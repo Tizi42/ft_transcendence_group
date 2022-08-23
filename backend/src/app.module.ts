@@ -1,24 +1,33 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
+import { getEnvPath } from './common/helper/env.helper';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
+const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 
 @Module({
   imports: [
-	ConfigModule.forRoot({ isGlobal: true }),
-	TypeOrmModule.forRoot({
-		type: 'postgres',
-		host: process.env.POSTGRES_HOST,
-		port: Number(process.env.POSTGRES_PORT),
-    	username: process.env.POSTGRES_USER,
-    	password: process.env.POSTGRES_PASSWORD,
-		database: process.env.POSTGRES_DB,
-		//Or just: url: process.env.DATABASE_URL,
-		entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-    	synchronize: false,
-	})
+    ConfigModule.forRoot({ envFilePath, isGlobal: true }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get('DB_HOST'),
+        port: +configService.get('DB_PORT'),
+        username: configService.get('DB_USER'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_DATABASE'),
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        synchronize: true,
+      }),
+      inject: [ConfigService],
+    }),
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
