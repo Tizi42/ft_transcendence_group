@@ -19,6 +19,11 @@ This project is running inside a docker, you can lunch it through docker-compose
 docker compose up --build
 ```
 
+Once running, to connect to the database with CLI :
+```bash
+psql -h localhost -p 9876 -d ft-transcendence-db -U user-admin
+```
+
 # Backend
 
 [NestJs](https://github.com/nestjs/) is a nodeJs framework working with TypeScript.
