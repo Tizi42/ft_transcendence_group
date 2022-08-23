@@ -3,6 +3,7 @@ FROM node:lts-alpine As dev
 WORKDIR	/app
 COPY --chown=node:node package*.json ./
 RUN npm ci
+ENV NODE_ENV development
 COPY --chown=node:node . .
 USER node
 
