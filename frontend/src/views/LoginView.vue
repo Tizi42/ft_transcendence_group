@@ -20,10 +20,6 @@ export default defineComponent({
 </script>
 
 <script setup lang="ts">
-import { useRouter } from "vue-router";
-
-const router = useRouter();
-
 function loggedIn() {
   if (getCookie("jwt") === "") {
     return false;
