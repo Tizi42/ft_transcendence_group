@@ -1,7 +1,13 @@
 <template>
   <div class="container">
     <img id="ping-pong" src="@/assets/pingPongIcon.png" />
-    <button id="btn" data="Sign in with 42" @click="handleClick()"></button>
+    <button
+      v-if="!loggedIn()"
+      class="btn"
+      data="Sign in with 42"
+      @click="handleLogin()"
+    ></button>
+    <button v-else class="btn" data="Logout" @click="handleLogout()"></button>
   </div>
 </template>
 
@@ -14,8 +20,41 @@ export default defineComponent({
 </script>
 
 <script setup lang="ts">
-function handleClick() {
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+function loggedIn() {
+  if (getCookie("jwt") === "") {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+function getCookie(cname: string) {
+  let name = cname + "=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+  let ca = decodedCookie.split(";");
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == " ") {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+function handleLogin() {
   window.location.href = "http://localhost:3000/api/auth/42/login";
+}
+
+function handleLogout() {
+  document.cookie = "jwt" + "=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+  window.location.reload();
 }
 </script>
 
@@ -37,7 +76,7 @@ body {
   flex-direction: column;
 }
 
-#btn {
+.btn {
   padding: 19px 43px;
   border: none;
   outline: none;
@@ -53,7 +92,7 @@ body {
   z-index: 1;
 }
 
-#btn::before {
+.btn::before {
   content: "";
   position: absolute;
   top: 4px;
@@ -66,7 +105,7 @@ body {
   transition: 200ms;
 }
 
-#btn::after {
+.btn::after {
   content: attr(data);
   /* font-family: "Outfit"; */
   font-style: normal;
@@ -79,7 +118,7 @@ body {
   color: transparent;
 }
 
-#btn:hover::before {
+.btn:hover::before {
   opacity: 20%;
   top: 0;
   right: 0;
@@ -87,7 +126,7 @@ body {
   left: 0;
 }
 
-#btn:hover::after {
+.btn:hover::after {
   color: #1e2a02;
 }
 </style>
