@@ -14,15 +14,23 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, Ref, ref } from "vue";
+import { Ref, ref, onBeforeMount } from "vue";
+import { useRouter } from "vue-router";
 
 const profile: Ref<any> = ref("");
+const router = useRouter();
 
-onMounted(async () => {
+onBeforeMount(async () => {
   await fetch("http://localhost:3000/api/private", {
     credentials: "include",
   })
     .then((response) => {
+      if (response.status != 200) {
+        router.push({
+          name: "login",
+        });
+        return response.json();
+      }
       return response.json();
     })
     .then((user) => {
