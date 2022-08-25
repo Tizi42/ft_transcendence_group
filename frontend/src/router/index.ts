@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import GameView from "../views/GameView.vue";
+import LoginView from "../views/LoginView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -18,6 +19,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "user",
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/UserView.vue"),
+  },
+  {
+    path: "/login",
+    name: "login",
+    component: LoginView,
   },
 ];
 
