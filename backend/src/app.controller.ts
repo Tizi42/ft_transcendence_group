@@ -15,6 +15,8 @@ export class AppController {
   @UseGuards(JwtAuthGuard)
   @Get('private')
   getPrivate(@Req() req: Request) {
+    console.log(req.cookies);
+    console.log(req.user);
     return req.user;
   }
 }
