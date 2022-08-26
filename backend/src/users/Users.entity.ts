@@ -11,10 +11,10 @@ export class User {
   @Column()
   displayName: string;
   
-  @Column()
+  @Column({default: "nobody@42.intra.fr"})
   email: string;
 
-  @Column()
+  @Column({default: ""})
   picture: string;
 
   @Column("int", { array: true, default: {} })
