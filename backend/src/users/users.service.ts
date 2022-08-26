@@ -19,4 +19,10 @@ export class UsersService {
         const newUser = this.userRepository.create(userDetails);
         return await this.userRepository.save(newUser);
     }
+
+    async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
+        return this.userRepository.update(userId, {
+            twoFactorAuthenticationSecret: secret
+        });
+    }
 }
