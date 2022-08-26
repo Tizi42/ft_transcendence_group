@@ -2,7 +2,9 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Any, DataSource, Repository } from "typeorm";
 import { User } from "./Users.entity";
+import { FriendshipDto } from "./utils/friendship.dto";
 import { UserDetails } from "./utils/types";
+import { UserDto } from "./utils/user.dto";
 
 @Injectable()
 export class UsersService {
@@ -33,15 +35,21 @@ export class UsersService {
     await this.usersRepository.delete(id);
   }
 
-  addOne(user: User) {
-	this.usersRepository.insert(user);
+  addOne(userInfo: UserDto) {
+    let newUser = new User();
+    newUser.displayName = userInfo.displayName;
+    newUser.username = userInfo.username;
+	  this.usersRepository.insert(newUser);
   }
 
-  async createFriendship(id1: number, id2: number) {
-	let askingForFriend = await this.usersRepository.findOneBy({ id: id1 });
-	let target = await this.usersRepository.findOneBy({ id: id2 });
+  async createFriendship(param: FriendshipDto) {
+	let askingForFriend = await this.usersRepository.findOneBy({ id: param.id1 });
+	let target = await this.usersRepository.findOneBy({ id: param.id2 });
+
 	if (askingForFriend == null || target == null)
 		return console.log("friendship creation aborted");
+
+  console.log(target.displayName, " ", askingForFriend.displayName);
 	askingForFriend.friendWith.push(target.id);
 	target.friendOf.push(askingForFriend.id);
 	this.usersRepository.save(target);

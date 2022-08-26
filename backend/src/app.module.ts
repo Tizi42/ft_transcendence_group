@@ -8,6 +8,11 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { BattlesModule } from './battles/battles.module';
 import { typeOrmConfig } from './common/typeorm.config';
+import { DataSource } from 'typeorm';
+import { UsersController } from './users/users.controller';
+import { BattlesController } from './battles/battles.controller';
+import { UsersService } from './users/users.service';
+import { BattlesService } from './battles/battles.service';
 
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 
@@ -19,7 +24,9 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     UsersModule,
     BattlesModule
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private dataSource: DataSource) {}
+}
