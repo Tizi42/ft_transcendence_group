@@ -1,7 +1,8 @@
-import { Controller, Get, Req, Res, UseGuards } from "@nestjs/common";
+import { Controller, Get, Req, Res, UseGuards, Post } from "@nestjs/common";
 import { Request, Response } from "express";
 import { AuthService } from "./auth.service";
 import { FortyTwoAuthGuard } from "./guards/42-auth.guard";
+import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 
 @Controller('auth')
 export class AuthController {
@@ -23,4 +24,10 @@ export class AuthController {
         res.cookie('jwt', accessToken);
         return req.user;
     }
+
+    // @Post('2fa/generate')
+    // @UseGuards(JwtAuthGuard)
+    // async register(@Res() response: Response, @Req() request: Request) {
+    //     const { otpAuthUrl } = await this.authService.generateTwoFactorAuthenticationSecret(request.user);
+    // }
 }
