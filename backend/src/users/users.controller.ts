@@ -13,6 +13,18 @@ export class UsersController {
     return this.usersService.addOne(user);
   }
 
+  // to delete 
+  @Get('/rm/:id')
+  remove(@Param('id') id: number) {
+    return this.usersService.remove(id);
+  }
+
+  // to delete 
+  @Get('/rm')
+  removeAll() {
+    return this.usersService.removeAll();
+  }
+
   @Get()
   getAll(): Promise<User[]>  {
     return this.usersService.findAll();
@@ -24,7 +36,7 @@ export class UsersController {
   }
 
   @Post('/rmfriend')
-  remove(@Body() friendship: FriendshipDto) {
+  removeFriend(@Body() friendship: FriendshipDto) {
     return this.usersService.removeFriendship(friendship);
   }
 
