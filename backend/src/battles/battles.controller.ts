@@ -1,4 +1,6 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
+import { Request } from 'express';
+import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { DataSource } from "typeorm";
 import { Battle } from "./battle.entity";
 import { BattlesService } from "./battles.service";
@@ -23,6 +25,13 @@ export class BattlesController {
   getAllFor(@Param('id') id: number) : Promise<Battle[]> {
     let battles = this.battlesService.findAllFor(id);
     return (battles);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/mine')
+  getMyBattles(@Req() req: Request) : Promise<Battle[]> {
+    
+    return this.battlesService.findAllFor(10);
   }
 
 }

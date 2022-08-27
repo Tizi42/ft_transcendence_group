@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { User } from "src/users/Users.entity";
 import { DataSource, Repository } from "typeorm";
 import { Battle } from "./battle.entity";
 import { BattleDto } from "./utils/battle.dto";
@@ -25,9 +26,18 @@ export class BattlesService {
     });
   }
 
+  findAllForUser(user: User): Promise<Battle[]> {
+    return this.gamessRepository.find({
+        where: [
+            { opponent1: user.id, },
+            { opponent2: user.id },
+        ],
+    });
+  }
+
   async numberOfVictory(userId: number) : Promise<number>
   {
-    let winBattle = await this.gamessRepository.count({where: { winner: userId }});
+    let winBattle = await this.gamessRepository.count({ where: { winner: userId }});
     let totBattle = await this.gamessRepository.count({
       where: [
           { opponent1: userId, },
