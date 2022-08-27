@@ -8,6 +8,11 @@ import { UserDto } from "./utils/user.dto";
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Get()
+  getAll(): Promise<User[]>  {
+    return this.usersService.findAll();
+  };
+
   @Post('/add')
   create(@Body() user: UserDto) {
     return this.usersService.addOne(user);
@@ -24,18 +29,17 @@ export class UsersController {
   removeAll() {
     return this.usersService.removeAll();
   }
-
-  @Get()
-  getAll(): Promise<User[]>  {
-    return this.usersService.findAll();
-  };
   
-  @Post('/addfriend')
+  /*
+  **    FRIENDS
+  */
+
+  @Post('/friends/add')
   addFriend(@Body() friendship: FriendshipDto) {
     return this.usersService.createFriendship(friendship);
   }
 
-  @Post('/rmfriend')
+  @Post('/friends/rm')
   removeFriend(@Body() friendship: FriendshipDto) {
     return this.usersService.removeFriendship(friendship);
   }
@@ -50,4 +54,27 @@ export class UsersController {
 	  return this.usersService.showFriendOf(id);
   }
 
+  /*
+  **    BLOCKED
+  */
+
+  @Post('/block/add')
+  block(@Body() friendship: FriendshipDto) {
+    return this.usersService.blockRelationship(friendship);
+  }
+
+  @Post('/block/rm')
+  unblock(@Body() friendship: FriendshipDto) {
+    return this.usersService.unblockRelationship(friendship);
+  }
+
+  @Get('/block/:id')
+  getBlocked(@Param('id') id: number) {
+	  return this.usersService.getBlocked(id);
+  }
+
+  @Get('/blockby/:id')
+  getBlockedby(@Param('id') id: number) {
+	  return this.usersService.getBlockedBy(id);
+  }
 }
