@@ -22,4 +22,10 @@ export class User {
 
   @Column("int", { array: true, default: {} })
   friendOf: number[];
+
+  @Column("int", { array: true, default: {} })
+  blocked: number[];
+
+  @Column("int", { array: true, default: {} })
+  blockedBy: number[];
 }

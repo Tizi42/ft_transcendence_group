@@ -42,8 +42,15 @@ export class UsersService {
     let newUser = new User();
     newUser.displayName = userInfo.displayName;
     newUser.username = userInfo.username;
+    newUser.email = userInfo.email;
+    newUser.picture = userInfo.picture;
 	  this.usersRepository.insert(newUser);
   }
+
+
+  /*
+  **    FRIENDS
+  */
 
   async createFriendship(param: FriendshipDto) {
     let askingForFriend = await this.usersRepository.findOneBy({ id: param.id1 });
@@ -108,5 +115,77 @@ export class UsersService {
     return this.usersRepository.find({
         where: { id: Any(user.friendOf) }
       });
+  }
+
+
+  /*
+  **    BLOCKED
+  */
+
+  async blockRelationship(param: FriendshipDto) {
+    let wantToBlock = await this.usersRepository.findOneBy({ id: param.id1 });
+    let target = await this.usersRepository.findOneBy({ id: param.id2 });
+
+    if (wantToBlock == null || target == null)
+      return console.log("block aborted");
+
+    // check if already blocked
+    if (wantToBlock.blocked.includes(target.id))
+      return console.log(wantToBlock.displayName, "has already blocked", target.displayName);
+
+    wantToBlock.blocked.push(target.id);
+    target.blockedBy.push(wantToBlock.id);
+
+    this.usersRepository.save(target);
+    this.usersRepository.save(wantToBlock);
+
+    console.log(wantToBlock.displayName, "has blocked", target.displayName);
+  }
+
+  async unblockRelationship(param: FriendshipDto) {
+    let wantToUnblock = await this.usersRepository.findOneBy({ id: param.id1 });
+    let target = await this.usersRepository.findOneBy({ id: param.id2 });
+
+    if (wantToUnblock == null || target == null)
+      return console.log("block aborted");
+
+    // check if blocked
+    if (!wantToUnblock.blocked.includes(target.id))
+      return console.log(wantToUnblock.displayName, "has not blocked", target.displayName);
+
+    let newBlockedList = wantToUnblock.blocked.filter(function(ele){ return ele != target.id });
+    let newBlockedByList = target.blockedBy.filter(function(ele){ return ele != wantToUnblock.id });
+    
+    wantToUnblock.blocked = newBlockedList;
+    target.blockedBy = newBlockedByList;
+
+    this.usersRepository.save(target);
+    this.usersRepository.save(wantToUnblock);
+
+    console.log(wantToUnblock.displayName, "has unblocked", target.displayName);
+  }
+
+  async getBlocked(id: number) : Promise<User[]> {
+    const user = await this.usersRepository.findOneBy({ id });
+    if (user == null)
+    {
+      console.log("no user matches this id");
+      return null;
     }
+    return this.usersRepository.find({
+        where: { id: Any(user.blocked) }
+	  });
+  }
+
+  async getBlockedBy(id: number) : Promise<User[]> {
+    const user = await this.usersRepository.findOneBy({ id });
+    if (user == null)
+    {
+      console.log("no user matches this id");
+      return null;
+    }
+    return this.usersRepository.find({
+        where: { id: Any(user.blockedBy) }
+      });
+  }
 }
