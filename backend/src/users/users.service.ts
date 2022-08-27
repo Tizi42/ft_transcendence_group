@@ -6,19 +6,11 @@ import { FriendshipDto } from "./utils/friendship.dto";
 import { UserDetails } from "./utils/types";
 import { UserDto } from "./utils/user.dto";
 
-function arrayRemove(arr, value) { 
-    
-  return arr.filter(function(ele){ 
-      return ele != value; 
-  });
-}
-
 @Injectable()
 export class UsersService {
     constructor(
         @InjectRepository(User)
-        private readonly usersRepository: Repository<User>,
-        private dataSource: DataSource
+        private readonly usersRepository: Repository<User>
     ) {}
 
     async findOneByEmail(email: string): Promise<User | undefined> {
@@ -40,6 +32,10 @@ export class UsersService {
 
   async remove(id: number): Promise<void> {
     await this.usersRepository.delete(id);
+  }
+
+  async removeAll(): Promise<void> {
+    await this.usersRepository.delete({});
   }
 
   addOne(userInfo: UserDto) {
@@ -78,6 +74,7 @@ export class UsersService {
 
     if (!removingFriend.friendWith.includes(target.id))
       return console.log(removingFriend.displayName, "and", target.displayName, "are not friends");
+    
     let newFriendWithList = removingFriend.friendWith.filter(function(ele){ return ele != target.id });
     let newFriendOfList = target.friendOf.filter(function(ele){ return ele != removingFriend.id });
     
@@ -91,6 +88,11 @@ export class UsersService {
 
   async showFriendWith(id: number) : Promise<User[]> {
     const user = await this.usersRepository.findOneBy({ id });
+    if (user == null)
+    {
+      console.log("no user matches this id");
+      return null;
+    }
     return this.usersRepository.find({
         where: { id: Any(user.friendWith) }
 	  });
@@ -98,6 +100,11 @@ export class UsersService {
 
   async showFriendOf(id: number) : Promise<User[]> {
     const user = await this.usersRepository.findOneBy({ id });
+    if (user == null)
+    {
+      console.log("no user matches this id");
+      return null;
+    }
     return this.usersRepository.find({
         where: { id: Any(user.friendOf) }
       });
