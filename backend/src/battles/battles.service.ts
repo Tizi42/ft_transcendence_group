@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DataSource, Repository } from "typeorm";
 import { Battle } from "./battle.entity";
+import { BattleDto } from "./utils/battle.dto";
 
 @Injectable()
 export class BattlesService {
@@ -46,7 +47,10 @@ export class BattlesService {
     await this.gamessRepository.delete(id);
   }
 
-  addOne(game: Battle) {
-	  this.gamessRepository.insert(game);
+  addOne(game: BattleDto) {
+    let newBattle = new Battle();
+    newBattle.opponent1 = game.opponent1;
+    newBattle.opponent2 = game.opponent2;
+	  this.gamessRepository.insert(newBattle);
   }
 }
