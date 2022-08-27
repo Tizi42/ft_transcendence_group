@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'battles' })
 export class Battle {
@@ -6,8 +6,8 @@ export class Battle {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
-    date: number; // -> change to Date() 
+    @CreateDateColumn()
+    date_start: Date;
   
     @Column()
     opponent1: number;
@@ -15,7 +15,7 @@ export class Battle {
     @Column()
     opponent2: number;
   
-    @Column()
+    @Column({ default: undefined, nullable: true })
     winner: number;
   
     @Column({ default: false })
