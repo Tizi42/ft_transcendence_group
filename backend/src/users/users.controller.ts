@@ -20,8 +20,12 @@ export class UsersController {
   
   @Post('/addfriend')
   addFriend(@Body() friendship: FriendshipDto) {
-    console.log(friendship.id1, " ", friendship.id2);
     return this.usersService.createFriendship(friendship);
+  }
+
+  @Post('/rmfriend')
+  remove(@Body() friendship: FriendshipDto) {
+    return this.usersService.removeFriendship(friendship);
   }
 
   @Get('/friends/:id')
