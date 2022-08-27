@@ -43,23 +43,28 @@ export class UsersService {
   }
 
   async createFriendship(param: FriendshipDto) {
-	let askingForFriend = await this.usersRepository.findOneBy({ id: param.id1 });
-	let target = await this.usersRepository.findOneBy({ id: param.id2 });
+    let askingForFriend = await this.usersRepository.findOneBy({ id: param.id1 });
+    let target = await this.usersRepository.findOneBy({ id: param.id2 });
 
-	if (askingForFriend == null || target == null)
-		return console.log("friendship creation aborted");
+    if (askingForFriend == null || target == null)
+      return console.log("friendship creation aborted");
 
-  console.log(target.displayName, " ", askingForFriend.displayName);
-	askingForFriend.friendWith.push(target.id);
-	target.friendOf.push(askingForFriend.id);
-	this.usersRepository.save(target);
-	this.usersRepository.save(askingForFriend);
+    // check if already friends
+    console.log(target.displayName, " ", askingForFriend.displayName);
+    if (askingForFriend.friendWith.includes(target.id))
+      return console.log("already friends");
+
+    askingForFriend.friendWith.push(target.id);
+    target.friendOf.push(askingForFriend.id);
+
+    this.usersRepository.save(target);
+    this.usersRepository.save(askingForFriend);
   }
 
   async showFriendWith(id: number) : Promise<User[]> {
-	const user = await this.usersRepository.findOneBy({ id });
-	return this.usersRepository.find({
-	    where: { id: Any(user.friendWith) }
+    const user = await this.usersRepository.findOneBy({ id });
+    return this.usersRepository.find({
+        where: { id: Any(user.friendWith) }
 	  });
   }
 
