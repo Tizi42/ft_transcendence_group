@@ -1,5 +1,5 @@
 <template>
-  <div class="nav-container">
+  <div class="nav-container" id="app">
     <nav id="navbar">
       <router-link :to="{ name: 'game' }">
         <div class="link-container">
