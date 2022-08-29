@@ -10,9 +10,11 @@
   "dependencies": {
     "axios": "^0.27.2",
     "core-js": "^3.8.3",
+    "socket.io-client": "^4.5.1",
     "vue": "^3.2.13",
     "vue-axios": "^3.4.1",
-    "vue-router": "^4.0.3"
+    "vue-router": "^4.0.3",
+    "vue-socket.io": "^3.0.10"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.4.0",
