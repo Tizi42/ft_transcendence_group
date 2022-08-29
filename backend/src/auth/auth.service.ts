@@ -38,6 +38,13 @@ export class AuthService {
         return toFileStream(stream, otpAuthUrl);
     }
 
+    isTwoFactorAuthenticationCodeValid(twoFactorAuthenticationCode: string, user: User) {
+        return authenticator.verify({
+            token: twoFactorAuthenticationCode,
+            secret: user.twoFactorAuthenticationSecret,
+        });
+    }
+
     async validateUser(userDetails: UserDetails): Promise<any> {
         const user = await this.usersService.findOneByEmail(userDetails.email);
         if (user) {
