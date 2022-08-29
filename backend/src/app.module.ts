@@ -6,6 +6,8 @@ import { getEnvPath } from './common/helper/env.helper';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { GameModule } from './game/game.module';
+import { GameGateway } from './game/game.gateway';
 
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 
@@ -28,6 +30,7 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     }),
     AuthModule,
     UsersModule,
+    GameModule,
   ],
   controllers: [AppController],
   providers: [AppService],
