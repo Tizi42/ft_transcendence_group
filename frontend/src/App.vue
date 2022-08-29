@@ -18,7 +18,10 @@
       </router-link>
       <router-link :to="{ name: 'leaderboard' }">
         <div class="link-container">
-          <img src="@/assets/icon-user-stroke.png" alt="icon LeaderBoard" />
+          <img
+            src="@/assets/icon-leaderboard-stroke.png"
+            alt="icon LeaderBoard"
+          />
         </div>
       </router-link>
     </nav>
