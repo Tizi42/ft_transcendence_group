@@ -8,52 +8,19 @@
     <!-- </ul> -->
     <form @submit.prevent="onSubmit" class="form">
       <textarea v-model="input" placeholder="Your message..." class="input" />
-      <button :disabled="!isValid" class="send-button">Send</button>
+      <button class="send-button">Send</button>
     </form>
   </div>
 </template>
 
-<script lang="ts">
-import socket from "../socket";
-
-export default {
-  data() {
-    return {
-      input: "",
-    };
-  },
-  methods: {
-    onSubmit() {
-      socket.emit("input", this.input);
-      this.input = "";
-    },
-  },
-  computed: {
-    isValid() {
-      return this.input.length > 0;
-    },
-  },
-  created() {
-    socket.on("connect", function () {
-      console.log("socket connected");
-    });
-    socket.emit("send_message", function () {
-      console.log("front");
-    });
-  },
-  // unmounted() {
-  //   socket.off("connect");
-  //   socket.off("input");
-  // },
-};
-</script>
-
 <script lang="ts" setup>
-import { Ref, ref, onBeforeMount } from "vue";
+import { Ref, ref, onBeforeMount, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
+import socket from "../socket";
 
 const router = useRouter();
 const profile: Ref<any> = ref("");
+const input: Ref<any> = ref("");
 
 onBeforeMount(async () => {
   await fetch("http://localhost:3000/api/private", {
@@ -76,6 +43,25 @@ onBeforeMount(async () => {
       console.log(error);
     });
 });
+onMounted(() => {
+  socket.on("connect", function () {
+    console.log("socket connected");
+  });
+  function isValid() {
+    return input.value.lenght > 0;
+  }
+});
+onUnmounted(() => {
+  socket.off("connect");
+  socket.off("send_message");
+});
+function onSubmit() {
+  const data = {
+    content: input.value,
+    author: profile.value.username,
+  };
+  socket.emit("send_message", data);
+}
 </script>
 
 <style scoped>
