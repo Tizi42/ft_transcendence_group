@@ -1,9 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { AuthService } from '../auth/auth.service';
-import { Socket } from 'socket.io';
-import { parse } from 'cookie';
-import { WsException } from '@nestjs/websockets';
- 
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { Chat } from './entities/chat.entity';
+import { messageInfos } from './utils/types';
+
 @Injectable()
 export class ChatService {
+    constructor(
+        @InjectRepository(Chat)
+        private readonly chatRepository: Repository<Chat>,
+    ) {}
+
+    async saveMessage(content: messageInfos): Promise<Chat> {
+        const newMessage = this.chatRepository.create(content);
+        return await this.chatRepository.save(newMessage);
+    }
 }
