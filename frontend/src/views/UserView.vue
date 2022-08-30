@@ -10,6 +10,16 @@
         <img :src="profile.picture" width="100" />
       </li>
     </ul>
+    <label for="button2FA">
+      <span v-if="enabled2FA">2FA on</span>
+      <span v-else>2FA off</span>
+      <input
+        type="checkbox"
+        id="button2FA"
+        v-model="enabled2FA"
+        @click="toggle2FA()"
+      />
+    </label>
   </div>
 </template>
 
@@ -19,6 +29,7 @@ import { useRouter } from "vue-router";
 
 const profile: Ref<any> = ref("");
 const router = useRouter();
+const enabled2FA = ref(false);
 
 onBeforeMount(async () => {
   await fetch("http://localhost:3000/api/private", {
@@ -40,15 +51,33 @@ onBeforeMount(async () => {
       console.log(error);
     });
 });
+
+async function toggle2FA() {
+  if (enabled2FA.value === false) {
+    await fetch("http://localhost:3000/api/auth/2fa/generate", {
+      method: "POST",
+      credentials: "include",
+    })
+      .then((response) => {
+        console.log(response.body);
+        return response.body;
+      })
+      .then((body) => {
+        console.log(body);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+}
 </script>
 
 <style>
-h1 {
+.about {
   color: white;
 }
 
 li {
   list-style: none;
-  color: white;
 }
 </style>
