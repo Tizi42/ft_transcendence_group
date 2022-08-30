@@ -1,14 +1,16 @@
 <template>
   <div>
     <h1>This is the CHAT page</h1>
-    <!-- <ul class="messages">
-      <li v-for="(message, index) in messages" :key="index" class="message">
-        {{ message.content }}
-      </li> -->
-    <!-- </ul> -->
-    <form @submit.prevent="onSubmit" class="form">
+    <div class="sender">
+      <p class="message">{{ profile.username }}:</p>
+      <h3 v-for="(message, index) in history" :key="index" class="message">
+        {{ date[index] }}:
+        {{ history[index] }}
+      </h3>
+    </div>
+    <form @submit.prevent="onSubmit" @keyup.enter="onSubmit" class="form">
       <textarea v-model="input" placeholder="Your message..." class="input" />
-      <button class="send-button">Send</button>
+      <button :disabled="input === ''" class="send-button">Send</button>
     </form>
   </div>
 </template>
@@ -21,6 +23,9 @@ import socket from "../socket";
 const router = useRouter();
 const profile: Ref<any> = ref("");
 const input: Ref<any> = ref("");
+const history: Ref<any> = ref([]);
+const date: Ref<any> = ref([]);
+const index = 0;
 
 onBeforeMount(async () => {
   await fetch("http://localhost:3000/api/private", {
@@ -42,14 +47,13 @@ onBeforeMount(async () => {
     .catch((error) => {
       console.log(error);
     });
+  getMessages();
 });
 onMounted(() => {
   socket.on("connect", function () {
     console.log("socket connected");
+    // getMessages();
   });
-  function isValid() {
-    return input.value.lenght > 0;
-  }
 });
 onUnmounted(() => {
   socket.off("connect");
@@ -61,14 +65,23 @@ function onSubmit() {
     author: profile.value.username,
   };
   socket.emit("send_message", data);
+  input.value = null;
+  window.location.reload();
+}
+function getMessages() {
+  fetch("http://localhost:3000/api/chat")
+    .then((response) => response.json())
+    .then((data) => {
+      data.forEach((el: any) => {
+        date.value.push(el.created_at);
+        history.value.push(el.content);
+      });
+    })
+    .catch((err) => console.error(err));
 }
 </script>
 
 <style scoped>
-.messages {
-  margin: 0;
-  padding: 20px;
-}
 .form {
   padding: 10px;
 }
@@ -82,5 +95,11 @@ function onSubmit() {
 }
 .send-button {
   vertical-align: top;
+}
+.message {
+  background: #e7e7e7;
+  border-radius: 10px;
+  padding: 1rem;
+  width: fit-content;
 }
 </style>
