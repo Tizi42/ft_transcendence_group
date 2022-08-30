@@ -15,4 +15,7 @@ export class ChatService {
         const newMessage = this.chatRepository.create(content);
         return await this.chatRepository.save(newMessage);
     }
+    async getMessages(): Promise<Chat[]> {
+        return await this.chatRepository.find();
+    }
 }

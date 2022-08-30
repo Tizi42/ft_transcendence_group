@@ -20,13 +20,10 @@ export class ChatGateway {
     @SubscribeMessage('send_message')
     listenForMessages(@MessageBody() data: messageInfos) {
     
-        console.log('Message from:');
-        console.log(data.author);
-        console.log('says:');
-        console.log(data.content);
+        console.log('Message from: ' + data.author);
+        console.log('who says: ' + data.content);
     
         this.chatService.saveMessage(data);
-
         // envoi d'un message au client = socket.emit 
         this.server.sockets.emit('receive_message', data);
     }
