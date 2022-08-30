@@ -23,14 +23,13 @@ export class AuthController {
     @Get('42/redirect')
     @UseGuards(FortyTwoAuthGuard)
     handle42Redirect(@Req() request: RequestWithUser, @Res({ passthrough: true }) res: Response) {
-        const { accessToken } = this.authService.login(request.user);
-        res.cookie('jwt', accessToken);
-        console.log(request.user);
         if (!request.user.isTwoFactorAuthenticationEnabled) {
+            const { accessToken } = this.authService.login(request.user);
+            res.cookie('jwt', accessToken);
+            console.log(request.user);
             return res.redirect('http://localhost:8080/');
         }
-        return request.user;
-        // return res.redirect('2fa/authenticate'); redirect to a page to handle post with body action, (frontend)
+        return res.redirect('http://localhost:8080/2FA');
     }
 
     @Post('2fa/generate')
@@ -68,7 +67,8 @@ export class AuthController {
         if (!isCodeValid) {
             throw new UnauthorizedException('Wrong authentication code');
         }
-        // return request.res.redirect('http://localhost:8080/'); to redirect in home page frontend
-        return request.user;
+        const { accessToken } = this.authService.login(request.user);
+        request.res.cookie('jwt', accessToken);
+        return request.res.redirect('http://localhost:8080/');
     }
 }
