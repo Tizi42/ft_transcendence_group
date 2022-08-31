@@ -36,7 +36,8 @@ export class AuthController {
     @UseGuards(JwtAuthGuard)
     async register(@Res() response: Response, @Req() request: RequestWithUser) {
         const { otpAuthUrl } = await this.authService.generateTwoFactorAuthenticationSecret(request.user);
-
+        
+        await this.usersService.updateIsFirstEnablingTwoFactor(request.user.id, false);
         return this.authService.pipeQrCodeStream(response, otpAuthUrl);
     }
 
@@ -53,6 +54,14 @@ export class AuthController {
             throw new UnauthorizedException('Wrong authentication code');
         }
         await this.usersService.turnOnTwoFactorAuthentication(request.user.id);
+        return request.user;
+    }
+
+    @Get('2fa/turn-off')
+    @UseGuards(JwtAuthGuard)
+    async turnOffTwoFactorAuthentication(@Req() request: RequestWithUser) {
+        await this.usersService.turnOffTwoFactorAuthentication(request.user.id);
+        return request.user;
     }
 
     @Post('2fa/authenticate')

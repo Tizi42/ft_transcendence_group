@@ -46,6 +46,7 @@ onBeforeMount(async () => {
     })
     .then((user) => {
       profile.value = user;
+      enabled2FA.value = profile.value.isTwoFactorAuthenticationEnabled;
     })
     .catch((error) => {
       console.log(error);
@@ -54,19 +55,21 @@ onBeforeMount(async () => {
 
 async function toggle2FA() {
   if (enabled2FA.value === false) {
-    await fetch("http://localhost:3000/api/auth/2fa/generate", {
-      method: "POST",
+    router.push({
+      name: "2FA",
+    });
+  } else {
+    await fetch("http://localhost:3000/api/auth/2fa/turn-off", {
       credentials: "include",
     })
       .then((response) => {
-        console.log(response.body);
-        return response.body;
+        return response.json();
       })
-      .then((body) => {
-        console.log(body);
+      .then((result) => {
+        console.log("success : ", result);
       })
       .catch((error) => {
-        console.log(error);
+        console.log("error : ", error);
       });
   }
 }

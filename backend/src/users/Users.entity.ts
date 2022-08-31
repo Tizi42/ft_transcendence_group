@@ -23,4 +23,7 @@ export class User {
 
     @Column({ default: false })
     isTwoFactorAuthenticationEnabled: boolean;
+
+    @Column({ default: true })
+    isFirstEnablingTwoFactor: boolean;
 }
