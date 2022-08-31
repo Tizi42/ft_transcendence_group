@@ -4,6 +4,7 @@ import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { DataSource } from "typeorm";
 import { Battle } from "./battle.entity";
 import { BattlesService } from "./battles.service";
+import { BattleShowDto } from "./utils/battle-show.dto";
 import { BattleDto } from "./utils/battle.dto";
 
 @Controller('/battles')
@@ -15,6 +16,12 @@ export class BattlesController {
   getAll(): Promise<Battle[]>  {
     return this.battlesService.findAll();
   };
+
+  @UseGuards(JwtAuthGuard)
+  @Get("/test")
+  showAll(): Promise<BattleShowDto[]> {
+    return this.battlesService.showAll();
+  }
 
   @Post('/add')
   create(@Body() game: BattleDto) {
@@ -30,7 +37,7 @@ export class BattlesController {
   @UseGuards(JwtAuthGuard)
   @Get('/mine')
   getMyBattles(@Req() req: Request) : Promise<Battle[]> {
-    
+
     return this.battlesService.findAllFor(10);
   }
 
