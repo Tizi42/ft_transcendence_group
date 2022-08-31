@@ -1,12 +1,16 @@
 <template>
-  <div>
+  <div class="chatPage">
     <h1>This is the CHAT page</h1>
     <div class="sender">
-      <p class="message">{{ profile.username }}:</p>
-      <h3 v-for="(message, index) in history" :key="index" class="message">
-        {{ date[index] }}:
+      <p
+        v-for="(message, index) in history"
+        :key="index"
+        class="message message-out"
+      >
         {{ history[index] }}
-      </h3>
+        {{ date[index] }}
+        <img :src="profile.picture" class="photo" />
+      </p>
     </div>
     <form @submit.prevent="onSubmit" @keyup.enter="onSubmit" class="form">
       <textarea v-model="input" placeholder="Your message..." class="input" />
@@ -82,24 +86,73 @@ function getMessages() {
 </script>
 
 <style scoped>
-.form {
-  padding: 10px;
+.chatPage {
+  background: linear-gradient(
+    116.6deg,
+    #005f3e -20.9%,
+    #feca00 99.99%,
+    #ffda00 100%
+  );
 }
-.input {
-  width: 80%;
-  resize: none;
+/* .form {
   padding: 10px;
-  line-height: 1.5;
-  border-radius: 5px;
-  border: 1px solid #000;
+} */
+.input {
+  border-radius: 18px;
+  background: #ffffff;
+  width: 791px;
+  height: 90%;
+  left: 426px;
+  top: 836px;
 }
 .send-button {
   vertical-align: top;
 }
 .message {
-  background: #e7e7e7;
+  /* width: 40%; */
   border-radius: 10px;
-  padding: 1rem;
-  width: fit-content;
+  padding: 0.5em;
+  font-size: 100%;
+}
+.message-in {
+  background: #f1f0f0;
+  color: black;
+}
+.message-out {
+  margin-left: 55%;
+  width: 30%;
+  color: white;
+  background: #141817;
+  border-radius: 18px;
+}
+
+.sender {
+  background: #1e2b02;
+  border-radius: 22px;
+  width: 90%;
+  height: 20%;
+  padding: 0.5em;
+  overflow: auto;
+  margin: 0 auto 1em auto;
+  box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.3);
+  /* display: inline-block; */
+}
+.sender.time {
+}
+#time {
+  font-size: 10px;
+}
+.photo {
+  /* position: absolute; */
+  /* left: 83.54%;
+  right: 11.67%;
+  top: 49.41%;
+  bottom: 44.14%; */
+  /* height: 10%; */
+  width: 20%;
+  margin: 10% 0% 0% 20%;
+  border-radius: 50px;
+  margin-left: 105%;
+  margin-right: 10%;
 }
 </style>
