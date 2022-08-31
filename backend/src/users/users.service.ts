@@ -8,19 +8,33 @@ import { UserDto } from "./utils/user.dto";
 
 @Injectable()
 export class UsersService {
-    constructor(
-        @InjectRepository(User)
-        private readonly usersRepository: Repository<User>
-    ) {}
+  constructor(
+      @InjectRepository(User)
+      private readonly usersRepository: Repository<User>
+  ) {}
 
-    async findOneByEmail(email: string): Promise<User | undefined> {
-        return this.usersRepository.findOneBy({ email: email });
-    }
+  async findOneByEmail(email: string): Promise<User | undefined> {
+      return this.usersRepository.findOneBy({ email: email });
+  }
 
-    async createNewUser(userDetails: UserDetails): Promise<User> {
-        const newUser = this.usersRepository.create(userDetails);
-        return await this.usersRepository.save(newUser);
-    }
+  async createNewUser(userDetails: UserDetails): Promise<User> {
+      const newUser = this.usersRepository.create(userDetails);
+      return await this.usersRepository.save(newUser);
+  }
+  
+  async getDisplayname(id: number) : Promise<string> {
+    let user = await this.usersRepository.findOneBy({id});
+    if (user == null)
+      return ("");
+    return (user.username);
+  }
+
+  async getPicture(id: number) : Promise<string> {
+    let user = await this.usersRepository.findOneBy({id});
+    if (user == null)
+      return ("");
+    return (user.picture);
+  }
 
   findAll(): Promise<User[]> {
     return this.usersRepository.find();
