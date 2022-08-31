@@ -1,20 +1,27 @@
 <template>
-  <div class="about">
-    <h1>Hey {{ profile.username }}</h1>
-    <ul>
-      <li><span>Id : </span>{{ profile.id }}</li>
-      <li><span>Email : </span>{{ profile.email }}</li>
-      <li><span>Display Name : </span>{{ profile.displayName }}</li>
-      <li>
-        <span>Picture profile : </span>
-        <img :src="profile.picture" width="100" />
-      </li>
+  <ProfileBanner :profile="profile" />
+  <div class="users-navbar-frame">
+    <ul id="users-navbar-list">
+      <li>STATS</li>
+      <li>FRIENDS</li>
+      <li>SETTINGS</li>
     </ul>
   </div>
 </template>
 
+<script lang="ts">
+import ProfileBanner from "@/components/users/ProfileBanner.vue";
+
+export default defineComponent({
+  name: "UserView",
+  components: {
+    ProfileBanner,
+  },
+});
+</script>
+
 <script lang="ts" setup>
-import { Ref, ref, onBeforeMount } from "vue";
+import { Ref, ref, onBeforeMount, defineComponent } from "vue";
 import { useRouter } from "vue-router";
 
 const profile: Ref<any> = ref("");
@@ -43,12 +50,23 @@ onBeforeMount(async () => {
 </script>
 
 <style>
-h1 {
-  color: white;
+#users-navbar-list {
+  list-style-type: none;
+  margin-top: 375px;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
 }
 
-li {
-  list-style: none;
-  color: white;
+#users-navbar-list li {
+  font-family: "Outfit";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 35px;
+
+  display: inline-block;
+  margin: 0px 38px;
+  color: rgba(255, 255, 255, 1);
 }
 </style>
