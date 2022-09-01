@@ -1,25 +1,19 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
+    <img alt="logo" src="../assets/pingPongIcon.png" />
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
-
-export default defineComponent({
-  name: "GameView",
-  components: {
-    HelloWorld,
-  },
-});
-</script>
-
 <script lang="ts" setup>
+import { defineComponent, defineExpose } from "vue";
 import { onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
+
+defineExpose(
+  defineComponent({
+    name: "GameView",
+  })
+);
 
 const router = useRouter();
 
