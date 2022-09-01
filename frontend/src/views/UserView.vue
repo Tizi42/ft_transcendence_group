@@ -16,10 +16,8 @@
 <script lang="ts" setup>
 import { Ref, ref, onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
-
 const profile: Ref<any> = ref("");
 const router = useRouter();
-
 onBeforeMount(async () => {
   await fetch("http://localhost:3000/api/private", {
     credentials: "include",
@@ -46,7 +44,6 @@ onBeforeMount(async () => {
 h1 {
   color: white;
 }
-
 li {
   list-style: none;
   color: white;

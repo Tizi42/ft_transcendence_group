@@ -1,6 +1,15 @@
 <template>
   <div class="home">
     <img alt="logo" src="../assets/pingPongIcon.png" />
+    <router-link :to="{ name: 'play' }">
+      <button class="gameButton">Play</button>
+    </router-link>
+    <router-link :to="{ name: 'leaderboard' }">
+      <button class="gameButton">Leaderboard</button>
+    </router-link>
+    <router-link :to="{ name: 'history' }">
+      <button class="gameButton">Match history</button>
+    </router-link>
   </div>
 </template>
 

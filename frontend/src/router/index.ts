@@ -4,6 +4,7 @@ import LoginView from "../views/LoginView.vue";
 import LeaderboardView from "../views/LeaderboardView.vue";
 import HistoryView from "../views/HistoryView.vue";
 import PlayView from "../views/PlayView.vue";
+//import UserView from "../views/UserView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
