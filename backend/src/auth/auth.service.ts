@@ -8,7 +8,7 @@ import { User } from 'src/users/Users.entity';
 import { UsersService } from 'src/users/users.service';
 import { UserDetails } from 'src/users/utils/types';
 import { Repository } from 'typeorm';
-import { JwtPayload } from './strategy/jwt.strategy';
+import { JwtPayload} from './strategy/jwt.strategy';
 import { toFileStream } from 'qrcode';
 
 @Injectable()

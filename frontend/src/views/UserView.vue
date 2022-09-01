@@ -36,12 +36,6 @@ onBeforeMount(async () => {
     credentials: "include",
   })
     .then((response) => {
-      if (response.status != 200) {
-        router.push({
-          name: "login",
-        });
-        return response.json();
-      }
       return response.json();
     })
     .then((user) => {
