@@ -1,21 +1,23 @@
 <template>
   <div class="chatPage">
     <h1>This is the CHAT page</h1>
-    <div class="sender">
-      <p
+    <div class="chatroom">
+      <div
+        class="messageBlock"
         v-for="(message, index) in history"
         :key="index"
-        class="message message-out"
       >
-        {{ history[index] }}
-        {{ date[index] }}
+        <p class="message message-out">
+          {{ history[index] }}
+          <!-- {{ timestamp }} -->
+        </p>
         <img :src="profile.picture" class="photo" />
-      </p>
+      </div>
+      <form @submit.prevent="onSubmit" @keyup.enter="onSubmit" class="form">
+        <textarea v-model="input" placeholder="Your message..." class="input" />
+        <button :disabled="input === ''" class="send-button">Send</button>
+      </form>
     </div>
-    <form @submit.prevent="onSubmit" @keyup.enter="onSubmit" class="form">
-      <textarea v-model="input" placeholder="Your message..." class="input" />
-      <button :disabled="input === ''" class="send-button">Send</button>
-    </form>
   </div>
 </template>
 
@@ -28,7 +30,7 @@ const router = useRouter();
 const profile: Ref<any> = ref("");
 const input: Ref<any> = ref("");
 const history: Ref<any> = ref([]);
-const date: Ref<any> = ref([]);
+const timestamp: Ref<any> = ref([]);
 const index = 0;
 
 onBeforeMount(async () => {
@@ -56,7 +58,6 @@ onBeforeMount(async () => {
 onMounted(() => {
   socket.on("connect", function () {
     console.log("socket connected");
-    // getMessages();
   });
 });
 onUnmounted(() => {
@@ -77,16 +78,27 @@ function getMessages() {
     .then((response) => response.json())
     .then((data) => {
       data.forEach((el: any) => {
-        date.value.push(el.created_at);
         history.value.push(el.content);
       });
     })
     .catch((err) => console.error(err));
 }
+function getTime() {
+  const today = new Date();
+  const date =
+    today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
+  const time =
+    today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+  const dateTime = date + " " + time;
+  timestamp.value = dateTime;
+  console.log(timestamp.value);
+}
 </script>
 
 <style scoped>
 .chatPage {
+  height: 100vh;
+  width: 100vw;
   background: linear-gradient(
     116.6deg,
     #005f3e -20.9%,
@@ -94,65 +106,49 @@ function getMessages() {
     #ffda00 100%
   );
 }
-/* .form {
-  padding: 10px;
-} */
 .input {
-  border-radius: 18px;
+  border-radius: 12px;
   background: #ffffff;
-  width: 791px;
-  height: 90%;
-  left: 426px;
-  top: 836px;
-}
-.send-button {
-  vertical-align: top;
+  width: 90%;
 }
 .message {
-  /* width: 40%; */
   border-radius: 10px;
-  padding: 0.5em;
-  font-size: 100%;
+  font-size: 80%;
+  box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.3);
 }
 .message-in {
   background: #f1f0f0;
   color: black;
 }
 .message-out {
-  margin-left: 55%;
-  width: 30%;
   color: white;
-  background: #141817;
-  border-radius: 18px;
+  background: #0d4134e7;
+  min-width: 50px;
+  padding: 10px;
 }
-
-.sender {
+.photo {
+  position: relative;
+  display: block;
+  width: 35px;
+  height: 35px;
+  border-radius: 80px;
+  margin-top: 2%;
+  margin-left: 2%;
+  box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.3);
+}
+.messageBlock {
+  display: flex;
+  justify-content: right;
+}
+.chatroom {
+  overflow-y: scroll;
+  scroll-behavior: smooth;
   background: #1e2b02;
   border-radius: 22px;
   width: 90%;
-  height: 20%;
-  padding: 0.5em;
+  padding: 5px;
+  margin: 5% 5% 10% 5%;
   overflow: auto;
-  margin: 0 auto 1em auto;
   box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.3);
-  /* display: inline-block; */
-}
-.sender.time {
-}
-#time {
-  font-size: 10px;
-}
-.photo {
-  /* position: absolute; */
-  /* left: 83.54%;
-  right: 11.67%;
-  top: 49.41%;
-  bottom: 44.14%; */
-  /* height: 10%; */
-  width: 20%;
-  margin: 10% 0% 0% 20%;
-  border-radius: 50px;
-  margin-left: 105%;
-  margin-right: 10%;
 }
 </style>
