@@ -14,10 +14,12 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref, ref, onBeforeMount } from "vue";
+import { Ref, ref, onBeforeMount, defineComponent, defineExpose } from "vue";
 import { useRouter } from "vue-router";
+
 const profile: Ref<any> = ref("");
 const router = useRouter();
+
 onBeforeMount(async () => {
   await fetch("http://localhost:3000/api/private", {
     credentials: "include",
@@ -38,6 +40,12 @@ onBeforeMount(async () => {
       console.log(error);
     });
 });
+
+defineExpose(
+  defineComponent({
+    name: "UserView",
+  })
+);
 </script>
 
 <style>
