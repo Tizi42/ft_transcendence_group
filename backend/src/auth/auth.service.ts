@@ -53,8 +53,8 @@ export class AuthService {
         return await this.usersService.createNewUser(userDetails);
     }
 
-    login(user: any) {
-        const payload: JwtPayload = { email: user.email, sub: user.id };
+    login(user: User, isTwoFactorAuthenticated: boolean) {
+        const payload: JwtPayload = { email: user.email, sub: user.id, isTwoFactorAuthenticatedEnabled: isTwoFactorAuthenticated };
         return {
             accessToken: this.jwtService.sign(payload),
         };

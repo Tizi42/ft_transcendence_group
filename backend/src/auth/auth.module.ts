@@ -8,6 +8,7 @@ import { User } from 'src/users/Users.entity';
 import { JwtAuthStrategy } from './strategy/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { jwtTwoFactorStrategy } from './strategy/jwt-2fa.strategy';
 
 @Module({
 	imports: [
@@ -29,6 +30,7 @@ import { ConfigService } from '@nestjs/config';
 		AuthService,
 		FortyTwoStrategy,
 		JwtAuthStrategy,
+		jwtTwoFactorStrategy
 	],
 	exports: [
 		AuthService,

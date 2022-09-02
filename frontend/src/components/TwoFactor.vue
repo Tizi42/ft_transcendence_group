@@ -3,14 +3,14 @@
     <h3>Scan this Qr Code to get the 6 numbers verification code</h3>
     <img id="QrCode" src="" />
   </div>
-  <div v-if="!profile.isTwoFactorAuthenticationEnabled">
+  <div v-if="!isTwoFactorAuthentication">
     <h4>Verify the code here for turn-on 2FA :</h4>
     <form @submit.prevent="verifyCode" id="form">
       <input v-model="authenticationCode" />
       <input type="submit" />
     </form>
   </div>
-  <div v-if="profile.isTwoFactorAuthenticationEnabled">
+  <div v-else>
     <h4>Verify the code here for authenticate with 2FA :</h4>
     <form @submit.prevent="authenticate" id="form">
       <input v-model="authenticationCode" />
@@ -29,10 +29,11 @@ export default defineComponent({
 
 <script lang="ts" setup>
 import router from "@/router";
-import { onBeforeMount, ref, Ref } from "vue";
+import { onBeforeMount, ref, Ref, onBeforeUnmount } from "vue";
 
 const authenticationCode: Ref<string> = ref("");
 const profile: Ref<any> = ref("");
+const isTwoFactorAuthentication: Ref<boolean> = ref(false);
 
 const authenticate = async () => {
   await fetch("http://localhost:3000/api/auth/2fa/authenticate", {
@@ -60,10 +61,7 @@ const authenticate = async () => {
       }
       return response.json();
     })
-    .then((data) => {
-      console.log("success : ", data);
-    })
-    .then((error) => {
+    .catch((error) => {
       console.log("error : ", error);
     });
 };
@@ -107,6 +105,9 @@ onBeforeMount(async () => {
     credentials: "include",
   })
     .then((response) => {
+      if (response.status !== 200) {
+        isTwoFactorAuthentication.value = true;
+      }
       return response.json();
     })
     .then((user) => {
