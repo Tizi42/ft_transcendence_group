@@ -1,11 +1,17 @@
 <template>
-  <div class="container">
-    <h1 class="title">Leaderboard</h1>
-    <LeaderBoard />
+  <div class="page">
+    <div class="title">
+      <img src="@/assets/icon-leaderboard-stroke.png" />
+      <h1>Leaderboard</h1>
+    </div>
+    <div class="content">
+      <LeaderBoard v-if="dataReady" />
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import "@/assets/styles/historyAndLeaderboard.css";
 import { defineComponent, defineExpose, ref } from "vue";
 import { onBeforeMount } from "vue";
 //import { useRouter } from "vue-router";
@@ -41,21 +47,3 @@ defineExpose(
   })
 );
 </script>
-
-<style scoped>
-.title {
-  font-family: "Outfit Bold";
-  font-size: 40px;
-  line-height: 50px;
-  color: var(--main-color);
-}
-
-.container {
-  background: linear-gradient(
-    116.6deg,
-    #005f3e -20.9%,
-    #feca00 99.99%,
-    #ffda00 100%
-  );
-}
-</style>

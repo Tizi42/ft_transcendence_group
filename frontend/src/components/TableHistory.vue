@@ -2,7 +2,7 @@
   <div class="historyTable">
     <div class="topBar">
       <div class="test">
-        <div class="title">Global</div>
+        <div class="titleTab">Global</div>
       </div>
     </div>
     <img src="../assets/tables/frame.svg" class="frame" />
@@ -28,7 +28,7 @@ export default {
   color: white;
 }
 
-.title {
+.titleTab {
   position: absolute;
   font-family: "Outfit Bold";
   font-style: normal;

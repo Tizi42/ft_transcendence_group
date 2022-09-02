@@ -8,9 +8,6 @@
       <img src="../assets/tables/unselectedTab.svg" class="tableTab" />
     </div>
     <img src="../assets/tables/frame.svg" class="frame" />
-    <div class="test">
-      <div class="title">Global</div>
-    </div>
   </div>
 </template>
 

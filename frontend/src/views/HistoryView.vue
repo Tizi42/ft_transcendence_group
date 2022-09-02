@@ -6,7 +6,7 @@
     </div>
     <div class="content">
       <TableHistory v-if="dataReady" />
-      <table v-if="false" class="table table-striped table-bordered">
+      <table v-if="dataReady" class="table table-striped table-bordered">
         <thead>
           <tr>
             <th>Date</th>
