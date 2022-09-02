@@ -1,28 +1,31 @@
 <template>
   <div class="historyTable">
     <div class="topBar">
-      <div class="test">
-        <div class="title">Global</div>
-      </div>
+      <img src="../assets/tables/title.svg" class="titleFrame" />
+      <img src="../assets/tables/selectedTab.svg" class="tableTab" />
+      <img src="../assets/tables/unselectedTab.svg" class="tableTab" />
+      <img src="../assets/tables/unselectedTab.svg" class="tableTab" />
+      <img src="../assets/tables/unselectedTab.svg" class="tableTab" />
     </div>
     <img src="../assets/tables/frame.svg" class="frame" />
+    <div class="test">
+      <div class="title">Global</div>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "TableHistory",
+  name: "LeaderBoard",
 };
 </script>
 
 <style scoped>
 .test {
-  display: block;
   background-image: url("../assets/tables/title.svg");
   background-repeat: no-repeat;
-  width: 200px;
-  height: 50px;
-  margin-left: -1px;
+  width: 13%;
+  height: 13%;
   padding-top: 1em;
   padding-left: 3em;
   color: white;
@@ -39,7 +42,7 @@ export default {
 }
 
 .historyTable {
-  width: 100%;
+  width: 80%;
   align: left;
   text-align: left;
   margin: 0;
@@ -50,6 +53,7 @@ export default {
   display: flex;
   margin-left: 1px;
   margin-bottom: -20px;
+  justify-content: space-between;
 }
 
 .titleFrame {
