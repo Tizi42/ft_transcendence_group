@@ -1,6 +1,7 @@
 <template>
   <div class="container">
-    <h1 class="p-3 text-center">Battle history</h1>
+    <h1 class="p-3">Battle history</h1>
+    <TableHistory v-if="dataReady" />
     <table v-if="dataReady" class="table table-striped table-bordered">
       <thead>
         <tr>
@@ -25,6 +26,7 @@
 import { defineComponent, defineExpose, ref } from "vue";
 import { onBeforeMount, onMounted, onUpdated } from "vue";
 import { useRouter } from "vue-router";
+import TableHistory from "../components/TableHistory.vue";
 
 const dataReady = ref(false);
 const battles = ref({});
@@ -57,29 +59,15 @@ defineExpose(
 );
 </script>
 
-<!--
-<script lang="ts">
-import { ref } from "vue";
-
-export default {
-  setup() {
-    const dataReady = ref(false);
-    const battles = ref({});
-
-    return {
-      battles,
-      dataReady,
-    };
-  },
-  mounted() {
-    this.dataReady = true;
-  },
-};
-</script>
-
--->
-
 <style>
+.container {
+  background: linear-gradient(
+    116.6deg,
+    #005f3e -20.9%,
+    #feca00 99.99%,
+    #ffda00 100%
+  );
+}
 h1 {
   color: white;
 }
