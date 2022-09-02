@@ -23,9 +23,10 @@ export class AuthController {
     @Get('42/redirect')
     @UseGuards(FortyTwoAuthGuard)
     handle42Redirect(@Req() request: RequestWithUser, @Res({ passthrough: true }) res: Response) {
-        const { accessToken } = this.authService.login(request.user);
+        const { accessToken } = this.authService.login(request.user, false);
         res.cookie('jwt', accessToken);
         console.log(request.user);
+        console.log("jwt 1 = ", accessToken);
         if (!request.user.isTwoFactorAuthenticationEnabled) {
             return res.redirect('http://localhost:8080/');
         }
@@ -76,10 +77,10 @@ export class AuthController {
         if (!isCodeValid) {
             throw new UnauthorizedException('Wrong authentication code');
         }
-        const { accessToken } = this.authService.login(request.user);
+        const { accessToken } = this.authService.login(request.user, true);
         request.res.cookie('jwt', accessToken);
-        // const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(request.user.id, true);
-        // request.res.setHeader('Set-Cookie', [accessTokenCookie]);
+        console.log("jwt 2 = ", accessToken);
         return request.user;
+        // return await this.authService.signIn(request.user, true);
     }
 }

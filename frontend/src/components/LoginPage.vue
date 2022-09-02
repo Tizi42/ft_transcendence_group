@@ -1,6 +1,6 @@
 <template>
   <button
-    v-if="!loggedIn()"
+    v-if="!loggedIn"
     class="btn"
     data="Sign in with 42"
     @click="handleLogin()"
@@ -9,7 +9,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, onBeforeMount, ref, Ref } from "vue";
+import { useCookie } from "vue-cookie-next";
 
 export default defineComponent({
   name: "LoginPage",
@@ -17,38 +18,42 @@ export default defineComponent({
 </script>
 
 <script setup lang="ts">
-function loggedIn() {
-  if (getCookie("jwt") === "") {
-    return false;
-  } else {
-    return true;
-  }
-}
-
-function getCookie(cname: string) {
-  let name = cname + "=";
-  let decodedCookie = decodeURIComponent(document.cookie);
-  let ca = decodedCookie.split(";");
-  for (let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) == " ") {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
-}
+const { isCookieAvailable } = useCookie();
+const loggedIn: Ref<boolean> = ref(false);
 
 function handleLogin() {
   window.location.href = "http://localhost:3000/api/auth/42/login";
 }
 
-function handleLogout() {
-  document.cookie = "jwt" + "=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+async function handleLogout() {
+  if (isCookieAvailable("jwt")) {
+    await fetch("http://localhost:3000/api/logout", {
+      credentials: "include",
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
   window.location.reload();
 }
+
+onBeforeMount(async () => {
+  await fetch("http://localhost:3000/api/private", {
+    credentials: "include",
+  })
+    .then((response) => {
+      if (response.status === 200) {
+        loggedIn.value = true;
+      }
+      return response.json();
+    })
+    .catch((error) => {
+      console.log("ERROR : ", error);
+    });
+});
 </script>
 
 <style>

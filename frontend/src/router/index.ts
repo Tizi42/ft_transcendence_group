@@ -1,3 +1,4 @@
+import { ref, Ref } from "vue";
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import GameView from "../views/GameView.vue";
 import LoginView from "../views/LoginView.vue";
@@ -38,32 +39,32 @@ const router = createRouter({
   routes,
 });
 
-function getCookie(cname: string) {
-  const name = cname + "=";
-  const decodedCookie = decodeURIComponent(document.cookie);
-  const ca = decodedCookie.split(";");
-  for (let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) == " ") {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
-}
+const result: Ref<boolean> = ref(false);
 
-function isAuthenticated() {
-  if (getCookie("jwt") === "") {
-    return false;
-  } else {
-    return true;
-  }
-}
+const isAuthenticated = () => {
+  fetch("http://localhost:3000/api/private", {
+    credentials: "include",
+  })
+    .then((response) => {
+      if (response.status === 200) {
+        result.value = true;
+        return result.value;
+      }
+      return response.json();
+    })
+    .catch((error) => {
+      console.log("ERROR : ", error);
+    });
+  console.log(result.value);
+  return result.value;
+};
 
 router.beforeEach((to, from, next) => {
-  console.log("from = ", from);
+  console.log("to.name = ", to.name);
+  // if (to.name === "2FA") {
+  //   next();
+  //   return;
+  // }
   if (to.name !== "login" && !isAuthenticated() && to.name !== "2FA") {
     next({ name: "login" });
   } else next();
