@@ -1,36 +1,42 @@
 <template>
-  <div class="container">
-    <h1 class="p-3">Battle history</h1>
-    <TableHistory v-if="dataReady" />
-    <table v-if="dataReady" class="table table-striped table-bordered">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Time</th>
-          <th>Opponent1</th>
-          <th>Opponent2</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="battle in battles" :key="battle.id">
-          <td>{{ battle.date }}</td>
-          <td>{{ battle.time }}</td>
-          <td>{{ battle.opponent1 }}</td>
-          <td>{{ battle.opponent2 }}</td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="page">
+    <div class="title">
+      <img src="@/assets/icon-leaderboard-stroke.png" />
+      <h1>Match history</h1>
+    </div>
+    <div class="content">
+      <TableHistory v-if="dataReady" />
+      <table v-if="false" class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Opponent1</th>
+            <th>Opponent2</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="battle in battles" :key="battle.id">
+            <td>{{ battle.date }}</td>
+            <td>{{ battle.time }}</td>
+            <td>{{ battle.opponent1 }}</td>
+            <td>{{ battle.opponent2 }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
+
 <script lang="ts" setup>
 import { defineComponent, defineExpose, ref } from "vue";
-import { onBeforeMount, onMounted, onUpdated } from "vue";
-import { useRouter } from "vue-router";
+import { onBeforeMount } from "vue";
+//import { useRouter } from "vue-router";
 import TableHistory from "../components/TableHistory.vue";
 
 const dataReady = ref(false);
 const battles = ref({});
-const router = useRouter();
+//const router = useRouter();
 
 // setTimeout to test loading -> to remove
 async function reloadData() {
@@ -59,32 +65,55 @@ defineExpose(
 );
 </script>
 
-<style>
-@font-face {
-  font-family: "Outfit";
-  src: url("../assets/fonts/Outfit/Outfit-Regular.otf") format("opentype");
+<style scoped>
+body {
+  overflow: hidden;
+}
+.title {
+  display: flex;
+  align-item: left;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
-@font-face {
-  font-family: "Outfit Bold";
-  src: url("../assets/fonts/Outfit/Outfit-Bold.otf") format("opentype");
+.title img {
+  height: 42px;
+  margin-right: 10px;
 }
 
-@font-face {
+.title h1 {
+  color: var(--main-color);
   font-family: "Outfit SemiBold";
-  src: url("../assets/fonts/Outfit/Outfit-SemiBold.otf") format("opentype");
+  font-size: 40px;
+  margin: 0;
 }
 
-.container {
+.page {
   background: linear-gradient(
     116.6deg,
     #005f3e -20.9%,
     #feca00 99.99%,
     #ffda00 100%
   );
+  height: 100vh;
+  width: 100vw;
+  padding-left: 10%;
+  padding-right: 10%;
+  padding-top: 2%;
+  display: flex;
+  justify-content: left;
+  align-items: left;
+  text-align: left;
+  flex-direction: column;
 }
-h1 {
-  color: white;
+
+.content {
+  width: 80vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex-direction: column;
 }
 
 table {
