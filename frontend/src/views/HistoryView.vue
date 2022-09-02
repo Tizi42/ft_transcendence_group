@@ -14,31 +14,40 @@
         <tr v-for="battle in battles" :key="battle.id">
           <td>{{ battle.date }}</td>
           <td>{{ battle.time }}</td>
-          <td>{{ battle.opponent1 }} ></td>
+          <td>{{ battle.opponent1 }}</td>
           <td>{{ battle.opponent2 }}</td>
         </tr>
       </tbody>
     </table>
   </div>
 </template>
-
 <script lang="ts" setup>
-import { defineComponent, defineExpose } from "vue";
-import { Ref, ref, onMounted } from "vue";
+import { defineComponent, defineExpose, ref } from "vue";
+import { onBeforeMount, onMounted, onUpdated } from "vue";
+import { useRouter } from "vue-router";
 
-let battles: Ref<any> = ref("");
-let dataReady = false;
+const dataReady = ref(false);
+const battles = ref({});
+const router = useRouter();
 
-function reloadData() {
-  battles.value = fetch("http://localhost:3000/api/battles/test", {
-    credentials: "include",
-  });
-  dataReady = true;
+// setTimeout to test loading -> to remove
+async function reloadData() {
+  setTimeout(async () => {
+    console.log("reloading");
+    let response = await fetch("http://localhost:3000/api/battles", {
+      credentials: "include",
+    });
+    battles.value = await response.json();
+    dataReady.value = true;
+    console.log("reload end");
+  }, 2000);
 }
 
-onMounted(() => {
-  reloadData();
-  console.log("yo");
+onBeforeMount(async () => {
+  await reloadData();
+  console.log(battles.value);
+  console.log(dataReady.value);
+  console.log("mounted");
 });
 
 defineExpose(
@@ -47,6 +56,28 @@ defineExpose(
   })
 );
 </script>
+
+<!--
+<script lang="ts">
+import { ref } from "vue";
+
+export default {
+  setup() {
+    const dataReady = ref(false);
+    const battles = ref({});
+
+    return {
+      battles,
+      dataReady,
+    };
+  },
+  mounted() {
+    this.dataReady = true;
+  },
+};
+</script>
+
+-->
 
 <style>
 h1 {
