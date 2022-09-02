@@ -60,6 +60,21 @@ defineExpose(
 </script>
 
 <style>
+@font-face {
+  font-family: "Outfit";
+  src: url("../assets/fonts/Outfit/Outfit-Regular.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Outfit Bold";
+  src: url("../assets/fonts/Outfit/Outfit-Bold.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Outfit SemiBold";
+  src: url("../assets/fonts/Outfit/Outfit-SemiBold.otf") format("opentype");
+}
+
 .container {
   background: linear-gradient(
     116.6deg,

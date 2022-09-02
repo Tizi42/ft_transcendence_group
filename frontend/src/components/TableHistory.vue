@@ -8,6 +8,9 @@
       <img src="../assets/tables/unselectedTab.svg" class="tableTab" />
     </div>
     <img src="../assets/tables/frame.svg" class="frame" />
+    <div class="test">
+      <div class="title">Global</div>
+    </div>
   </div>
 </template>
 
@@ -18,6 +21,26 @@ export default {
 </script>
 
 <style scoped>
+.test {
+  background-image: url("../assets/tables/title.svg");
+  background-repeat: no-repeat;
+  width: 13%;
+  height: 13%;
+  padding-top: 1em;
+  padding-left: 3em;
+  color: white;
+}
+
+.title {
+  position: absolute;
+  font-family: "Outfit Bold";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 18px;
+  color: #ffda00;
+}
+
 .historyTable {
   width: 80%;
   align: left;
