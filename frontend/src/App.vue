@@ -18,7 +18,7 @@
       </router-link>
     </nav>
   </div>
-  <router-view />
+  <router-view></router-view>
 </template>
 
 <style>
@@ -71,7 +71,7 @@
   margin: auto;
 }
 
-nav a.router-link-exact-active {
+nav a.router-link-active {
   background-color: rgba(1, 71, 47, 1);
   height: 200px;
 }
