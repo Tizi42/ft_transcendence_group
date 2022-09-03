@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <div class="title">
-      <img src="@/assets/icon-leaderboard-stroke.png" />
+      <img src="@/assets/icons/leaderboard.svg" />
       <h1>Leaderboard</h1>
     </div>
     <div class="content">

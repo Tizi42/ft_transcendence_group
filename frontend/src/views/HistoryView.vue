@@ -1,29 +1,12 @@
 <template>
   <div class="page">
     <div class="title">
-      <img src="@/assets/icon-leaderboard-stroke.png" />
+      <img src="@/assets/icons/clock.svg" />
       <h1>Match history</h1>
     </div>
     <div class="content">
-      <TableHistory v-if="dataReady" />
-      <table v-if="dataReady" class="table table-striped table-bordered">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Opponent1</th>
-            <th>Opponent2</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="battle in battles" :key="battle.id">
-            <td>{{ battle.date }}</td>
-            <td>{{ battle.time }}</td>
-            <td>{{ battle.opponent1 }}</td>
-            <td>{{ battle.opponent2 }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <TableHistory v-if="dataReady" title="Global" />
+      <TableHistory v-if="dataReady" title="Personal" />
     </div>
   </div>
 </template>
@@ -72,8 +55,8 @@ body {
 .title {
   display: flex;
   align-item: left;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 3em;
+  margin-bottom: 3em;
 }
 
 .title img {

@@ -62,6 +62,7 @@
 
 .link-container img {
   margin: auto;
+  width: 70%;
 }
   
 nav a.router-link-exact-active {
