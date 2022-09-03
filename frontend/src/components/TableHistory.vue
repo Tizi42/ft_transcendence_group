@@ -6,13 +6,7 @@
       </div>
     </div>
     <div class="tableContainer">
-      <div class="tableContent" v-if="ready">
-        <TransitionGroup name="list" tag="ul">
-          <li v-for="item in items" :key="item">
-            {{ item.msg }}
-          </li>
-        </TransitionGroup>
-      </div>
+      <ContentHistory :battles="battles" v-if="ready" />
       <div class="loading" v-else>
         <fulfilling-bouncing-circle-spinner
           :animation-duration="2000"
@@ -29,18 +23,12 @@ import { FulfillingBouncingCircleSpinner } from "epic-spinners";
 import { defineComponent, defineExpose, defineProps } from "vue";
 import { onMounted } from "vue";
 import { ref } from "vue";
+import ContentHistory from "../components/ContentHistory.vue";
 
-const props = defineProps(["title", "ready"]);
+const props = defineProps(["title", "ready", "battles"]);
 const items = ref([]);
+const itemms = ref([]);
 console.log(props);
-
-onMounted(async () => {
-  for (let i = 0; i < 9; i++) {
-    setTimeout(() => {
-      items.value.push({ msg: "Item" + i });
-    }, 1200 + 200 * i);
-  }
-});
 
 defineExpose(
   defineComponent({
@@ -50,29 +38,6 @@ defineExpose(
 </script>
 
 <style scoped>
-li {
-  margin-top: 30px;
-  margin-bottom: 30px;
-}
-
-.list-move, /* apply transition to moving elements */
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.5s ease;
-}
-
-.list-enter-from,
-.list-leave-to {
-  opacity: 0;
-  transform: translateX(30px);
-}
-
-/* ensure leaving items are taken out of layout flow so that moving
-   animations can be calculated correctly. */
-.list-leave-active {
-  position: absolute;
-}
-
 .loading {
   display: flex;
   align-items: center;
@@ -98,11 +63,6 @@ li {
 
 .tableContainer::-webkit-scrollbar {
   display: none;
-}
-
-.tableContent {
-  padding-left: 30px;
-  padding-right: 30px;
 }
 
 .titleContainer {
