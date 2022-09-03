@@ -31,7 +31,7 @@ async function reloadData() {
     battles.value = await response.json();
     dataReady.value = true;
     console.log("reload end");
-  }, 2000);
+  }, 4000);
 }
 
 onBeforeMount(async () => {
