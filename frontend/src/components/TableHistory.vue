@@ -6,7 +6,7 @@
       </div>
     </div>
     <div class="tableContainer">
-      <div class="tableContent">
+      <div class="tableContent" v-if="ready">
         Lorem Ipsum is simply dummy text of the grerbgbeb rebbr vrebbe erl whenn
         unknown printer took a galley of type and scrambled it to rboppo,pbo bro
         make a type specimen book. It has survived not only five centuries, ono
@@ -62,10 +62,10 @@
   </div>
 </template>
 
-<script land="ts" setup>
+<script lang="ts" setup>
 import { defineComponent, defineExpose, defineProps } from "vue";
 
-const props = defineProps(["title"]);
+const props = defineProps(["title", "ready"]);
 console.log(props);
 
 defineExpose(
@@ -83,11 +83,13 @@ defineExpose(
   overflow: scroll;
   background-image: url("../assets/tables/frame.svg");
   background-repeat: no-repeat;
-  background-size: 80vw;
-  width: 80vw;
-  height: 22.22vw;
+  background-size: 70vw 30vh;
+  width: 70vw;
+  height: 30vh;
   margin: 0;
   z-index: 20;
+  scrollbar-color: dark;
+  scrollbar-width: none;
 }
 
 .tableContent {

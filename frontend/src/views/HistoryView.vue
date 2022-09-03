@@ -5,8 +5,8 @@
       <h1>Match history</h1>
     </div>
     <div class="content">
-      <TableHistory v-if="dataReady" title="Global" />
-      <TableHistory v-if="dataReady" title="Personal" />
+      <TableHistory :ready="dataReady" title="Global" />
+      <TableHistory :ready="dataReady" title="Personal" />
     </div>
   </div>
 </template>
@@ -50,8 +50,9 @@ defineExpose(
 
 <style scoped>
 body {
-  overflow: hidden;
+  overflow: scroll;
 }
+
 .title {
   display: flex;
   align-item: left;
@@ -80,9 +81,8 @@ body {
   );
   height: 100vh;
   width: 100vw;
-  padding-left: 10%;
-  padding-right: 10%;
-  padding-top: 2%;
+  padding-left: 15vw;
+  padding-top: 1em;
   display: flex;
   justify-content: left;
   align-items: left;
@@ -91,7 +91,7 @@ body {
 }
 
 .content {
-  width: 80vw;
+  width: 70vw;
   display: flex;
   justify-content: center;
   align-items: center;
