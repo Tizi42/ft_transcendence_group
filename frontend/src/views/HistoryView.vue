@@ -74,15 +74,31 @@ defineExpose(
   flex-direction: row;
 }
 
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
+
 .reload {
-  display: block;
+  filter: brightness(0) saturate(100%) invert(22%) sepia(74%) saturate(1495%)
+    hue-rotate(134deg) brightness(92%) contrast(101%);
+  margin-right: 20px;
+  background-color: #00000000;
   background-image: url("../assets/icons/refresh.svg");
   background-repeat: no-repeat;
   background-size: 42px 42px;
   width: 42px;
   height: 42px;
   border: none;
-  background-color: none;
-  color: none;
+  fill: none;
+}
+
+.reload:hover {
+  animation: rotation 2s infinite linear;
+  cursor: pointer;
 }
 </style>
