@@ -14,7 +14,7 @@
 <script lang="ts" setup>
 import "@/assets/styles/historyAndLeaderboard.css";
 import { defineComponent, defineExpose, ref } from "vue";
-import { onBeforeMount } from "vue";
+import { onBeforeMount, onUpdated } from "vue";
 import { useRouter } from "vue-router";
 import TableHistory from "../components/TableHistory.vue";
 
@@ -40,13 +40,11 @@ async function checkIfLogged() {
 // setTimeout to test loading -> to remove
 async function reloadData() {
   setTimeout(async () => {
-    console.log("reloading");
     let response = await fetch("http://localhost:3000/api/battles", {
       credentials: "include",
     });
     battles.value = await response.json();
     dataReady.value = true;
-    console.log("reload end");
   }, 1000);
 }
 
@@ -56,6 +54,10 @@ onBeforeMount(async () => {
   console.log(battles.value);
   console.log(dataReady.value);
   console.log("mounted");
+});
+
+onUpdated(async () => {
+  await reloadData();
 });
 
 defineExpose(

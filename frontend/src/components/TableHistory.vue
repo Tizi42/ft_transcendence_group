@@ -21,13 +21,9 @@
 <script lang="ts" setup>
 import { FulfillingBouncingCircleSpinner } from "epic-spinners";
 import { defineComponent, defineExpose, defineProps } from "vue";
-import { onMounted } from "vue";
-import { ref } from "vue";
 import ContentHistory from "../components/ContentHistory.vue";
 
 const props = defineProps(["title", "ready", "battles"]);
-const items = ref([]);
-const itemms = ref([]);
 console.log(props);
 
 defineExpose(
