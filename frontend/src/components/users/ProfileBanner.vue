@@ -6,9 +6,10 @@
     ></div>
     <div class="personal-info-frame">
       <p id="info-name">{{ profile.displayName }}</p>
-      <p id="info-id">&nbsp;user_id: {{ profile.id }}</p>
-      <p id="info-email">&nbsp;{{ profile.email }}</p>
+      <p id="info-id">&nbsp;&nbsp;user_id: {{ profile.id }}</p>
+      <p id="info-email">&nbsp;&nbsp;{{ profile.email }}</p>
     </div>
+    <button class="edit-button">edit</button>
   </div>
 </template>
 
@@ -25,39 +26,40 @@ export default defineComponent({
 
 <style scoped>
 .profile-frame {
-  position: absolute;
+  width: 86%;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  margin-left: 7%;
+  margin-right: 7%;
+  margin-top: 25px;
+  background-color: rgba(243, 133, 44, 0.631);
   display: flex;
-  width: 1236px;
-  height: 323px;
-  left: 102px;
-  top: 25px;
-  background-color: rgba(255, 203, 0, 1);
 }
-
 .avatar-frame {
+  display: inline-block;
   border-radius: 100%;
   background-position: center;
   background-size: cover;
-  position: absolute;
   width: 223px;
   height: 223px;
-  left: 56px;
+  margin-left: 5%;
+  margin-right: 8%;
   top: 50px;
 }
 
 .personal-info-frame {
-  position: absolute;
-  left: 374px;
-  top: 87px;
   text-align: left;
+  align-self: flex-end;
+  padding-bottom: 37px;
+  flex: 1;
 }
 
 #info-name {
   font-family: "Outfit";
   font-style: normal;
-  font-weight: 700;
+  font-weight: bold;
   font-size: 52px;
-  line-height: 66px;
+  line-height: 1.2;
   color: rgba(255, 255, 255, 1);
   margin: 0;
 }
@@ -66,14 +68,18 @@ export default defineComponent({
 #info-id {
   font-family: "Outfit";
   font-style: normal;
-  font-weight: 300;
-  font-size: 26px;
-  line-height: 33px;
+  font-weight: light;
+  font-size: 24px;
+  line-height: 1.2;
   margin: 0;
   color: rgba(255, 255, 255, 1);
 }
 
 #info-id {
-  margin-top: 36px;
+  margin-top: 20px;
+}
+
+.edit-button {
+  align-self: flex-end;
 }
 </style>

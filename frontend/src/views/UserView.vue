@@ -1,15 +1,23 @@
 <template>
-  <ProfileBanner :profile="profile" />
-  <div class="users-navbar-frame">
-    <ul id="users-navbar-list">
-      <li>STATS</li>
-      <li>FRIENDS</li>
-      <li>SETTINGS</li>
-    </ul>
+  <div id="user-page">
+    <ProfileBanner :profile="profile" />
+    <div class="user-navbar">
+      <router-link to="/user/stats">
+        <div class="user-navbar-item">STATS</div>
+      </router-link>
+      <router-link to="/user/friends">
+        <div class="user-navbar-item">FRIENDS</div>
+      </router-link>
+      <router-link to="/user/settings">
+        <div class="user-navbar-item">SETTINGS</div>
+      </router-link>
+    </div>
+    <router-view></router-view>
   </div>
 </template>
 
 <script lang="ts">
+import { defineComponent } from "vue";
 import ProfileBanner from "@/components/users/ProfileBanner.vue";
 
 export default defineComponent({
@@ -21,7 +29,7 @@ export default defineComponent({
 </script>
 
 <script lang="ts" setup>
-import { Ref, ref, onBeforeMount, defineComponent } from "vue";
+import { Ref, ref, onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
 
 const profile: Ref<any> = ref("");
@@ -49,24 +57,50 @@ onBeforeMount(async () => {
 });
 </script>
 
-<style>
-#users-navbar-list {
-  list-style-type: none;
-  margin-top: 375px;
-  padding: 0;
+<style scoped>
+.user-navbar {
+  width: 86%;
+  margin-left: 7%;
+  margin-right: 7%;
+  margin-top: 20px;
+  margin-bottom: 20px;
   display: flex;
   flex-direction: row;
+  padding: 0;
+  border-bottom: 1px solid rgba(147, 150, 148, 1);
 }
 
-#users-navbar-list li {
+.user-navbar a {
+  text-decoration: none;
+}
+
+.user-navbar a:hover .user-navbar-item {
+  color: rgba(255, 203, 0, 1);
+}
+
+.user-navbar a.router-link-active .user-navbar-item {
+  color: rgba(255, 203, 0, 1);
+  border-bottom: 3px solid rgba(255, 203, 0, 1);
+}
+
+.user-navbar-item {
   font-family: "Outfit";
   font-style: normal;
   font-weight: 600;
-  font-size: 28px;
-  line-height: 35px;
-
-  display: inline-block;
-  margin: 0px 38px;
+  font-size: 26px;
+  line-height: 1.6;
+  margin: 0px 28px 6px;
   color: rgba(255, 255, 255, 1);
+  text-align: center;
 }
+
+/* 
+- 被选择的tag下划线可以用： border-bottom-color / style / width 
+- overflow: scroll
+overflow-y: scroll 
+text-decoration: underline 
+text-decoration: divne-through red wavy
+text-align: center;
+
+*/
 </style>
