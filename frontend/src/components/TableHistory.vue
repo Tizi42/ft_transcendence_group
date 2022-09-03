@@ -58,11 +58,19 @@
         with desktop publishing software like Aldus PageMaker includingonononn
         versions of Lorem Ipsum.
       </div>
+      <div class="loading" v-else>
+        <fulfilling-bouncing-circle-spinner
+          :animation-duration="2000"
+          :size="40"
+          color="#ffcb00"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { FulfillingBouncingCircleSpinner } from "epic-spinners";
 import { defineComponent, defineExpose, defineProps } from "vue";
 
 const props = defineProps(["title", "ready"]);
@@ -76,10 +84,16 @@ defineExpose(
 </script>
 
 <style scoped>
+.loading {
+  display: flex;
+  align-items: center;
+}
+
 .tableContainer {
   color: white;
   position: relative;
-  display: block;
+  display: flex;
+  justify-content: center;
   overflow: scroll;
   background-image: url("../assets/tables/frame.svg");
   background-repeat: no-repeat;
