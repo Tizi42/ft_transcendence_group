@@ -113,18 +113,18 @@ defineExpose(
 
 .titleContainer {
   z-index: 1;
-  display: block;
+  display: flex;
   background-image: url("../assets/tables/title.svg");
-  background-size: 200px;
+  background-size: 176px 44px;
   background-repeat: no-repeat;
-  width: 200px;
-  height: 50px;
-  margin-left: -1px;
-  padding-top: 1em;
-  padding-left: 3em;
+  width: 176px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
 }
 
 .titleTab {
+  margin-right: 1em;
   z-index: 2;
   position: absolute;
   font-family: "Outfit Bold";
@@ -147,8 +147,6 @@ defineExpose(
   z-index: 1;
   width: 95%;
   display: flex;
-  margin-left: 1px;
-  margin-bottom: -20px;
 }
 
 .titleFrame {
