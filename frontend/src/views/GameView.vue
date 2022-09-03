@@ -1,5 +1,5 @@
 <template>
-  <div class="menu">
+  <div class="menu" v-if="logged">
     <router-link :to="{ name: 'play' }" class="gameButtonPlay">
       Play !
     </router-link>
@@ -17,37 +17,36 @@
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose } from "vue";
-import { onBeforeMount } from "vue";
+import { onBeforeMount, ref } from "vue";
 import { useRouter } from "vue-router";
+
+const router = useRouter();
+const logged = ref(false);
+
+async function checkIfLogged() {
+  await fetch("http://localhost:3000/api/private", {
+    credentials: "include",
+  }).then((response) => {
+    if (response.status != 200) {
+      router.push({
+        name: "login",
+      });
+    } else {
+      logged.value = true;
+    }
+  });
+}
+
+onBeforeMount(async () => {
+  await checkIfLogged();
+  console.log("login");
+});
 
 defineExpose(
   defineComponent({
     name: "GameView",
   })
 );
-
-const router = useRouter();
-
-onBeforeMount(async () => {
-  await fetch("http://localhost:3000/api/private", {
-    credentials: "include",
-  })
-    .then((response) => {
-      if (response.status != 200) {
-        router.push({
-          name: "login",
-        });
-        return response.json();
-      }
-      return response.json();
-    })
-    .then((user) => {
-      console.log(user);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-});
 </script>
 
 <style scoped>
@@ -79,9 +78,9 @@ onBeforeMount(async () => {
 .menu {
   height: 100vh;
   width: 100vw;
-  padding-top: 17%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 </style>
