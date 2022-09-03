@@ -1,5 +1,5 @@
 <template>
-  <div class="page">
+  <div class="page" v-if="logged">
     <div class="title">
       <img src="@/assets/icons/clock.svg" />
       <h1>Match history</h1>
@@ -14,12 +14,27 @@
 <script lang="ts" setup>
 import { defineComponent, defineExpose, ref } from "vue";
 import { onBeforeMount } from "vue";
-//import { useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import TableHistory from "../components/TableHistory.vue";
 
 const dataReady = ref(false);
 const battles = ref({});
-//const router = useRouter();
+const router = useRouter();
+const logged = ref(false);
+
+async function checkIfLogged() {
+  await fetch("http://localhost:3000/api/private", {
+    credentials: "include",
+  }).then((response) => {
+    if (response.status != 200) {
+      router.push({
+        name: "login",
+      });
+    } else {
+      logged.value = true;
+    }
+  });
+}
 
 // setTimeout to test loading -> to remove
 async function reloadData() {
@@ -31,10 +46,11 @@ async function reloadData() {
     battles.value = await response.json();
     dataReady.value = true;
     console.log("reload end");
-  }, 4000);
+  }, 1000);
 }
 
 onBeforeMount(async () => {
+  await checkIfLogged();
   await reloadData();
   console.log(battles.value);
   console.log(dataReady.value);
@@ -49,10 +65,6 @@ defineExpose(
 </script>
 
 <style scoped>
-body {
-  overflow: scroll;
-}
-
 .title {
   display: flex;
   align-item: left;
@@ -62,7 +74,7 @@ body {
 
 .title img {
   height: 42px;
-  margin-right: 10px;
+  margin-right: 20px;
 }
 
 .title h1 {
@@ -80,8 +92,9 @@ body {
     #ffda00 100%
   );
   height: 100vh;
-  width: 100vw;
+  width: 80vw;
   padding-left: 15vw;
+  padding-right: 5vw;
   padding-top: 1em;
   display: flex;
   justify-content: left;
@@ -97,10 +110,5 @@ body {
   align-items: center;
   text-align: center;
   flex-direction: column;
-}
-
-table {
-  color: white;
-  width: 50%;
 }
 </style>

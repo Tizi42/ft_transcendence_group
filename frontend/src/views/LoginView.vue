@@ -20,10 +20,6 @@ function handleClick() {
 </script>
 
 <style>
-body {
-  background-color: #1e2a02;
-}
-
 #ping-pong {
   height: 200px;
 }
