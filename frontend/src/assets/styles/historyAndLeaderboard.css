@@ -1,6 +1,8 @@
 .title {
   display: flex;
-  align-items: left;
+  justify-content: space-between;
+  flex-direction: row;
+  width: 70vw;
   margin-top: 3em;
   margin-bottom: 3em;
 }
