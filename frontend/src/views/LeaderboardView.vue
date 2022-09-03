@@ -1,11 +1,12 @@
 <template>
-  <div class="page">
+  <div class="page" v-if="logged">
     <div class="title">
       <img src="@/assets/icons/leaderboard.svg" />
       <h1>Leaderboard</h1>
     </div>
     <div class="content">
-      <LeaderBoard v-if="dataReady" />
+      <LeaderBoard :ready="dataReady" title="Global" />
+      <LeaderBoard :ready="dataReady" title="Friends" />
     </div>
   </div>
 </template>
@@ -14,12 +15,27 @@
 import "@/assets/styles/historyAndLeaderboard.css";
 import { defineComponent, defineExpose, ref } from "vue";
 import { onBeforeMount } from "vue";
-//import { useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import LeaderBoard from "../components/Leaderboard.vue";
 
 const dataReady = ref(false);
 const battles = ref({});
-//const router = useRouter();
+const router = useRouter();
+const logged = ref(false);
+
+async function checkIfLogged() {
+  await fetch("http://localhost:3000/api/private", {
+    credentials: "include",
+  }).then((response) => {
+    if (response.status != 200) {
+      router.push({
+        name: "login",
+      });
+    } else {
+      logged.value = true;
+    }
+  });
+}
 
 // setTimeout to test loading -> to remove
 async function reloadData() {
@@ -31,10 +47,11 @@ async function reloadData() {
     battles.value = await response.json();
     dataReady.value = true;
     console.log("reload end");
-  }, 2000);
+  }, 1000);
 }
 
 onBeforeMount(async () => {
+  await checkIfLogged();
   await reloadData();
   console.log(battles.value);
   console.log(dataReady.value);

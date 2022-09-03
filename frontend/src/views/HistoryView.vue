@@ -5,13 +5,14 @@
       <h1>Match history</h1>
     </div>
     <div class="content">
-      <TableHistory :ready="dataReady" title="Global" />
-      <TableHistory :ready="dataReady" title="Personal" />
+      <TableHistory :ready="dataReady" :battles="battles" title="Global" />
+      <TableHistory :ready="dataReady" :battles="battles" title="Personal" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import "@/assets/styles/historyAndLeaderboard.css";
 import { defineComponent, defineExpose, ref } from "vue";
 import { onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
@@ -63,52 +64,3 @@ defineExpose(
   })
 );
 </script>
-
-<style scoped>
-.title {
-  display: flex;
-  align-item: left;
-  margin-top: 3em;
-  margin-bottom: 3em;
-}
-
-.title img {
-  height: 42px;
-  margin-right: 20px;
-}
-
-.title h1 {
-  color: var(--main-color);
-  font-family: "Outfit SemiBold";
-  font-size: 40px;
-  margin: 0;
-}
-
-.page {
-  background: linear-gradient(
-    116.6deg,
-    #005f3e -20.9%,
-    #feca00 99.99%,
-    #ffda00 100%
-  );
-  height: 100vh;
-  width: 80vw;
-  padding-left: 15vw;
-  padding-right: 5vw;
-  padding-top: 1em;
-  display: flex;
-  justify-content: left;
-  align-items: left;
-  text-align: left;
-  flex-direction: column;
-}
-
-.content {
-  width: 70vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  flex-direction: column;
-}
-</style>
