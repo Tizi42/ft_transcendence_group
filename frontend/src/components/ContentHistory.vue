@@ -2,29 +2,60 @@
   <div class="tableContent">
     <TransitionGroup name="list" tag="ul">
       <li v-for="battle in items" :key="battle">
-        {{ battle.date_start }}
+        <div class="match" v-if="show">
+          <div class="date">{{ getDate(battle.date_start) }}</div>
+          <div class="time">{{ getTime(battle.date_start) }}</div>
+        </div>
       </li>
     </TransitionGroup>
   </div>
 </template>
 
 <script lang="ts" setup>
+//  imports
 import { defineComponent, defineExpose, defineProps } from "vue";
-import { onMounted } from "vue";
+import { onMounted, onUpdated } from "vue";
 import { ref } from "vue";
 
+//  variables
 const props = defineProps(["battles"]);
 const items = ref([]);
-console.log(props);
+const show = ref(false);
 
-onMounted(async () => {
+//  usefull functions
+function getTime(fullDate): string {
+  let splitted = fullDate.split("T")[1].split(":");
+  return splitted[0] + ":" + splitted[1];
+}
+
+function getDate(fullDate): string {
+  let splitted = fullDate.split("T")[0].split("-");
+  return splitted[1] + "." + splitted[2];
+}
+
+async function reshowData() {
   for await (const [key, item] of props.battles.entries()) {
     setTimeout(() => {
       items.value.push(item);
-    }, 200 * key);
+    }, 200 * (key + 1));
   }
+}
+
+//  lifecycle hook
+onMounted(async () => {
+  show.value = false;
+  await reshowData();
+  show.value = true;
 });
 
+onUpdated(async () => {
+  show.value = false;
+  items.value = [];
+  await reshowData();
+  show.value = true;
+});
+
+//  expose component
 defineExpose(
   defineComponent({
     name: "ContentHistory",
@@ -33,29 +64,49 @@ defineExpose(
 </script>
 
 <style scoped>
+ul {
+  margin: 0;
+  padding: 0;
+}
+
 li {
   margin-top: 30px;
   margin-bottom: 30px;
 }
 
-.list-move,
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.5s ease;
+.list-enter-active {
+  transition: all 0.3s ease-out;
 }
 
-.list-enter-from,
+.list-leave-active {
+  transition: all 0.3s ease-out;
+}
+
+.list-enter-from {
+  transform: translateX(30px);
+  opacity: 0;
+}
+
 .list-leave-to {
   opacity: 0;
-  transform: translateX(30px);
 }
 
-.list-leave-active {
-  position: absolute;
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
-
-.tableContent {
-  padding-left: 30px;
-  padding-right: 30px;
+.match {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  width: 60vw;
 }
 </style>
