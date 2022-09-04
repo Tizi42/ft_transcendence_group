@@ -3,7 +3,11 @@
     <div
       class="avatar-frame"
       :style="{ 'background-image': 'url(' + profile.picture + ')' }"
-    ></div>
+    >
+      <div class="upload-overlay">
+        <div class="upload-text">upload🐱</div>
+      </div>
+    </div>
     <div class="personal-info-frame">
       <p id="info-name">{{ profile.displayName }}</p>
       <p id="info-id">&nbsp;&nbsp;user_id: {{ profile.id }}</p>
@@ -32,7 +36,7 @@ export default defineComponent({
   margin-left: 7%;
   margin-right: 7%;
   margin-top: 25px;
-  background-color: rgba(243, 133, 44, 0.631);
+  background-color: rgba(20, 29, 1, 1);
   display: flex;
 }
 .avatar-frame {
@@ -45,6 +49,38 @@ export default defineComponent({
   margin-left: 5%;
   margin-right: 8%;
   top: 50px;
+}
+
+.upload-overlay {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-radius: 100%;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  transition: 0.2s ease;
+  background-color: rgba(30, 42, 2, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed rgba(255, 203, 0, 1);
+}
+
+.upload-text {
+  padding: 10px;
+  font-family: "Outfit";
+  font-style: normal;
+  font-size: 30px;
+  font-weight: regular;
+  color: rgba(255, 203, 0, 1);
+  background: none;
+}
+
+.avatar-frame:hover .upload-overlay {
+  opacity: 1;
+  cursor: pointer;
 }
 
 .personal-info-frame {
@@ -81,5 +117,23 @@ export default defineComponent({
 
 .edit-button {
   align-self: flex-end;
+  position: relative;
+  top: 38px;
+  right: 10px;
+  padding: 5px;
+  padding-left: 16px;
+  padding-right: 16px;
+  border: none;
+  font-family: "Outfit";
+  font-style: normal;
+  font-weight: light;
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(30, 42, 2, 0.7);
+}
+
+.edit-button:hover {
+  background-color: rgba(255, 203, 0, 0.7);
+  cursor: pointer;
 }
 </style>

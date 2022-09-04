@@ -6,10 +6,6 @@
       <div>Win Rate</div>
     </div>
     <div class="stats-item">
-      <div>88%</div>
-      <div>Win Rate</div>
-    </div>
-    <div class="stats-item">
       <div>2</div>
       <div>Rank</div>
     </div>
@@ -39,6 +35,7 @@ export default defineComponent({
   margin-right: 7%;
   background-color: rgba(20, 29, 1, 1);
   display: flex;
+  align-items: center;
 }
 
 .stats-item {
