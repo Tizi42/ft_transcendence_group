@@ -19,6 +19,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/user",
     name: "user",
+    redirect: "/user/stats",
     component: UserView,
     children: [
       {

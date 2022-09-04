@@ -33,7 +33,7 @@
 }
 
 .nav-container {
-  position: absolute;
+  position: fixed;
   width: 102px;
   height: 100%;
   left: 0px;
