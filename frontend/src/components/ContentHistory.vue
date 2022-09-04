@@ -3,8 +3,23 @@
     <TransitionGroup name="list" tag="ul">
       <li v-for="battle in items" :key="battle">
         <div class="match" v-if="show">
-          <div class="date">{{ getDate(battle.date_start) }}</div>
-          <div class="time">{{ getTime(battle.date_start) }}</div>
+          <div class="matchResults">
+            <div class="opponentLeft">
+              <div class="score">10</div>
+              <div class="name">Conan Edogawa</div>
+              <img class="pp" src="@/assets/profile/conan.png" />
+            </div>
+            vs
+            <div class="opponentRight">
+              <img class="pp" src="@/assets/profile/ran.png" />
+              <div class="name">Ran Mouri</div>
+              <div class="score">3</div>
+            </div>
+          </div>
+          <div class="matchDate">
+            <div class="date">{{ getDate(battle.date_start) }}</div>
+            <div class="time">{{ getTime(battle.date_start) }}</div>
+          </div>
         </div>
       </li>
     </TransitionGroup>
@@ -91,22 +106,54 @@ li {
   opacity: 0;
 }
 
-@keyframes bounce-in {
-  0% {
-    transform: scale(0);
-  }
-  50% {
-    transform: scale(1.25);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
 .match {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-direction: row;
   width: 60vw;
+}
+
+.matchResults {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: center;
+  width: 70%;
+}
+
+.matchDate {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  width: 10vw;
+}
+
+.opponentRight,
+.opponentLeft {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.opponentRight {
+  justify-content: start;
+  text-align: left;
+}
+
+.opponentLeft {
+  justify-content: end;
+  text-align: right;
+}
+
+.pp {
+  width: 50px;
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
+.name {
+  width: 70%;
 }
 </style>
