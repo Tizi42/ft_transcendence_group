@@ -16,7 +16,16 @@ export class User {
 
   @Column({default: ""})
   picture: string;
+  
+  @Column({ nullable: true })
+  twoFactorAuthenticationSecret: string;
 
+  @Column({ default: false })
+  isTwoFactorAuthenticationEnabled: boolean;
+
+  @Column({ default: true })
+  isFirstEnablingTwoFactor: boolean;
+  
   @Column("int", { array: true, default: {} })
   friendWith: number[];
 

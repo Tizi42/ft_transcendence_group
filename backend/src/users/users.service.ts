@@ -21,7 +21,7 @@ export class UsersService {
       const newUser = this.usersRepository.create(userDetails);
       return await this.usersRepository.save(newUser);
   }
-  
+
   async getDisplayname(id: number) : Promise<string> {
     let user = await this.usersRepository.findOneBy({id});
     if (user == null)
@@ -191,6 +191,34 @@ export class UsersService {
 	  });
   }
 
+  async findOneById(id: number): Promise<User | undefined> {
+      return this.usersRepository.findOneBy({ id: id });
+  }
+
+  async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
+      return this.usersRepository.update(userId, {
+          twoFactorAuthenticationSecret: secret
+      });
+  }
+
+  async turnOnTwoFactorAuthentication(userId: number) {
+      return this.usersRepository.update(userId, {
+          isTwoFactorAuthenticationEnabled: true,
+      });
+  }
+
+  async turnOffTwoFactorAuthentication(userId: number) {
+      return this.usersRepository.update(userId, {
+          isTwoFactorAuthenticationEnabled: false,
+      });
+  }
+
+  async updateIsFirstEnablingTwoFactor(userId: number, value: boolean) {
+      return this.usersRepository.update(userId, {
+          isFirstEnablingTwoFactor: value,
+      });
+  }
+    
   async getBlockedBy(id: number) : Promise<User[]> {
     const user = await this.usersRepository.findOneBy({ id });
     if (user == null)
