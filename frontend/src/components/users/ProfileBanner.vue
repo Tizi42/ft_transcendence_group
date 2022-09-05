@@ -2,10 +2,18 @@
   <div class="profile-frame">
     <div
       class="avatar-frame"
+      ref="avatarFrame"
       :style="{ 'background-image': 'url(' + profile.picture + ')' }"
     >
-      <div class="upload-overlay">
+      <div class="upload-overlay" @click="onClickUpload">
         <div class="upload-text">upload🐱</div>
+        <input
+          type="file"
+          accept="image/*"
+          ref="avatar"
+          id="file"
+          @change="onChangeAvatar"
+        />
       </div>
     </div>
     <div class="personal-info-frame">
@@ -13,19 +21,56 @@
       <p id="info-id">&nbsp;&nbsp;user_id: {{ profile.id }}</p>
       <p id="info-email">&nbsp;&nbsp;{{ profile.email }}</p>
     </div>
-    <button class="edit-button">edit</button>
+    <button class="edit-button" @click="editProfile">edit</button>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script lang="ts" setup defer>
+import {
+  ref,
+  defineComponent,
+  defineExpose,
+  defineProps,
+  onMounted,
+} from "vue";
+//import axios from "axios";
 
-export default defineComponent({
-  name: "ProfileBanner",
-  props: {
-    profile: Object,
+const props = defineProps(["profile"]);
+console.log(props);
+
+const avatar = ref(null);
+let avatarFrame = ref(null);
+const reader = new FileReader();
+
+function onClickUpload() {
+  console.log(avatar.value);
+  avatar.value.click();
+}
+
+function onChangeAvatar() {
+  console.log(avatar.value.files[0]);
+  const image = avatar.value.files[0];
+  if (image) reader.readAsDataURL(image);
+}
+
+reader.addEventListener(
+  "load",
+  function () {
+    console.log("here");
+    avatarFrame.value.style.backgroundImage = `url(${reader.result})`;
   },
-});
+  false
+);
+
+function editProfile() {
+  console.log("edit button clicked");
+}
+
+defineExpose(
+  defineComponent({
+    name: "ProfileBanner",
+  })
+);
 </script>
 
 <style scoped>
@@ -76,6 +121,10 @@ export default defineComponent({
   font-weight: regular;
   color: rgba(255, 203, 0, 1);
   background: none;
+}
+
+input[type="file"] {
+  display: none;
 }
 
 .avatar-frame:hover .upload-overlay {
