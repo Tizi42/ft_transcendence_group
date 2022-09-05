@@ -67,7 +67,7 @@ li {
   margin-bottom: 30px;
 }
 
-.list-move, /* apply transition to moving elements */
+.list-move,
 .list-enter-active,
 .list-leave-active {
   transition: all 0.5s ease;
@@ -79,8 +79,6 @@ li {
   transform: translateX(30px);
 }
 
-/* ensure leaving items are taken out of layout flow so that moving
-   animations can be calculated correctly. */
 .list-leave-active {
   position: absolute;
 }
@@ -96,7 +94,7 @@ li {
   display: flex;
   justify-content: center;
   overflow: scroll;
-  background-image: url("../assets/tables/frame.svg");
+  background-image: url("../assets/icons/tables/frame.svg");
   background-repeat: no-repeat;
   background-size: 70vw 30vh;
   width: 70vw;
@@ -120,7 +118,7 @@ li {
 .titleContainer {
   z-index: 1;
   display: flex;
-  background-image: url("../assets/tables/title.svg");
+  background-image: url("../assets/icons/tables/title.svg");
   background-size: 176px 44px;
   background-repeat: no-repeat;
   width: 176px;
