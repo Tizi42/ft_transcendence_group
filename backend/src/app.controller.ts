@@ -1,6 +1,7 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
-import { Request } from 'express';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { AppService } from './app.service';
+import { JwtTwoFactorGuard } from './auth/guards/jwt-2fa-auth.guard';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
 @Controller()
@@ -12,11 +13,17 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Get('private')
   getPrivate(@Req() req: Request) {
-    console.log(req.cookies);
-    console.log(req.user);
+    console.log("private cookies : ", req.cookies);
+    console.log("private user : ", req.user);
     return req.user;
+  }
+
+  @Get('logout')
+  @UseGuards(JwtAuthGuard)
+  logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    res.clearCookie('jwt');
   }
 }
