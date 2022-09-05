@@ -2,25 +2,7 @@
   <div class="tableContent">
     <TransitionGroup name="list" tag="ul">
       <li v-for="battle in items" :key="battle">
-        <div class="match" v-if="show">
-          <div class="matchResults">
-            <div class="opponentLeft">
-              <div class="score">10</div>
-              <div class="name">Conan Edogawa</div>
-              <img class="pp" src="@/assets/profile/conan.png" />
-            </div>
-            vs
-            <div class="opponentRight">
-              <img class="pp" src="@/assets/profile/ran.png" />
-              <div class="name">Ran Mouri</div>
-              <div class="score">3</div>
-            </div>
-          </div>
-          <div class="matchDate">
-            <div class="date">{{ getDate(battle.date_start) }}</div>
-            <div class="time">{{ getTime(battle.date_start) }}</div>
-          </div>
-        </div>
+        <MatchResult v-if="show" :battle="battle" />
       </li>
     </TransitionGroup>
   </div>
@@ -31,6 +13,7 @@
 import { defineComponent, defineExpose, defineProps } from "vue";
 import { onMounted, onUpdated } from "vue";
 import { ref } from "vue";
+import MatchResult from "../components/MatchResult.vue";
 
 //  variables
 const props = defineProps(["battles"]);
@@ -38,16 +21,6 @@ const items = ref([]);
 const show = ref(false);
 
 //  usefull functions
-function getTime(fullDate): string {
-  let splitted = fullDate.split("T")[1].split(":");
-  return splitted[0] + ":" + splitted[1];
-}
-
-function getDate(fullDate): string {
-  let splitted = fullDate.split("T")[0].split("-");
-  return splitted[1] + "." + splitted[2];
-}
-
 async function reshowData() {
   for await (const [key, item] of props.battles.entries()) {
     setTimeout(() => {
@@ -104,56 +77,5 @@ li {
 
 .list-leave-to {
   opacity: 0;
-}
-
-.match {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-direction: row;
-  width: 60vw;
-}
-
-.matchResults {
-  display: flex;
-  justify-content: space-between;
-  flex-direction: row;
-  align-items: center;
-  width: 70%;
-}
-
-.matchDate {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-direction: row;
-  width: 10vw;
-}
-
-.opponentRight,
-.opponentLeft {
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-.opponentRight {
-  justify-content: start;
-  text-align: left;
-}
-
-.opponentLeft {
-  justify-content: end;
-  text-align: right;
-}
-
-.pp {
-  width: 50px;
-  margin-left: 1em;
-  margin-right: 1em;
-}
-
-.name {
-  width: 70%;
 }
 </style>
