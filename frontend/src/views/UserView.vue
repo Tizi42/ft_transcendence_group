@@ -16,45 +16,34 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script lang="ts" setup>
+import { Ref, ref, onBeforeMount, defineComponent, defineExpose } from "vue";
 import ProfileBanner from "@/components/users/ProfileBanner.vue";
 
-export default defineComponent({
-  name: "UserView",
-  components: {
-    ProfileBanner,
-  },
-});
-</script>
-
-<script lang="ts" setup>
-import { Ref, ref, onBeforeMount } from "vue";
-import { useRouter } from "vue-router";
-
 const profile: Ref<any> = ref("");
-const router = useRouter();
+// const enabled2FA = ref(false);
 
 onBeforeMount(async () => {
   await fetch("http://localhost:3000/api/private", {
     credentials: "include",
   })
     .then((response) => {
-      if (response.status != 200) {
-        router.push({
-          name: "login",
-        });
-        return response.json();
-      }
       return response.json();
     })
     .then((user) => {
       profile.value = user;
+      // enabled2FA.value = profile.value.isTwoFactorAuthenticationEnabled;
     })
     .catch((error) => {
       console.log(error);
     });
 });
+
+defineExpose(
+  defineComponent({
+    name: "UserView",
+  })
+);
 </script>
 
 <style scoped>
