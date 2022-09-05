@@ -52,3 +52,5 @@ const authenticate = async () => {
     });
 };
 </script>
+
+<style scoped></style>
