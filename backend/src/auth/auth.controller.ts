@@ -38,10 +38,9 @@ export class AuthController {
     async register(@Res() response: Response, @Req() request: RequestWithUser) {
         const { otpAuthUrl } = await this.authService.generateTwoFactorAuthenticationSecret(request.user);
         
-        await this.usersService.updateIsFirstEnablingTwoFactor(request.user.id, false);
         return this.authService.pipeQrCodeStream(response, otpAuthUrl);
     }
-
+    
     @Post('2fa/turn-on')
     @HttpCode(200)
     @UseGuards(JwtAuthGuard)
@@ -50,11 +49,16 @@ export class AuthController {
         @Body() { authenticationCode }: TwoFactorAuthenticationCodeDto
     ) {
         const isCodeValid = this.authService.isTwoFactorAuthenticationCodeValid(authenticationCode, request.user);
-
+            
         if (!isCodeValid) {
             throw new UnauthorizedException('Wrong authentication code');
         }
+        await this.usersService.updateIsFirstEnablingTwoFactor(request.user.id, false);
         await this.usersService.turnOnTwoFactorAuthentication(request.user.id);
+
+        const { accessToken } = this.authService.login(request.user, true);
+        request.res.cookie('jwt', accessToken);
+
         return request.user;
     }
 
@@ -79,8 +83,6 @@ export class AuthController {
         }
         const { accessToken } = this.authService.login(request.user, true);
         request.res.cookie('jwt', accessToken);
-        console.log("jwt 2 = ", accessToken);
         return request.user;
-        // return await this.authService.signIn(request.user, true);
     }
 }

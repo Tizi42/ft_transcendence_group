@@ -4,17 +4,17 @@
     alt="google authenticator logo"
     width="200"
   />
-  <TwoFactor />
+  <TwoFactorPage />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import TwoFactor from "@/components/TwoFactor.vue";
+import TwoFactorPage from "@/components/TwoFactorPage.vue";
 
 export default defineComponent({
-  name: "TwoFactorAuthenticationView",
+  name: "TwoFactorView",
   components: {
-    TwoFactor,
+    TwoFactorPage,
   },
 });
 </script>
