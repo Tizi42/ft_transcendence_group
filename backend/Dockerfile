@@ -2,6 +2,7 @@
 FROM node:lts-alpine As dev
 WORKDIR	/app
 COPY --chown=node:node package*.json ./
+RUN npm install
 RUN npm ci
 ENV NODE_ENV development
 COPY --chown=node:node . .
@@ -13,6 +14,7 @@ WORKDIR /app
 COPY --chown=node:node package*.json ./
 COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modules
 COPY --chown=node:node . .
+RUN npm install
 RUN npm run build
 ENV NODE_ENV production
 RUN npm ci --only=production && npm cache clean --force
