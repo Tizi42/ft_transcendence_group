@@ -23,11 +23,6 @@ export class BattlesController {
     return this.battlesService.showAll();
   }
 
-  @Get("/end/:id/:winner")
-  changeStatus(@Param('id') id: number, @Param('winner') winner: number) {
-    this.battlesService.changeStatus(id, winner);
-  }
-
   @Post('/add')
   create(@Body() game: BattleDto) {
     return this.battlesService.addOne(game);

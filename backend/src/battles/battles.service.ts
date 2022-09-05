@@ -17,11 +17,11 @@ export class BattlesService {
   ) {}
 
   findAll(): Promise<Battle[]> {
-    return this.battlesRepository.find({order: {date_start: "ASC"}});
+    return this.battlesRepository.find();
   }
 
   async showAll(): Promise<BattleShowDto[]> {
-    let battles = await this.battlesRepository.find({order: {date_start: "ASC"}});
+    let battles = await this.battlesRepository.find({order: {date_start: "DESC"}});
     let res = [];
     battles.forEach(async (battle) => {
       let showbattle = new BattleShowDto();
@@ -45,16 +45,6 @@ export class BattlesService {
             { opponent2: userId },
         ],
     });
-  }
-
-  async changeStatus(id: number, winner: number) {
-    let battle = await this.findOne(id);
-    battle.isFinished = !battle.isFinished;
-    if (winner == 1)
-      battle.winner = battle.opponent1;
-    else
-      battle.winner = battle.opponent2;
-    this.battlesRepository.save(battle);
   }
 
   findAllForUser(user: User): Promise<Battle[]> {
