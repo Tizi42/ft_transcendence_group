@@ -7,11 +7,24 @@
     </div>
     <div class="setting-field">
       <div class="option-group">
-        <div class="on-off-option">
+        <div class="on-off-option" @click="change2FA">
           <div class="option">
             Two-factor authentication with Google Authenticator
           </div>
-          <img class="on-off" src="@/assets/option-off.png" alt="option-off" />
+          <img
+            v-if="enabled2FA"
+            id="option-icon-2FA"
+            class="on-off"
+            src="@/assets/option-on.png"
+            alt="option-off"
+          />
+          <img
+            v-else
+            id="option-icon-2FA"
+            class="on-off"
+            src="@/assets/option-off.png"
+            alt="option-off"
+          />
         </div>
         <div class="on-off-option">
           <div class="option">Allow popaup notifications</div>
@@ -30,12 +43,44 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script lang="ts" setup>
+import { ref, defineComponent, defineExpose } from "vue";
+import { useRouter } from "vue-router";
 
-export default defineComponent({
-  name: "UserSetting",
-});
+const router = useRouter();
+const enabled2FA = ref(false);
+
+async function toggle2FA() {
+  if (enabled2FA.value === false) {
+    router.push({
+      name: "2FA",
+    });
+  } else {
+    await fetch("http://localhost:3000/api/auth/2fa/turn-off", {
+      credentials: "include",
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((result) => {
+        console.log("success : ", result);
+      })
+      .catch((error) => {
+        console.log("error : ", error);
+      });
+  }
+}
+
+function change2FA() {
+  enabled2FA.value = !enabled2FA.value;
+  toggle2FA();
+}
+
+defineExpose(
+  defineComponent({
+    name: "UserSetting",
+  })
+);
 </script>
 
 <style scoped>
