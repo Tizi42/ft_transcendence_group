@@ -1,13 +1,9 @@
 <template>
   <div class="page">
     <div class="title">
-      <img src="@/assets/icons/leaderboard.svg" />
-      <h1>Leaderboard</h1>
-    </div>
-    <div class="title">
       <div class="titleName">
         <img src="@/assets/icons/leaderboard.svg" />
-        <h1>Match history</h1>
+        <h1>Leaderboard</h1>
       </div>
       <button class="reload" @click="reloadData()"></button>
     </div>
@@ -53,3 +49,38 @@ defineExpose(
   })
 );
 </script>
+
+<style scoped>
+.titleName {
+  display: flex;
+  flex-direction: row;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+.reload {
+  filter: brightness(0) saturate(100%) invert(22%) sepia(74%) saturate(1495%)
+    hue-rotate(134deg) brightness(92%) contrast(101%);
+  margin-right: 20px;
+  background-color: #00000000;
+  background-image: url("../assets/icons/refresh.svg");
+  background-repeat: no-repeat;
+  background-size: 42px 42px;
+  width: 42px;
+  height: 42px;
+  border: none;
+  fill: none;
+}
+
+.reload:hover {
+  animation: rotation 2s infinite linear;
+  cursor: pointer;
+}
+</style>
