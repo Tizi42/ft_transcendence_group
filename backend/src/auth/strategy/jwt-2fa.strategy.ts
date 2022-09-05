@@ -1,15 +1,19 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
+import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
-import { Strategy, ExtractJwt } from 'passport-jwt';
+import { ExtractJwt, Strategy } from "passport-jwt";
+import { User } from "src/users/Users.entity";
 import { UsersService } from "src/users/users.service";
-
-export type JwtPayload = { sub: number; email: string; isTwoFactorAuthenticatedEnabled: boolean };
+import { Repository } from "typeorm";
+import { JwtPayload } from "./jwt.strategy";
 
 @Injectable()
-export class JwtAuthStrategy extends PassportStrategy(Strategy) {
+export class jwtTwoFactorStrategy extends PassportStrategy(Strategy, 'jwt-two-factor') {
     constructor(
+        @InjectRepository(User)
+        private userRepository: Repository<User>,
         configService: ConfigService,
         private usersService: UsersService,
     ) {
@@ -23,7 +27,6 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy) {
 
         super({
             jwtFromRequest: extractJwtFromCookie,
-            ignoreExpiration: false,
             secretOrKey: configService.get<string>('JWT_SECRET'),
         });
     }
@@ -36,13 +39,17 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy) {
         return token;
     }
 
-    async validate(payload: JwtPayload) {
+    async validate(payload: JwtPayload): Promise<User> {
         const user = await this.usersService.findOneByEmail(payload.email);
 
-        return {
-            id: payload.sub,
-            email: payload.email,
-            ... user,
-        };
+        if (!user) {
+            throw new UnauthorizedException();
+        }
+        if (!user.isTwoFactorAuthenticationEnabled) {
+            return user;
+        }
+        if (payload.isTwoFactorAuthenticatedEnabled) {
+            return user;
+        }
     }
 }

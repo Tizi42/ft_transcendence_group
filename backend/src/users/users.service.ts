@@ -191,6 +191,39 @@ export class UsersService {
 	  });
   }
 
+  async findOneById(id: number): Promise<User | undefined> {
+      return this.userRepository.findOneBy({ id: id });
+  }
+
+  async createNewUser(userDetails: UserDetails): Promise<User> {
+      const newUser = this.userRepository.create(userDetails);
+      return await this.userRepository.save(newUser);
+  }
+
+  async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
+      return this.userRepository.update(userId, {
+          twoFactorAuthenticationSecret: secret
+      });
+  }
+
+  async turnOnTwoFactorAuthentication(userId: number) {
+      return this.userRepository.update(userId, {
+          isTwoFactorAuthenticationEnabled: true,
+      });
+  }
+
+  async turnOffTwoFactorAuthentication(userId: number) {
+      return this.userRepository.update(userId, {
+          isTwoFactorAuthenticationEnabled: false,
+      });
+  }
+
+  async updateIsFirstEnablingTwoFactor(userId: number, value: boolean) {
+      return this.userRepository.update(userId, {
+          isFirstEnablingTwoFactor: value,
+      });
+  }
+    
   async getBlockedBy(id: number) : Promise<User[]> {
     const user = await this.usersRepository.findOneBy({ id });
     if (user == null)

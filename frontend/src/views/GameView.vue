@@ -1,5 +1,5 @@
 <template>
-  <div class="menu" v-if="logged">
+  <div class="menu">
     <router-link :to="{ name: 'play' }" class="gameButtonPlay">
       Play !
     </router-link>
@@ -17,30 +17,6 @@
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose } from "vue";
-import { onBeforeMount, ref } from "vue";
-import { useRouter } from "vue-router";
-
-const router = useRouter();
-const logged = ref(false);
-
-async function checkIfLogged() {
-  await fetch("http://localhost:3000/api/private", {
-    credentials: "include",
-  }).then((response) => {
-    if (response.status != 200) {
-      router.push({
-        name: "login",
-      });
-    } else {
-      logged.value = true;
-    }
-  });
-}
-
-onBeforeMount(async () => {
-  await checkIfLogged();
-  console.log("login");
-});
 
 defineExpose(
   defineComponent({
