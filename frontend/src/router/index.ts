@@ -2,6 +2,10 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import GameView from "../views/GameView.vue";
 import LoginView from "../views/LoginView.vue";
 import TwoFactorView from "../views/TwoFactorView.vue";
+import LeaderboardView from "../views/LeaderboardView.vue";
+import HistoryView from "../views/HistoryView.vue";
+import PlayView from "../views/PlayView.vue";
+import UserView from "../views/UserView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -18,8 +22,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/user",
     name: "user",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/UserView.vue"),
+    component: UserView,
   },
   {
     path: "/login",
@@ -30,6 +33,21 @@ const routes: Array<RouteRecordRaw> = [
     path: "/2FA",
     name: "2FA",
     component: TwoFactorView,
+  },
+  {
+    path: "/leaderboard",
+    name: "leaderboard",
+    component: LeaderboardView,
+  },
+  {
+    path: "/history",
+    name: "history",
+    component: HistoryView,
+  },
+  {
+    path: "/play",
+    name: "play",
+    component: PlayView,
   },
 ];
 

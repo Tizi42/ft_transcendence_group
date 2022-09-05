@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref, ref, onBeforeMount } from "vue";
+import { Ref, ref, onBeforeMount, defineComponent, defineExpose } from "vue";
 import { useRouter } from "vue-router";
 
 const profile: Ref<any> = ref("");
@@ -67,13 +67,18 @@ async function toggle2FA() {
       });
   }
 }
+
+defineExpose(
+  defineComponent({
+    name: "UserView",
+  })
+);
 </script>
 
 <style>
 .about {
   color: white;
 }
-
 li {
   list-style: none;
 }
