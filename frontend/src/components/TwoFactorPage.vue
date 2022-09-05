@@ -1,8 +1,5 @@
 <template>
-  <div v-if="profile.isFirstEnablingTwoFactor" class="container-generate">
-    <h3>Scan this Qr Code to get the 6 numbers verification code</h3>
-    <img id="QrCode" src="" />
-  </div>
+  <GenerateTwoFactorVue v-if="profile.isFirstEnablingTwoFactor" />
   <div v-if="!isTwoFactorAuthentication">
     <h4>Verify the code here for turn-on 2FA :</h4>
     <form @submit.prevent="verifyCode" id="form">
@@ -21,15 +18,19 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import GenerateTwoFactorVue from "./GenerateTwoFactor.vue";
 
 export default defineComponent({
-  name: "TwoFactor",
+  name: "TwoFactorPage",
+  components: {
+    GenerateTwoFactorVue,
+  },
 });
 </script>
 
 <script lang="ts" setup>
 import router from "@/router";
-import { onBeforeMount, ref, Ref, onBeforeUnmount } from "vue";
+import { onBeforeMount, ref, Ref } from "vue";
 
 const authenticationCode: Ref<string> = ref("");
 const profile: Ref<any> = ref("");
@@ -116,26 +117,6 @@ onBeforeMount(async () => {
     .catch((error) => {
       console.log(error);
     });
-  if (
-    profile.value.isTwoFactorAuthenticationEnabled === false &&
-    profile.value.isFirstEnablingTwoFactor === true
-  ) {
-    await fetch("http://localhost:3000/api/auth/2fa/generate", {
-      method: "POST",
-      credentials: "include",
-    })
-      .then((response) => {
-        return response.blob();
-      })
-      .then((blob: any) => {
-        const myImage: any = document.getElementById("QrCode");
-        const imageUrl = URL.createObjectURL(blob);
-        myImage.src = imageUrl;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
 });
 </script>
 

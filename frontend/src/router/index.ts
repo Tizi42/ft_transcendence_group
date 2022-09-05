@@ -1,8 +1,7 @@
-import { ref, Ref } from "vue";
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import GameView from "../views/GameView.vue";
 import LoginView from "../views/LoginView.vue";
-import TwoFactorAuthenticationView from "../views/TwoFactorAuthenticationView.vue";
+import TwoFactorView from "../views/TwoFactorView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -30,7 +29,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/2FA",
     name: "2FA",
-    component: TwoFactorAuthenticationView,
+    component: TwoFactorView,
   },
 ];
 
@@ -39,33 +38,29 @@ const router = createRouter({
   routes,
 });
 
-const result: Ref<boolean> = ref(false);
-
-const isAuthenticated = () => {
-  fetch("http://localhost:3000/api/private", {
+async function getStatus() {
+  return fetch("http://localhost:3000/api/private", {
     credentials: "include",
   })
     .then((response) => {
-      if (response.status === 200) {
-        result.value = true;
-        return result.value;
+      return response.status;
+    })
+    .then((status) => {
+      if (status === 200) {
+        return true;
       }
-      return response.json();
+      return false;
     })
     .catch((error) => {
       console.log("ERROR : ", error);
+      return error;
     });
-  console.log(result.value);
-  return result.value;
-};
+}
 
-router.beforeEach((to, from, next) => {
-  console.log("to.name = ", to.name);
-  // if (to.name === "2FA") {
-  //   next();
-  //   return;
-  // }
-  if (to.name !== "login" && !isAuthenticated() && to.name !== "2FA") {
+router.beforeEach(async (to, from, next) => {
+  console.log("to.name = ", to.name, " from.fullPath = ", from.fullPath);
+  const isAuthenticated = await getStatus();
+  if (to.name !== "login" && !isAuthenticated && to.name !== "2FA") {
     next({ name: "login" });
   } else next();
 });
