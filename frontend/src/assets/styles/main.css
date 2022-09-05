@@ -13,6 +13,11 @@
   src: url("../../assets/fonts/Outfit/Outfit-SemiBold.otf") format("opentype");
 }
 
+@font-face {
+  font-family: "Outfit Light";
+  src: url("../../assets/fonts/Outfit/Outfit-Light.otf") format("opentype");
+}
+
 :root {
   --main-color: #ffcb00;
   --main-gradient-background: linear-gradient(

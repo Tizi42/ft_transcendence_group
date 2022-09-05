@@ -78,7 +78,7 @@ async function getStatus() {
 router.beforeEach(async (to, from, next) => {
   console.log("to.name = ", to.name, " from.fullPath = ", from.fullPath);
   const isAuthenticated = await getStatus();
-  if (to.name !== "login" && !isAuthenticated && to.name !== "2FA") {
+  if (to.name !== "login" && !isAuthenticated) {
     next({ name: "login" });
   } else next();
 });

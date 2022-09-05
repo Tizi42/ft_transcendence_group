@@ -1,9 +1,13 @@
 <template>
   <div class="container-turn-on">
-    <h4>Verify the code here for turn-on 2FA :</h4>
+    <h4>Enter your 2FA code below :</h4>
     <form @submit.prevent="verifyCode" id="form">
-      <input v-model="authenticationCode" />
-      <input type="submit" />
+      <input
+        v-model="authenticationCode"
+        placeholder="Code (ex: 123456)"
+        type="text"
+      />
+      <input type="submit" value="Submit" />
     </form>
   </div>
 </template>
@@ -55,3 +59,61 @@ const verifyCode = async () => {
     });
 };
 </script>
+
+<style scoped>
+h4 {
+  color: #ffffff;
+  font-family: "Outfit Light";
+  font-size: 20px;
+}
+
+input[type="submit"] {
+  display: block;
+  font-family: "Outfit Bold";
+  background: #1e2a02;
+  box-shadow: 0px 0px 4px 3px rgba(0, 0, 0, 0.25);
+  border-radius: 22px;
+  line-height: 2.3em;
+  border: none;
+  font-size: 24px;
+  color: #ffffff;
+  width: 40%;
+  margin-top: 1.5em;
+}
+
+input[type="text"] {
+  display: block;
+  font-family: "Outfit";
+  text-align: center;
+  background: rgba(30, 42, 2, 0.7);
+  box-shadow: inset 0px 0px 4px 3px rgba(0, 0, 0, 0.25);
+  border-radius: 22px;
+  border: none;
+  font-size: 1em;
+  line-height: 3.5em;
+  width: 70%;
+  color: #ffffff;
+}
+
+input[type="text"]:focus {
+  outline: none;
+}
+
+::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+#form {
+  width: 30vw;
+  display: flex;
+  flex-direction: column;
+  display: space-between;
+  align-items: center;
+}
+
+.container-turn-on {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+</style>
