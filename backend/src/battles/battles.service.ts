@@ -17,11 +17,11 @@ export class BattlesService {
   ) {}
 
   findAll(): Promise<Battle[]> {
-    return this.battlesRepository.find();
+    return this.battlesRepository.find({order: {date_start: "ASC"}});
   }
 
   async showAll(): Promise<BattleShowDto[]> {
-    let battles = await this.battlesRepository.find({order: {date_start: "DESC"}});
+    let battles = await this.battlesRepository.find({order: {date_start: "ASC"}});
     let res = [];
     battles.forEach(async (battle) => {
       let showbattle = new BattleShowDto();
@@ -44,6 +44,7 @@ export class BattlesService {
             { opponent1: userId, },
             { opponent2: userId },
         ],
+        order: {date_start: "ASC"},
     });
   }
 

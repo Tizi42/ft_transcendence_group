@@ -1,5 +1,5 @@
 <template>
-  <div class="page" v-if="logged">
+  <div class="page">
     <div class="title">
       <div class="titleName">
         <img src="@/assets/icons/clock.svg" />
@@ -18,13 +18,10 @@
 import "@/assets/styles/historyAndLeaderboard.css";
 import { defineComponent, defineExpose, ref } from "vue";
 import { onBeforeMount, onUpdated } from "vue";
-import { useRouter } from "vue-router";
 import TableHistory from "../components/TableHistory.vue";
 
 const dataReady = ref(false);
 const battles = ref({});
-const router = useRouter();
-const logged = ref(false);
 
 // setTimeout to test loading -> to remove
 async function reloadData() {
@@ -41,8 +38,6 @@ async function reloadData() {
 
 onBeforeMount(async () => {
   await reloadData();
-  console.log(battles.value);
-  console.log(dataReady.value);
   console.log("mounted");
 });
 
