@@ -16,7 +16,7 @@
 
 This project is running inside a docker, you can lunch it through docker-compose :
 ```bash
-docker compose up --build
+docker-compose up --build
 ```
 
 Once running, to connect to the database with CLI :

@@ -1,6 +1,10 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import GameView from "../views/GameView.vue";
 import LoginView from "../views/LoginView.vue";
+import LeaderboardView from "../views/LeaderboardView.vue";
+import HistoryView from "../views/HistoryView.vue";
+import PlayView from "../views/PlayView.vue";
+import UserView from "../views/UserView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -17,13 +21,27 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/user",
     name: "user",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/UserView.vue"),
+    component: UserView,
   },
   {
     path: "/login",
     name: "login",
     component: LoginView,
+  },
+  {
+    path: "/leaderboard",
+    name: "leaderboard",
+    component: LeaderboardView,
+  },
+  {
+    path: "/history",
+    name: "history",
+    component: HistoryView,
+  },
+  {
+    path: "/play",
+    name: "play",
+    component: PlayView,
   },
 ];
 

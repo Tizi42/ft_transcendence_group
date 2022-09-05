@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref, ref, onBeforeMount } from "vue";
+import { Ref, ref, onBeforeMount, defineComponent, defineExpose } from "vue";
 import { useRouter } from "vue-router";
 
 const profile: Ref<any> = ref("");
@@ -40,13 +40,18 @@ onBeforeMount(async () => {
       console.log(error);
     });
 });
+
+defineExpose(
+  defineComponent({
+    name: "UserView",
+  })
+);
 </script>
 
 <style>
 h1 {
   color: white;
 }
-
 li {
   list-style: none;
   color: white;
