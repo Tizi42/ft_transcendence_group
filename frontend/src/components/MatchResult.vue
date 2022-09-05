@@ -56,13 +56,10 @@
 <script lang="ts" setup>
 //  imports
 import { defineComponent, defineExpose, defineProps } from "vue";
-import { onMounted, onUpdated } from "vue";
-import { ref } from "vue";
-import { OrbitSpinner, SwappingSquaresSpinner } from "epic-spinners";
 import { FulfillingBouncingCircleSpinner } from "epic-spinners";
 
 //  variables
-const props = defineProps(["battle"]);
+defineProps(["battle"]);
 
 //  usefull functions
 function getTime(fullDate): string {
