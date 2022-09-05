@@ -1,5 +1,5 @@
 <template>
-  <div class="page" v-if="logged">
+  <div class="page">
     <div class="title">
       <img src="@/assets/icons/leaderboard.svg" />
       <h1>Leaderboard</h1>
@@ -22,13 +22,10 @@
 import "@/assets/styles/historyAndLeaderboard.css";
 import { defineComponent, defineExpose, ref } from "vue";
 import { onBeforeMount } from "vue";
-import { useRouter } from "vue-router";
 import LeaderBoard from "../components/Leaderboard.vue";
 
 const dataReady = ref(false);
 const battles = ref({});
-const router = useRouter();
-const logged = ref(false);
 
 // setTimeout to test loading -> to remove
 async function reloadData() {

@@ -17,7 +17,7 @@
 <script lang="ts" setup>
 import "@/assets/styles/historyAndLeaderboard.css";
 import { defineComponent, defineExpose, ref } from "vue";
-import { onBeforeMount, onUpdated } from "vue";
+import { onBeforeMount } from "vue";
 import TableHistory from "../components/TableHistory.vue";
 
 const dataReady = ref(false);
