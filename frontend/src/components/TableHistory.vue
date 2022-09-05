@@ -45,7 +45,7 @@ defineExpose(
   display: flex;
   justify-content: center;
   overflow: scroll;
-  background-image: url("../assets/tables/frame.svg");
+  background-image: url("../assets/icons/tables/frame.svg");
   background-repeat: no-repeat;
   background-size: 70vw 30vh;
   width: 70vw;
@@ -64,7 +64,7 @@ defineExpose(
 .titleContainer {
   z-index: 1;
   display: flex;
-  background-image: url("../assets/tables/title.svg");
+  background-image: url("../assets/icons/tables/title.svg");
   background-size: 176px 44px;
   background-repeat: no-repeat;
   width: 176px;
