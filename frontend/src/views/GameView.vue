@@ -43,7 +43,12 @@ socket.emit("login");
 var ball;
 var l_paddle;
 var r_paddle;
-var isGameStarted = false;
+
+var isGameStarted = 0;
+var pos = 0;
+
+var player;
+var other;
 
 export default {
   data() {
@@ -69,12 +74,23 @@ export default {
             this.cameras.main.setBackgroundColor("#1E2B02");
           },
           create() {
-            socket.on("game_found", (to: string) => {
+            socket.on("game_found", (data) => {
               const socketId = socket.id;
-              if (socketId === to) {
+              if (socketId === data.to) {
+                pos = data.player;
+                console.log(data.player);
                 console.log(socket.id + " : game found !");
+                this.ready = this.time.now;
+                isGameStarted = 1;
               }
             });
+            socket.on("paddle_pos", (data) => {
+              const socketId = socket.id;
+              if (socketId === data.to) {
+                other.y = data.pos;
+              }
+            });
+            this.frameTime = 0;
             this.cursors = this.input.keyboard.createCursorKeys();
             this.background = this.add.image(
               this.cameras.main.width / 2,
@@ -112,29 +128,33 @@ export default {
             r_paddle.setImmovable(true);
             socket.emit("queue_register", "normal");
           },
-          update() {
-            if (!isGameStarted) {
+          update(time, delta) {
+            if (isGameStarted == 1) {
               const initialVelocityX = 100;
               const initialVelocityY = 100;
 
               ball.setVelocityX(initialVelocityX);
               ball.setVelocityY(initialVelocityY);
-              isGameStarted = true;
+              if (pos === 1) {
+                player = r_paddle;
+                other = l_paddle;
+              } else {
+                player = l_paddle;
+                other = r_paddle;
+              }
+              isGameStarted = 2;
             }
-            if (ball.body.x < l_paddle.body.x) {
-              console.log("player 1 win");
-            }
-            if (ball.body.x > r_paddle.body.x) {
-              console.log("player 2 win");
-            }
-            if (this.cursors.up.isDown) {
-              l_paddle.setVelocityY(-100);
-            } else if (this.cursors.down.isDown) {
-              l_paddle.setVelocityY(100);
-            } else if (this.cursors.up.isUp) {
-              l_paddle.setVelocityY(0);
-            } else if (this.cursors.down.isUp) {
-              l_paddle.setVelocityY(0);
+            if (isGameStarted == 2) {
+              socket.emit("update_paddle", player.y);
+              if (this.cursors.up.isDown) {
+                player.setVelocityY(-100);
+              } else if (this.cursors.down.isDown) {
+                player.setVelocityY(100);
+              } else if (this.cursors.up.isUp) {
+                player.setVelocityY(0);
+              } else if (this.cursors.down.isUp) {
+                player.setVelocityY(0);
+              }
             }
 
             //else if (this.cursors.down.isDown) {

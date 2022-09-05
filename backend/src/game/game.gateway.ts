@@ -43,8 +43,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     @SubscribeMessage('queue_register')
-    async listenForMessages(socket: Socket, mode: string) {
-        console.log(mode);
+    async queueRegister(socket: Socket, mode: string) {
         const socketId = socket.id;
         if (!GameGateway.queues.has(socketId)) {
             GameGateway.queues.set(socketId, mode);
@@ -53,14 +52,17 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         for (let user of GameGateway.queues.keys()) {
             let m = GameGateway.queues.get(user)
             if (user != socketId && mode == m) {
+                const room_name = socketId + " vs " + user;
                 var game = new GameRoom();
                 game.mode = m;
                 game.player1 = user;
                 game.player2 = socketId;
 
-                GameGateway.rooms.set((socketId + " vs " + user), game);
-                this.server.sockets.to(user).emit('game_found', user);
-                this.server.sockets.emit('game_found', socketId);
+                GameGateway.participants.set(user, room_name);
+                GameGateway.participants.set(socketId, room_name);
+                GameGateway.rooms.set(room_name, game);
+                this.server.sockets.to(user).emit('game_found', {'to': user, 'player': 1});
+                this.server.sockets.emit('game_found', {'to': socketId, 'player': 2});
 
                 GameGateway.queues.delete(socketId);
                 GameGateway.queues.delete(user);
@@ -68,7 +70,17 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             }
         }
     }
-
+    @SubscribeMessage('update_paddle')
+    async updatePaddle(socket: Socket, pos: string) {
+        const socketId = socket.id;
+        const roomId = GameGateway.participants.get(socketId);
+        const room = GameGateway.rooms.get(roomId);
+        if (room.player1 == socketId) {
+            this.server.sockets.to(room.player2).emit('paddle_pos', {'to': room.player2, 'pos': pos});
+        } else {
+            this.server.sockets.to(room.player1).emit('paddle_pos', {'to': room.player1, 'pos': pos});
+        }
+    }
     // static createGameRoom(roomDto: RoomDto): void {
     //     const roomId = roomDto.roomId;
     //     if (this.rooms.has(roomId)) {
