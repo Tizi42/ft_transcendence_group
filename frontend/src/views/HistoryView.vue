@@ -26,20 +26,6 @@ const battles = ref({});
 const router = useRouter();
 const logged = ref(false);
 
-async function checkIfLogged() {
-  await fetch("http://localhost:3000/api/private", {
-    credentials: "include",
-  }).then((response) => {
-    if (response.status != 200) {
-      router.push({
-        name: "login",
-      });
-    } else {
-      logged.value = true;
-    }
-  });
-}
-
 // setTimeout to test loading -> to remove
 async function reloadData() {
   console.log("reloading...");
@@ -54,7 +40,6 @@ async function reloadData() {
 }
 
 onBeforeMount(async () => {
-  await checkIfLogged();
   await reloadData();
   console.log(battles.value);
   console.log(dataReady.value);

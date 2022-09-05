@@ -4,6 +4,13 @@
       <img src="@/assets/icons/leaderboard.svg" />
       <h1>Leaderboard</h1>
     </div>
+    <div class="title">
+      <div class="titleName">
+        <img src="@/assets/icons/leaderboard.svg" />
+        <h1>Match history</h1>
+      </div>
+      <button class="reload" @click="reloadData()"></button>
+    </div>
     <div class="content">
       <LeaderBoard :ready="dataReady" title="Global" />
       <LeaderBoard :ready="dataReady" title="Friends" />
@@ -23,20 +30,6 @@ const battles = ref({});
 const router = useRouter();
 const logged = ref(false);
 
-async function checkIfLogged() {
-  await fetch("http://localhost:3000/api/private", {
-    credentials: "include",
-  }).then((response) => {
-    if (response.status != 200) {
-      router.push({
-        name: "login",
-      });
-    } else {
-      logged.value = true;
-    }
-  });
-}
-
 // setTimeout to test loading -> to remove
 async function reloadData() {
   setTimeout(async () => {
@@ -51,7 +44,6 @@ async function reloadData() {
 }
 
 onBeforeMount(async () => {
-  await checkIfLogged();
   await reloadData();
   console.log(battles.value);
   console.log(dataReady.value);
