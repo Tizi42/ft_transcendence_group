@@ -18,7 +18,7 @@
 import "@/assets/styles/historyAndLeaderboard.css";
 import { defineComponent, defineExpose, ref } from "vue";
 import { onBeforeMount } from "vue";
-import TableHistory from "../components/TableHistory.vue";
+import TableHistory from "@/components/MatchHistory/TableHistory.vue";
 
 const dataReady = ref(false);
 const battles = ref({});
@@ -68,17 +68,18 @@ defineExpose(
     hue-rotate(134deg) brightness(92%) contrast(101%);
   margin-right: 20px;
   background-color: #00000000;
-  background-image: url("../assets/icons/refresh.svg");
+  background-image: url("@/assets/icons/refresh.svg");
   background-repeat: no-repeat;
   background-size: 42px 42px;
   width: 42px;
   height: 42px;
   border: none;
   fill: none;
+  transition: transform 1.5s ease;
 }
 
 .reload:hover {
-  animation: rotation 2s infinite linear;
+  transform: scale(1.2, 1.2) rotate(360deg);
   cursor: pointer;
 }
 </style>

@@ -13,7 +13,7 @@
 import { defineComponent, defineExpose, defineProps } from "vue";
 import { onMounted, onUpdated } from "vue";
 import { ref } from "vue";
-import MatchResult from "../components/MatchResult.vue";
+import MatchResult from "./MatchResult.vue";
 
 //  variables
 const props = defineProps(["battles"]);
