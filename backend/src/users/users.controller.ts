@@ -1,9 +1,9 @@
-import { Body, Controller, Get, Param, Post, Put, UseInterceptors, UploadedFile, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Res, Post, Put, UseInterceptors, UploadedFile, UseGuards } from "@nestjs/common";
 import { FriendshipDto } from "./utils/friendship.dto";
 import { User } from "./Users.entity";
 import { UsersService } from "./users.service";
 import { UserDto } from "./utils/user.dto";
-import { Express } from "express";
+import { Express, Response } from "express";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { extname } from "path";
@@ -33,9 +33,20 @@ export class UsersController {
   // @UseGuards(JwtAuthGuard)
   @Put('uploads/avatar/:id')
   @UseInterceptors(FileInterceptor('file', storage))
-  updateAvatar(@Param('id') id: number, @UploadedFile() file: Express.Multer.File) {
+  async updateAvatar(@Param('id') id: number, @UploadedFile() file: Express.Multer.File) : Promise<any> {
     console.log("File received, saved as " + file.filename);
-    return this.usersService.updateUserAvatar(id, file.filename);
+    return this.usersService.updateUserAvatar(id, file.filename, "http://localhost:3000/api/users/avatar/" + id); //`${this.SERVER_URL}${file.path}`
+  }
+
+  @Get('avatar/:id')
+  async serveAvatar(@Param('id') id: number, @Res() res: Response): Promise<any> {
+    let user = await this.usersService.findOne(id);
+    if (user.pictureLocalFilename === "")
+    {
+      console.log("Using default avatar from 42 api...");
+      return res.redirect(user.picture42URL); //?
+    }
+    return res.sendFile(user.pictureLocalFilename, { root: 'src/uploads/avatar'});
   }
 
   @Post('/add')
