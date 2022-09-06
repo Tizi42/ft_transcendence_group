@@ -1,6 +1,6 @@
 import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-import { ChatService } from './chat.service';
+import { MessagesService } from './messages.service';
 import { Inject } from '@nestjs/common';
 import { messageInfos } from './utils/types';
    
@@ -10,20 +10,20 @@ import { messageInfos } from './utils/types';
   },
 })
 
-export class ChatGateway {
+export class MessagesGateway {
     @WebSocketServer()
     server: Server;
 
-    @Inject(ChatService)
-    private readonly chatService: ChatService;
+    @Inject(MessagesService)
+    private readonly messagesService: MessagesService;
 
     @SubscribeMessage('send_message')
     listenForMessages(@MessageBody() data: messageInfos) {
+
+        console.log('Message from: ' + data.owner);
+        console.log('who says: ' + data.message);
     
-        console.log('Message from: ' + data.author);
-        console.log('who says: ' + data.content);
-    
-        this.chatService.saveMessage(data);
+        // this.chatService.saveMessage(data);
         // envoi d'un message au client = socket.emit 
         this.server.sockets.emit('receive_message', data);
     }
