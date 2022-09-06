@@ -54,20 +54,12 @@ defineExpose(
   flex-direction: row;
 }
 
-@keyframes rotation {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(359deg);
-  }
-}
-
 .reload {
   filter: brightness(0) saturate(100%) invert(22%) sepia(74%) saturate(1495%)
     hue-rotate(134deg) brightness(92%) contrast(101%);
   margin-right: 20px;
   background-color: #00000000;
+  opacity: 50%;
   background-image: url("@/assets/icons/refresh.svg");
   background-repeat: no-repeat;
   background-size: 42px 42px;
@@ -75,11 +67,12 @@ defineExpose(
   height: 42px;
   border: none;
   fill: none;
-  transition: transform 1.5s ease;
+  transition: transform 1.5s ease, opacity 1.5s ease;
 }
 
 .reload:hover {
   transform: scale(1.2, 1.2) rotate(360deg);
+  opacity: 90%;
   cursor: pointer;
 }
 </style>
