@@ -1,16 +1,18 @@
+import { User } from "src/users/Users.entity";
 import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn } from "typeorm";
+import { ChatRoom } from '../../entities/chatRoom.entity';
 
-@Entity({ name: 'chat' })
-export class Chat {
-    
+@Entity({ name: 'messages' })
+export class Messages {
+
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
-    author: string;
+    message: string;
 
     @Column()
-    content: string;
+    owner: User;
 
     @CreateDateColumn()
     created_at: Date;

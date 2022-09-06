@@ -7,7 +7,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ChatModule } from './chat/chat.module';
-import { ChatGateway } from './chat/chat.gateway';
+import { MessagesModule } from './chat/messages/messages.module';
+import { User } from './users/Users.entity';
+import { Messages } from './chat/messages/entities/messages.entity';
+import { ChatRoom } from './chat/entities/chatRoom.entity';
 
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 
@@ -30,7 +33,6 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     }),
     AuthModule,
     UsersModule,
-    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],
