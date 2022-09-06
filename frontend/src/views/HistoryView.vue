@@ -8,8 +8,16 @@
       <button class="reload" @click="reloadData()"></button>
     </div>
     <div class="content">
-      <TableHistory :ready="dataReady" :battles="battles" title="Global" />
-      <TableHistory :ready="dataReady" :battles="battles" title="Personal" />
+      <TableHistory
+        title="Global"
+        :ready="dataReady"
+        :battles="battlesGlobal"
+      />
+      <TableHistory
+        title="Personal"
+        :ready="dataReady"
+        :battles="battlesPersonal"
+      />
     </div>
   </div>
 </template>
@@ -21,24 +29,23 @@ import { onBeforeMount } from "vue";
 import TableHistory from "@/components/MatchHistory/TableHistory.vue";
 
 const dataReady = ref(false);
-const battles = ref({});
+const battlesGlobal = ref({});
+const battlesPersonal = ref({});
 
 // setTimeout to test loading -> to remove
 async function reloadData() {
-  console.log("reloading...");
   await setTimeout(async () => {
     let response = await fetch("http://localhost:3000/api/battles", {
       credentials: "include",
     });
-    battles.value = await response.json();
+    battlesGlobal.value = await response.json();
+    battlesPersonal.value = battlesGlobal.value;
     dataReady.value = true;
   }, 1000);
-  console.log("ok");
 }
 
 onBeforeMount(async () => {
   await reloadData();
-  console.log("mounted");
 });
 
 defineExpose(
@@ -47,32 +54,3 @@ defineExpose(
   })
 );
 </script>
-
-<style scoped>
-.titleName {
-  display: flex;
-  flex-direction: row;
-}
-
-.reload {
-  filter: brightness(0) saturate(100%) invert(22%) sepia(74%) saturate(1495%)
-    hue-rotate(134deg) brightness(92%) contrast(101%);
-  margin-right: 20px;
-  background-color: #00000000;
-  opacity: 50%;
-  background-image: url("@/assets/icons/refresh.svg");
-  background-repeat: no-repeat;
-  background-size: 42px 42px;
-  width: 42px;
-  height: 42px;
-  border: none;
-  fill: none;
-  transition: transform 1.5s ease, opacity 1.5s ease;
-}
-
-.reload:hover {
-  transform: scale(1.2, 1.2) rotate(360deg);
-  opacity: 90%;
-  cursor: pointer;
-}
-</style>

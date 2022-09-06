@@ -5,11 +5,21 @@
         <img src="@/assets/icons/leaderboard.svg" />
         <h1>Leaderboard</h1>
       </div>
-      <button class="reload" @click="reloadData()"></button>
+      <button class="reload" @click="reloadAll()"></button>
     </div>
     <div class="content">
-      <LeaderBoard :ready="dataReady" title="Global" />
-      <LeaderBoard :ready="dataReady" title="Friends" />
+      <LeaderBoard
+        title="Global"
+        :ready="dataReadyPersonal"
+        :leaderboard="leaderboardGlobal"
+        :reorder="reloadAndOrderGlobal"
+      />
+      <LeaderBoard
+        title="Friends"
+        :ready="dataReadyGlobal"
+        :leaderboard="leaderboardPersonal"
+        :reorder="reloadAndOrderPersonal"
+      />
     </div>
   </div>
 </template>
@@ -20,27 +30,48 @@ import { defineComponent, defineExpose, ref } from "vue";
 import { onBeforeMount } from "vue";
 import LeaderBoard from "@/components/Leaderboard/Leaderboard.vue";
 
-const dataReady = ref(false);
-const battles = ref({});
+const dataReadyGlobal = ref(false);
+const dataReadyPersonal = ref(false);
+const leaderboardGlobal = ref({});
+const leaderboardPersonal = ref({});
 
-// setTimeout to test loading -> to remove
-async function reloadData() {
+// setTimeout to delay loading -> to remove
+async function reloadAll() {
   setTimeout(async () => {
-    console.log("reloading");
     let response = await fetch("http://localhost:3000/api/battles", {
       credentials: "include",
     });
-    battles.value = await response.json();
-    dataReady.value = true;
-    console.log("reload end");
+    leaderboardGlobal.value = await response.json();
+    leaderboardPersonal.value = leaderboardGlobal.value; // to change
+    dataReadyGlobal.value = true;
+    dataReadyPersonal.value = true;
+  }, 1000);
+}
+
+async function reloadAndOrderGlobal(order: number) {
+  console.log("new order for global:", order);
+  setTimeout(async () => {
+    let response = await fetch("http://localhost:3000/api/battles", {
+      credentials: "include",
+    });
+    leaderboardGlobal.value = await response.json();
+    dataReadyGlobal.value = true;
+  }, 1000);
+}
+
+async function reloadAndOrderPersonal(order: number) {
+  console.log("new order for personal:", order);
+  setTimeout(async () => {
+    let response = await fetch("http://localhost:3000/api/battles", {
+      credentials: "include",
+    });
+    leaderboardPersonal.value = await response.json();
+    dataReadyPersonal.value = true;
   }, 1000);
 }
 
 onBeforeMount(async () => {
-  await reloadData();
-  console.log(battles.value);
-  console.log(dataReady.value);
-  console.log("mounted");
+  await reloadAll();
 });
 
 defineExpose(
@@ -49,38 +80,3 @@ defineExpose(
   })
 );
 </script>
-
-<style scoped>
-.titleName {
-  display: flex;
-  flex-direction: row;
-}
-
-@keyframes rotation {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(359deg);
-  }
-}
-
-.reload {
-  filter: brightness(0) saturate(100%) invert(22%) sepia(74%) saturate(1495%)
-    hue-rotate(134deg) brightness(92%) contrast(101%);
-  margin-right: 20px;
-  background-color: #00000000;
-  background-image: url("@/assets/icons/refresh.svg");
-  background-repeat: no-repeat;
-  background-size: 42px 42px;
-  width: 42px;
-  height: 42px;
-  border: none;
-  fill: none;
-}
-
-.reload:hover {
-  animation: rotation 2s infinite linear;
-  cursor: pointer;
-}
-</style>
