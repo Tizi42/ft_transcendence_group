@@ -112,7 +112,7 @@
 
 .topBar {
   z-index: 1;
-  width: 95%;
+  width: 100%;
   display: flex;
   justify-content: space-between;
 }
@@ -160,6 +160,7 @@
 .orderSelection {
   display: flex;
   width: 30vw;
+  margin-right: 2vw;
   font-size: 14px;
   flex-direction: row;
   justify-content: space-between;
@@ -175,7 +176,7 @@
   background-position: center;
   margin-top: 8px;
   background-repeat: no-repeat;
-  width: 137px ;
+  width: 137px;
   height: 36px;
   align-items: center;
   justify-content: center;
@@ -194,4 +195,129 @@
 .tabContainer:hover {
   opacity: 0.65;
   font-size: 13px;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.list-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.list-leave-active {
+  transition: all 0.3s ease-out;
+}
+
+.list-enter-from {
+  transform: translateX(30px);
+  opacity: 0;
+}
+
+.list-leave-to {
+  opacity: 0;
+}
+
+.matchResults {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: center;
+  width: 70%;
+}
+
+.matchDate {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  width: 10vw;
+}
+
+.opponentRight,
+.opponentLeft {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.opponentRight {
+  justify-content: start;
+  text-align: left;
+}
+
+.opponentLeft {
+  justify-content: end;
+  text-align: right;
+}
+
+.pp {
+  width: 50px;
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
+.name {
+  width: 70%;
+}
+
+.winner .name {
+  font-weight: 600;
+  color: var(--main-color);
+}
+
+.looser img {
+  opacity: 50%;
+}
+
+.match {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  width: 60vw;
+}
+
+.playerResults {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 70vw;
+}
+
+.playerInfo {
+  margin-left: 3vw;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  width: 30vw;
+}
+
+.results {
+  margin-right: 2vw;
+  display: flex;
+  font-size: 14px;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  width: 30vw;
+}
+
+.points,
+.winRate,
+.gamesNb {
+  width: 137px;
+}
+
+.profile {
+  width: 50px;
 }

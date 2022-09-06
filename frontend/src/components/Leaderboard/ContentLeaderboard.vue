@@ -1,8 +1,8 @@
 <template>
   <div class="tableContent">
     <TransitionGroup name="list" tag="ul">
-      <li v-for="battle in items" :key="battle">
-        <MatchResult v-if="show" :battle="battle" />
+      <li v-for="(player, id) in items" :key="id">
+        <PlayerResult v-if="show" :player="player" :pos="id + 1" />
       </li>
     </TransitionGroup>
   </div>
@@ -13,16 +13,16 @@
 import { defineComponent, defineExpose, defineProps } from "vue";
 import { onMounted, onUpdated } from "vue";
 import { ref } from "vue";
-import MatchResult from "./MatchResult.vue";
+import PlayerResult from "./PlayerResult.vue";
 
 //  variables
-const props = defineProps(["battles"]);
+const props = defineProps(["leaderboard"]);
 const items = ref([]);
 const show = ref(false);
 
 //  usefull functions
 async function reshowData() {
-  for await (const [key, item] of props.battles.entries()) {
+  for await (const [key, item] of props.leaderboard.entries()) {
     setTimeout(() => {
       items.value.push(item);
     }, 200 * (key + 1));
@@ -46,36 +46,7 @@ onUpdated(async () => {
 //  expose component
 defineExpose(
   defineComponent({
-    name: "ContentHistory",
+    name: "ContentLeaderboard",
   })
 );
 </script>
-
-<style scoped>
-ul {
-  margin: 0;
-  padding: 0;
-}
-
-li {
-  margin-top: 30px;
-  margin-bottom: 30px;
-}
-
-.list-enter-active {
-  transition: all 0.3s ease-out;
-}
-
-.list-leave-active {
-  transition: all 0.3s ease-out;
-}
-
-.list-enter-from {
-  transform: translateX(30px);
-  opacity: 0;
-}
-
-.list-leave-to {
-  opacity: 0;
-}
-</style>
