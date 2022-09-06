@@ -50,32 +50,3 @@ defineExpose(
   })
 );
 </script>
-
-<style scoped>
-ul {
-  margin: 0;
-  padding: 0;
-}
-
-li {
-  margin-top: 30px;
-  margin-bottom: 30px;
-}
-
-.list-enter-active {
-  transition: all 0.3s ease-out;
-}
-
-.list-leave-active {
-  transition: all 0.3s ease-out;
-}
-
-.list-enter-from {
-  transform: translateX(30px);
-  opacity: 0;
-}
-
-.list-leave-to {
-  opacity: 0;
-}
-</style>

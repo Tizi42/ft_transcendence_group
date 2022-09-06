@@ -16,7 +16,9 @@
         </div>
       </div>
     </div>
-    <div class="tableContainer"></div>
+    <div class="tableContainer">
+      <ContentLeaderboard :leaderboard="leaderboard" v-if="ready" />
+    </div>
   </div>
 </template>
 
@@ -24,7 +26,7 @@
 import { FulfillingBouncingCircleSpinner } from "epic-spinners";
 import { defineComponent, defineExpose, defineProps } from "vue";
 import { onUpdated } from "vue";
-//import ContentLeaderBoard from "./ContentLeaderBoard.vue";
+import ContentLeaderboard from "./ContentLeaderboard.vue";
 import { Ref, ref } from "vue";
 
 const props = defineProps(["title", "ready", "leaderboard", "reorder"]);
@@ -43,6 +45,7 @@ function changeOrder(order: number) {
   cssClassTab.value[2] = "tabContainer";
   cssClassTab.value[order] = "selectedTabContainer";
 }
+
 function getClassStyleOf(tab: number): string {
   return cssClassTab.value[tab];
 }

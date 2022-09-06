@@ -38,7 +38,7 @@ const leaderboardPersonal = ref({});
 // setTimeout to delay loading -> to remove
 async function reloadAll() {
   setTimeout(async () => {
-    let response = await fetch("http://localhost:3000/api/battles", {
+    let response = await fetch("http://localhost:3000/api/users", {
       credentials: "include",
     });
     leaderboardGlobal.value = await response.json();
@@ -51,7 +51,7 @@ async function reloadAll() {
 async function reloadAndOrderGlobal(order: number) {
   console.log("new order for global:", order);
   setTimeout(async () => {
-    let response = await fetch("http://localhost:3000/api/battles", {
+    let response = await fetch("http://localhost:3000/api/users", {
       credentials: "include",
     });
     leaderboardGlobal.value = await response.json();
@@ -62,7 +62,7 @@ async function reloadAndOrderGlobal(order: number) {
 async function reloadAndOrderPersonal(order: number) {
   console.log("new order for personal:", order);
   setTimeout(async () => {
-    let response = await fetch("http://localhost:3000/api/battles", {
+    let response = await fetch("http://localhost:3000/api/users", {
       credentials: "include",
     });
     leaderboardPersonal.value = await response.json();
