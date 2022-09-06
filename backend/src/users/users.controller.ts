@@ -1,8 +1,25 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Put, UseInterceptors, UploadedFile, UseGuards } from "@nestjs/common";
 import { FriendshipDto } from "./utils/friendship.dto";
 import { User } from "./Users.entity";
 import { UsersService } from "./users.service";
 import { UserDto } from "./utils/user.dto";
+import { Express } from "express";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { diskStorage } from "multer";
+import { extname } from "path";
+import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
+import { identity } from "rxjs";
+
+export const storage = {
+  storage : diskStorage ({
+    destination: './src/uploads/avatar',
+      filename(req, file, callback) {
+        // need to change the way to get user id. Maybe use Of()
+        console.log(req.headers.id);
+        callback(null , `avatar-${req.headers.id}${extname(file.originalname)}`);
+      },
+  })
+}
 
 @Controller('/users')
 export class UsersController {
@@ -12,6 +29,14 @@ export class UsersController {
   getAll(): Promise<User[]>  {
     return this.usersService.findAll();
   };
+
+  // @UseGuards(JwtAuthGuard)
+  @Put('uploads/avatar/:id')
+  @UseInterceptors(FileInterceptor('file', storage))
+  updateAvatar(@Param('id') id: number, @UploadedFile() file: Express.Multer.File) {
+    console.log("File received, saved as " + file.filename);
+    return this.usersService.updateUserAvatar(id, file.filename);
+  }
 
   @Post('/add')
   create(@Body() user: UserDto) {

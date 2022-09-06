@@ -13,6 +13,18 @@ export class UsersService {
       private readonly usersRepository: Repository<User>
   ) {}
 
+  async updateUserAvatar(id: number, filename: string): Promise<any> {
+    return  this.usersRepository.update(id, {picture: filename});
+  }
+
+  async updateUserDisplayName(id: number, name: string): Promise<any> {
+    return  this.usersRepository.update(id, {displayName: name});
+  }
+
+  async updateUserEmail(id: number, email: string): Promise<any> {
+    return  this.usersRepository.update(id, {email: email});
+  }
+
   async findOneByEmail(email: string): Promise<User | undefined> {
       return this.usersRepository.findOneBy({ email: email });
   }
