@@ -52,9 +52,6 @@ function onChangeAvatar() {
   const image = avatar.value.files[0];
   let formdata = new FormData();
 
-  console.log(
-    "name is http://localhost:3000/api/users/uploads/avatar/" + props.profile.id
-  );
   formdata.append("file", image);
   axios.put(
     "http://localhost:3000/api/users/uploads/avatar/" + props.profile.id,
