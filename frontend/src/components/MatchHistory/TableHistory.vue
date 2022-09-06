@@ -71,18 +71,23 @@ defineExpose(
   height: 44px;
   align-items: center;
   justify-content: center;
+  font-size: 19px;
+  transition: font-size 0.5s ease;
 }
 
 .titleTab {
-  margin-right: 1em;
+  padding-right: 10px;
   z-index: 2;
   position: absolute;
   font-family: "Outfit Bold";
   font-style: normal;
   font-weight: 700;
-  font-size: 20px;
   line-height: 18px;
   color: var(--main-color);
+}
+
+.titleContainer:hover {
+  font-size: 21px;
 }
 
 .historyTable {
