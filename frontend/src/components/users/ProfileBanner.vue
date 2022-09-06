@@ -33,7 +33,7 @@ import {
   defineProps,
   onMounted,
 } from "vue";
-//import axios from "axios";
+import axios from "axios";
 
 const props = defineProps(["profile"]);
 console.log(props);
@@ -50,6 +50,21 @@ function onClickUpload() {
 function onChangeAvatar() {
   console.log(avatar.value.files[0]);
   const image = avatar.value.files[0];
+  let formdata = new FormData();
+
+  console.log(
+    "name is http://localhost:3000/api/users/uploads/avatar/" + props.profile.id
+  );
+  formdata.append("file", image);
+  axios.put(
+    "http://localhost:3000/api/users/uploads/avatar/" + props.profile.id,
+    formdata,
+    {
+      headers: {
+        id: props.profile.id,
+      },
+    }
+  );
   if (image) reader.readAsDataURL(image);
 }
 
@@ -140,6 +155,7 @@ input[type="file"] {
 }
 
 #info-name {
+  text-align: left;
   font-family: "Outfit";
   font-style: normal;
   font-weight: bold;
@@ -151,6 +167,7 @@ input[type="file"] {
 
 #info-email,
 #info-id {
+  text-align: left;
   font-family: "Outfit";
   font-style: normal;
   font-weight: light;
