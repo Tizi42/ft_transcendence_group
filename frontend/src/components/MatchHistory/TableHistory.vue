@@ -1,30 +1,12 @@
 <template>
-  <div class="thisTable">
+  <div class="historyTable">
     <div class="topBar">
       <div class="titleContainer">
-        <div class="titleTabMain">{{ title }}</div>
-      </div>
-      <div class="tabContainer">
-        <div class="titleTab">{{ title }}</div>
-      </div>
-      <div class="tabContainer">
-        <div class="titleTab">{{ title }}</div>
-      </div>
-      <div class="tabContainer">
-        <div class="titleTab">{{ title }}</div>
-      </div>
-      <div class="tabContainer">
         <div class="titleTab">{{ title }}</div>
       </div>
     </div>
     <div class="tableContainer">
-      <div class="tableContent" v-if="ready">
-        <TransitionGroup name="list" tag="ul">
-          <li v-for="item in items" :key="item">
-            {{ item.msg }}
-          </li>
-        </TransitionGroup>
-      </div>
+      <ContentHistory :battles="battles" v-if="ready" />
       <div class="loading" v-else>
         <fulfilling-bouncing-circle-spinner
           :animation-duration="2000"
@@ -39,50 +21,19 @@
 <script lang="ts" setup>
 import { FulfillingBouncingCircleSpinner } from "epic-spinners";
 import { defineComponent, defineExpose, defineProps } from "vue";
-import { onMounted } from "vue";
-import { ref } from "vue";
+import ContentHistory from "./ContentHistory.vue";
 
-const props = defineProps(["title", "ready"]);
-const items = ref([]);
+const props = defineProps(["title", "ready", "battles"]);
 console.log(props);
-
-onMounted(async () => {
-  for (let i = 0; i < 9; i++) {
-    setTimeout(() => {
-      items.value.push({ msg: "Item" + i });
-    }, 1200 + 200 * i);
-  }
-});
 
 defineExpose(
   defineComponent({
-    name: "LeaderBoard",
+    name: "TableHistory",
   })
 );
 </script>
 
 <style scoped>
-li {
-  margin-top: 30px;
-  margin-bottom: 30px;
-}
-
-.list-move,
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.5s ease;
-}
-
-.list-enter-from,
-.list-leave-to {
-  opacity: 0;
-  transform: translateX(30px);
-}
-
-.list-leave-active {
-  position: absolute;
-}
-
 .loading {
   display: flex;
   align-items: center;
@@ -94,7 +45,7 @@ li {
   display: flex;
   justify-content: center;
   overflow: scroll;
-  background-image: url("../assets/icons/tables/frame.svg");
+  background-image: url("@/assets/icons/tables/frame.svg");
   background-repeat: no-repeat;
   background-size: 70vw 30vh;
   width: 70vw;
@@ -110,15 +61,10 @@ li {
   display: none;
 }
 
-.tableContent {
-  padding-left: 30px;
-  padding-right: 30px;
-}
-
 .titleContainer {
   z-index: 1;
   display: flex;
-  background-image: url("../assets/icons/tables/title.svg");
+  background-image: url("@/assets/icons/tables/title.svg");
   background-size: 176px 44px;
   background-repeat: no-repeat;
   width: 176px;
@@ -127,7 +73,7 @@ li {
   justify-content: center;
 }
 
-.titleTabMain {
+.titleTab {
   margin-right: 1em;
   z-index: 2;
   position: absolute;
@@ -139,7 +85,7 @@ li {
   color: var(--main-color);
 }
 
-.thisTable {
+.historyTable {
   width: 100%;
   align: left;
   text-align: left;

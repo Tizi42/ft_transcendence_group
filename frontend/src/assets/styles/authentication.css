@@ -17,6 +17,16 @@ input[type="submit"] {
   color: #ffffff;
   width: 40%;
   margin-top: 1.5em;
+  transition: transform 0.5s ease;
+}
+
+input[type="submit"]:hover {
+  transform: scale(1.05, 1.05);
+  cursor: pointer;
+}
+
+input[type="submit"]:focus {
+  transform: scale(1.05, 1.05);
 }
 
 input[type="text"] {
@@ -28,9 +38,15 @@ input[type="text"] {
   border-radius: 22px;
   border: none;
   font-size: 1em;
-  line-height: 3.5em;
+  line-height: 3.3em;
   width: 70%;
   color: #ffffff;
+  transition: transform 0.5s ease;
+}
+
+input[type="text"]:hover,
+input[type="text"]:focus {
+  transform: scale(1.05, 1.05);
 }
 
 input[type="text"]:focus {

@@ -18,7 +18,7 @@
 import "@/assets/styles/historyAndLeaderboard.css";
 import { defineComponent, defineExpose, ref } from "vue";
 import { onBeforeMount } from "vue";
-import LeaderBoard from "../components/Leaderboard.vue";
+import LeaderBoard from "@/components/Leaderboard/Leaderboard.vue";
 
 const dataReady = ref(false);
 const battles = ref({});
@@ -70,7 +70,7 @@ defineExpose(
     hue-rotate(134deg) brightness(92%) contrast(101%);
   margin-right: 20px;
   background-color: #00000000;
-  background-image: url("../assets/icons/refresh.svg");
+  background-image: url("@/assets/icons/refresh.svg");
   background-repeat: no-repeat;
   background-size: 42px 42px;
   width: 42px;

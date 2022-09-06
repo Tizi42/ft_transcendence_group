@@ -1,11 +1,16 @@
 <template>
   <div class="page2FA">
     <div class="box">
-      <img
-        src="@/assets/icons/googleAuthticator.svg"
-        alt="google authenticator logo"
-        class="GAlogo"
-      />
+      <a
+        href="https://support.google.com/accounts/answer/1066447?hl=en&co=GENIE.Platform%3DAndroid&oco=0"
+        tabindex="-1"
+      >
+        <img
+          src="@/assets/icons/googleAuthticator.svg"
+          alt="google authenticator logo"
+          class="GAlogo"
+        />
+      </a>
       <div class="title">Google Authenticator</div>
       <TwoFactorPage />
     </div>
@@ -35,6 +40,11 @@ defineExpose(
 .page2FA img {
   width: 4vw;
   margin-bottom: 2vw;
+  transition: transform 0.7s ease-in-out;
+}
+
+.page2FA img:hover {
+  transform: scale(1.2, 1.2) rotate(-90deg);
 }
 
 .page2FA .title {
