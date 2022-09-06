@@ -34,6 +34,7 @@ defineExpose(
 
 .page2FA img {
   width: 4vw;
+  margin-bottom: 2vw;
 }
 
 .page2FA .title {
@@ -44,10 +45,10 @@ defineExpose(
   display: block;
   padding: 0;
   margin: 0;
+  margin-bottom: 1vw;
 }
 
 .box {
-  margin-top: 30vh;
   display: flex;
   align-items: center;
   text-align: center;
@@ -56,9 +57,12 @@ defineExpose(
   padding-top: 2em;
   padding-bottom: 2em;
   width: 35vw;
-  height: 25vw;
   background: rgba(30, 42, 2, 0.8);
   box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.75);
   border-radius: 58px;
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
 }
 </style>
