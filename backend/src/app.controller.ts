@@ -21,6 +21,12 @@ export class AppController {
     return req.user;
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('preAuth')
+  getPreAuth(@Req() req: Request) {
+    console.log("is Pre Authenticated ! ");
+  }
+
   @Get('logout')
   @UseGuards(JwtAuthGuard)
   logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
