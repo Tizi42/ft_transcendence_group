@@ -1,6 +1,6 @@
 <template>
   <div id="user-page">
-    <ProfileBanner :profile="profile" />
+    <ProfileBanner v-if="profile" :profile="profile" />
     <div class="user-navbar">
       <router-link to="/user/stats">
         <div class="user-navbar-item">STATS</div>

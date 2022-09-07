@@ -17,11 +17,32 @@
       </div>
     </div>
     <div class="personal-info-frame">
-      <p id="info-name">{{ profile.displayName }}</p>
-      <p id="info-id">&nbsp;&nbsp;user_id: {{ profile.id }}</p>
-      <p id="info-email">&nbsp;&nbsp;{{ profile.email }}</p>
+      <p v-if="!editingMode" id="info-name">
+        {{ profile.displayName }}
+      </p>
+      <form v-if="editingMode" id="info-form" @submit.prevent="onSubmit">
+        <input
+          v-model="newname"
+          class="input-textarea"
+          type="text"
+          required="true"
+          autofocus
+        />
+      </form>
+      <p id="info-id">&nbsp;user_id: {{ profile.id }}</p>
+      <p id="info-email">&nbsp;{{ profile.email }}</p>
     </div>
-    <button class="edit-button" @click="editProfile">edit</button>
+    <button v-if="!editingMode" class="edit-button" @click="editProfile">
+      edit
+    </button>
+    <button
+      v-if="editingMode"
+      class="edit-button"
+      form="info-form"
+      @click="onSubmit"
+    >
+      save
+    </button>
   </div>
 </template>
 
@@ -31,16 +52,29 @@ import {
   defineComponent,
   defineExpose,
   defineProps,
-  onMounted,
+  onBeforeMount,
 } from "vue";
 import axios from "axios";
 
 const props = defineProps(["profile"]);
-console.log(props);
 
-const avatar = ref(null);
-let avatarFrame = ref(null);
+const avatar = ref();
 const reader = new FileReader();
+const editingMode = ref(false);
+let avatarFrame = ref();
+let newname = ref("");
+// let user = ref();
+
+// onBeforeMount(async () => {
+//   console.log("id is " + props.profile.id);
+//   await axios
+//     .get("http://localhost:3000/api/users/" + props.id)
+//     .then(function (response) {
+//       console.log(response.data);
+//     });
+//   user.value = props.profile;
+//   console.log("user is : " + user.value);
+// });
 
 function onClickUpload() {
   console.log(avatar.value);
@@ -68,14 +102,24 @@ function onChangeAvatar() {
 reader.addEventListener(
   "load",
   function () {
-    console.log("here");
     avatarFrame.value.style.backgroundImage = `url(${reader.result})`;
   },
   false
 );
 
 function editProfile() {
-  console.log("edit button clicked");
+  newname.value = props.profile.displayName;
+  editingMode.value = !editingMode.value;
+}
+
+function onSubmit() {
+  if (newname.value === "") return;
+  editingMode.value = false;
+  if (newname.value !== props.profile.displayname) {
+    axios.post(
+      "http://localhost:3000/api/users/info/3?displayname=" + newname.value
+    );
+  }
 }
 
 defineExpose(
@@ -176,6 +220,12 @@ input[type="file"] {
 
 #info-id {
   margin-top: 20px;
+}
+
+.input-textarea {
+  font-family: "Outfit";
+  font-size: 42px;
+  color: rgba(30, 42, 2, 0.8);
 }
 
 .edit-button {
