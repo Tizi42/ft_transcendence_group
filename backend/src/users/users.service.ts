@@ -42,14 +42,14 @@ export class UsersService {
   }
 
   async getPicture(id: number) : Promise<string> {
-    let user = await this.usersRepository.findOneBy({id});
+    let user = await this.usersRepository.findOneBy({ id });
     if (user == null)
       return ("");
     return (user.picture);
   }
 
   async getPictureFilename(id: number) : Promise<string> {
-    let user = await this.usersRepository.findOneBy({id});
+    let user = await this.usersRepository.findOneBy({ id });
     if (user == null)
       return ("");
     return (user.pictureLocalFilename);
