@@ -40,6 +40,12 @@ export class AuthController {
         
         return this.authService.pipeQrCodeStream(response, otpAuthUrl);
     }
+
+    @Get('2fa/reGenerate')
+    @UseGuards(JwtAuthGuard)
+    async generateNewQrCode(@Req() request: RequestWithUser) {
+        await this.usersService.updateIsFirstEnablingTwoFactor(request.user.id, true);
+    }
     
     @Post('2fa/turn-on')
     @HttpCode(200)
