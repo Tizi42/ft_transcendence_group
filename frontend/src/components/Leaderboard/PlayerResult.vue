@@ -1,7 +1,7 @@
 <template>
   <div class="playerResults">
     <div class="playerInfo">
-      <div>{{ pos }}</div>
+      <div class="positionLb">{{ pos }}</div>
       <img class="profile" src="@/assets/profile/conan.png" />
       <div class="namePlayer">{{ player.displayName }}</div>
       <div class="username">@{{ player.username }}</div>
