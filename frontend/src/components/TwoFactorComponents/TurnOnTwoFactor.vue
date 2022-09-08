@@ -50,7 +50,8 @@ const verifyCode = async () => {
         authenticationCode.value = "";
         let newP = document.createElement("p");
         newP.textContent = "Wrong code !";
-        document.body.append(newP);
+        let form = document.getElementById("form");
+        form?.append(newP);
       }
       return response.json();
     })
