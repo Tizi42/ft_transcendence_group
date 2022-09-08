@@ -1,4 +1,4 @@
-import { Chat } from "src/chat/entities/chat.entity";
+import { Chat } from "../../chat/entities/chat.entity";
 
 export type UserDetails = {
     username: string;

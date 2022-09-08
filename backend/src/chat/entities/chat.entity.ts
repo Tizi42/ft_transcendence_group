@@ -7,8 +7,8 @@ export class Chat {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
-    author: string;
+    // @Column()
+    // author: string;
 
     @Column()
     content: string;
@@ -16,6 +16,6 @@ export class Chat {
     @CreateDateColumn()
     created_at: Date;
 
-    // @ManyToOne( () => User, (author) => author.messages )
-    // author: User;
+    @ManyToOne( () => User, (author) => author.messages )
+    author: User;
 }

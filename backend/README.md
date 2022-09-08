@@ -90,3 +90,6 @@ LES NAMESPACES : pour créer des channel
 https://socket.io/fr/docs/v4/namespaces/
 
 Implementation en back via un gateway 
+##WebSocket
+
+https://socket.io/fr/get-started/chat
