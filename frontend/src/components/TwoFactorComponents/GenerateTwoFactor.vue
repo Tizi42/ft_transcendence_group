@@ -1,12 +1,13 @@
 <template>
   <div class="container-generate">
-    <h3>Scan this Qr Code to get the 6 numbers verification code</h3>
+    <h4>Scan this Qr Code to get the<br />6 numbers verification code</h4>
     <img id="QrCode" src="" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, onBeforeMount } from "vue";
+import "@/assets/styles/authentication.css";
 
 export default defineComponent({
   name: "GenerateTwoFactor",
