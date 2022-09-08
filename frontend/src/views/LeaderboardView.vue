@@ -28,6 +28,7 @@
 import "@/assets/styles/historyAndLeaderboard.css";
 import { defineComponent, defineExpose, ref } from "vue";
 import { onBeforeMount } from "vue";
+import { getUrlOf } from "@/router";
 import LeaderBoard from "@/components/Leaderboard/Leaderboard.vue";
 
 const dataReadyGlobal = ref(false);
@@ -38,7 +39,7 @@ const leaderboardPersonal = ref({});
 // setTimeout to delay loading -> to remove
 async function reloadAll() {
   setTimeout(async () => {
-    let response = await fetch("http://localhost:3000/api/users", {
+    let response = await fetch(getUrlOf("api/users"), {
       credentials: "include",
     });
     leaderboardGlobal.value = await response.json();
@@ -51,7 +52,7 @@ async function reloadAll() {
 async function reloadAndOrderGlobal(order: number) {
   console.log("new order for global:", order);
   setTimeout(async () => {
-    let response = await fetch("http://localhost:3000/api/users", {
+    let response = await fetch(getUrlOf("api/users"), {
       credentials: "include",
     });
     leaderboardGlobal.value = await response.json();
@@ -62,7 +63,7 @@ async function reloadAndOrderGlobal(order: number) {
 async function reloadAndOrderPersonal(order: number) {
   console.log("new order for personal:", order);
   setTimeout(async () => {
-    let response = await fetch("http://localhost:3000/api/users", {
+    let response = await fetch(getUrlOf("api/users"), {
       credentials: "include",
     });
     leaderboardPersonal.value = await response.json();

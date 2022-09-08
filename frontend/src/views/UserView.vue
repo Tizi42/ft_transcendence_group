@@ -26,13 +26,14 @@
 <script lang="ts" setup>
 import { Ref, ref, onBeforeMount, defineComponent, defineExpose } from "vue";
 import { useRouter } from "vue-router";
+import { getUrlOf } from "@/router";
 
 const profile: Ref<any> = ref("");
 const router = useRouter();
 const enabled2FA = ref(false);
 
 onBeforeMount(async () => {
-  await fetch("http://localhost:3000/api/private", {
+  await fetch(getUrlOf("api/private"), {
     credentials: "include",
   })
     .then((response) => {
@@ -53,7 +54,7 @@ async function toggle2FA() {
       name: "2FA",
     });
   } else {
-    await fetch("http://localhost:3000/api/auth/2fa/turn-off", {
+    await fetch(getUrlOf("api/auth/2fa/turn-off"), {
       credentials: "include",
     })
       .then((response) => {

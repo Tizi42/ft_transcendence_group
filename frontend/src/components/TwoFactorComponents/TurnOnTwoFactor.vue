@@ -25,11 +25,12 @@ export default defineComponent({
 <script lang="ts" setup>
 import router from "@/router";
 import "@/assets/styles/authentication.css";
+import { getUrlOf } from "@/router";
 
 const authenticationCode: Ref<string> = ref("");
 
 const verifyCode = async () => {
-  await fetch("http://localhost:3000/api/auth/2fa/turn-on", {
+  await fetch(getUrlOf("api/auth/2fa/turn-on"), {
     method: "POST",
     credentials: "include",
     headers: {

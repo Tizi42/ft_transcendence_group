@@ -11,6 +11,7 @@
 <script lang="ts">
 import { defineComponent, onBeforeMount, ref, Ref } from "vue";
 import { useCookie } from "vue-cookie-next";
+import { getUrlOf } from "@/router";
 
 export default defineComponent({
   name: "LoginPage",
@@ -22,12 +23,12 @@ const { isCookieAvailable } = useCookie();
 const loggedIn: Ref<boolean> = ref(false);
 
 function handleLogin() {
-  window.location.href = "http://localhost:3000/api/auth/42/login";
+  window.location.href = getUrlOf("api/auth/42/login");
 }
 
 async function handleLogout() {
   if (isCookieAvailable("jwt")) {
-    await fetch("http://localhost:3000/api/logout", {
+    await fetch(getUrlOf("api/logout"), {
       credentials: "include",
     })
       .then((response) => {
@@ -41,7 +42,7 @@ async function handleLogout() {
 }
 
 onBeforeMount(async () => {
-  await fetch("http://localhost:3000/api/private", {
+  await fetch(getUrlOf("api/private"), {
     credentials: "include",
   })
     .then((response) => {
