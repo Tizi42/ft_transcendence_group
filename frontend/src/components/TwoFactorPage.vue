@@ -1,5 +1,10 @@
 <template>
-  <GenerateTwoFactorVue v-if="profile.isFirstEnablingTwoFactor" />
+  <div v-if="!isTwoFactorAuthentication">
+    <button v-if="!firstEnablingTwoFactor" @click="generateNewQrCode">
+      Generate a new QrCode
+    </button>
+  </div>
+  <GenerateTwoFactorVue v-if="firstEnablingTwoFactor" />
   <TurnOnTwoFactorVue v-if="!isTwoFactorAuthentication" />
   <AuthenticateTwoFactorVue v-else />
 </template>
@@ -25,12 +30,33 @@ import { onBeforeMount, ref, Ref } from "vue";
 
 const profile: Ref<any> = ref("");
 const isTwoFactorAuthentication: Ref<boolean> = ref(false);
+const firstEnablingTwoFactor: Ref<boolean> = ref(false);
+
+function generateNewQrCode() {
+  if (firstEnablingTwoFactor.value === false) {
+    firstEnablingTwoFactor.value = true;
+    fetch("http://localhost:3000/api/auth/2fa/reGenerate", {
+      credentials: "include",
+    })
+      .then((response) => {
+        return response.status;
+      })
+      .then((status) => {
+        console.log(status);
+      })
+      .catch((error) => {
+        console.log("ERROR : ", error);
+      });
+  }
+}
 
 onBeforeMount(async () => {
   await fetch("http://localhost:3000/api/private", {
     credentials: "include",
   })
     .then((response) => {
+      let p1 = document.querySelector("p");
+      p1?.remove();
       if (response.status !== 200) {
         isTwoFactorAuthentication.value = true;
       }
@@ -38,9 +64,10 @@ onBeforeMount(async () => {
     })
     .then((user) => {
       profile.value = user;
+      firstEnablingTwoFactor.value = user.isFirstEnablingTwoFactor;
     })
     .catch((error) => {
-      console.log(error);
+      console.log("ERROR : ", error);
     });
 });
 </script>
