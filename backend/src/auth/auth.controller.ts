@@ -1,5 +1,6 @@
 import { Controller, Get, Req, Res, UseGuards, Post, HttpCode, Body, UnauthorizedException } from "@nestjs/common";
 import { Request, Response } from "express";
+import { User } from "src/users/Users.entity";
 import { UsersService } from "src/users/users.service";
 import RequestWithUser from "src/users/utils/requestWithUser.interface";
 import { AuthService } from "./auth.service";
@@ -16,8 +17,8 @@ export class AuthController {
 
     @Get('42/login')
     @UseGuards(FortyTwoAuthGuard)
-    handle42Login() {
-        return { msg: "42 Authentication" };
+    handle42Login(): string {
+        return "42 Authentication";
     }
 
     @Get('42/redirect')
@@ -28,14 +29,14 @@ export class AuthController {
         console.log(request.user);
         console.log("jwt 1 = ", accessToken);
         if (!request.user.isTwoFactorAuthenticationEnabled) {
-            return res.redirect('http://localhost:8080/');
+            res.redirect('http://localhost:8080/');
         }
-        return res.redirect('http://localhost:8080/2FA');
+        res.redirect('http://localhost:8080/2FA');
     }
 
     @Post('2fa/generate')
     @UseGuards(JwtAuthGuard)
-    async register(@Res() response: Response, @Req() request: RequestWithUser) {
+    async register(@Res() response: Response, @Req() request: RequestWithUser): Promise<any> {
         const { otpAuthUrl } = await this.authService.generateTwoFactorAuthenticationSecret(request.user);
         
         return this.authService.pipeQrCodeStream(response, otpAuthUrl);
@@ -53,7 +54,7 @@ export class AuthController {
     async turnOnTwoFactorAuthentication(
         @Req() request: RequestWithUser,
         @Body() { authenticationCode }: TwoFactorAuthenticationCodeDto
-    ) {
+    ): Promise<User> {
         const isCodeValid = this.authService.isTwoFactorAuthenticationCodeValid(authenticationCode, request.user);
             
         if (!isCodeValid) {
@@ -70,7 +71,7 @@ export class AuthController {
 
     @Get('2fa/turn-off')
     @UseGuards(JwtAuthGuard)
-    async turnOffTwoFactorAuthentication(@Req() request: RequestWithUser) {
+    async turnOffTwoFactorAuthentication(@Req() request: RequestWithUser): Promise<User> {
         await this.usersService.turnOffTwoFactorAuthentication(request.user.id);
         return request.user;
     }
@@ -81,7 +82,7 @@ export class AuthController {
     async authenticate(
         @Req() request: RequestWithUser,
         @Body() { authenticationCode }: TwoFactorAuthenticationCodeDto,
-    ) {
+    ): Promise<User> {
         const isCodeValid = this.authService.isTwoFactorAuthenticationCodeValid(authenticationCode, request.user);
 
         if (!isCodeValid) {

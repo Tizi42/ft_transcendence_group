@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!isTwoFactorAuthentication">
+  <div v-if="!isTwoFactorAuthentication" class="container-re-generate">
     <button v-if="!firstEnablingTwoFactor" @click="generateNewQrCode">
       Generate a new QrCode
     </button>
@@ -14,6 +14,7 @@ import { defineComponent } from "vue";
 import GenerateTwoFactorVue from "./TwoFactorComponents/GenerateTwoFactor.vue";
 import TurnOnTwoFactorVue from "./TwoFactorComponents/TurnOnTwoFactor.vue";
 import AuthenticateTwoFactorVue from "./TwoFactorComponents/AuthenticateTwoFactor.vue";
+import "@/assets/styles/authentication.css";
 
 export default defineComponent({
   name: "TwoFactorPage",
