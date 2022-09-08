@@ -26,6 +26,7 @@
 import "@/assets/styles/historyAndLeaderboard.css";
 import { defineComponent, defineExpose, ref } from "vue";
 import { onBeforeMount } from "vue";
+import { getUrlOf } from "@/router";
 import TableHistory from "@/components/MatchHistory/TableHistory.vue";
 
 const dataReady = ref(false);
@@ -35,7 +36,7 @@ const battlesPersonal = ref({});
 // setTimeout to test loading -> to remove
 async function reloadData() {
   await setTimeout(async () => {
-    let response = await fetch("http://localhost:3000/api/battles", {
+    let response = await fetch(getUrlOf("api/battles"), {
       credentials: "include",
     });
     battlesGlobal.value = await response.json();
