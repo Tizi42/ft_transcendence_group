@@ -1,9 +1,8 @@
-import { User } from "src/users/Users.entity";
-import { ChatRoom } from "../entities/chatRoom.entity";
-import { Messages } from "../messages/entities/messages.entity";
+import { User } from "src/users/users.entity";
 
-export type roomInfos = {
-    name: string;
-    messages: Messages[];
-    connectedUsers: User[];
+export type messageInfos = {
+    // author: string;
+    author: User;
+    content: string;
+    created_at: Date;
 }
