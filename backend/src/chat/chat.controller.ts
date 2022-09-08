@@ -13,8 +13,13 @@ export class ChatController {
   }
 
   @Get()
-  async Chat(@Res() res) {
-    const messages = await this.chatService.getMessages();
-    return res.json(messages);
+  async chat(@Res() res) {
+    const boxes = await this.chatService.getMessages();
+    return res.json(boxes);
   }
+  // @Get('id/:id')
+  // async Chat(@Res() res) {
+  //   const messages = await this.chatService.getMessagesById(res.id);
+  //   return res.json(messages);
+  // }
 }
