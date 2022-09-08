@@ -71,15 +71,3 @@ onBeforeMount(async () => {
     });
 });
 </script>
-
-<style>
-h3,
-h4 {
-  color: white;
-}
-
-p {
-  text-align: center;
-  color: red;
-}
-</style>

@@ -1,9 +1,15 @@
 <template>
   <div class="container-turn-on">
-    <h4>Verify the code here for turn-on 2FA :</h4>
+    <h4>
+      Enter your 2FA code below to turn on<br />two-factor authentication :
+    </h4>
     <form @submit.prevent="verifyCode" id="form">
-      <input v-model="authenticationCode" />
-      <input type="submit" />
+      <input
+        v-model="authenticationCode"
+        placeholder="Code (ex: 123456)"
+        type="text"
+      />
+      <input type="submit" value="Submit" />
     </form>
   </div>
 </template>
@@ -18,6 +24,7 @@ export default defineComponent({
 
 <script lang="ts" setup>
 import router from "@/router";
+import "@/assets/styles/authentication.css";
 
 const authenticationCode: Ref<string> = ref("");
 
