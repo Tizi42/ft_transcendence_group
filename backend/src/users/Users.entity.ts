@@ -16,6 +16,12 @@ export class User {
 
   @Column({default: ""})
   picture: string;
+
+  @Column({default: ""})
+  picture42URL: string;
+
+  @Column({default: ""})
+  pictureLocalFilename: string;
   
   @Column({ nullable: true })
   twoFactorAuthenticationSecret: string;

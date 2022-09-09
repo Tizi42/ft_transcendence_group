@@ -1,11 +1,12 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import GameView from "../views/GameView.vue";
 import LoginView from "../views/LoginView.vue";
+import UserView from "../views/UserView.vue";
+import UserStats from "../components/users/UserStats.vue";
 import TwoFactorView from "../views/TwoFactorView.vue";
 import LeaderboardView from "../views/LeaderboardView.vue";
 import HistoryView from "../views/HistoryView.vue";
 import PlayView from "../views/PlayView.vue";
-import UserView from "../views/UserView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -22,7 +23,25 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/user",
     name: "user",
+    redirect: "/user/stats",
     component: UserView,
+    children: [
+      {
+        path: "stats",
+        name: "stats",
+        component: UserStats,
+      },
+      {
+        path: "friends",
+        name: "firends",
+        component: () => import("../components/users/UserFriends.vue"),
+      },
+      {
+        path: "settings",
+        name: "settings",
+        component: () => import("../components/users/UserSettings.vue"),
+      },
+    ],
   },
   {
     path: "/login",
@@ -104,10 +123,10 @@ router.beforeEach(async (to, from, next) => {
     } else if (isPreAuth && !isAuthenticated) {
       next();
     } else if (isAuthenticated) {
-      if (from.fullPath === "/user") {
+      if (from.fullPath === "/user/settings") {
         next();
       } else {
-        next({ name: "user" });
+        next({ name: "settings" });
       }
     }
   } else if (to.name !== "login" && !isAuthenticated) {
