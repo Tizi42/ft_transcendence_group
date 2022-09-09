@@ -39,18 +39,20 @@ import ProfileAvatar from "./ProfileAvatar.vue";
 
 const user = useUserStore();
 const editingMode = ref(false);
-let newname = "";
+let newname = ref("");
 
 function onClickEdit() {
-  newname = user.displayName;
+  newname.value = user.displayName;
   editingMode.value = !editingMode.value;
 }
 
 function onSubmit() {
-  if (newname === "") return;
+  if (newname.value === "") return;
   editingMode.value = false;
-  if (newname !== user.displayName) {
-    axios.post("http://localhost:3000/api/users/info/3?displayname=" + newname);
+  if (newname.value !== user.displayName) {
+    axios.post(
+      "http://localhost:3000/api/users/info/3?displayname=" + newname.value
+    );
   }
   user.doFetch();
 }
@@ -109,9 +111,12 @@ defineExpose(
 }
 
 .input-textarea {
+  all: unset;
+  width: 8em;
   font-family: "Outfit";
   font-size: 42px;
   color: rgba(30, 42, 2, 0.8);
+  background-color: white;
 }
 
 .edit-button {
