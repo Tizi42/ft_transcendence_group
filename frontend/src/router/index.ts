@@ -40,20 +40,6 @@ const routes: Array<RouteRecordRaw> = [
         path: "settings",
         name: "settings",
         component: () => import("../components/users/UserSettings.vue"),
-        // children: [
-        //   {
-        //     path: "account",
-        //     component: Account,
-        //   },
-        //   {
-        //     path: "privacy",
-        //     component: Privacy,
-        //   },
-        //   {
-        //     path: "block",
-        //     component: BlockList,
-        //   },
-        // ]
       },
     ],
   },
@@ -104,14 +90,46 @@ async function getStatus() {
     })
     .catch((error) => {
       console.log("ERROR : ", error);
-      return error;
+      return false;
+    });
+}
+
+async function getPreAuth() {
+  return fetch("http://localhost:3000/api/preAuth", {
+    credentials: "include",
+  })
+    .then((response) => {
+      return response.status;
+    })
+    .then((status) => {
+      if (status === 200) {
+        return true;
+      }
+      return false;
+    })
+    .catch((error) => {
+      console.log("ERROR : ", error);
+      return false;
     });
 }
 
 router.beforeEach(async (to, from, next) => {
-  console.log("to.name = ", to.name, " from.fullPath = ", from.fullPath);
   const isAuthenticated = await getStatus();
-  if (to.name !== "login" && !isAuthenticated && to.name !== "2FA") {
+  const isPreAuth = await getPreAuth();
+
+  if (to.name === "2FA") {
+    if (!isPreAuth && !isAuthenticated) {
+      next({ name: "login" });
+    } else if (isPreAuth && !isAuthenticated) {
+      next();
+    } else if (isAuthenticated) {
+      if (from.fullPath === "/user/settings") {
+        next();
+      } else {
+        next({ name: "settings" });
+      }
+    }
+  } else if (to.name !== "login" && !isAuthenticated) {
     next({ name: "login" });
   } else next();
 });

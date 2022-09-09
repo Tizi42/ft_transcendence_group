@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <img id="ping-pong" src="@/assets/pingPongIcon.png" />
+    <img id="ping-pong" src="@/assets/icons/pingPongIcon.png" />
     <LoginPage />
   </div>
 </template>

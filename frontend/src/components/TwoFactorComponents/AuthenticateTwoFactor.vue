@@ -1,15 +1,20 @@
 <template>
-  <div>
-    <h4>Verify the code here for authenticate with 2FA :</h4>
+  <div class="container-auth">
+    <h4>Enter your 2FA code below<br />to authenticate :</h4>
     <form @submit.prevent="authenticate" id="form">
-      <input v-model="authenticationCode" />
-      <input type="submit" />
+      <input
+        v-model="authenticationCode"
+        placeholder="Code (ex: 123456)"
+        type="text"
+      />
+      <input type="submit" value="Submit" />
     </form>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, Ref } from "vue";
+import "@/assets/styles/authentication.css";
 
 export default defineComponent({
   name: "AuthenticateTwoFactor",
@@ -43,7 +48,8 @@ const authenticate = async () => {
         authenticationCode.value = "";
         let newP = document.createElement("p");
         newP.textContent = "Wrong code !";
-        document.body.append(newP);
+        let form = document.getElementById("form");
+        form?.append(newP);
       }
       return response.json();
     })

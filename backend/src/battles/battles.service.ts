@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "src/users/Users.entity";
 import { UsersService } from "src/users/users.service";
-import { DataSource, Repository } from "typeorm";
+import { Repository } from "typeorm";
 import { Battle } from "./battle.entity";
 import { BattleShowDto } from "./utils/battle-show.dto";
 import { BattleDto } from "./utils/battle.dto";
@@ -12,8 +12,7 @@ export class BattlesService {
   constructor(
     @InjectRepository(Battle)
     private battlesRepository: Repository<Battle>,
-    private usersService: UsersService,
-    private dataSource: DataSource
+    private usersService: UsersService
   ) {}
 
   findAll(): Promise<Battle[]> {
