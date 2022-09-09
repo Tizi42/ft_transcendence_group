@@ -74,7 +74,7 @@ onUnmounted(() => {
 function onSubmit() {
   const data = {
     content: input.value,
-    author: profile.value.username,
+    author: profile.value.id,
   };
   socket.emit("send_message", data);
   input.value = null;

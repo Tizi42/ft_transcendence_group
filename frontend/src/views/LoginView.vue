@@ -19,7 +19,7 @@ function handleClick() {
 }
 </script>
 
-<style scoped>
+<style>
 body {
   background-color: #1e2a02;
 }

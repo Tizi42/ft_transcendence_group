@@ -12,13 +12,13 @@ export class ChatService {
     ) {}
 
     async saveMessage(content: messageInfos): Promise<Chat> {
-        console.log("LA");
+        console.log("SAVE");
         const newMessage = this.chatRepository.create(content);
         return await this.chatRepository.save(newMessage);
     }
     async getMessages(): Promise<Chat[]> {
-        console.log("ICI");
-        return await this.chatRepository.find();
+        console.log("GET");
+        return await this.chatRepository.find({ relations: ['author'] });
     }
     async getMessagesById(id: any): Promise<Chat> {
         const chat = await this.chatRepository.findOne({
