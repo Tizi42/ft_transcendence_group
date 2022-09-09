@@ -14,7 +14,7 @@ export class UsersService {
   ) {}
 
   async updateUserAvatar(id: number, filename: string, pictureUrl: string): Promise<any> {
-    return  this.usersRepository.update(id, {picture: pictureUrl, pictureLocalFilename: filename});
+    return  await this.usersRepository.update(id, {picture: pictureUrl, pictureLocalFilename: filename});
   }
 
   async updateUserDisplayName(id: number, name: string): Promise<any> {
