@@ -7,12 +7,12 @@
     </div>
     <div class="setting-field">
       <div class="option-group">
-        <div class="on-off-option" @click="change2FA">
+        <div class="on-off-option" @click="toggle2FA">
           <div class="option">
             Two-factor authentication with Google Authenticator
           </div>
           <img
-            v-if="enabled2FA"
+            v-if="user.enabled2FA"
             id="option-icon-2FA"
             class="on-off"
             src="@/assets/option-on.png"
@@ -44,11 +44,17 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineComponent, defineExpose } from "vue";
+import { ref, onBeforeMount, defineComponent, defineExpose } from "vue";
 import { useRouter } from "vue-router";
+import { useUserStore } from "@/stores/user";
 
+const user = useUserStore();
 const router = useRouter();
 const enabled2FA = ref(false);
+
+onBeforeMount(async () => {
+  await user.doFetch();
+});
 
 async function toggle2FA() {
   if (enabled2FA.value === false) {
@@ -69,11 +75,6 @@ async function toggle2FA() {
         console.log("error : ", error);
       });
   }
-}
-
-function change2FA() {
-  enabled2FA.value = !enabled2FA.value;
-  toggle2FA();
 }
 
 defineExpose(
