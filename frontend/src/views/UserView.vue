@@ -63,14 +63,4 @@ defineExpose(
   color: rgba(255, 255, 255, 1);
   text-align: center;
 }
-
-/* 
-- 被选择的tag下划线可以用： border-bottom-color / style / width 
-- overflow: scroll
-overflow-y: scroll 
-text-decoration: underline 
-text-decoration: divne-through red wavy
-text-align: center;
-
-*/
 </style>

@@ -50,14 +50,13 @@ import { useUserStore } from "@/stores/user";
 
 const user = useUserStore();
 const router = useRouter();
-const enabled2FA = ref(false);
 
 onBeforeMount(async () => {
   await user.doFetch();
 });
 
 async function toggle2FA() {
-  if (enabled2FA.value === false) {
+  if (user.enabled2FA === false) {
     router.push({
       name: "2FA",
     });
@@ -69,6 +68,7 @@ async function toggle2FA() {
         return response.json();
       })
       .then((result) => {
+        user.doFetch();
         console.log("success : ", result);
       })
       .catch((error) => {

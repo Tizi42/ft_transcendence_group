@@ -2,6 +2,9 @@
   <div class="nav-container">
     <nav id="navbar">
       <router-link :to="{ name: 'game' }">
+        <div class="barTag">
+          <img src="@/assets/icons/barTag.svg" alt="icon Bar Tag" />
+        </div>
         <div class="link-container">
           <img src="@/assets/icons/pingpong.svg" alt="icon PingPong" />
         </div>
