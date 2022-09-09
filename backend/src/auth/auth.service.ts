@@ -21,6 +21,8 @@ export class AuthService {
         private readonly userRepository: Repository<User>,
     ) {}
 
+    /***Two Factor Authentication***/
+
     async generateTwoFactorAuthenticationSecret(user: User) {
         const secret = authenticator.generateSecret();
 
@@ -44,6 +46,20 @@ export class AuthService {
             secret: user.twoFactorAuthenticationSecret,
         });
     }
+
+    /***User Token verification from cookie for socket***/
+
+    async getUserFromAuthenticationToken(token: string) {
+        const payload: JwtPayload = this.jwtService.verify(token, {
+            secret: this.configService.get('JWT_SECRET')
+        });
+
+        if (payload.sub) {
+            return this.usersService.findOne(payload.sub);
+        }
+    }
+
+    /***Valid User and Login***/
 
     async validateUser(userDetails: UserDetails): Promise<any> {
         const user = await this.usersService.findOneByEmail(userDetails.email);
