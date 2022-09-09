@@ -1,6 +1,6 @@
 <template>
   <div id="user-page">
-    <ProfileBanner v-if="profile" :profile="profile" />
+    <ProfileBanner />
     <div class="user-navbar">
       <router-link to="/user/stats">
         <div class="user-navbar-item">STATS</div>
@@ -17,27 +17,8 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref, ref, onBeforeMount, defineComponent, defineExpose } from "vue";
+import { defineComponent, defineExpose } from "vue";
 import ProfileBanner from "@/components/users/ProfileBanner.vue";
-
-const profile: Ref<any> = ref("");
-// const enabled2FA = ref(false);
-
-onBeforeMount(async () => {
-  await fetch("http://localhost:3000/api/private", {
-    credentials: "include",
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .then((user) => {
-      profile.value = user;
-      // enabled2FA.value = profile.value.isTwoFactorAuthenticationEnabled;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-});
 
 defineExpose(
   defineComponent({
@@ -56,7 +37,7 @@ defineExpose(
   display: flex;
   flex-direction: row;
   padding: 0;
-  border-bottom: 1px solid rgba(147, 150, 148, 1);
+  border-bottom: 1px solid rgba(147, 150, 148, 0.5);
 }
 
 .user-navbar a {

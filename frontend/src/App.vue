@@ -20,3 +20,10 @@
   </div>
   <router-view></router-view>
 </template>
+
+<script lang="ts" setup>
+import { useUserStore } from "@/stores/user";
+
+const user = useUserStore();
+user.doFetch();
+</script>

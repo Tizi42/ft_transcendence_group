@@ -40,5 +40,9 @@ export default defineComponent({
 
 .stats-item {
   margin: 42px;
+  font-family: "Outfit";
+  font-style: normal;
+  font-weight: light;
+  font-size: 18px;
 }
 </style>

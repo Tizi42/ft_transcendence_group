@@ -1,22 +1,22 @@
-import { Body, Controller, Get, Param, Query, Res, Post, Put, UseInterceptors, UploadedFile, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Query, Res, Req, Post, Put, UseInterceptors, UploadedFile, UseGuards } from "@nestjs/common";
 import { FriendshipDto } from "./utils/friendship.dto";
 import { User } from "./Users.entity";
 import { UsersService } from "./users.service";
 import { UserDto } from "./utils/user.dto";
-import { Express, Response } from "express";
+import { Express, Request, Response } from "express";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { extname } from "path";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { identity } from "rxjs";
+import RequestWithUser from "./utils/requestWithUser.interface";
 
 export const storage = {
   storage : diskStorage ({
     destination: './src/uploads/avatar',
-      filename(req, file, callback) {
-        // need to change the way to get user id. Maybe use Of()
-        console.log(req.headers.id);
-        callback(null , `avatar-${req.headers.id}${extname(file.originalname)}`);
+      filename(req: RequestWithUser, file, callback) {
+        console.log(req.user.id);
+        callback(null , `avatar-${req.user.id}${extname(file.originalname)}`);
       },
   })
 }
@@ -36,11 +36,12 @@ export class UsersController {
     return this.usersService.findOne(id);
   };
 
-  @Put('uploads/avatar/:id')
+  @UseGuards(JwtAuthGuard)
+  @Put('uploads/avatar')
   @UseInterceptors(FileInterceptor('file', storage))
-  async uploadAvatar(@Param('id') id: number, @UploadedFile() file: Express.Multer.File) : Promise<any> {
+  async uploadAvatar(@Req() req: RequestWithUser, @UploadedFile() file: Express.Multer.File) : Promise<any> {
     console.log("File received, saved as " + file.filename);
-    return this.usersService.updateUserAvatar(id, file.filename, "http://localhost:3000/api/users/avatar/" + id); //`${this.SERVER_URL}${file.path}`
+    return await this.usersService.updateUserAvatar(req.user.id, file.filename, "http://localhost:3000/api/users/avatar/" + req.user.id); //`${this.SERVER_URL}${file.path}`
   }
 
   @Get('avatar/:id')
