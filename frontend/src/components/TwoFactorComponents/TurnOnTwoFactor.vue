@@ -44,7 +44,7 @@ const verifyCode = async () => {
       p1?.remove();
       if (response.status === 200) {
         router.push({
-          name: "user",
+          name: "settings",
         });
       } else {
         authenticationCode.value = "";

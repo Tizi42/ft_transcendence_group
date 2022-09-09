@@ -13,6 +13,18 @@ export class UsersService {
       private readonly usersRepository: Repository<User>
   ) {}
 
+  async updateUserAvatar(id: number, filename: string, pictureUrl: string): Promise<any> {
+    return  await this.usersRepository.update(id, {picture: pictureUrl, pictureLocalFilename: filename});
+  }
+
+  async updateUserDisplayName(id: number, name: string): Promise<any> {
+    return  this.usersRepository.update(id, {displayName: name});
+  }
+
+  async updateUserEmail(id: number, email: string): Promise<any> {
+    return  this.usersRepository.update(id, {email: email});
+  }
+
   async findOneByEmail(email: string): Promise<User | undefined> {
       return this.usersRepository.findOneBy({ email: email });
   }
@@ -30,10 +42,17 @@ export class UsersService {
   }
 
   async getPicture(id: number) : Promise<string> {
-    let user = await this.usersRepository.findOneBy({id});
+    let user = await this.usersRepository.findOneBy({ id });
     if (user == null)
       return ("");
     return (user.picture);
+  }
+
+  async getPictureFilename(id: number) : Promise<string> {
+    let user = await this.usersRepository.findOneBy({ id });
+    if (user == null)
+      return ("");
+    return (user.pictureLocalFilename);
   }
 
   findAll(): Promise<User[]> {
@@ -58,6 +77,7 @@ export class UsersService {
     newUser.username = userInfo.username;
     newUser.email = userInfo.email;
     newUser.picture = userInfo.picture;
+    newUser.picture42URL = userInfo.picture;
 	  this.usersRepository.insert(newUser);
   }
 
