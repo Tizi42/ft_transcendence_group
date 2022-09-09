@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts" setup>
-import MessagesView from "./MessagesView.vue";
+import MessagesView from "../components/MessagesView.vue";
 </script>
 
 <style>

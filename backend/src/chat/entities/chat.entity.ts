@@ -13,9 +13,9 @@ export class Chat {
     @Column()
     content: string;
 
-    @CreateDateColumn()
-    created_at: Date;
+    // @CreateDateColumn()
+    // created_at: Date;
 
-    @ManyToOne( () => User, (author) => author.messages )
-    author: User;
+    // @ManyToOne( () => User, (author) => author.messages )
+    // author: User;
 }

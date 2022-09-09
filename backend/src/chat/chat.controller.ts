@@ -9,6 +9,7 @@ export class ChatController {
 
   @Post()
   saveMessage(@Body() body: messageInfos): Promise<Chat> {
+  console.log("[SAVE]" + body.author);
     return this.chatService.saveMessage(body);
   }
 

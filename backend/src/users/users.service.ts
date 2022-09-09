@@ -15,6 +15,10 @@ export class UsersService {
         return this.userRepository.findOneBy({ email: email });
     }
 
+    findOne(id: number): Promise<User> {
+        return this.userRepository.findOneBy({ id });
+    }
+
     async createNewUser(userDetails: UserDetails): Promise<User> {
         const newUser = this.userRepository.create(userDetails);
         return await this.userRepository.save(newUser);

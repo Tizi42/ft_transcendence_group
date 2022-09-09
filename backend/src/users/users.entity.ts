@@ -19,6 +19,6 @@ export class User {
     @Column()
     picture: string;
 
-    @OneToMany( () => Chat, (messages) => messages.author )
-    messages?: Chat[];
+    // @OneToMany( () => Chat, (messages) => messages.author )
+    // messages?: Chat[];
 }
