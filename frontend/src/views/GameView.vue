@@ -17,10 +17,6 @@ import background from "../assets/game_assets/background.png";
 import padle from "../assets/game_assets/padle.png";
 import ball_image from "../assets/game_assets/ball.png";
 
-function tempCheck(to: string): boolean {
-  return true;
-}
-
 socket.on("connect", () => {
   console.log(socket.id + " : connected !");
 });
@@ -49,6 +45,10 @@ var pos = 0;
 
 var player;
 var other;
+var initialVelocityX = 100;
+var initialVelocityY = 100;
+var lastVelX = 0;
+var lastVelY = 0;
 
 export default {
   data() {
@@ -77,17 +77,29 @@ export default {
             socket.on("game_found", (data) => {
               const socketId = socket.id;
               if (socketId === data.to) {
+                console.log(data);
                 pos = data.player;
-                console.log(data.player);
+                initialVelocityX = data.ball_speed * data.ball_dir_x;
+                initialVelocityY = data.ball_speed * data.ball_dir_y;
                 console.log(socket.id + " : game found !");
-                this.ready = this.time.now;
                 isGameStarted = 1;
               }
             });
-            socket.on("paddle_pos", (data) => {
+            socket.on("game_state", (data) => {
               const socketId = socket.id;
               if (socketId === data.to) {
                 other.y = data.pos;
+                ball.x = data.ball_pos_x;
+                ball.y = data.ball_pos_y;
+                if (
+                  lastVelX != data.ball_dir_x ||
+                  lastVelY != data.ball_dir_y
+                ) {
+                  lastVelX = data.ball_dir_x;
+                  lastVelY = data.ball_dir_y;
+                  ball.setVelocityX(data.ball_dir_x * data.ball_speed);
+                  ball.setVelocityY(data.ball_dir_y * data.ball_speed);
+                }
               }
             });
             this.frameTime = 0;
@@ -128,23 +140,21 @@ export default {
             r_paddle.setImmovable(true);
             socket.emit("queue_register", "normal");
           },
-          update(time, delta) {
+          update() {
             if (isGameStarted == 1) {
-              const initialVelocityX = 100;
-              const initialVelocityY = 100;
-
               ball.setVelocityX(initialVelocityX);
               ball.setVelocityY(initialVelocityY);
-              if (pos === 1) {
-                player = r_paddle;
-                other = l_paddle;
-              } else {
+              if (pos == 1) {
                 player = l_paddle;
                 other = r_paddle;
+              } else {
+                player = r_paddle;
+                other = l_paddle;
               }
               isGameStarted = 2;
             }
             if (isGameStarted == 2) {
+              console.log("x = ", ball.x, " y = ", ball.y);
               socket.emit("update_paddle", player.y);
               if (this.cursors.up.isDown) {
                 player.setVelocityY(-100);
