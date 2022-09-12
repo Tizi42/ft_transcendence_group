@@ -13,9 +13,9 @@
 <script lang="ts">
 import Phaser from "phaser";
 import socket from "../socket";
-import background from "../assets/game_assets/background.png";
-import padle from "../assets/game_assets/padle.png";
-import ball_image from "../assets/game_assets/ball.png";
+// import background from "../assets/game_assets/background.png";
+// import padle from "../assets/game_assets/padle.png";
+// import ball_image from "../assets/game_assets/ball.png";
 
 socket.on("connect", () => {
   console.log(socket.id + " : connected !");
