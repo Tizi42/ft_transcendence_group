@@ -192,9 +192,14 @@
   font-size: 14px;
 }
 
+.selectedTabContainer:hover {
+  cursor: pointer;
+}
+
 .tabContainer:hover {
   opacity: 0.65;
   font-size: 14px;
+  cursor: pointer;
 }
 
 ul {
@@ -320,4 +325,8 @@ li {
 
 .profile {
   width: 50px;
+}
+
+li {
+  list-style: none;
 }

@@ -17,7 +17,6 @@
 <script lang="ts" setup>
 //  imports
 import { defineComponent, defineExpose, defineProps } from "vue";
-import { FulfillingBouncingCircleSpinner } from "epic-spinners";
 
 //  variables
 defineProps(["player", "pos"]);
