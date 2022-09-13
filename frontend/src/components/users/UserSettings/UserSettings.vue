@@ -15,6 +15,7 @@
       >
         Blocked Users
       </div>
+      <button id="logout-button" @click="toLogout">LOG OUT</button>
     </div>
     <div class="setting-field">
       <component :is="menu[selected]"></component>
@@ -26,7 +27,12 @@
 import { defineComponent, defineExpose, ref } from "vue";
 import AccountOptions from "./AccountOptions.vue";
 import BlockedUsers from "./BlockedUsers.vue";
+import { useRouter } from "vue-router";
+import { useCookie } from "vue-cookie-next";
 
+const { isCookieAvailable } = useCookie();
+
+const router = useRouter();
 let selected = ref("AccountOptions");
 
 let menu = {
@@ -36,6 +42,23 @@ let menu = {
 
 function select(toSelect: string) {
   selected.value = toSelect;
+}
+
+async function toLogout() {
+  if (isCookieAvailable("jwt")) {
+    await fetch("http://localhost:3000/api/logout", {
+      credentials: "include",
+    })
+      .then((response) => {
+        router.push({
+          name: "login",
+        });
+        return response.json();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 }
 
 defineExpose(
@@ -56,6 +79,9 @@ defineExpose(
   align-items: left;
   width: 14em;
   text-align: left;
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
 }
 
 .setting-navbar-item {
@@ -75,6 +101,27 @@ defineExpose(
 
 .setting-navbar-item.active {
   background: linear-gradient(90deg, #141d01 0%, #ffcb00 145.91%);
+}
+
+#logout-button {
+  border: 5px solid rgba(212, 57, 29, 1);
+  border-radius: 22px;
+  color: rgba(212, 57, 29, 1);
+  font-family: "Outfit";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 25px;
+  padding: 0.2em 1.2em 0.2em 1.2em;
+  background-color: transparent;
+  width: fit-content;
+  margin: auto;
+  margin-top: 2em;
+}
+
+#logout-button:hover {
+  cursor: pointer;
+  transform: scale(1.05, 1.05);
 }
 
 .setting-field {
