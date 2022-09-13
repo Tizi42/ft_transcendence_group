@@ -19,7 +19,7 @@ export class ChatGateway {
     private readonly chatService: ChatService;
 
     @Inject(UsersService)
-    private readonly userService: UsersService;
+    private userService: UsersService;
 
     @SubscribeMessage('send_message')
     listenForMessages(@MessageBody() data: messageInfos) {
@@ -30,5 +30,5 @@ export class ChatGateway {
         this.chatService.saveMessage(data);
         // envoi d'un message au client = socket.emit 
         this.server.sockets.emit('receive_message', data);
-    }
+    };
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { User } from 'src/users/users.entity';
+import { createQueryBuilder, DataSource, Repository } from "typeorm";
 import { Chat } from './entities/chat.entity';
 import { messageInfos } from './utils/types';
 
@@ -9,6 +10,8 @@ export class ChatService {
     constructor(
         @InjectRepository(Chat)
         private readonly chatRepository: Repository<Chat>,
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
     ) {}
 
     async saveMessage(content: messageInfos): Promise<Chat> {
@@ -20,11 +23,25 @@ export class ChatService {
         console.log("GET");
         return await this.chatRepository.find({ relations: ['author'] });
     }
-    async getMessagesById(id: any): Promise<Chat> {
-        const chat = await this.chatRepository.findOne({
-            where: { id: id }, 
-            relations: ['author'],
-        });
-        return chat;
+    async getAllDest(): Promise<Chat[]> {
+        console.log("GET DEST");
+        return await this.chatRepository.find({ relations: ['dest'] });
+    }
+    async getMessagesById(dest: number) {
+        // const destId = await this.userRepository.findOne(id);
+        // console.log("=> " + destId.id);
+        // const chat = await this.chatRepository.find({
+        //     where: { dest: destId },
+        //     skip: 0,
+        //     take: 1,
+        // });
+        // const query = await this.chatRepository.createQueryBuilder()
+        // .select("*")
+        // .from(Chat, "chat")
+        // .where("'destId' = :id", { id: dest })
+        // .getMany()
+        const query = await this.chatRepository.query('SELECT * FROM chat WHERE "destId" =' + dest);
+
+        console.log("=> " + query);
     }
 }

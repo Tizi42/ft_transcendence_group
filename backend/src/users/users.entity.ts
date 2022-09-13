@@ -19,6 +19,9 @@ export class User {
     @Column()
     picture: string;
 
-    // @OneToMany( () => Chat, (messages) => messages.author )
-    // messages?: Chat[];
+    @Column('bool', { nullable : true })
+    isConnected: boolean;
+
+    @OneToMany( () => Chat, (messages) => messages.author )
+    messages?: Chat[];
 }
