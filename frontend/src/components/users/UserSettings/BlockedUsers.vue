@@ -1,11 +1,20 @@
 <template>
-  <div class="about">
-    <h1>This is the blocked users section</h1>
-  </div>
+  <ul id="list-users">
+    <li>
+      <BlockedUserItem />
+    </li>
+    <li>
+      <BlockedUserItem />
+    </li>
+    <li>
+      <BlockedUserItem />
+    </li>
+  </ul>
 </template>
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose } from "vue";
+import BlockedUserItem from "./BlockedUserItem.vue";
 
 defineExpose(
   defineComponent({
@@ -13,3 +22,20 @@ defineExpose(
   })
 );
 </script>
+
+<style scoped>
+#list-users {
+  margin: 36px 15% 48px 5%;
+  padding-right: 2%;
+  list-style: none;
+}
+
+li {
+  display: flex;
+  border-top: 1px solid rgba(59, 57, 57, 0.5);
+  width: 100%;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  margin: 0;
+}
+</style>

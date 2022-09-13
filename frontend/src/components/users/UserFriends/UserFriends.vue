@@ -1,8 +1,16 @@
 <template>
   <div class="friends-section">
     <div class="friends-buttons">
-      <img class="icon-button" src="@/assets/icon-add.png" alt="add" />
-      <img class="icon-button" src="@/assets/icon-filter.png" alt="filter" />
+      <img
+        class="icon-button"
+        src="@/assets/icons/icon-add.png"
+        alt="add button"
+      />
+      <img
+        class="icon-button"
+        src="@/assets/icons/icon-filter.png"
+        alt="filter button"
+      />
     </div>
     <div class="friends-grid">
       <div>firends items</div>
@@ -37,8 +45,8 @@ export default defineComponent({
 }
 
 .icon-button:hover {
-  opacity: 0.5;
   cursor: pointer;
+  transform: scale(1.1, 1.1);
 }
 
 .friends-grid {

@@ -127,41 +127,12 @@ defineExpose(
 .setting-field {
   flex: 1;
   margin-right: 7%;
-  height: 545px;
+  height: fit-content;
+  max-height: 535px;
   overflow: scroll;
   background-color: rgba(20, 29, 1, 1);
   text-align: left;
   display: flex;
   flex-direction: column;
-}
-
-.option-group {
-  border-top: 1px solid rgba(147, 150, 148, 1);
-  margin: 36px 15% 48px 5%;
-  padding-right: 2%;
-}
-
-.on-off-option {
-  display: flex;
-}
-
-.on-off {
-  align-self: flex-end;
-  margin-left: auto;
-  object-fit: cover;
-  height: 20px;
-}
-
-.option {
-  font-family: "Outfit";
-  font-style: normal;
-  font-weight: 500;
-  font-size: 22px;
-  color: rgba(255, 255, 255, 1);
-  margin: 20px 3% 0px 3%;
-}
-
-.option:hover {
-  cursor: pointer;
 }
 </style>
