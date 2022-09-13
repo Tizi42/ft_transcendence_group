@@ -2,16 +2,25 @@
   <div class="chatPages">
     <div class="chatroom">
       <div
-        class="messageBlock"
         v-for="(message, index) in history"
         :key="index"
+        class="messageBlockOut"
       >
         <p class="message message-out">
           {{ history[index] }}
-          <!-- {{ timestamp }} -->
         </p>
         <img :src="profile.picture" class="photo" />
       </div>
+      <!-- <div
+        v-for="(messageFrom, index) in historyFrom"
+        :key="index"
+        class="messageBlockIn"
+      >
+        <p class="message message-in">
+          {{ historyFrom[index] }}
+        </p>
+        <img :src="profileFrom.picture" class="photo" />
+      </div> -->
       <form @submit.prevent="onSubmit" @keyup.enter="onSubmit" class="form">
         <textarea v-model="input" placeholder="Your message..." class="input" />
         <button :disabled="input === ''" class="send-button">Send</button>
@@ -29,52 +38,37 @@ export default defineComponent({
 </script>
 
 <script setup lang="ts">
-import { Ref, ref, onBeforeMount, onMounted, onUnmounted } from "vue";
-import { useRouter } from "vue-router";
+import { onBeforeMount, Ref, ref, defineProps } from "vue";
 import socket from "../socket";
 
-const router = useRouter();
-const profile: Ref<any> = ref("");
 const input: Ref<any> = ref("");
 const history: Ref<any> = ref([]);
-const timestamp: Ref<any> = ref([]);
-const index = 0;
+const profile: Ref<any> = ref("");
+const index = ref(0);
+
+defineProps(["profileFrom"]);
 
 onBeforeMount(async () => {
   await fetch("http://localhost:3000/api/private", {
     credentials: "include",
   })
     .then((response) => {
-      if (response.status != 200) {
-        router.push({
-          name: "login",
-        });
-        return response.json();
-      }
       return response.json();
     })
     .then((user) => {
       profile.value = user;
-      console.log(user);
     })
     .catch((error) => {
       console.log(error);
     });
   getMessages();
 });
-onMounted(() => {
-  socket.on("connect", function () {
-    console.log("socket connected");
-  });
-});
-onUnmounted(() => {
-  socket.off("connect");
-  socket.off("send_message");
-});
+
 function onSubmit() {
   const data = {
     content: input.value,
-    author: profile.value.id,
+    author: 4,
+    dest: 1,
   };
   socket.emit("send_message", data);
   input.value = null;
@@ -89,16 +83,6 @@ function getMessages() {
       });
     })
     .catch((err) => console.error(err));
-}
-function getTime() {
-  const today = new Date();
-  const date =
-    today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
-  const time =
-    today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-  const dateTime = date + " " + time;
-  timestamp.value = dateTime;
-  console.log(timestamp.value);
 }
 </script>
 
@@ -116,6 +100,8 @@ function getTime() {
 .message-in {
   background: #f1f0f0;
   color: black;
+  min-width: 50px;
+  padding: 10px;
 }
 .message-out {
   color: white;
@@ -123,29 +109,8 @@ function getTime() {
   min-width: 50px;
   padding: 10px;
 }
-.photo {
-  position: relative;
-  display: block;
-  width: 35px;
-  height: 35px;
-  border-radius: 80px;
-  margin-top: 2%;
-  margin-left: 2%;
-  box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.3);
-}
-.messageBlock {
+.messageBlockIn {
   display: flex;
-  justify-content: right;
-}
-.chatroom {
-  overflow-y: scroll;
-  scroll-behavior: smooth;
-  background: #1e2b02;
-  border-radius: 22px;
-  width: 90%;
-  padding: 5px;
-  margin: 5% 5% 10% 5%;
-  overflow: auto;
-  box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.3);
+  justify-content: left;
 }
 </style>

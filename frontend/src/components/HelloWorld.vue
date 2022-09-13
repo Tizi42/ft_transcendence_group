@@ -104,6 +104,8 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { onMounted } from "vue";
+import socket from "../socket";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -111,6 +113,12 @@ export default defineComponent({
     msg: String,
   },
 });
+onMounted(() => {
+  socket.on("connect", function () {
+    console.log("user is connected");
+  });
+});
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
