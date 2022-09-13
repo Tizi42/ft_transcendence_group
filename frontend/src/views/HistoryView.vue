@@ -40,7 +40,7 @@ async function reloadData() {
       credentials: "include",
     });
     battlesGlobal.value = await response.json();
-    battlesPersonal.value = battlesGlobal.value;
+    battlesPersonal.value = battlesGlobal.value; // to change
     dataReady.value = true;
   }, 1000);
 }
