@@ -8,29 +8,22 @@
         v-if="user.enabled2FA"
         id="option-icon-2FA"
         class="on-off"
-        src="@/assets/option-on.png"
+        src="@/assets/icons/option-on.png"
         alt="option-off"
       />
       <img
         v-else
         id="option-icon-2FA"
         class="on-off"
-        src="@/assets/option-off.png"
+        src="@/assets/icons/option-off.png"
         alt="option-off"
       />
     </div>
-    <div class="on-off-option">
-      <div class="option">Allow popaup notifications</div>
-      <img class="on-off" src="@/assets/option-on.png" alt="option-on" />
+  </div>
+  <div class="option-group">
+    <div class="option">
+      <a href="mailto: feedback@transcendence.42.fr">Send a feedback</a>
     </div>
-  </div>
-  <div class="option-group">
-    <div class="option">Send a feedback</div>
-  </div>
-  <div class="option-group">
-    <div class="option">Erase match history</div>
-    <div class="option">Reset account</div>
-    <div class="option">Delete account</div>
   </div>
 </template>
 
@@ -102,7 +95,12 @@ defineExpose(
   margin: 20px 3% 0px 3%;
 }
 
-.option:hover {
+a {
+  all: unset;
+}
+
+.option:hover,
+.on-off-option:hover {
   cursor: pointer;
 }
 </style>
