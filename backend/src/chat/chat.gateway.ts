@@ -4,7 +4,9 @@ import { ChatService } from './chat.service';
 
 @WebSocketGateway({
   cors: {
-    origin: '*',
+    origin: 'http://localhost:8080',
+    methods: ["GET", "POST"],
+    credentials: true,
   },
 })
 export class ChatGateway implements OnGatewayConnection {

@@ -28,9 +28,6 @@ export class AuthController {
         res.cookie('jwt', accessToken);
         console.log(request.user);
         console.log("jwt 1 = ", accessToken);
-        if (!request.user.isTwoFactorAuthenticationEnabled) {
-            res.redirect('http://localhost:8080/');
-        }
         res.redirect('http://localhost:8080/2FA');
     }
 

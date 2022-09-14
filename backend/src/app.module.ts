@@ -9,10 +9,6 @@ import { UsersModule } from './users/users.module';
 import { BattlesModule } from './battles/battles.module';
 import { typeOrmConfig } from './common/typeorm.config';
 import { DataSource } from 'typeorm';
-import { UsersController } from './users/users.controller';
-import { BattlesController } from './battles/battles.controller';
-import { UsersService } from './users/users.service';
-import { BattlesService } from './battles/battles.service';
 import { ChatModule } from './chat/chat.module';
 
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
