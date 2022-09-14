@@ -2,7 +2,12 @@
   <div class="tableContent">
     <TransitionGroup name="list" tag="ul">
       <li v-for="(player, id) in items" :key="id">
-        <PlayerResult v-if="show" :player="player" :pos="id + 1" />
+        <PlayerResult
+          v-if="show"
+          :player="player"
+          :pos="id + 1"
+          :pp="getPictureUrl(player.id)"
+        />
       </li>
     </TransitionGroup>
   </div>
@@ -12,13 +17,22 @@
 //  imports
 import { defineComponent, defineExpose, defineProps } from "vue";
 import { onMounted, onUpdated } from "vue";
-import { ref } from "vue";
+import { ref, Ref } from "vue";
 import PlayerResult from "./PlayerResult.vue";
 
 //  variables
 const props = defineProps(["leaderboard"]);
 const items = ref([]);
 const show = ref(false);
+
+function getPictureUrl(id: number): string {
+  return (
+    "http://localhost:3000/api/users/avatar/" +
+    id.toString() +
+    "?_=" +
+    `${+new Date()}`
+  );
+}
 
 //  usefull functions
 async function reshowData() {

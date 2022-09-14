@@ -2,7 +2,7 @@
   <div class="playerResults">
     <div class="playerInfo">
       <div class="positionLb">{{ pos }}</div>
-      <img class="profile" src="@/assets/profile/conan.png" />
+      <img class="profile" :src="pp" />
       <div class="namePlayer">{{ player.displayName }}</div>
       <div class="username">@{{ player.username }}</div>
     </div>
@@ -19,7 +19,7 @@
 import { defineComponent, defineExpose, defineProps } from "vue";
 
 //  variables
-defineProps(["player", "pos"]);
+defineProps(["player", "pos", "pp"]);
 
 //  expose component
 defineExpose(
