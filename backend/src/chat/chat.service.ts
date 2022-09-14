@@ -19,7 +19,7 @@ export class ChatService {
     /***Messages Managment***/
 
     async saveMessage(content: string, author: User) {
-        const newMessage = await this.messagesRepository.create({
+        const newMessage = this.messagesRepository.create({
             content,
             author,
         });
@@ -37,11 +37,11 @@ export class ChatService {
     /***Verify User***/
 
     async getUserFromSocket(socket: Socket) {
-        const cookie = socket.handshake.headers.cookie;
-        console.log("inside header = ", socket.handshake.headers);
-        console.log("inside cookie = ", cookie);
-        const { Authentication: authenticationToken } = parse(cookie);
-        const user = await this.authService.getUserFromAuthenticationToken(authenticationToken);
+        const cookieJwt = socket.handshake.headers.cookie
+            .split('; ')
+            .find((cookie: string) => cookie.startsWith('jwt'))
+            .split('=')[1];
+        const user = await this.authService.getUserFromAuthenticationToken(cookieJwt);
 
         if (!user) {
             throw new WsException('Invalid Credentials !');
