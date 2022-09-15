@@ -13,17 +13,23 @@
       />
     </div>
     <div class="friends-grid">
-      <div>firends items</div>
+      <FriendItem v-for="index in 12" :key="index" />
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script lang="ts" setup>
+import { defineComponent, defineExpose, ref } from "vue";
+import { useUserStore } from "@/stores/user";
+import FriendItem from "./FriendItem.vue";
 
-export default defineComponent({
-  name: "UserFriends",
-});
+const user = useUserStore();
+
+defineExpose(
+  defineComponent({
+    name: "UserFriends",
+  })
+);
 </script>
 
 <style scoped>
@@ -50,8 +56,12 @@ export default defineComponent({
 }
 
 .friends-grid {
-  background-color: rgba(20, 29, 1, 1);
-  height: 300px;
+  max-height: 500px;
   overflow-y: scroll;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  width: 99%;
+  grid-gap: 15px;
+  margin-bottom: 50px;
 }
 </style>

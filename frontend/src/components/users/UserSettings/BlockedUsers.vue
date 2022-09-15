@@ -1,12 +1,6 @@
 <template>
   <ul id="list-users">
-    <li>
-      <BlockedUserItem />
-    </li>
-    <li>
-      <BlockedUserItem />
-    </li>
-    <li>
+    <li v-for="index in 10" :key="index">
       <BlockedUserItem />
     </li>
   </ul>
