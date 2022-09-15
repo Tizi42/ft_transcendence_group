@@ -2,7 +2,6 @@
   <div class="blocked-user-item">
     <div
       class="avatar-frame"
-      ref="avatarFrame"
       :style="{
         'background-image': 'url(' + user.avatarUrl + ')',
       }"
