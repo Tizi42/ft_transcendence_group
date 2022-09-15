@@ -46,6 +46,7 @@ export class ChatService {
         if (!user) {
             throw new WsException('Invalid Credentials !');
         }
+        socket.data = user;
         return user;
     }
 }
