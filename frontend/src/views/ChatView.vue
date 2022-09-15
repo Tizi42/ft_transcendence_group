@@ -1,6 +1,21 @@
 <template>
   <div class="chat">
     <h1>This is the chat page</h1>
+    <div class="container-list-users">
+      <h3>List of all existing users</h3>
+      <ul v-for="user in listOfUsers" :key="user">
+        <li>
+          {{ user.username }}:
+          <span
+            v-if="
+              connectedUsers.find((elem) => elem.username === user.username)
+            "
+            >online
+          </span>
+          <span v-else>offline</span>
+        </li>
+      </ul>
+    </div>
     <div class="container-chat">
       <div class="container-messages">
         <div v-for="message in messages" :key="message">
@@ -19,19 +34,23 @@
 </template>
 
 <script lang="ts" setup>
-import { io } from "socket.io-client";
 import { onBeforeMount, Ref, ref } from "vue";
-
-const socket = io("http://localhost:3000", {
-  withCredentials: true,
-});
+import socket from "@/socket";
 
 const messages: Ref<Array<any>> = ref([]);
 const messageText: Ref<string> = ref("");
+const listOfUsers: Ref<Array<any>> = ref([]);
+const connectedUsers: Ref<Array<any>> = ref([]);
 
-onBeforeMount(() => {
+const sendMessage = () => {
+  socket.emit("send_message", messageText.value, () => {
+    messageText.value = "";
+  });
+};
+
+onBeforeMount(async () => {
   socket.emit("request_all_messages", {}, (response: any) => {
-    messages.value = response;
+    console.log(response);
   });
 
   socket.on("send_all_messages", (response) => {
@@ -41,17 +60,36 @@ onBeforeMount(() => {
   socket.on("receive_message", (message) => {
     messages.value.push(message);
   });
-});
 
-const sendMessage = () => {
-  socket.emit("send_message", messageText.value, () => {
-    messageText.value = "";
+  socket.emit("request_all_users", {}, (response: any) => {
+    console.log(response);
   });
-};
+
+  socket.on("users", (users) => {
+    connectedUsers.value = users;
+  });
+
+  await fetch("http://localhost:3000/api/users", {
+    credentials: "include",
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data: any) => {
+      listOfUsers.value = data;
+    })
+    .catch((error) => {
+      console.log("ERROR : ", error);
+    });
+});
 </script>
 
 <style>
 .chat {
   color: white;
+}
+
+.container-chat {
+  border-top: 1px solid white;
 }
 </style>
