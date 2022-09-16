@@ -250,4 +250,17 @@ export class UsersService {
         where: { id: Any(user.blockedBy) }
       });
   }
+
+  /*
+  **    GAME STATS
+  */
+
+  async updateResult(id: number, winner: boolean) {
+    let target = await this.usersRepository.findOneBy({ id });
+    target.totalGames++;
+    if (winner)
+      target.totalVictories++;
+    target.winRate = target.totalVictories / target.totalGames;
+    this.usersRepository.save(target);
+  }
 }
