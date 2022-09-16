@@ -8,20 +8,36 @@
       }"
     ></div>
     <div class="info">
-      <div class="name">{{ sender.displayName }}</div>
+      <div class="name">{{ sender.displayName }}#{{ sender.id }}</div>
       <div class="message">sent you a friend request</div>
     </div>
-    <button>accept</button>
-    <button>ignore</button>
+    <button @click="onHandleFriendRequest('accept')">accept</button>
+    <button @click="onHandleFriendRequest('ignore')">ignore</button>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose, defineProps } from "vue";
 import { useUserStore } from "@/stores/user";
+import axios from "axios";
 
 const user = useUserStore();
 const props = defineProps(["sender"]); //later: delete userstore and use this prop instead
+
+function onHandleFriendRequest(action: string) {
+  axios
+    .post("http://localhost:3000/api/users/friends/" + action, {
+      id1: props.sender.id,
+      id2: user.id,
+    })
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  user.doFetch();
+}
 
 defineExpose(
   defineComponent({

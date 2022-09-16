@@ -31,7 +31,7 @@ useClickOutside(menu, () => {
 
 defineExpose(
   defineComponent({
-    name: "FriendItem",
+    name: "FriendItemMenu",
   })
 );
 </script>

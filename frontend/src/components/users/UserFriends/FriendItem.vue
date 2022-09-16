@@ -8,7 +8,7 @@
       }"
     ></div>
     <div class="info">
-      <div class="name">{{ friend.displayName }}</div>
+      <div class="name">{{ friend.displayName }}#{{ friend.id }}</div>
       <div class="status">
         <div class="status-rond" ref="statusRound"></div>
         <div class="status-text" ref="statusText">In game</div>
@@ -19,7 +19,7 @@
       @click="onClickFriend"
       v-text="buttonText"
     ></button>
-    <FriendMenu
+    <FriendItemMenu
       v-if="show"
       :style="{ left: clickCoord.x + 'px', top: clickCoord.y + 'px' }"
       @hide="hide"
@@ -30,7 +30,7 @@
 <script lang="ts" setup>
 import { defineComponent, defineExpose, defineProps, ref, computed } from "vue";
 import { useUserStore } from "@/stores/user";
-import FriendMenu from "./FriendMenu.vue";
+import FriendItemMenu from "./FriendItemMenu.vue";
 
 const user = useUserStore();
 const props = defineProps(["friend"]); //later: delete userstore and use this prop instead
