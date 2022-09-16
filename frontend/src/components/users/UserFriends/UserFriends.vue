@@ -9,21 +9,7 @@
       />
       <teleport to="body">
         <MyModal v-if="addWindow">
-          <form>
-            <div>Add Friend</div>
-            <input
-              v-model="input"
-              type="text"
-              placeholder="Enter the id of user"
-              required="true"
-              autofocus
-            />
-            <input
-              type="button"
-              value="Send Friend Request"
-              @click="onSubmit"
-            />
-          </form>
+          <AddFriend />
         </MyModal>
       </teleport>
       <img
@@ -51,6 +37,7 @@ import { defineComponent, defineExpose, ref, onBeforeMount } from "vue";
 import { useUserStore } from "@/stores/user";
 import FriendItem from "./FriendItem.vue";
 import FriendReqItem from "./FriendReqItem.vue";
+import AddFriend from "./AddFriend.vue";
 import MyModal from "./MyModal.vue";
 
 import axios from "axios";
@@ -59,7 +46,6 @@ const user = useUserStore();
 const friends = ref();
 const pending = ref();
 const addWindow = ref(false);
-let input = ref("");
 
 async function doFetchFriends() {
   await fetch("http://localhost:3000/api/users/friends/" + user.id, {
@@ -96,21 +82,6 @@ async function doFetchPending() {
 function onAdd() {
   addWindow.value = true;
   console.log("set add window true");
-}
-
-function onSubmit() {
-  console.log(input.value);
-  axios
-    .post("http://localhost:3000/api/users/friends/add", {
-      id1: user.id,
-      id2: input.value,
-    })
-    .then(function (response) {
-      console.log(response);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
 }
 
 onBeforeMount(() => {
