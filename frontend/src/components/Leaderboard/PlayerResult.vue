@@ -7,9 +7,9 @@
       <div class="username">@{{ player.username }}</div>
     </div>
     <div class="results">
-      <div class="points">1958</div>
-      <div class="winRate">85.2%</div>
-      <div class="gamesNb">203</div>
+      <div class="points">{{ player.totalVictories }}</div>
+      <div class="winRate">{{ player.winRate }}</div>
+      <div class="gamesNb">{{ player.totalGames }}</div>
     </div>
   </div>
 </template>

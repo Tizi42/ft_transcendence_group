@@ -34,12 +34,31 @@ function getPictureUrl(id: number): string {
   );
 }
 
+const images = ref([]);
+
+function preload(ids: Ref<[]>) {
+  for (var i = 0; i < ids.length; i++) {
+    images.value[i] = new Image();
+    images.value[i].src =
+      "http://localhost:3000/api/users/avatar/" + ids[i].toString();
+  }
+}
+
+async function preloadPic() {
+  const ids = ref([]);
+  for await (const [user] of props.leaderboard.entries()) {
+    ids.value.push(user.id);
+  }
+  preload(ids.value);
+}
+
 //  usefull functions
 async function reshowData() {
+  await preloadPic();
   for await (const [key, item] of props.leaderboard.entries()) {
     setTimeout(() => {
       items.value.push(item);
-    }, 200 * (key + 1));
+    }, 500 * (key + 1));
   }
 }
 
