@@ -33,7 +33,7 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: "friends",
-        name: "firends",
+        name: "friends",
         component: () => import("../components/users/UserFriends.vue"),
       },
       {

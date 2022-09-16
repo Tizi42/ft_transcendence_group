@@ -6,7 +6,7 @@
       </div>
       <div class="orderSelection">
         <div :class="getClassStyleOf(0)" @click="changeOrder(0)">
-          <div class="nameTab">Points</div>
+          <div class="nameTab">Victories</div>
         </div>
         <div :class="getClassStyleOf(1)" @click="changeOrder(1)">
           <div class="nameTab">Win Rate</div>
