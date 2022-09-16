@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { BattlesModule } from './battles/battles.module';
 import { typeOrmConfig } from './common/typeorm.config';
 import { DataSource } from 'typeorm';
+import { ChatModule } from './chat/chat.module';
 
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 
@@ -18,7 +19,8 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     TypeOrmModule.forRootAsync(typeOrmConfig),
     AuthModule,
     UsersModule,
-    BattlesModule
+    BattlesModule,
+    ChatModule
   ],
   controllers: [AppController],
   providers: [AppService],
