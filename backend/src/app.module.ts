@@ -18,7 +18,6 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     ConfigModule.forRoot({ envFilePath, isGlobal: true }),
     TypeOrmModule.forRootAsync(typeOrmConfig),
     AuthModule,
-    UsersModule,
     BattlesModule,
     ChatModule
   ],
