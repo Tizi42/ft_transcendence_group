@@ -32,7 +32,6 @@ export class BattlesService {
       showbattle.picture2 = await this.usersService.getPicture(battle.opponent2);
       showbattle.winner = (battle.winner == battle.opponent1 ? 1 : 2);
       res.push(showbattle);
-      console.log(showbattle.time);
     });
     return (res);
   }
@@ -56,26 +55,21 @@ export class BattlesService {
     });
   }
 
-  async numberOfVictory(userId: number) : Promise<number>
-  {
-    let winBattle = await this.battlesRepository.count({ where: { winner: userId }});
-    let totBattle = await this.battlesRepository.count({
-      where: [
-          { opponent1: userId, },
-          { opponent2: userId },
-      ],
-    });
-    let looses = totBattle - winBattle;
-    console.log("user", userId, "\tvictories : ", winBattle, "/", totBattle);
-    return (winBattle);
-  }
-
   findOne(id: number): Promise<Battle> {
     return this.battlesRepository.findOneBy({id});
   }
 
   async remove(id: number): Promise<void> {
     await this.battlesRepository.delete(id);
+  }
+
+  async end(id: number, winner: number) {
+    let battle = await this.battlesRepository.findOneBy({id});
+    let looser: number = (winner == battle.opponent1 ? battle.opponent2 : battle.opponent1);
+    battle.winner = winner;
+    this.battlesRepository.save(battle);
+    this.usersService.updateResult(winner, true);
+    this.usersService.updateResult(looser, false);
   }
 
   addOne(game: BattleDto) {
