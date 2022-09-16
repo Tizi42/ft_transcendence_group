@@ -4,11 +4,11 @@
       class="avatar-frame"
       ref="avatarFrame"
       :style="{
-        'background-image': 'url(' + user.avatarUrl + ')',
+        'background-image': 'url(' + friend.picture + ')',
       }"
     ></div>
     <div class="info">
-      <div class="name">{{ user.displayName }}</div>
+      <div class="name">{{ friend.displayName }}</div>
       <div class="status">
         <div class="status-rond" ref="statusRound"></div>
         <div class="status-text" ref="statusText">In game</div>
@@ -33,7 +33,8 @@ import { useUserStore } from "@/stores/user";
 import FriendMenu from "./FriendMenu.vue";
 
 const user = useUserStore();
-const props = defineProps(["user"]); //later: delete userstore and use this prop instead
+const props = defineProps(["friend"]); //later: delete userstore and use this prop instead
+console.log("friend:", props.friend);
 const show = ref(false);
 const buttonText = computed(() => (show.value === true ? "=" : "..."));
 const clickCoord = ref({

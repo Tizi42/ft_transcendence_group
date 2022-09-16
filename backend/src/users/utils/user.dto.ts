@@ -16,4 +16,7 @@ export class UserDto {
   @IsNotEmpty()
   @IsString()
   picture: string;
+
+  @IsString()
+  pictureLocalFilename: string;
 }
