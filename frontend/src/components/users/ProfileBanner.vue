@@ -51,7 +51,10 @@ function onSubmit() {
   editingMode.value = false;
   if (newname.value !== user.displayName) {
     axios.post(
-      "http://localhost:3000/api/users/info/3?displayname=" + newname.value
+      "http://localhost:3000/api/users/info/" +
+        user.id +
+        "?displayname=" +
+        newname.value
     );
   }
   user.doFetch();

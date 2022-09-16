@@ -77,7 +77,7 @@ export class UsersService {
     newUser.username = userInfo.username;
     newUser.email = userInfo.email;
     newUser.picture = userInfo.picture;
-    newUser.picture42URL = userInfo.picture;
+    newUser.pictureLocalFilename = userInfo.pictureLocalFilename;
 	  this.usersRepository.insert(newUser);
   }
 
@@ -86,24 +86,78 @@ export class UsersService {
   **    FRIENDS
   */
 
-  async createFriendship(param: FriendshipDto) {
+  async sendFriendRequest(param: FriendshipDto) {
     let askingForFriend = await this.usersRepository.findOneBy({ id: param.id1 });
     let target = await this.usersRepository.findOneBy({ id: param.id2 });
 
     if (askingForFriend == null || target == null)
-      return console.log("friendship creation aborted");
+      return console.log("send friend request aborted");
 
     // check if already friends
     if (askingForFriend.friendWith.includes(target.id))
       return console.log(askingForFriend.displayName, "and", target.displayName,"are already friends");
 
-    askingForFriend.friendWith.push(target.id);
-    target.friendOf.push(askingForFriend.id);
+    askingForFriend.friendPendingReqTo.push(target.id);
+    target.friendPendingReqFrom.push(askingForFriend.id);
 
     this.usersRepository.save(target);
     this.usersRepository.save(askingForFriend);
 
-    console.log(askingForFriend.displayName, "and", target.displayName, "are now friends");
+    console.log(askingForFriend.displayName, " sent a friend request to ", target.displayName);
+  }
+
+  async removeFriendRequest(param: FriendshipDto) {
+    let askingForFriend = await this.usersRepository.findOneBy({ id: param.id1 });
+    let target = await this.usersRepository.findOneBy({ id: param.id2 });
+
+    if (askingForFriend == null || target == null)
+      return console.log("cancel friend reques aborted");
+
+    // remove from pending list
+    let index = askingForFriend.friendPendingReqTo.indexOf(target.id);
+    if (index > -1)
+      askingForFriend.friendPendingReqTo.splice(index, 1);
+
+    index = target.friendPendingReqFrom.indexOf(askingForFriend.id);
+    if (index > -1)
+      target.friendPendingReqFrom.splice(index, 1);
+
+    this.usersRepository.save(target);
+    this.usersRepository.save(askingForFriend);
+
+    console.log(askingForFriend.displayName, "'s friend request to ", target.displayName, " is removed");
+  }
+
+  async acceptFriendRequest(param: FriendshipDto) {
+    let askingForFriend = await this.usersRepository.findOneBy({ id: param.id1 });
+    let target = await this.usersRepository.findOneBy({ id: param.id2 });
+
+    if (askingForFriend == null || target == null)
+      return console.log("cancel friend reques aborted");
+
+    // check if already friends
+    if (askingForFriend.friendWith.includes(target.id))
+      return console.log(askingForFriend.displayName, "and", target.displayName,"are already friends");
+
+    // check if request exist and remove it from pending list
+    let index = askingForFriend.friendPendingReqTo.indexOf(target.id);
+    if (index == -1)
+      return console.log("Friend request does not exist");
+    askingForFriend.friendPendingReqTo.splice(index, 1);
+
+    index = target.friendPendingReqFrom.indexOf(askingForFriend.id);
+    if (index == -1)
+      return console.log("Friend request does not exist");
+    target.friendPendingReqFrom.splice(index, 1);
+
+    //add friends
+    askingForFriend.friendWith.push(target.id);
+    target.friendWith.push(askingForFriend.id);
+
+    this.usersRepository.save(target);
+    this.usersRepository.save(askingForFriend);
+
+    console.log(askingForFriend.displayName, " and ", target.displayName, "are friends now");
   }
 
   async removeFriendship(param: FriendshipDto) {
@@ -117,10 +171,10 @@ export class UsersService {
       return console.log(removingFriend.displayName, "and", target.displayName, "are not friends");
     
     let newFriendWithList = removingFriend.friendWith.filter(function(ele){ return ele != target.id });
-    let newFriendOfList = target.friendOf.filter(function(ele){ return ele != removingFriend.id });
+    let newFriendOfList = target.friendWith.filter(function(ele){ return ele != removingFriend.id });
     
     removingFriend.friendWith = newFriendWithList;
-    target.friendOf = newFriendOfList;
+    target.friendWith = newFriendOfList;
 
     this.usersRepository.save(target);
     this.usersRepository.save(removingFriend);
@@ -139,7 +193,7 @@ export class UsersService {
 	  });
   }
 
-  async showFriendOf(id: number) : Promise<User[]> {
+  async showFriendPendingReqTo(id: number) : Promise<User[]> {
     const user = await this.usersRepository.findOneBy({ id });
     if (user == null)
     {
@@ -147,7 +201,19 @@ export class UsersService {
       return null;
     }
     return this.usersRepository.find({
-        where: { id: Any(user.friendOf) }
+        where: { id: Any(user.friendPendingReqTo) }
+      });
+  }
+
+  async showFriendPendingReqFrom(id: number) : Promise<User[]> {
+    const user = await this.usersRepository.findOneBy({ id });
+    if (user == null)
+    {
+      console.log("no user matches this id");
+      return null;
+    }
+    return this.usersRepository.find({
+        where: { id: Any(user.friendPendingReqFrom) }
       });
   }
 
