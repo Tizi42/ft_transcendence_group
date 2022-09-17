@@ -31,25 +31,24 @@ function getPictureUrl(id: number): string {
 
 //  usefull functions
 async function reshowData() {
+  show.value = false;
+  items.value = [];
+  console.log("reshow");
   for await (const [key, item] of props.leaderboard.entries()) {
     setTimeout(() => {
       items.value.push(item);
-    }, 500 * (key + 1));
+    }, 200 * (key + 1));
   }
+  show.value = true;
 }
 
 //  lifecycle hook
 onMounted(async () => {
-  show.value = false;
   await reshowData();
-  show.value = true;
 });
 
 onUpdated(async () => {
-  show.value = false;
-  items.value = [];
   await reshowData();
-  show.value = true;
 });
 
 //  expose component

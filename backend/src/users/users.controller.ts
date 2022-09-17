@@ -50,6 +50,7 @@ export class UsersController {
     let user = await this.usersService.findOne(id);
     if (user.pictureLocalFilename === "")
     {
+      return res.sendFile("default.png", { root: 'src/uploads/avatar'});
       console.log("Using default avatar from 42 api... at", user.picture42URL);
       return res.redirect(user.picture42URL); //?
     }
