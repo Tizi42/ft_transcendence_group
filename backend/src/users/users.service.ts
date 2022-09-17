@@ -265,7 +265,7 @@ export class UsersService {
     target.totalGames++;
     if (winner)
       target.totalVictories++;
-    target.winRate = target.totalVictories / target.totalGames;
+    target.winRate = (target.totalVictories / target.totalGames).toString();
     this.usersRepository.save(target);
   }
 
@@ -282,9 +282,11 @@ export class UsersService {
       newUser.email = "user" + i.toString() + "@student.42.fr";
 	    this.usersRepository.insert(newUser);
       let id = this.usersRepository.getId(newUser);
-      newUser.pictureLocalFilename = "default.png";
       newUser.picture = id;
       newUser.picture42URL = "";
+      newUser.winRate = "0.5";
+      newUser.totalGames = 2;
+      newUser.totalVictories = 1;
     }
   }
 }

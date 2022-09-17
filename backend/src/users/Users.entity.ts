@@ -51,5 +51,5 @@ export class User {
   totalVictories: number;
 
   @Column({default: null, nullable: true})
-  winRate: number;
+  winRate: string;
 }

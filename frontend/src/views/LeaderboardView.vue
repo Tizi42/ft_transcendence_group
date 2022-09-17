@@ -38,37 +38,31 @@ const leaderboardPersonal = ref({});
 
 // setTimeout to delay loading -> to remove
 async function reloadAll() {
-  setTimeout(async () => {
-    let response = await fetch(getUrlOf("api/users"), {
-      credentials: "include",
-    });
-    leaderboardGlobal.value = await response.json();
-    leaderboardPersonal.value = leaderboardGlobal.value; // to change
-    dataReadyGlobal.value = true;
-    dataReadyPersonal.value = true;
-  }, 1000);
+  let response = await fetch(getUrlOf("api/users"), {
+    credentials: "include",
+  });
+  leaderboardGlobal.value = await response.json();
+  leaderboardPersonal.value = leaderboardGlobal.value; // to change
+  dataReadyGlobal.value = true;
+  dataReadyPersonal.value = true;
 }
 
 async function reloadAndOrderGlobal(order: number) {
   console.log("new order for global:", order);
-  setTimeout(async () => {
-    let response = await fetch(getUrlOf("api/users"), {
-      credentials: "include",
-    });
-    leaderboardGlobal.value = await response.json();
-    dataReadyGlobal.value = true;
-  }, 1000);
+  let response = await fetch(getUrlOf("api/users"), {
+    credentials: "include",
+  });
+  leaderboardGlobal.value = await response.json();
+  dataReadyGlobal.value = true;
 }
 
 async function reloadAndOrderPersonal(order: number) {
   console.log("new order for personal:", order);
-  setTimeout(async () => {
-    let response = await fetch(getUrlOf("api/users"), {
-      credentials: "include",
-    });
-    leaderboardPersonal.value = await response.json();
-    dataReadyPersonal.value = true;
-  }, 1000);
+  let response = await fetch(getUrlOf("api/users"), {
+    credentials: "include",
+  });
+  leaderboardPersonal.value = await response.json();
+  dataReadyPersonal.value = true;
 }
 
 onBeforeMount(async () => {

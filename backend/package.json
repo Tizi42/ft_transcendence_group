@@ -48,6 +48,7 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
     "sharp": "^0.31.0",
+    "socker.io": "^0.0.0-alpha-beta",
     "typeorm": "^0.3.7"
   },
   "devDependencies": {
