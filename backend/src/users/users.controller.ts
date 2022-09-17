@@ -42,20 +42,6 @@ export class UsersController {
   @UseInterceptors(FileInterceptor('file', storage))
   async uploadAvatar(@Req() req: RequestWithUser, @UploadedFile() file: Express.Multer.File) : Promise<any> {
     console.log("File received, saved as " + file.filename);
-    // const input = "../uploads/avatar/" + file.filename;
-    // const output = "../uploads/avatar/lowRes_" + file.filename;
-    // sharp(input)
-    //   .resize(100, 100, {
-    //     kernel: sharp.kernel.nearest,
-    //     fit: 'contain',
-    //     position: 'right top',
-    //   })
-    //   .toFile(output)
-    //   .then(() => {
-    //     // output.png is a 200 pixels wide and 300 pixels high image
-    //     // containing a nearest-neighbour scaled version
-    //     // contained within the north-east corner of a semi-transparent white canvas
-    //   });
     return await this.usersService.updateUserAvatar(req.user.id, file.filename, "http://localhost:3000/api/users/avatar/" + req.user.id); //`${this.SERVER_URL}${file.path}`
   }
 
@@ -64,7 +50,7 @@ export class UsersController {
     let user = await this.usersService.findOne(id);
     if (user.pictureLocalFilename === "")
     {
-      console.log("Using default avatar from 42 api...");
+      console.log("Using default avatar from 42 api... at", user.picture42URL);
       return res.redirect(user.picture42URL); //?
     }
     return res.sendFile(user.pictureLocalFilename, { root: 'src/uploads/avatar'});

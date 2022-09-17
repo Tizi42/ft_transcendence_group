@@ -26,35 +26,11 @@ const items = ref([]);
 const show = ref(false);
 
 function getPictureUrl(id: number): string {
-  return (
-    "http://localhost:3000/api/users/avatar/" +
-    id.toString() +
-    "?_=" +
-    `${+new Date()}`
-  );
-}
-
-const images = ref([]);
-
-function preload(ids: Ref<[]>) {
-  for (var i = 0; i < ids.length; i++) {
-    images.value[i] = new Image();
-    images.value[i].src =
-      "http://localhost:3000/api/users/avatar/" + ids[i].toString();
-  }
-}
-
-async function preloadPic() {
-  const ids = ref([]);
-  for await (const [user] of props.leaderboard.entries()) {
-    ids.value.push(user.id);
-  }
-  preload(ids.value);
+  return "http://localhost:3000/api/users/avatar/" + id.toString();
 }
 
 //  usefull functions
 async function reshowData() {
-  await preloadPic();
   for await (const [key, item] of props.leaderboard.entries()) {
     setTimeout(() => {
       items.value.push(item);
