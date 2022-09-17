@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { Message } from "src/chat/message.entity";
 import { Any, DataSource, Repository } from "typeorm";
 import { User } from "./Users.entity";
 import { FriendshipDto } from "./utils/friendship.dto";
@@ -10,7 +11,10 @@ import { UserDto } from "./utils/user.dto";
 export class UsersService {
   constructor(
       @InjectRepository(User)
-      private readonly usersRepository: Repository<User>
+      private readonly usersRepository: Repository<User>,
+
+      @InjectRepository(Message)
+      private readonly messageRepository: Repository<Message>
   ) {}
 
   async updateUserAvatar(id: number, filename: string, pictureUrl: string): Promise<any> {
@@ -68,6 +72,7 @@ export class UsersService {
   }
 
   async removeAll(): Promise<void> {
+    await this.messageRepository.delete({});
     await this.usersRepository.delete({});
   }
 
@@ -262,5 +267,24 @@ export class UsersService {
       target.totalVictories++;
     target.winRate = target.totalVictories / target.totalGames;
     this.usersRepository.save(target);
+  }
+
+  /*
+  **    INIT DATABASE WITH FAKE USERS
+  */
+
+  createFakeUsers(nb: number)
+  {
+    for (var i = 0; i < nb; i++) {
+      let newUser = new User();
+      newUser.displayName = "User" + i.toString();
+      newUser.username = "username" + i.toString();
+      newUser.email = "user" + i.toString() + "@student.42.fr";
+	    this.usersRepository.insert(newUser);
+      let id = this.usersRepository.getId(newUser);
+      newUser.pictureLocalFilename = "default.png";
+      newUser.picture = id;
+      newUser.picture42URL = "";
+    }
   }
 }
