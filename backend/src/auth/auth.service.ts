@@ -4,12 +4,12 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Response } from 'express';
 import { authenticator } from 'otplib';
-import { User } from 'src/users/Users.entity';
 import { UsersService } from 'src/users/users.service';
 import { UserDetails } from 'src/users/utils/types';
 import { Repository } from 'typeorm';
 import { JwtPayload} from './strategy/jwt.strategy';
 import { toFileStream } from 'qrcode';
+import { User } from 'src/users/users.entity';
 
 @Injectable()
 export class AuthService {

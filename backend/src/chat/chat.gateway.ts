@@ -56,7 +56,7 @@ export class ChatGateway implements OnGatewayConnection {
         console.log('Message from: ');
         console.log(data.author);
         console.log('who says: ' + data.content);
-        data.author = author;
+        // data.author = author;
         console.log('Message from: ');
         console.log(data.author);
         this.chatService.saveMessage(data);
