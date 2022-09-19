@@ -1,35 +1,30 @@
 <template>
-  <div class="chatPages">
-    <div class="box chat">
-      <div id="echange">
-        <div v-for="(message, index) in history" :key="index">
-          <div v-if="message.authorId === 1" class="messageBlockOut">
-            <p class="message message-out">
-              {{ message.authorId.username }}
-              {{ message.content }}
-            </p>
-            <img :src="message.authorId.picture" class="photo" />
-          </div>
-          <div v-else class="messageBlockIn">
-            <img :src="message.authorId.picture" class="photo" />
-            <p class="message message-in">
-              {{ message.authorId.username }}
-              {{ message.content }}
-            </p>
-          </div>
+  <div class="box chat">
+    <div id="echange">
+      <div v-for="(message, index) in history" :key="index">
+        <div v-if="message.authorId === 1" class="messageBlockOut">
+          <p class="message message-out">
+            {{ message.content }}
+          </p>
+          <img :src="message.author.picture" class="photo" />
+        </div>
+        <div v-else class="messageBlockIn">
+          <img :src="message.dest.picture" class="photo" />
+          <p class="message message-in">
+            {{ message.content }}
+          </p>
         </div>
       </div>
-      <form @submit.prevent="onSubmit" @keyup.enter="onSubmit" class="form">
-        <textarea v-model="input" placeholder="Your message..." class="input" />
-        <button :disabled="input === ''" class="send-button">Send</button>
-      </form>
     </div>
+    <form @submit.prevent="onSubmit" @keyup.enter="onSubmit" class="form">
+      <textarea v-model="input" placeholder="Your message..." class="input" />
+      <button :disabled="input === ''" class="send-button">Send</button>
+    </form>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { createDOMCompilerError } from "@vue/compiler-dom";
 
 export default defineComponent({
   name: "MessagesView",
@@ -64,8 +59,8 @@ onBeforeMount(async () => {
 function onSubmit() {
   const data = {
     content: input.value,
+    author: 6,
     dest: 1,
-    author: prop.chosenProfile.id,
   };
   console.log("dest =", data.dest);
   socket.emit("send_message", data);
@@ -74,14 +69,12 @@ function onSubmit() {
 }
 function getMessages() {
   // console.log(prop.chosenProfile.id);
-  fetch("http://localhost:3000/api/chat/messages/" + 5)
+  fetch("http://localhost:3000/api/chat/messages/" + 6)
     .then((response) => response.json())
     .then((data) => {
       data.forEach((el: any) => {
-        console.log("history id auth = ", el.authorId);
         history.value.push(el);
       });
-      console.log("history id pic= ", history.value[0].destId.username);
     })
     .catch((err) => console.error(err));
 }
@@ -89,7 +82,8 @@ function getMessages() {
 
 <style scoped>
 .chat {
-  width: 200%;
+  width: 100%;
+  margin-right: 5%;
 }
 .input {
   border-radius: 12px;

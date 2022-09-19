@@ -115,11 +115,11 @@ function renderCorresponding(prof: any) {
   overflow: auto;
   box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.3);
   height: 100%;
-  margin-right: 2%;
-  margin-left: 5%;
+  margin-right: 1%;
 }
 .list {
-  width: 20%;
+  width: 15%;
+  margin-left: 5%;
 }
 .photo {
   display: block;
