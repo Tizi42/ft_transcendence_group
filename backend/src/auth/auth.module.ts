@@ -4,11 +4,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthController } from './auth.controller';
 import { FortyTwoStrategy } from './strategy/42.strategy';
 import { UsersModule } from 'src/users/users.module';
-import { User } from 'src/users/users.entity';
 import { JwtAuthStrategy } from './strategy/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { jwtTwoFactorStrategy } from './strategy/jwt-2fa.strategy';
+import { User } from 'src/users/users.entity';
 
 @Module({
 	imports: [

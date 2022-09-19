@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from "@nestjs/typeorm";
-import { User } from 'src/users/users.entity';
-import { createQueryBuilder, DataSource, Repository } from "typeorm";
+import { WsException } from '@nestjs/websockets';
+import { Socket } from 'socket.io';
+import { AuthService } from 'src/auth/auth.service';
+import { Repository } from "typeorm";
 import { Chat } from './entities/chat.entity';
 import { messageInfos } from './utils/types';
 
@@ -10,8 +12,7 @@ export class ChatService {
     constructor(
         @InjectRepository(Chat)
         private readonly chatRepository: Repository<Chat>,
-        @InjectRepository(User)
-        private readonly userRepository: Repository<User>,
+        private readonly authService: AuthService,
     ) {}
 
     async saveMessage(content: messageInfos): Promise<Chat> {
@@ -33,7 +34,20 @@ export class ChatService {
         .where('"destId" = :id', { id: id })
         .orWhere('"authorId" = :id', { id: id })
         .getRawMany();
-        console.log(query);
+        // console.log(query);
         return query;
+    }
+    async getUserFromSocket(socket: Socket) {
+        const cookieJwt = socket.handshake.headers.cookie
+            .split('; ')
+            .find((cookie: string) => cookie.startsWith('jwt'))
+            .split('=')[1];
+        const user = await this.authService.getUserFromAuthenticationToken(cookieJwt);
+
+        if (!user) {
+            throw new WsException('Invalid Credentials !');
+        }
+        socket.data = user;
+        return user;
     }
 }

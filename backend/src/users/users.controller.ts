@@ -20,7 +20,7 @@ export class UsersController {
 
   @Post('/add')
   create(@Body() user: UserDto) {
-    return this.usersService.addOne(user);
+    return this.usersService.createNewUser(user);
   }
 
   // to delete 
