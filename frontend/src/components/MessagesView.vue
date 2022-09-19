@@ -1,26 +1,24 @@
 <template>
   <div class="chatPages">
-    <div class="chatroom">
-      <div
-        v-for="(message, index) in history"
-        :key="index"
-        class="messageBlockOut"
-      >
-        <p class="message message-out">
-          {{ history[index] }}
-        </p>
-        <img :src="profile.picture" class="photo" />
+    <div class="box chat">
+      <div id="echange">
+        <div v-for="(message, index) in history" :key="index">
+          <div v-if="message.authorId === 1" class="messageBlockOut">
+            <p class="message message-out">
+              {{ message.authorId.username }}
+              {{ message.content }}
+            </p>
+            <img :src="message.authorId.picture" class="photo" />
+          </div>
+          <div v-else class="messageBlockIn">
+            <img :src="message.authorId.picture" class="photo" />
+            <p class="message message-in">
+              {{ message.authorId.username }}
+              {{ message.content }}
+            </p>
+          </div>
+        </div>
       </div>
-      <!-- <div
-        v-for="(messageFrom, index) in historyFrom"
-        :key="index"
-        class="messageBlockIn"
-      >
-        <p class="message message-in">
-          {{ historyFrom[index] }}
-        </p>
-        <img :src="profileFrom.picture" class="photo" />
-      </div> -->
       <form @submit.prevent="onSubmit" @keyup.enter="onSubmit" class="form">
         <textarea v-model="input" placeholder="Your message..." class="input" />
         <button :disabled="input === ''" class="send-button">Send</button>
@@ -31,6 +29,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { createDOMCompilerError } from "@vue/compiler-dom";
 
 export default defineComponent({
   name: "MessagesView",
@@ -38,15 +37,13 @@ export default defineComponent({
 </script>
 
 <script setup lang="ts">
-import { onBeforeMount, Ref, ref, defineProps } from "vue";
+import { onBeforeMount, Ref, ref, defineProps, onMounted } from "vue";
 import socket from "../socket";
 
 const input: Ref<any> = ref("");
 const history: Ref<any> = ref([]);
-const profile: Ref<any> = ref("");
-const index = ref(0);
-
-defineProps(["profileFrom"]);
+const profile: Ref<any> = ref([]);
+const prop = defineProps(["chosenProfile"]);
 
 onBeforeMount(async () => {
   await fetch("http://localhost:3000/api/private", {
@@ -67,26 +64,33 @@ onBeforeMount(async () => {
 function onSubmit() {
   const data = {
     content: input.value,
-    author: 4,
     dest: 1,
+    author: prop.chosenProfile.id,
   };
+  console.log("dest =", data.dest);
   socket.emit("send_message", data);
   input.value = null;
   window.location.reload();
 }
 function getMessages() {
-  fetch("http://localhost:3000/api/chat")
+  // console.log(prop.chosenProfile.id);
+  fetch("http://localhost:3000/api/chat/messages/" + 5)
     .then((response) => response.json())
     .then((data) => {
       data.forEach((el: any) => {
-        history.value.push(el.content);
+        console.log("history id auth = ", el.authorId);
+        history.value.push(el);
       });
+      console.log("history id pic= ", history.value[0].destId.username);
     })
     .catch((err) => console.error(err));
 }
 </script>
 
 <style scoped>
+.chat {
+  width: 200%;
+}
 .input {
   border-radius: 12px;
   background: #ffffff;
@@ -109,8 +113,16 @@ function getMessages() {
   min-width: 50px;
   padding: 10px;
 }
+.messageBlockOut {
+  display: flex;
+  justify-content: right;
+}
 .messageBlockIn {
   display: flex;
   justify-content: left;
+}
+#echange {
+  display: flex;
+  flex-direction: column;
 }
 </style>

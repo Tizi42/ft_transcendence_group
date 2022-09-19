@@ -1,27 +1,48 @@
 import { Chat } from "src/chat/entities/chat.entity";
-import { Column, Entity,  OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'users' })
 export class User {
-    
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
+  
+  @Column()
+  username: string;
+  
+  @Column()
+  displayName: string;
+  
+  @Column({default: "nobody@42.intra.fr"})
+  email: string;
 
-    @Column()
-    username: string;
+  @Column({default: ""})
+  picture: string;
+  
+  @Column({ nullable: true })
+  twoFactorAuthenticationSecret: string;
 
-    @Column()
-    displayName: string;
+  @Column({ default: false })
+  isTwoFactorAuthenticationEnabled: boolean;
 
-    @Column()
-    email: string;
+  @Column({ default: true })
+  isFirstEnablingTwoFactor: boolean;
+  
+  @Column("int", { array: true, default: {} })
+  friendWith: number[];
 
-    @Column()
-    picture: string;
+  @Column("int", { array: true, default: {} })
+  friendOf: number[];
 
-    @Column('bool', { nullable : true })
-    isConnected: boolean;
+  @Column("int", { array: true, default: {} })
+  blocked: number[];
 
-    @OneToMany( () => Chat, (messages) => messages.author )
-    messages?: Chat[];
+  @Column("int", { array: true, default: {} })
+  blockedBy: number[];
+
+  @Column('bool', { nullable : true })
+  isConnected: boolean;
+
+  @OneToMany( () => Chat, (messages) => messages.author )
+  messages?: Chat[];
+
 }

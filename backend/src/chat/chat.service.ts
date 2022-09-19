@@ -20,28 +20,20 @@ export class ChatService {
         return await this.chatRepository.save(newMessage);
     }
     async getMessages(): Promise<Chat[]> {
-        console.log("GET");
+        console.log("GET MESSAGES");
         return await this.chatRepository.find({ relations: ['author'] });
     }
     async getAllDest(): Promise<Chat[]> {
-        console.log("GET DEST");
+        console.log("GET DESTS");
         return await this.chatRepository.find({ relations: ['dest'] });
     }
-    async getMessagesById(dest: number) {
-        // const destId = await this.userRepository.findOne(id);
-        // console.log("=> " + destId.id);
-        // const chat = await this.chatRepository.find({
-        //     where: { dest: destId },
-        //     skip: 0,
-        //     take: 1,
-        // });
-        // const query = await this.chatRepository.createQueryBuilder()
-        // .select("*")
-        // .from(Chat, "chat")
-        // .where("'destId' = :id", { id: dest })
-        // .getMany()
-        const query = await this.chatRepository.query('SELECT * FROM chat WHERE "destId" =' + dest);
-
-        console.log("=> " + query);
+    async getMessagesById(id: number): Promise<Chat[]>{
+        const query = await this.chatRepository.createQueryBuilder()
+        .select("*")
+        .where('"destId" = :id', { id: id })
+        .orWhere('"authorId" = :id', { id: id })
+        .getRawMany();
+        console.log(query);
+        return query;
     }
 }
