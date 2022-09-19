@@ -19,11 +19,17 @@ import { defineComponent, defineExpose, defineProps } from "vue";
 import { onMounted, onUpdated } from "vue";
 import { ref, Ref } from "vue";
 import PlayerResult from "./PlayerResult.vue";
+import { User } from "../../../../backend/src/users/Users.entity";
 
 //  variables
-const props = defineProps(["leaderboard"]);
-const items = ref([]);
-const show = ref(false);
+const props = defineProps({
+  leaderboard: {
+    type: Array<User>,
+    required: true,
+  },
+});
+const items: Ref<Array<User>> = ref([]);
+const show: Ref<boolean> = ref(false);
 
 function getPictureUrl(id: number): string {
   return "http://localhost:3000/api/users/avatar/" + id.toString();

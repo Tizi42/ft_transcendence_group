@@ -43,13 +43,17 @@ const cssClassTab: Ref<string[3]> = ref([
   "tabContainer",
 ]);
 
-function changeOrder(order: number) {
-  props.reorder(order);
-  selectedOrder.value = order;
+function changeStyle(order: number) {
   cssClassTab.value[0] = "tabContainer";
   cssClassTab.value[1] = "tabContainer";
   cssClassTab.value[2] = "tabContainer";
   cssClassTab.value[order] = "selectedTabContainer";
+}
+
+function changeOrder(order: number) {
+  props.reorder(order);
+  selectedOrder.value = order;
+  changeStyle(order);
 }
 
 function getClassStyleOf(tab: number): string {
