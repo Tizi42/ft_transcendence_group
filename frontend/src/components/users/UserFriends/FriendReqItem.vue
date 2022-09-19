@@ -1,18 +1,27 @@
 <template>
-  <div class="friend-item">
-    <div
-      class="avatar-frame"
-      ref="avatarFrame"
-      :style="{
-        'background-image': 'url(' + sender.picture + ')',
-      }"
-    ></div>
+  <div class="request-frame">
     <div class="info">
-      <div class="name">{{ sender.displayName }}#{{ sender.id }}</div>
-      <div class="message">sent you a friend request</div>
+      <div class="message">
+        <span class="name">{{ sender.displayName }}</span>
+        wants to be friends with you!
+      </div>
     </div>
-    <button @click="onHandleFriendRequest('accept')">accept</button>
-    <button @click="onHandleFriendRequest('ignore')">ignore</button>
+    <div class="button-section">
+      <button
+        class="buttons"
+        id="button-accept"
+        @click="onHandleFriendRequest('accept')"
+      >
+        accept
+      </button>
+      <button
+        class="buttons"
+        id="button-ignore"
+        @click="onHandleFriendRequest('ignore')"
+      >
+        ignore
+      </button>
+    </div>
   </div>
 </template>
 
@@ -22,10 +31,10 @@ import { useUserStore } from "@/stores/user";
 import axios from "axios";
 
 const user = useUserStore();
-const props = defineProps(["sender"]); //later: delete userstore and use this prop instead
+const props = defineProps(["sender"]);
 
-function onHandleFriendRequest(action: string) {
-  axios
+async function onHandleFriendRequest(action: string) {
+  await axios
     .post("http://localhost:3000/api/users/friends/" + action, {
       id1: props.sender.id,
       id2: user.id,
@@ -47,24 +56,63 @@ defineExpose(
 </script>
 
 <style scoped>
-.friend-item {
+.request-frame {
+  font-family: "Outfit";
+  color: white;
   display: flex;
   width: 100%;
-  min-width: 260px;
-  height: 110px;
+  height: 50px;
   background-color: rgba(20, 29, 1, 1);
   border-radius: 12px;
+  white-space: nowrap;
 }
-.avatar-frame {
-  margin-left: 0.5em;
-  display: inline-block;
-  border-radius: 100%;
-  background-position: center;
-  background-size: cover;
-  min-width: 70px;
-  height: 70px;
+
+.info {
+  display: flex;
   align-self: center;
-  margin-left: 7%;
-  border: 3px solid #ffcb00;
+  margin-left: 5%;
+  text-align: left;
+  font-family: "Outfit";
+  font-size: 20px;
+}
+
+.name {
+  text-decoration: underline;
+  color: rgba(255, 203, 0, 0.7);
+}
+
+.name:hover {
+  cursor: pointer;
+}
+.button-section {
+  align-self: center;
+  margin-right: 5%;
+  margin-left: auto;
+}
+
+.buttons {
+  align-self: center;
+  font-family: "Outfit";
+  font-size: 18px;
+  border: none;
+  border-radius: 12px;
+  margin-left: 1em;
+  padding: 0.2em 1em 0.2em 1em;
+  color: white;
+  background-color: rgba(30, 42, 2, 0.7);
+}
+
+#button-accept {
+  background-color: rgba(18, 214, 84, 0.8);
+}
+
+#button-ignore {
+  background-color: rgba(212, 57, 29, 0.8);
+}
+
+#button-ignore:hover,
+#button-accept:hover {
+  cursor: pointer;
+  transform: scale(1.1, 1.1);
 }
 </style>

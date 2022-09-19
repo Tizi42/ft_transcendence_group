@@ -18,16 +18,17 @@
           'background-image': 'url(' + targetUser.picture + ')',
         }"
       ></div>
-      <div>{{ targetUser.displayName }}</div>
+      <div class="target-name">{{ targetUser.displayName }}</div>
     </div>
     <button v-if="pending" id="cancel-button" class="buttons" @click="onCancel">
       Cancel
     </button>
     <button
-      v-if="!pending && !friendWith"
+      v-if="!pending"
       id="send-button"
       class="buttons"
       @click="onSend"
+      :disabled="friendWith"
     >
       Send
     </button>
@@ -110,19 +111,14 @@ defineExpose(
 
 <style scoped>
 .avatar-frame {
-  margin-left: 0.5em;
   display: inline-block;
-  border-radius: 100%;
+  border-radius: 20%;
   background-position: center;
   background-size: cover;
-  min-width: 70px;
-  height: 70px;
+  min-width: 50px;
+  height: 50px;
   align-self: center;
-  margin-left: 7%;
-}
-
-.target-info {
-  display: flex;
+  margin: 7%;
 }
 
 #search-form {
@@ -136,7 +132,41 @@ defineExpose(
   font-size: 22px;
 }
 
+#search-button {
+  margin: 10px;
+  padding: 0;
+}
+
 #search-result {
   display: flex;
+  align-items: center;
+  width: 60%;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: grey;
+  border-radius: 10px;
+}
+.target-info {
+  display: flex;
+  align-items: center;
+}
+.buttons {
+  margin-left: auto;
+  margin-right: 1em;
+  align-self: center;
+  font-family: "Outfit";
+  font-size: 18px;
+  border-radius: 12px;
+  padding: 0.2em 1em 0.2em 1em;
+  border: none;
+}
+.buttons:enabled {
+  color: white;
+  background-color: var(--main-color);
+}
+
+.buttons:enabled:hover {
+  cursor: pointer;
+  transform: scale(1.1, 1.1);
 }
 </style>

@@ -1,6 +1,11 @@
 <template>
   <div class="friends-section">
     <div class="friends-buttons">
+      <div v-if="pending">
+        <div class="pending-grid">
+          <FriendReqItem v-for="req in pending" :key="req" :sender="req" />
+        </div>
+      </div>
       <img
         class="icon-button"
         src="@/assets/icons/icon-add.png"
@@ -8,7 +13,7 @@
         @click="onAdd"
       />
       <teleport to="body">
-        <MyModal v-if="addWindow">
+        <MyModal v-if="addWindow" @hide="hide">
           <AddFriend />
         </MyModal>
       </teleport>
@@ -17,12 +22,6 @@
         src="@/assets/icons/icon-filter.png"
         alt="filter button"
       />
-    </div>
-    <div v-if="pending">
-      <div>Incoming friend request</div>
-      <div class="friends-grid">
-        <FriendReqItem v-for="req in pending" :key="req" :sender="req" />
-      </div>
     </div>
     <div v-if="friends">
       <div class="friends-grid">
@@ -84,6 +83,10 @@ function onAdd() {
   console.log("set add window true");
 }
 
+function hide() {
+  addWindow.value = false;
+}
+
 onBeforeMount(() => {
   doFetchFriends();
   doFetchPending();
@@ -108,7 +111,7 @@ defineExpose(
 }
 
 .icon-button {
-  margin: 5px 15px 5px 5px;
+  margin: 5px 15px 15px 5px;
   height: 24px;
   width: 24px;
   display: inline-block;
@@ -119,11 +122,19 @@ defineExpose(
   transform: scale(1.1, 1.1);
 }
 
+.pending-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  width: 77%;
+  grid-gap: 5px;
+  margin-bottom: 20px;
+}
+
 .friends-grid {
   max-height: 500px;
   overflow-y: scroll;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   width: 99%;
   grid-gap: 15px;
   margin-bottom: 50px;
