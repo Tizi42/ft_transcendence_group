@@ -28,7 +28,6 @@ export class ChatGateway {
         console.log(data.author);
         console.log('who says: ' + data.content);
         this.chatService.saveMessage(data);
-        // envoi d'un message au client = socket.emit 
         this.server.sockets.emit('receive_message', data);
     };
 }

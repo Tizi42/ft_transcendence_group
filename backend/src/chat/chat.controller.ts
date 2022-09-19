@@ -18,17 +18,24 @@ export class ChatController {
     const boxes = await this.chatService.getMessages();
     return res.json(boxes);
   }
+
+  @Get('messages/:id')
+  async chatWith(@Res() res, @Param('id') id) {
+    const boxes = await this.chatService.getMessagesById(id);
+    console.log("hi there = ", boxes);
+    return res.json(boxes);
+  }
   @Get('dest')
   async dest(@Res() res) {
     const dest = await this.chatService.getAllDest();
     return res.json(dest);
   }
   @Get(':id')
-  async lastMessage(@Param('id') id) {
-    console.log("[LAST]");
-    console.log(id);
+  async lastMessages(@Param('id') id) {
     const messages = await this.chatService.getMessagesById(id);
-    console.log(messages);
-    return messages;
+    const last = messages[messages.length - 1];
+    console.log("LAST =");
+    console.log(last);
+    return last;
   }
 }

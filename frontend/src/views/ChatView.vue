@@ -1,25 +1,39 @@
 <template>
   <div class="chatPage">
     <h1>This is the CHAT page</h1>
-    <div v-for="(message, index) in history" :key="index" class="chatroom">
-      <p class="message">
-        {{ history[index] }}
-      </p>
-      <img :src="profileFrom.picture" class="photo" />
+    <div class="chatroom">
+      <div class="box list">
+        <div
+          class="block"
+          v-for="(prof, index) in profileFrom"
+          :key="index"
+          @click="renderCorresponding(prof)"
+        >
+          <img :src="prof.picture" class="photo select" />
+          <div class="infos">
+            <p id="userinfos">
+              {{ prof.username }}
+            </p>
+            <p id="messagelist">
+              {{ lastMessage[index] }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <MessagesView :chosenProfile="chosenProfile"></MessagesView>
     </div>
-    <MessagesView></MessagesView>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { Ref, ref, onBeforeMount, onUnmounted } from "vue";
+import { Ref, ref, onBeforeMount, onUnmounted, onMounted } from "vue";
 import socket from "../socket";
 import MessagesView from "../components/MessagesView.vue";
 
-const history: Ref<any> = ref([]);
+const lastMessage: Ref<any> = ref([]);
 const profile: Ref<any> = ref("");
-const profileFrom: Ref<any> = ref("");
-const index = ref(0);
+const profileFrom: Ref<Array<any>> = ref([]);
+const chosenProfile: Ref<any> = ref("");
 
 onBeforeMount(async () => {
   await fetch("http://localhost:3000/api/private", {
@@ -35,32 +49,40 @@ onBeforeMount(async () => {
       console.log(error);
     });
   getAllDest();
-  getLastMessage();
 });
+
 onUnmounted(() => {
-  socket.off("send_messag 18e");
+  socket.off("send_message");
 });
+
 function getAllDest() {
   fetch("http://localhost:3000/api/chat/dest")
     .then((response) => response.json())
     .then((data) => {
       data.forEach((el: any) => {
-        console.log(el.dest.id);
-        profileFrom.value = el.dest;
+        if (el.dest.id !== 1) {
+          getLastMessage(el.dest.id);
+          profileFrom.value.push(el.dest);
+        }
       });
+      chosenProfile.value = profileFrom.value[profileFrom.value.length - 1];
     })
     .catch((err) => console.error(err));
 }
-function getLastMessage() {
-  fetch("http://localhost:3000/api/chat/" + 4)
+
+function getLastMessage(id: number) {
+  fetch("http://localhost:3000/api/chat/" + id)
     .then((response) => response.json())
     .then((data) => {
-      data.forEach((el: any) => {
-        console.log("HISTORY = " + el.content);
-        history.value.push(el.content);
-      });
+      lastMessage.value.push(data.content);
     })
     .catch((err) => console.error(err));
+}
+
+function renderCorresponding(prof: any) {
+  console.log("before = ", chosenProfile.value);
+  chosenProfile.value = prof;
+  console.log("after = ", chosenProfile.value);
 }
 </script>
 
@@ -76,20 +98,30 @@ function getLastMessage() {
   width: 100vw;
   padding-top: 2em;
   padding-bottom: 5em;
+  display: flex;
+  flex-direction: column;
 }
 .chatroom {
+  display: flex;
+  flex-direction: row;
+  height: 80%;
+  width: 100%;
+}
+.box {
   overflow-y: scroll;
   scroll-behavior: smooth;
   background: #1e2b02;
   border-radius: 22px;
-  width: 90%;
-  padding: 5px;
-  margin: 5% 5% 10% 5%;
   overflow: auto;
   box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.3);
+  height: 100%;
+  margin-right: 2%;
+  margin-left: 5%;
+}
+.list {
+  width: 20%;
 }
 .photo {
-  position: relative;
   display: block;
   width: 35px;
   height: 35px;
@@ -98,8 +130,27 @@ function getLastMessage() {
   margin-left: 2%;
   box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.3);
 }
-.messageBlockOut {
+.block {
+  cursor: pointer;
+  background: #005f3e;
+  box-shadow: 2px 2px 2px 2px rgba(1, 53, 28, 0.527);
   display: flex;
-  justify-content: right;
+  flex-direction: row;
+}
+.block:active {
+  background-color: #feca00;
+}
+#messagelist {
+  margin-left: 5%;
+  font-size: 10px;
+}
+.infos {
+  width: 50%;
+}
+#userinfos {
+  font-family: "Outfit SemiBold";
+  font-size: 10px;
+  color: white;
+  padding-right: 40%;
 }
 </style>
