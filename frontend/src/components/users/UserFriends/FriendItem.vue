@@ -8,7 +8,7 @@
       }"
     ></div>
     <div class="info">
-      <div class="name">{{ friend.displayName }}#{{ friend.id }}</div>
+      <div class="name">{{ friend.displayName }}</div>
       <div class="status">
         <div class="status-rond" ref="statusRound"></div>
         <div class="status-text" ref="statusText">In game</div>
@@ -36,7 +36,7 @@ const user = useUserStore();
 const props = defineProps(["friend"]); //later: delete userstore and use this prop instead
 console.log("friend:", props.friend);
 const show = ref(false);
-const buttonText = computed(() => (show.value === true ? "=" : "..."));
+const buttonText = computed(() => (show.value === true ? "+" : "="));
 const clickCoord = ref({
   x: 0,
   y: 0,
@@ -62,6 +62,7 @@ defineExpose(
 
 <style scoped>
 .friend-item {
+  white-space: nowrap;
   display: flex;
   width: 100%;
   min-width: 260px;
@@ -79,7 +80,7 @@ defineExpose(
   height: 70px;
   align-self: center;
   margin-left: 7%;
-  border: 3px solid #ffcb00;
+  border: 1px solid #ffcb00;
 }
 
 .info {
