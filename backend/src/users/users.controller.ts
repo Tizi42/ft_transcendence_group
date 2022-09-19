@@ -128,4 +128,12 @@ export class UsersController {
 	  return this.usersService.getBlockedBy(id);
   }
 
+  /*
+  **    LEADERBOARD
+  */
+
+  @Get('/leaderboard/:id')
+  getLeaderboard(@Param('id') order: number) {
+    return this.usersService.getLeaderboard(order);
+  }
 }

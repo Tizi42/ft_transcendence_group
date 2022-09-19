@@ -8,7 +8,7 @@
     </div>
     <div class="results">
       <div class="points">{{ player.totalVictories }}</div>
-      <div class="winRate">{{ player.winRate }}</div>
+      <div class="winRate">{{ player.winRate }}%</div>
       <div class="gamesNb">{{ player.totalGames }}</div>
     </div>
   </div>
