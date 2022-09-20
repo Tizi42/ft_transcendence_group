@@ -11,7 +11,7 @@
       <div class="name">{{ friend.displayName }}</div>
       <div class="status">
         <div class="status-rond" ref="statusRound"></div>
-        <div class="status-text" ref="statusText">In game</div>
+        <div class="status-text" ref="statusText">In Game</div>
       </div>
     </div>
     <button
@@ -87,7 +87,7 @@ defineExpose(
 .info {
   align-self: center;
   color: white;
-  margin-left: 7%;
+  margin-left: 6%;
   font-family: "Outfit";
   text-align: left;
 }
@@ -105,7 +105,7 @@ defineExpose(
 
 .status-text {
   font-weight: 300;
-  font-size: 16px;
+  font-size: 14px;
   margin-left: 5%;
   width: 6em;
 }
@@ -113,9 +113,9 @@ defineExpose(
 .status-rond {
   border-radius: 100%;
   background-color: rgba(212, 57, 29, 1);
-  min-width: 12px;
-  height: 12px;
-  margin-left: 5%;
+  min-width: 10px;
+  height: 10px;
+  margin-left: 2%;
 }
 
 .friend-menu-button {
