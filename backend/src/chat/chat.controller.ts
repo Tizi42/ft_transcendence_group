@@ -42,8 +42,8 @@ export class ChatController {
   async lastMessages(@Param('id') id) {
     const messages = await this.chatService.getMessagesById(id);
     const last = messages[messages.length - 1];
-    // console.log("LAST =");
-    // console.log(last);
+    console.log("LAST = ", id);
+    console.log(last);
     return last;
   }
 }
