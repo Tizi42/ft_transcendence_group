@@ -43,4 +43,13 @@ export class User {
 
   @Column("int", { array: true, default: {} })
   blockedBy: number[];
+
+  @Column({default: 0})
+  totalGames: number;
+
+  @Column({default: 0})
+  totalVictories: number;
+
+  @Column({default: -1, nullable: true})
+  winRate: number;
 }

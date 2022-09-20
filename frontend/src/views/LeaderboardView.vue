@@ -10,15 +10,15 @@
     <div class="content">
       <LeaderBoard
         title="Global"
-        :ready="dataReadyPersonal"
-        :leaderboard="leaderboardGlobal"
-        :reorder="reloadAndOrderGlobal"
+        :ready="dataReady[0]"
+        :leaderboard="leaderboard[0]"
+        :reorder="reloadAndOrder(0)"
       />
       <LeaderBoard
         title="Friends"
-        :ready="dataReadyGlobal"
-        :leaderboard="leaderboardPersonal"
-        :reorder="reloadAndOrderPersonal"
+        :ready="dataReady[1]"
+        :leaderboard="leaderboard[1]"
+        :reorder="reloadAndOrder(1)"
       />
     </div>
   </div>
@@ -28,46 +28,34 @@
 import "@/assets/styles/historyAndLeaderboard.css";
 import { defineComponent, defineExpose, ref } from "vue";
 import { onBeforeMount } from "vue";
+import { getUrlOf } from "@/router";
 import LeaderBoard from "@/components/Leaderboard/Leaderboard.vue";
 
-const dataReadyGlobal = ref(false);
-const dataReadyPersonal = ref(false);
-const leaderboardGlobal = ref({});
-const leaderboardPersonal = ref({});
+const dataReady = ref([false, false]);
+const leaderboard = ref([{}, {}]);
+const orders = ref([1, 1]);
 
-// setTimeout to delay loading -> to remove
+async function reloadOne(index: number) {
+  let response = await fetch(
+    getUrlOf("api/users/leaderboard/" + orders.value[index].toString()),
+    {
+      credentials: "include",
+    }
+  );
+  leaderboard.value[index] = await response.json();
+  dataReady.value[index] = true;
+}
+
 async function reloadAll() {
-  setTimeout(async () => {
-    let response = await fetch("http://localhost:3000/api/users", {
-      credentials: "include",
-    });
-    leaderboardGlobal.value = await response.json();
-    leaderboardPersonal.value = leaderboardGlobal.value; // to change
-    dataReadyGlobal.value = true;
-    dataReadyPersonal.value = true;
-  }, 1000);
+  reloadOne(0);
+  reloadOne(1);
 }
 
-async function reloadAndOrderGlobal(order: number) {
-  console.log("new order for global:", order);
-  setTimeout(async () => {
-    let response = await fetch("http://localhost:3000/api/users", {
-      credentials: "include",
-    });
-    leaderboardGlobal.value = await response.json();
-    dataReadyGlobal.value = true;
-  }, 1000);
-}
-
-async function reloadAndOrderPersonal(order: number) {
-  console.log("new order for personal:", order);
-  setTimeout(async () => {
-    let response = await fetch("http://localhost:3000/api/users", {
-      credentials: "include",
-    });
-    leaderboardPersonal.value = await response.json();
-    dataReadyPersonal.value = true;
-  }, 1000);
+function reloadAndOrder(index: number) {
+  return async function reloadAndOrderFunc(order: number) {
+    orders.value[index] = order;
+    reloadOne(index);
+  };
 }
 
 onBeforeMount(async () => {
