@@ -7,6 +7,7 @@
       placeholder="Search by user id"
       required="true"
       autofocus
+      :style="{ border: inputBorder }"
     />
     <input id="search-button" type="submit" value="Search" />
   </form>
@@ -45,11 +46,13 @@ let input = ref("");
 let targetUser = ref();
 let pending = ref(false);
 let friendWith = ref(false);
+let inputBorder = ref("none");
 
 function onClickSearch() {
   targetUser.value = null;
   pending.value = false;
   friendWith.value = false;
+  inputBorder.value = "none";
 
   console.log(input.value);
   axios
@@ -65,10 +68,15 @@ function onClickSearch() {
           friendWith.value = true;
         else if (targetUser.value.friendPendingReqFrom.includes(user.id))
           pending.value = true;
+      } else {
+        inputBorder.value = "4px solid red";
+        input.value = "";
       }
     })
     .catch((error) => {
       console.log(error);
+      inputBorder.value = "4px solid red";
+      input.value = "";
     });
 }
 
