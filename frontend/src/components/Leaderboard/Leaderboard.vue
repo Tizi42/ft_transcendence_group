@@ -34,7 +34,7 @@ type ReorderFunction = (order: number) => void;
 interface Props {
   leaderboard: Array<User>;
   ready: boolean;
-  type: string;
+  title: string;
   reorder: ReorderFunction;
 }
 

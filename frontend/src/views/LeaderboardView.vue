@@ -38,7 +38,12 @@ const orders: Ref<Array<number>> = ref([1, 1]);
 
 async function reloadOne(index: number) {
   let response: Response = await fetch(
-    getUrlOf("api/users/leaderboard/" + orders.value[index].toString()),
+    getUrlOf(
+      "api/users/leaderboard?order=" +
+        orders.value[index].toString() +
+        "&global=" +
+        (index == 0 ? "true" : "false")
+    ),
     {
       credentials: "include",
     }

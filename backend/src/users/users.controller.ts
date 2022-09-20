@@ -3,13 +3,12 @@ import { FriendshipDto } from "./utils/friendship.dto";
 import { User } from "./Users.entity";
 import { UsersService } from "./users.service";
 import { UserDto } from "./utils/user.dto";
-import { Express, Request, Response } from "express";
+import { Express, Response } from "express";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { sharp } from "sharp";
 import { extname } from "path";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
-import { identity } from "rxjs";
 import RequestWithUser from "./utils/requestWithUser.interface";
 
 export const storage = {
@@ -151,8 +150,11 @@ export class UsersController {
   **    LEADERBOARD
   */
 
-  @Get('/leaderboard/:id')
-  getLeaderboard(@Param('id') order: number) {
-    return this.usersService.getLeaderboard(order);
+  @UseGuards(JwtAuthGuard)
+  @Get('/leaderboard')
+  getLeaderboard(@Query('order') order: number,
+    @Query('global') global: boolean,
+    @Req() req: RequestWithUser) {
+    return this.usersService.getLeaderboard(order, req.user.id, global);
   }
 }
