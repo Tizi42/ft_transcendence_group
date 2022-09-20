@@ -19,7 +19,7 @@ import { defineComponent, defineExpose, defineProps } from "vue";
 import { onMounted, onUpdated } from "vue";
 import { ref, Ref } from "vue";
 import PlayerResult from "./PlayerResult.vue";
-import { User } from "../../../../backend/src/users/Users.entity";
+import { User } from "@backend/users/Users.entity";
 
 //  variables
 const props = defineProps({
@@ -39,7 +39,6 @@ function getPictureUrl(id: number): string {
 async function reshowData() {
   show.value = false;
   items.value = [];
-  console.log("reshow");
   for await (const [key, item] of props.leaderboard.entries()) {
     setTimeout(() => {
       items.value.push(item);
