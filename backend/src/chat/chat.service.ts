@@ -37,17 +37,17 @@ export class ChatService {
         // console.log(query);
         return query;
     }
-    async getUserFromSocket(socket: Socket) {
-        const cookieJwt = socket.handshake.headers.cookie
-            .split('; ')
-            .find((cookie: string) => cookie.startsWith('jwt'))
-            .split('=')[1];
-        const user = await this.authService.getUserFromAuthenticationToken(cookieJwt);
+    // async getUserFromSocket(socket: Socket) {
+    //     const cookieJwt = socket.handshake.headers.cookie
+    //     .split('; ')
+    //     .find((cookie: string) => cookie.startsWith('jwt'))
+    //     .split('=')[1];
+    //     const user = await this.authService.getUserFromAuthenticationToken(cookieJwt);
 
-        if (!user) {
-            throw new WsException('Invalid Credentials !');
-        }
-        socket.data = user;
-        return user;
-    }
+    //     if (!user) {
+    //         throw new WsException('Invalid Credentials !');
+    //     }
+    //     socket.data = user;
+    //     return user;
+    // }
 }
