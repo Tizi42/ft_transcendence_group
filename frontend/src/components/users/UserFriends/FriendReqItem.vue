@@ -33,19 +33,20 @@ import axios from "axios";
 const user = useUserStore();
 const props = defineProps(["sender"]);
 
-async function onHandleFriendRequest(action: string) {
-  await axios
+function onHandleFriendRequest(action: string) {
+  axios
     .post("http://localhost:3000/api/users/friends/" + action, {
       id1: props.sender.id,
       id2: user.id,
     })
     .then((response) => {
+      user.doFetchPending();
+      user.doFetchFriends();
       console.log(response);
     })
     .catch((error) => {
       console.log(error);
     });
-  user.doFetch();
 }
 
 defineExpose(
