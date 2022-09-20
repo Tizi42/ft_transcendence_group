@@ -2,7 +2,9 @@
   <div class="request-frame">
     <div class="info">
       <div class="message">
-        <span class="name">{{ sender.displayName }}</span>
+        <div class="name">
+          {{ sender.displayName }}<span class="id">(#{{ sender.id }})</span>
+        </div>
         wants to be friends with you!
       </div>
     </div>
@@ -78,13 +80,20 @@ defineExpose(
 }
 
 .name {
-  text-decoration: underline;
+  display: inline;
+  border-bottom: 2px solid;
   color: rgba(255, 203, 0, 0.7);
+  text-decoration-skip-ink: none;
+  font-size: 22px;
 }
-
 .name:hover {
   cursor: pointer;
 }
+
+.id {
+  font-size: 16px;
+}
+
 .button-section {
   align-self: center;
   margin-right: 5%;

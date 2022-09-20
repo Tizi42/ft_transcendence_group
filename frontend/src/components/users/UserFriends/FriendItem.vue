@@ -8,7 +8,9 @@
       }"
     ></div>
     <div class="info">
-      <div class="name">{{ friend.displayName }}</div>
+      <div class="name">
+        {{ friend.displayName }} <span class="id">(#{{ friend.id }})</span>
+      </div>
       <div class="status">
         <div class="status-rond" ref="statusRound"></div>
         <div class="status-text" ref="statusText">In Game</div>
@@ -94,7 +96,12 @@ defineExpose(
 
 .name {
   font-weight: 500;
-  font-size: 22px;
+  font-size: 24px;
+  color: rgba(255, 203, 0, 1);
+}
+
+.id {
+  font-size: 14px;
 }
 
 .status {
