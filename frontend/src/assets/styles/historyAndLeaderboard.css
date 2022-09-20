@@ -5,6 +5,7 @@
   width: 70vw;
   margin-top: 3em;
   margin-bottom: 3em;
+  cursor: default;
 }
 
 .title img {
@@ -45,6 +46,7 @@
   align-items: center;
   text-align: center;
   flex-direction: column;
+  cursor: default;
 }
 
 .loading {
@@ -192,9 +194,14 @@
   font-size: 14px;
 }
 
+.selectedTabContainer:hover {
+  cursor: pointer;
+}
+
 .tabContainer:hover {
   opacity: 0.65;
   font-size: 14px;
+  cursor: pointer;
 }
 
 ul {
@@ -216,7 +223,6 @@ li {
 }
 
 .list-enter-from {
-  transform: translateX(30px);
   opacity: 0;
 }
 
@@ -301,6 +307,22 @@ li {
   width: 30vw;
 }
 
+.playerInfo .positionLb {
+  width: 2vw;
+}
+
+.playerInfo .namePlayer {
+  width: 11vw;
+  margin-left: 2vw;
+  text-align: left;
+}
+
+.playerInfo .username {
+  width: 10vw;
+  text-align: left;
+  opacity: 0.7;
+}
+
 .results {
   margin-right: 2vw;
   display: flex;
@@ -319,5 +341,20 @@ li {
 }
 
 .profile {
+  display: block;
   width: 50px;
+  height: 50px;
+  border-radius: 100%;
+  background-size: cover;
+  object-fit: cover;
+  opacity: 1;
+  transition: all 0.3s ease-out;
+}
+
+.profile:hover {
+  transform: scale(1.2);
+}
+
+li {
+  list-style: none;
 }

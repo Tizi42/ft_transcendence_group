@@ -2,14 +2,14 @@
   <div class="playerResults">
     <div class="playerInfo">
       <div class="positionLb">{{ pos }}</div>
-      <img class="profile" src="@/assets/profile/conan.png" />
+      <img class="profile" :src="pp" />
       <div class="namePlayer">{{ player.displayName }}</div>
       <div class="username">@{{ player.username }}</div>
     </div>
     <div class="results">
-      <div class="points">1958</div>
-      <div class="winRate">85.2%</div>
-      <div class="gamesNb">203</div>
+      <div class="points">{{ player.totalVictories }}</div>
+      <div class="winRate">{{ player.winRate }}%</div>
+      <div class="gamesNb">{{ player.totalGames }}</div>
     </div>
   </div>
 </template>
@@ -17,10 +17,9 @@
 <script lang="ts" setup>
 //  imports
 import { defineComponent, defineExpose, defineProps } from "vue";
-import { FulfillingBouncingCircleSpinner } from "epic-spinners";
 
 //  variables
-defineProps(["player", "pos"]);
+defineProps(["player", "pos", "pp"]);
 
 //  expose component
 defineExpose(

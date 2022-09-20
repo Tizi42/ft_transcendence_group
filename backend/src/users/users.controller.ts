@@ -6,6 +6,7 @@ import { UserDto } from "./utils/user.dto";
 import { Express, Request, Response } from "express";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
+import { sharp } from "sharp";
 import { extname } from "path";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { identity } from "rxjs";
@@ -144,5 +145,14 @@ export class UsersController {
   @Get('/blockby/:id')
   getBlockedby(@Param('id') id: number) {
 	  return this.usersService.getBlockedBy(id);
+  }
+
+  /*
+  **    LEADERBOARD
+  */
+
+  @Get('/leaderboard/:id')
+  getLeaderboard(@Param('id') order: number) {
+    return this.usersService.getLeaderboard(order);
   }
 }

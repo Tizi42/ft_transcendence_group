@@ -18,7 +18,10 @@
     "paths": {
       "@/*": [
         "src/*"
-      ]
+      ],
+      "@backend/*" : [
+        "../backend/src/*"
+      ],
     },
     "lib": [
       "esnext",

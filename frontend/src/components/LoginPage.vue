@@ -5,15 +5,16 @@
 <script setup lang="ts">
 import { defineComponent, onBeforeMount, defineExpose } from "vue";
 import { useRouter } from "vue-router";
+import { getUrlOf } from "@/router";
 
 const router = useRouter();
 
 function handleLogin() {
-  window.location.href = "http://localhost:3000/api/auth/42/login";
+  window.location.href = getUrlOf("api/auth/42/login");
 }
 
 onBeforeMount(async () => {
-  await fetch("http://localhost:3000/api/private", {
+  await fetch(getUrlOf("api/private"), {
     credentials: "include",
   })
     .then((response) => {

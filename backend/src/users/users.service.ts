@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Any, DataSource, Repository } from "typeorm";
+import { Message } from "src/chat/message.entity";
+import { Any, DataSource, Not, Repository } from "typeorm";
 import { User } from "./Users.entity";
 import { FriendshipDto } from "./utils/friendship.dto";
 import { UserDetails } from "./utils/types";
@@ -8,10 +9,23 @@ import { UserDto } from "./utils/user.dto";
 
 @Injectable()
 export class UsersService {
+
+  /*
+  **    CONSTRUCTOR AND INJECTION OF USED REPOSITORY
+  */
+
   constructor(
       @InjectRepository(User)
-      private readonly usersRepository: Repository<User>
+      private readonly usersRepository: Repository<User>,
+
+      @InjectRepository(Message)
+      private readonly messageRepository: Repository<Message>
   ) {}
+
+
+  /*
+  **    UPDATE
+  */
 
   async updateUserAvatar(id: number, filename: string, pictureUrl: string): Promise<any> {
     return  await this.usersRepository.update(id, {picture: pictureUrl, pictureLocalFilename: filename});
@@ -25,14 +39,58 @@ export class UsersService {
     return  this.usersRepository.update(id, {email: email});
   }
 
-  async findOneByEmail(email: string): Promise<User | undefined> {
-      return this.usersRepository.findOneBy({ email: email });
-  }
+
+  /*
+  **    CREATE/DELETE
+  */
 
   async createNewUser(userDetails: UserDetails): Promise<User> {
-      const newUser = this.usersRepository.create(userDetails);
-      return await this.usersRepository.save(newUser);
+    const newUser = this.usersRepository.create(userDetails);
+    return await this.usersRepository.save(newUser);
   }
+
+  addOne(userInfo: UserDto) {
+    let newUser = new User();
+    newUser.displayName = userInfo.displayName;
+    newUser.username = userInfo.username;
+    newUser.email = userInfo.email;
+    newUser.picture = userInfo.picture;
+	  this.usersRepository.insert(newUser);
+  }
+
+  getRandomInt(max: number = 100) : number {
+    return Math.floor(Math.random() * max);
+  }
+
+  createFakeUsers(nb: number)
+  {
+    for (var i = 0; i < nb; i++) {
+      let newUser = new User();
+      newUser.displayName = "User" + i.toString();
+      newUser.username = "username" + i.toString();
+      newUser.email = "user" + i.toString() + "@student.42.fr";
+	    this.usersRepository.insert(newUser);
+      let id = this.usersRepository.getId(newUser);
+      newUser.picture = id;
+      newUser.totalGames = this.getRandomInt() + 1;
+      newUser.totalVictories = this.getRandomInt(newUser.totalGames);
+      newUser.winRate = Math.floor((newUser.totalVictories / newUser.totalGames * 100));
+    }
+  }
+
+  async remove(id: number): Promise<void> {
+    await this.usersRepository.delete(id);
+  }
+
+  async removeAll(): Promise<void> {
+    await this.messageRepository.delete({});
+    await this.usersRepository.delete({});
+  }
+
+
+  /*
+  **    GET USER INFORMATIONS
+  */
 
   async getDisplayname(id: number) : Promise<string> {
     let user = await this.usersRepository.findOneBy({id});
@@ -40,7 +98,7 @@ export class UsersService {
       return ("");
     return (user.username);
   }
-
+  
   async getPicture(id: number) : Promise<string> {
     let user = await this.usersRepository.findOneBy({ id });
     if (user == null)
@@ -55,30 +113,25 @@ export class UsersService {
     return (user.pictureLocalFilename);
   }
 
-  findAll(): Promise<User[]> {
-    return this.usersRepository.find();
-  }
 
+  /*
+  **    FIND USER
+  */
+ 
+  findAll(): Promise<User[]> {
+   return this.usersRepository.find();
+  }
+  
   findOne(id: number): Promise<User> {
     return this.usersRepository.findOneBy({ id });
   }
 
-  async remove(id: number): Promise<void> {
-    await this.usersRepository.delete(id);
+  async findOneById(id: number): Promise<User | undefined> {
+      return this.usersRepository.findOneBy({ id: id });
   }
 
-  async removeAll(): Promise<void> {
-    await this.usersRepository.delete({});
-  }
-
-  addOne(userInfo: UserDto) {
-    let newUser = new User();
-    newUser.displayName = userInfo.displayName;
-    newUser.username = userInfo.username;
-    newUser.email = userInfo.email;
-    newUser.picture = userInfo.picture;
-    newUser.pictureLocalFilename = userInfo.pictureLocalFilename;
-	  this.usersRepository.insert(newUser);
+  async findOneByEmail(email: string): Promise<User | undefined> {
+      return this.usersRepository.findOneBy({ email: email });
   }
 
 
@@ -288,9 +341,10 @@ export class UsersService {
 	  });
   }
 
-  async findOneById(id: number): Promise<User | undefined> {
-      return this.usersRepository.findOneBy({ id: id });
-  }
+
+  /*
+  **    AUTHENTICATION
+  */
 
   async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
       return this.usersRepository.update(userId, {
@@ -326,5 +380,51 @@ export class UsersService {
     return this.usersRepository.find({
         where: { id: Any(user.blockedBy) }
       });
+  }
+
+
+  /*
+  **    GAME STATS
+  */
+
+  async updateResult(id: number, winner: boolean) {
+    let target = await this.usersRepository.findOneBy({ id });
+    target.totalGames++;
+    if (winner)
+      target.totalVictories++;
+    target.winRate = Math.floor((target.totalVictories / target.totalGames) * 100);
+    this.usersRepository.save(target);
+  }
+
+  getLeadByVictories() : Promise<User[]> {
+    return this.usersRepository.find(
+      {order: {totalVictories: "DESC"},
+      where: {totalGames: Not(0)},
+    });
+  }
+
+  getLeadByWinRate() : Promise<User[]> {
+    return this.usersRepository.find({
+      order: {winRate: "DESC"},
+      where: {totalGames: Not(0)},
+    });
+  }
+
+  getLeadByGames() : Promise<User[]> {
+    return this.usersRepository.find({
+      order: {totalGames: "DESC"},
+      where: {totalGames: Not(0)},
+    });
+  }
+
+  getLeaderboard(order: number) : Promise<User[]> {
+    switch (order) {
+      case 0:
+        return this.getLeadByVictories();
+      case 1:
+        return this.getLeadByWinRate();
+      default:
+        return this.getLeadByGames();
+    }
   }
 }
