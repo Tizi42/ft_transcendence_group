@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Message } from "src/chat/message.entity";
-import { Any, DataSource, Not, Repository } from "typeorm";
+import { Any, DataSource, In, Not, Repository } from "typeorm";
 import { User } from "./Users.entity";
 import { FriendshipDto } from "./utils/friendship.dto";
 import { UserDetails } from "./utils/types";
@@ -340,7 +340,18 @@ export class UsersService {
         where: { id: Any(user.blocked) }
 	  });
   }
-
+    
+  async getBlockedBy(id: number) : Promise<User[]> {
+    const user = await this.usersRepository.findOneBy({ id });
+    if (user == null)
+    {
+      console.log("no user matches this id");
+      return null;
+    }
+    return this.usersRepository.find({
+        where: { id: Any(user.blockedBy) }
+      });
+  }
 
   /*
   **    AUTHENTICATION
@@ -369,18 +380,6 @@ export class UsersService {
           isFirstEnablingTwoFactor: value,
       });
   }
-    
-  async getBlockedBy(id: number) : Promise<User[]> {
-    const user = await this.usersRepository.findOneBy({ id });
-    if (user == null)
-    {
-      console.log("no user matches this id");
-      return null;
-    }
-    return this.usersRepository.find({
-        where: { id: Any(user.blockedBy) }
-      });
-  }
 
 
   /*
@@ -396,35 +395,59 @@ export class UsersService {
     this.usersRepository.save(target);
   }
 
-  getLeadByVictories() : Promise<User[]> {
-    return this.usersRepository.find(
-      {order: {totalVictories: "DESC"},
-      where: {totalGames: Not(0)},
+  async getLeadByVictories(global: boolean, id: number) : Promise<User[]> {
+    if (global)
+      return this.usersRepository.find(
+        {order: {totalVictories: "DESC"},
+        where: {totalGames: Not(0)},
+      });
+    return this.usersRepository.find({
+      order: {totalVictories: "DESC"},
+      where: {
+        totalGames: Not(0),
+        id: In((await this.findOne(id)).friendWith),
+      },
     });
   }
 
-  getLeadByWinRate() : Promise<User[]> {
+  async getLeadByWinRate(global: boolean, id: number) : Promise<User[]> {
+    if (global)
+      return this.usersRepository.find({
+        order: {winRate: "DESC"},
+        where: {totalGames: Not(0)},
+      });
     return this.usersRepository.find({
       order: {winRate: "DESC"},
-      where: {totalGames: Not(0)},
+      where: {
+        totalGames: Not(0),
+        id: In((await this.findOne(id)).friendWith),
+      },
     });
   }
 
-  getLeadByGames() : Promise<User[]> {
+  async getLeadByGames(global: boolean, id: number) : Promise<User[]> {
+    if (global)
+      return this.usersRepository.find({
+        order: {totalGames: "DESC"},
+        where: {totalGames: Not(0)},
+      });
     return this.usersRepository.find({
       order: {totalGames: "DESC"},
-      where: {totalGames: Not(0)},
+      where: {
+        totalGames: Not(0),
+        id: In((await this.findOne(id)).friendWith),
+      },
     });
   }
 
-  getLeaderboard(order: number) : Promise<User[]> {
+  getLeaderboard(order: number, id: number, global: boolean) : Promise<User[]> {
     switch (order) {
       case 0:
-        return this.getLeadByVictories();
+        return this.getLeadByVictories(global, id);
       case 1:
-        return this.getLeadByWinRate();
+        return this.getLeadByWinRate(global, id);
       default:
-        return this.getLeadByGames();
+        return this.getLeadByGames(global, id);
     }
   }
 }
