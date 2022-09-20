@@ -18,26 +18,19 @@
     </div>
     <div class="tableContainer">
       <ContentLeaderboard :leaderboard="leaderboard" v-if="ready" />
-      <div class="loading" v-else>
-        <fulfilling-bouncing-circle-spinner
-          :animation-duration="2000"
-          :size="40"
-          color="#ffcb00"
-        />
-      </div>
+      <div class="loading" v-else>loading...</div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { FulfillingBouncingCircleSpinner } from "epic-spinners";
 import { defineComponent, defineExpose, defineProps } from "vue";
 import ContentLeaderboard from "./ContentLeaderboard.vue";
 import { Ref, ref } from "vue";
 
 const props = defineProps(["title", "ready", "leaderboard", "reorder"]);
 const selectedOrder: Ref<number> = ref(1);
-const cssClassTab: Ref<string[3]> = ref([
+const cssClassTab: Ref<Array<string>> = ref([
   "tabContainer",
   "selectedTabContainer",
   "tabContainer",

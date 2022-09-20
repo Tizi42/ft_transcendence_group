@@ -356,3 +356,7 @@ li {
 li {
   list-style: none;
 }
+
+* {
+  cursor: default;
+}
