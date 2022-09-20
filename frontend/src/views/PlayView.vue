@@ -1,15 +1,39 @@
 <template>
   <div class="container">
-    <h1 class="p-3 text-center">Play</h1>
+    <div @click="searchGame" class="flex">
+      <a class="btn p-3 text-center">Play</a>
+    </div>
+    <ion-phaser v-bind:game.prop="game" v-bind:initialize.prop="initialize" />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import Phaser from "phaser";
+import GameScene from "@/game/scenes/Game";
 
-export default defineComponent({
-  name: "PlayView",
-});
+export default {
+  data() {
+    return {
+      game: {
+        width: 1043,
+        height: 591,
+        type: Phaser.AUTO,
+        physics: {
+          default: "arcade",
+          arcade: {
+            gravity: false,
+          },
+        },
+        scene: [GameScene],
+      },
+    };
+  },
+  methods: {
+    searchGame() {
+      console.log("");
+    },
+  },
+};
 </script>
 
 <style>
