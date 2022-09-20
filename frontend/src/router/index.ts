@@ -34,12 +34,14 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "friends",
         name: "friends",
-        component: () => import("../components/users/UserFriends.vue"),
+        component: () =>
+          import("../components/users/UserFriends/UserFriends.vue"),
       },
       {
         path: "settings",
         name: "settings",
-        component: () => import("../components/users/UserSettings.vue"),
+        component: () =>
+          import("../components/users/UserSettings/UserSettings.vue"),
       },
     ],
   },

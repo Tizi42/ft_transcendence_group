@@ -1,44 +1,16 @@
 <template>
-  <button
-    v-if="!loggedIn"
-    class="btn"
-    data="Sign in with 42"
-    @click="handleLogin()"
-  ></button>
-  <button v-else class="btn" data="Logout" @click="handleLogout()"></button>
+  <button class="btn" data="Sign in with 42" @click="handleLogin()"></button>
 </template>
 
-<script lang="ts">
-import { defineComponent, onBeforeMount, ref, Ref } from "vue";
-import { useCookie } from "vue-cookie-next";
+<script setup lang="ts">
+import { defineComponent, onBeforeMount, defineExpose } from "vue";
+import { useRouter } from "vue-router";
 import { getUrlOf } from "@/router";
 
-export default defineComponent({
-  name: "LoginPage",
-});
-</script>
-
-<script setup lang="ts">
-const { isCookieAvailable } = useCookie();
-const loggedIn: Ref<boolean> = ref(false);
+const router = useRouter();
 
 function handleLogin() {
   window.location.href = getUrlOf("api/auth/42/login");
-}
-
-async function handleLogout() {
-  if (isCookieAvailable("jwt")) {
-    await fetch(getUrlOf("api/logout"), {
-      credentials: "include",
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-  window.location.reload();
 }
 
 onBeforeMount(async () => {
@@ -47,7 +19,9 @@ onBeforeMount(async () => {
   })
     .then((response) => {
       if (response.status === 200) {
-        loggedIn.value = true;
+        router.push({
+          name: "game",
+        });
       }
       return response.json();
     })
@@ -55,6 +29,12 @@ onBeforeMount(async () => {
       console.log("ERROR : ", error);
     });
 });
+
+defineExpose(
+  defineComponent({
+    name: "LoginPage",
+  })
+);
 </script>
 
 <style>

@@ -5,6 +5,7 @@
   width: 70vw;
   margin-top: 3em;
   margin-bottom: 3em;
+  cursor: default;
 }
 
 .title img {
@@ -45,6 +46,7 @@
   align-items: center;
   text-align: center;
   flex-direction: column;
+  cursor: default;
 }
 
 .loading {
@@ -355,8 +357,4 @@ li {
 
 li {
   list-style: none;
-}
-
-* {
-  cursor: default;
 }
