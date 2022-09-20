@@ -3,23 +3,41 @@
     <div
       class="avatar-frame"
       :style="{
-        'background-image': 'url(' + user.avatarUrl + ')',
+        'background-image': 'url(' + blocked.picture + ')',
       }"
     ></div>
     <div>
-      <div class="name">{{ user.displayName }}</div>
-      <div class="email">( {{ user.email }} )</div>
+      <div class="name">{{ blocked.displayName }}</div>
+      <div class="email">( {{ blocked.email }} )</div>
     </div>
-    <img class="bin" src="@/assets/icons/bin.png" />
+    <img class="bin" src="@/assets/icons/bin.png" @click="onRemoveBlock" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, defineProps } from "vue";
+import { defineComponent, defineExpose, defineProps, defineEmits } from "vue";
 import { useUserStore } from "@/stores/user";
+import axios from "axios";
 
 const user = useUserStore();
-const props = defineProps(["user"]); //later: delete userstore and use this prop instead
+const props = defineProps(["blocked"]);
+const emit = defineEmits(["renew"]);
+
+function onRemoveBlock() {
+  axios
+    .post("http://localhost:3000/api/users/block/rm/", {
+      id1: user.id,
+      id2: props.blocked.id,
+    })
+    .then((response) => {
+      console.log(response);
+      emit("renew");
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  user.doFetch();
+}
 
 defineExpose(
   defineComponent({

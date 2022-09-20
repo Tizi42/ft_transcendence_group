@@ -140,9 +140,8 @@ defineExpose(
 #search-result {
   display: flex;
   align-items: center;
-  width: 60%;
-  margin-left: auto;
-  margin-right: auto;
+  width: 88%;
+  margin: 20px auto 20px auto;
   background-color: grey;
   border-radius: 10px;
 }

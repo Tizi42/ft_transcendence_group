@@ -23,6 +23,7 @@
       v-if="show"
       :style="{ left: clickCoord.x + 'px', top: clickCoord.y + 'px' }"
       @hide="hide"
+      :friend="friend"
     />
   </div>
 </template>
@@ -33,7 +34,7 @@ import { useUserStore } from "@/stores/user";
 import FriendItemMenu from "./FriendItemMenu.vue";
 
 const user = useUserStore();
-const props = defineProps(["friend"]); //later: delete userstore and use this prop instead
+const props = defineProps(["friend"]);
 console.log("friend:", props.friend);
 const show = ref(false);
 const buttonText = computed(() => (show.value === true ? "+" : "="));

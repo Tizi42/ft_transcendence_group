@@ -233,6 +233,17 @@ export class UsersService {
     if (wantToBlock.blocked.includes(target.id))
       return console.log(wantToBlock.displayName, "has already blocked", target.displayName);
 
+    // remove friendship if they are friends
+    if (wantToBlock.friendWith.includes(target.id))
+    {
+      let newFriendWithList = wantToBlock.friendWith.filter(function(ele){ return ele != target.id });
+      let newFriendOfList = target.friendWith.filter(function(ele){ return ele != wantToBlock.id });
+      
+      wantToBlock.friendWith = newFriendWithList;
+      target.friendWith = newFriendOfList;
+    }
+
+    // block target user
     wantToBlock.blocked.push(target.id);
     target.blockedBy.push(wantToBlock.id);
 
