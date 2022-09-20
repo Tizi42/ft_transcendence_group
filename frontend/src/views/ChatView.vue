@@ -25,8 +25,8 @@
   </div>
 </template>
 
-<script lang="ts" setup>
-import { Ref, ref, onBeforeMount, onUnmounted, onMounted } from "vue";
+<script lang="ts">
+import { Ref, ref, defineComponent } from "vue";
 import socket from "../socket";
 import MessagesView from "../components/MessagesView.vue";
 
@@ -35,56 +35,51 @@ const profile: Ref<any> = ref("");
 const profileFrom: Ref<Array<any>> = ref([]);
 const chosenProfile: Ref<any> = ref("");
 
-onBeforeMount(async () => {
-  await fetch("http://localhost:3000/api/private", {
-    credentials: "include",
-  })
-    .then((response) => {
-      return response.json();
+export default defineComponent({
+  async created() {
+    await fetch("http://localhost:3000/api/private", {
+      credentials: "include",
     })
-    .then((user) => {
-      profile.value = user;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-  getAllDest();
-});
-
-onUnmounted(() => {
-  socket.off("send_message");
-});
-
-function getAllDest() {
-  fetch("http://localhost:3000/api/chat/dest")
-    .then((response) => response.json())
-    .then((data) => {
-      data.forEach((el: any) => {
-        if (el.dest.id !== 1) {
-          getLastMessage(el.dest.id);
-          profileFrom.value.push(el.dest);
-        }
+      .then((response) => {
+        return response.json();
+      })
+      .then((user) => {
+        profile.value = user;
+      })
+      .catch((error) => {
+        console.log(error);
       });
+    socket.emit("all_dest", (response: any[]) => {
+      this.getAllDest(response);
+    });
+  },
+  methods: {
+    getAllDest(response: any[]) {
+      let dest: any[];
+      dest = response;
+      for (let i = 0; i < dest.length; i++) {
+        if (dest[i].dest.id !== 1) {
+          profileFrom.value.push(dest[i].dest);
+          this.getLastMessage(dest[i].dest.id);
+        }
+      }
       chosenProfile.value = profileFrom.value[profileFrom.value.length - 1];
-    })
-    .catch((err) => console.error(err));
-}
-
-function getLastMessage(id: number) {
-  fetch("http://localhost:3000/api/chat/" + id)
-    .then((response) => response.json())
-    .then((data) => {
-      lastMessage.value.push(data.content);
-    })
-    .catch((err) => console.error(err));
-}
-
-function renderCorresponding(prof: any) {
-  console.log("before = ", chosenProfile.value);
-  chosenProfile.value = prof;
-  console.log("after = ", chosenProfile.value);
-}
+    },
+    getLastMessage(id: number) {
+      socket.emit("last_message", id, (response: any) => {
+        lastMessage.value.push(response.content);
+      });
+    },
+    renderCorresponding(prof: any) {
+      console.log("before = ", chosenProfile.value);
+      chosenProfile.value = prof;
+      console.log("after = ", chosenProfile.value);
+    },
+  },
+});
 </script>
+
+<script lang="ts" setup></script>
 
 <style>
 .chatPage {

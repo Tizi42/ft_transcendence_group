@@ -39,8 +39,9 @@ const input: Ref<any> = ref("");
 const history: Ref<any> = ref([]);
 const profile: Ref<any> = ref([]);
 const prop = defineProps(["chosenProfile"]);
+console.log("how : ", prop.chosenProfile.id);
 
-onBeforeMount(async () => {
+onMounted(async () => {
   await fetch("http://localhost:3000/api/private", {
     credentials: "include",
   })
@@ -59,8 +60,8 @@ onBeforeMount(async () => {
 function onSubmit() {
   const data = {
     content: input.value,
-    author: 6,
-    dest: 1,
+    author: 1,
+    dest: prop.chosenProfile.id,
   };
   console.log("dest =", data.dest);
   socket.emit("send_message", data);
@@ -68,8 +69,7 @@ function onSubmit() {
   window.location.reload();
 }
 function getMessages() {
-  // console.log(prop.chosenProfile.id);
-  fetch("http://localhost:3000/api/chat/messages/" + 6)
+  fetch("http://localhost:3000/api/chat/messages/" + 5)
     .then((response) => response.json())
     .then((data) => {
       data.forEach((el: any) => {
