@@ -22,12 +22,11 @@ import PlayerResult from "./PlayerResult.vue";
 import { User } from "@backend/users/Users.entity";
 
 //  variables
-const props = defineProps({
-  leaderboard: {
-    type: Array<User>,
-    required: true,
-  },
-});
+interface Props {
+  leaderboard: Array<User>;
+}
+
+const props: Readonly<Props> = defineProps<Props>();
 const items: Ref<Array<User>> = ref([]);
 const show: Ref<boolean> = ref(false);
 
