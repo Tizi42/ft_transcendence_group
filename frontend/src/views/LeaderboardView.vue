@@ -26,17 +26,18 @@
 
 <script lang="ts" setup>
 import "@/assets/styles/historyAndLeaderboard.css";
-import { defineComponent, defineExpose, ref } from "vue";
+import { defineComponent, defineExpose, Ref, ref } from "vue";
 import { onBeforeMount } from "vue";
 import { getUrlOf } from "@/router";
+import { User } from "@backend/users/Users.entity";
 import LeaderBoard from "@/components/Leaderboard/Leaderboard.vue";
 
-const dataReady = ref([false, false]);
-const leaderboard = ref([{}, {}]);
-const orders = ref([1, 1]);
+const dataReady: Ref<Array<boolean>> = ref([false, false]);
+const leaderboard: Ref<Array<User[]>> = ref([[], []]);
+const orders: Ref<Array<number>> = ref([1, 1]);
 
 async function reloadOne(index: number) {
-  let response = await fetch(
+  let response: Response = await fetch(
     getUrlOf("api/users/leaderboard/" + orders.value[index].toString()),
     {
       credentials: "include",

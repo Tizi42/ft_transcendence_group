@@ -16,10 +16,17 @@
 
 <script lang="ts" setup>
 //  imports
+import { User } from "@backend/users/Users.entity";
 import { defineComponent, defineExpose, defineProps } from "vue";
 
 //  variables
-defineProps(["player", "pos", "pp"]);
+interface Props {
+  player: User;
+  pos: number;
+  pp: string;
+}
+
+defineProps<Props>();
 
 //  expose component
 defineExpose(
