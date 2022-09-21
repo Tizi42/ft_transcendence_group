@@ -4,16 +4,7 @@
     <div class="container-list-users">
       <h3>List of all existing users</h3>
       <ul v-for="user in listOfUsers" :key="user">
-        <li>
-          {{ user.username }}:
-          <span
-            v-if="
-              connectedUsers.find((elem) => elem.username === user.username)
-            "
-            >online
-          </span>
-          <span v-else>offline</span>
-        </li>
+        <li>{{ user.username }}: {{ user.online }}</li>
       </ul>
     </div>
     <div class="container-chat">
@@ -40,33 +31,29 @@ import socket from "@/socket";
 const messages: Ref<Array<any>> = ref([]);
 const messageText: Ref<string> = ref("");
 const listOfUsers: Ref<Array<any>> = ref([]);
-const connectedUsers: Ref<Array<any>> = ref([]);
-
-const sendMessage = () => {
-  socket.emit("send_message", messageText.value, () => {
-    messageText.value = "";
-  });
-};
 
 onBeforeMount(async () => {
   socket.emit("request_all_messages", {}, (response: any) => {
-    console.log(response);
-  });
-
-  socket.on("send_all_messages", (response) => {
     messages.value = response;
   });
 
-  socket.on("receive_message", (message) => {
+  socket.on("receive_message", (message: any) => {
     messages.value.push(message);
   });
 
-  socket.emit("request_all_users", {}, (response: any) => {
-    console.log(response);
-  });
-
-  socket.on("users", (users) => {
-    connectedUsers.value = users;
+  socket.on("new_connection", async () => {
+    await fetch("http://localhost:3000/api/users", {
+      credentials: "include",
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data: any) => {
+        listOfUsers.value = data;
+      })
+      .catch((error) => {
+        console.log("ERROR : ", error);
+      });
   });
 
   await fetch("http://localhost:3000/api/users", {
@@ -82,6 +69,12 @@ onBeforeMount(async () => {
       console.log("ERROR : ", error);
     });
 });
+
+const sendMessage = () => {
+  socket.emit("send_message", messageText.value, () => {
+    messageText.value = "";
+  });
+};
 </script>
 
 <style>
