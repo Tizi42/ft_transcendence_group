@@ -51,11 +51,12 @@
 
 .loading,
 .nofriends {
-  display: flex;
-  justify-content: space-around;
+  display: block;
   align-items: center;
   text-align: center;
-  margin-top: 10%;
+  width: 100%;
+  margin: 0 auto;
+  margin-top: 5%;
 }
 
 .tableContainer {

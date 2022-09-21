@@ -12,6 +12,7 @@
       <div class="gamesNb">{{ player.totalGames }}</div>
     </div>
   </div>
+  <div class="nofriends" v-if="alone">You don't have any friend 😕</div>
 </template>
 
 <script lang="ts" setup>
@@ -24,6 +25,7 @@ interface Props {
   player: User;
   pos: number;
   pp: string;
+  alone: boolean;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
