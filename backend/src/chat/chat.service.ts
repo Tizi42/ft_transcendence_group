@@ -29,7 +29,7 @@ export class ChatService {
     }
 
     async getAllMessages() {
-        return this.messagesRepository.find({
+        return await this.messagesRepository.find({
             relations: ['author'],
         });
     }

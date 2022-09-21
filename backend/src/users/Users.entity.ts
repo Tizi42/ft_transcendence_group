@@ -43,4 +43,7 @@ export class User {
 
   @Column("int", { array: true, default: {} })
   blockedBy: number[];
+
+  @Column({ default: false })
+  online: boolean;
 }
