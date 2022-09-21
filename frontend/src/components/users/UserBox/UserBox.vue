@@ -12,13 +12,17 @@
         id="cancelButton"
         class="buttons"
         @click="onCancel"
-      ></button>
+      >
+        <span class="hoverInfo">Cancel request</span>
+      </button>
       <button
         v-if="!pending && !friendWith"
         id="sendButton"
         class="buttons"
         @click="onSend"
-      ></button>
+      >
+        <span class="hoverInfo">Add friend</span>
+      </button>
       <div class="target-name">{{ target.displayName }}</div>
     </div>
     <div class="target-username">@{{ target.username }}</div>
@@ -182,6 +186,27 @@ defineExpose(
 
 #sendButton {
   background-image: url("@/assets/icons/addUser.svg");
+}
+
+#cancelButton .hoverInfo,
+#sendButton .hoverInfo {
+  opacity: 0;
+  width: 120px;
+  background-color: #000000dd;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  transition: all 0.5s ease-in-out 0s;
+  transform: translateX(10px) translateY(10px);
+  z-index: 999;
+}
+
+#cancelButton:hover .hoverInfo,
+#sendButton:hover .hoverInfo {
+  opacity: 1;
+  transition: all 0.5s ease-in-out 2s;
 }
 
 .nameAdd {
