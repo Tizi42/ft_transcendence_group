@@ -17,6 +17,8 @@ import { UsersService } from './users.service';
 export class UsersModule {
   constructor(private usersService: UsersService) {
     this.usersService.removeAll();
-    this.usersService.createFakeUsers(10);
+    setTimeout(() => {
+      this.usersService.createFakeUsers(10);
+    }, 1000);
   }
 }
