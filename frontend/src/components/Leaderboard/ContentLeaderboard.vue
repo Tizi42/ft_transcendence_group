@@ -10,6 +10,7 @@
         />
       </li>
     </TransitionGroup>
+    <div class="nofriends" v-if="alone">You don't have any friend 😕</div>
   </div>
 </template>
 
@@ -24,6 +25,7 @@ import { User } from "@backend/users/Users.entity";
 //  variables
 interface Props {
   leaderboard: Array<User>;
+  alone: boolean;
 }
 
 const props: Readonly<Props> = defineProps<Props>();

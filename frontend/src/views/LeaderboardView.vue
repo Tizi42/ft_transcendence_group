@@ -13,12 +13,14 @@
         :ready="dataReady[0]"
         :leaderboard="leaderboard[0]"
         :reorder="reloadAndOrder(0)"
+        :alone="false"
       />
       <LeaderBoard
         title="Friends"
         :ready="dataReady[1]"
         :leaderboard="leaderboard[1]"
         :reorder="reloadAndOrder(1)"
+        :alone="alone"
       />
     </div>
   </div>
@@ -35,6 +37,7 @@ import LeaderBoard from "@/components/Leaderboard/Leaderboard.vue";
 const dataReady: Ref<Array<boolean>> = ref([false, false]);
 const leaderboard: Ref<Array<User[]>> = ref([[], []]);
 const orders: Ref<Array<number>> = ref([1, 1]);
+const alone: Ref<boolean> = ref(true);
 
 async function reloadOne(index: number) {
   let response: Response = await fetch(
@@ -55,6 +58,8 @@ async function reloadOne(index: number) {
 async function reloadAll() {
   reloadOne(0);
   reloadOne(1);
+  alone.value = true;
+  if (leaderboard.value[1].length > 1) alone.value = false;
 }
 
 function reloadAndOrder(index: number) {

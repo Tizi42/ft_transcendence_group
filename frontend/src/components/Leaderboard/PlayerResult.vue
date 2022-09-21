@@ -8,7 +8,7 @@
     </div>
     <div class="results">
       <div class="points">{{ player.totalVictories }}</div>
-      <div class="winRate">{{ player.winRate }}%</div>
+      <div class="winRate">{{ getWinRate() }}</div>
       <div class="gamesNb">{{ player.totalGames }}</div>
     </div>
   </div>
@@ -26,7 +26,13 @@ interface Props {
   pp: string;
 }
 
-defineProps<Props>();
+const props: Readonly<Props> = defineProps<Props>();
+
+// usefull functions
+function getWinRate(): string {
+  if (props.player.winRate == -1) return "-";
+  return props.player.winRate + "%";
+}
 
 //  expose component
 defineExpose(

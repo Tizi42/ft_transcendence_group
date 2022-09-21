@@ -17,7 +17,11 @@
       </div>
     </div>
     <div class="tableContainer">
-      <ContentLeaderboard :leaderboard="leaderboard" v-if="ready" />
+      <ContentLeaderboard
+        :leaderboard="leaderboard"
+        :alone="alone"
+        v-if="ready"
+      />
       <div class="loading" v-else>loading...</div>
     </div>
   </div>
@@ -36,6 +40,7 @@ interface Props {
   ready: boolean;
   title: string;
   reorder: ReorderFunction;
+  alone: boolean;
 }
 
 const props: Readonly<Props> = defineProps<Props>();

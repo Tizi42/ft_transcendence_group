@@ -411,10 +411,15 @@ export class UsersService {
       });
     return this.usersRepository.find({
       order: {totalVictories: "DESC"},
-      where: {
-        totalGames: Not(0),
-        id: In((await this.findOne(id)).friendWith),
-      },
+      where: [
+        {
+          totalGames: Not(0),
+          id: In((await this.findOne(id)).friendWith),
+        },
+        {
+          id: id,
+        },
+      ],
     });
   }
 
@@ -426,10 +431,15 @@ export class UsersService {
       });
     return this.usersRepository.find({
       order: {winRate: "DESC"},
-      where: {
-        totalGames: Not(0),
-        id: In((await this.findOne(id)).friendWith),
-      },
+      where: [
+        {
+          totalGames: Not(0),
+          id: In((await this.findOne(id)).friendWith),
+        },
+        {
+          id: id,
+        },
+      ],
     });
   }
 
@@ -441,10 +451,15 @@ export class UsersService {
       });
     return this.usersRepository.find({
       order: {totalGames: "DESC"},
-      where: {
-        totalGames: Not(0),
-        id: In((await this.findOne(id)).friendWith),
-      },
+      where: [
+        {
+          totalGames: Not(0),
+          id: In((await this.findOne(id)).friendWith),
+        },
+        {
+          id: id,
+        },
+      ],
     });
   }
 

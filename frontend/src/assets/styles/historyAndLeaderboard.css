@@ -49,9 +49,13 @@
   cursor: default;
 }
 
-.loading {
+.loading,
+.nofriends {
   display: flex;
+  justify-content: space-around;
   align-items: center;
+  text-align: center;
+  margin-top: 10%;
 }
 
 .tableContainer {
