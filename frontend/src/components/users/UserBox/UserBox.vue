@@ -1,58 +1,60 @@
 <template>
-  <div class="infoBox" v-if="show">
-    <div
-      class="avatarFrame"
-      :style="{
-        'background-image': 'url(' + target.picture + ')',
-      }"
-    ></div>
-    <div class="nameAdd">
-      <button
-        v-if="pending"
-        id="cancelButton"
-        class="buttons"
-        @click="onCancel"
-      >
-        <span class="hoverInfo">Cancel request</span>
-      </button>
-      <button
-        v-if="!pending && !friendWith"
-        id="sendButton"
-        class="buttons"
-        @click="onSend"
-      >
-        <span class="hoverInfo">Add friend</span>
-      </button>
-      <div class="target-name">{{ target.displayName }}</div>
+  <TransitionGroup name="list">
+    <div class="infoBox" v-if="show">
+      <div
+        class="avatarFrame"
+        :style="{
+          'background-image': 'url(' + target.picture + ')',
+        }"
+      ></div>
+      <div class="nameAdd">
+        <button
+          v-if="pending"
+          id="cancelButton"
+          class="buttons"
+          @click="onCancel"
+        >
+          <span class="hoverInfo">Cancel request</span>
+        </button>
+        <button
+          v-if="!pending && !friendWith"
+          id="sendButton"
+          class="buttons"
+          @click="onSend"
+        >
+          <span class="hoverInfo">Add friend</span>
+        </button>
+        <div class="target-name">{{ target.displayName }}</div>
+      </div>
+      <div class="target-username">@{{ target.username }}</div>
     </div>
-    <div class="target-username">@{{ target.username }}</div>
-  </div>
-  <div class="statsBox" v-if="show">
-    <div class="subtitleBox">
-      <img src="@/assets/icons/stats.svg" />
-      Statistics
+    <div class="statsBox" v-if="show">
+      <div class="subtitleBox">
+        <img src="@/assets/icons/stats.svg" />
+        Statistics
+      </div>
+      <table class="statistics">
+        <tbody>
+          <tr class="firstRow">
+            <td>Victories</td>
+            <td>Win Rate</td>
+            <td>Games</td>
+          </tr>
+          <tr>
+            <td>{{ target.totalVictories }}</td>
+            <td>{{ getWinRate() }}</td>
+            <td>{{ target.totalGames }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-    <table class="statistics">
-      <tbody>
-        <tr class="firstRow">
-          <td>Victories</td>
-          <td>Win Rate</td>
-          <td>Games</td>
-        </tr>
-        <tr>
-          <td>{{ target.totalVictories }}</td>
-          <td>{{ getWinRate() }}</td>
-          <td>{{ target.totalGames }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="friendsBox" v-if="show">
-    <div class="subtitleBox">
-      <img src="@/assets/icons/friends.svg" />
-      Friends ({{ nbFriends }})
+    <div class="friendsBox" v-if="show">
+      <div class="subtitleBox">
+        <img src="@/assets/icons/friends.svg" />
+        Friends ({{ nbFriends }})
+      </div>
     </div>
-  </div>
+  </TransitionGroup>
 </template>
 
 <script lang="ts" setup>
@@ -153,7 +155,7 @@ defineExpose(
 }
 
 .avatarFrame {
-  border-radius: 20%;
+  border-radius: 100%;
   background-position: center;
   background-size: cover;
   min-width: 100px;
@@ -206,7 +208,7 @@ defineExpose(
 #cancelButton:hover .hoverInfo,
 #sendButton:hover .hoverInfo {
   opacity: 1;
-  transition: all 0.5s ease-in-out 2s;
+  transition: all 0.5s ease-in-out 1.2s;
 }
 
 .nameAdd {
