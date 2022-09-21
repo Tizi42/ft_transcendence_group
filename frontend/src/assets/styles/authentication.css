@@ -1,0 +1,95 @@
+h4 {
+  color: #ffffff;
+  font-family: "Outfit Light";
+  font-size: 20px;
+  line-height: 1.4em;
+}
+
+input[type="submit"] {
+  display: block;
+  font-family: "Outfit Bold";
+  background: #1e2a02;
+  box-shadow: 0px 0px 4px 3px rgba(0, 0, 0, 0.25);
+  border-radius: 22px;
+  line-height: 2.3em;
+  border: none;
+  font-size: 24px;
+  color: #ffffff;
+  width: 40%;
+  margin-top: 1.5em;
+  transition: transform 0.5s ease;
+}
+
+input[type="submit"]:hover {
+  transform: scale(1.05, 1.05);
+  cursor: pointer;
+}
+
+input[type="submit"]:focus {
+  transform: scale(1.05, 1.05);
+}
+
+input[type="text"] {
+  display: block;
+  font-family: "Outfit";
+  text-align: center;
+  background: rgba(30, 42, 2, 0.7);
+  box-shadow: inset 0px 0px 4px 3px rgba(0, 0, 0, 0.25);
+  border-radius: 22px;
+  border: none;
+  font-size: 1em;
+  line-height: 3.3em;
+  width: 70%;
+  color: #ffffff;
+  transition: transform 0.5s ease;
+}
+
+input[type="text"]:hover,
+input[type="text"]:focus {
+  transform: scale(1.05, 1.05);
+}
+
+input[type="text"]:focus {
+  outline: none;
+}
+
+::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+#form {
+  width: 30vw;
+  display: flex;
+  flex-direction: column;
+  display: space-between;
+  align-items: center;
+}
+
+.container-turn-on {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.container-re-generate button {
+  border-radius: 18px;
+  border: none;
+  font-family: "Outfit";
+  text-align: center;
+  font-size: 1em;
+  padding: 10px;
+  box-shadow: 0px 0px 4px 3px rgba(0, 0, 0, 0.25);
+  background-color: #feca00;
+  transition: transform 0.5s ease;
+  opacity: 68%;
+}
+
+.container-re-generate button:hover,
+.container-re-generate button:focus {
+  transform: scale(1.05, 1.05);
+}
+
+p {
+  color: darkgoldenrod;
+  font-family: "Outfit";
+}

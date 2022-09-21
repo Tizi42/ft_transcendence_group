@@ -1,9 +1,11 @@
 import { io } from "socket.io-client";
 
-const URL = "http://localhost:3000";
-const socket = io(URL, { autoConnect: true });
+const socket = io("http://localhost:3000", {
+  withCredentials: true,
+});
 
-// socket.onAny((event, ...args) => {
-//   console.log(event, args);
-// });
+socket.onAny((event, ...args) => {
+  console.log(event, args);
+});
+
 export default socket;
