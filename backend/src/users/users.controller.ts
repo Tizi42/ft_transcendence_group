@@ -62,7 +62,7 @@ export class UsersController {
   }
 
   @Get('info/:id')
-  getOne(@Param('id') id: number): Promise<User>  {
+  getOne(@Param('id') id: number): Promise<User> {
     console.log("id is " + id);
     return this.usersService.findOne(id);
   };
@@ -70,12 +70,6 @@ export class UsersController {
   @Post('/add')
   create(@Body() user: UserDto) {
     return this.usersService.addOne(user);
-  }
-
-  // to delete 
-  @Get('/rm/:id')
-  remove(@Param('id') id: number) {
-    return this.usersService.remove(id);
   }
 
   // to delete 
@@ -122,6 +116,13 @@ export class UsersController {
   getFriendPendingReqFrom(@Param('id') id: number) {
 	  return this.usersService.showFriendPendingReqFrom(id);
   }
+
+  @Get('/friendship')
+  async friendLevelWith(@Query('target') target: number,
+    @Query('mine') id: number): Promise<number> {
+	  return await this.usersService.getFriendLevel(id, target);
+  }
+
   /*
   **    BLOCKED
   */
@@ -150,11 +151,10 @@ export class UsersController {
   **    LEADERBOARD
   */
 
-  @UseGuards(JwtAuthGuard)
   @Get('/leaderboard')
   getLeaderboard(@Query('order') order: number,
     @Query('global') global: boolean,
-    @Req() req: RequestWithUser) {
-    return this.usersService.getLeaderboard(order, req.user.id, global);
+    @Query('mine') id: number) {
+    return this.usersService.getLeaderboard(order, id, global);
   }
 }
