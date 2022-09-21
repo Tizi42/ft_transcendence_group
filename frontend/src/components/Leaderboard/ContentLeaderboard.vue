@@ -7,10 +7,10 @@
           :player="player"
           :pos="id + 1"
           :pp="getPictureUrl(player.id)"
+          :alone="alone"
         />
       </li>
     </TransitionGroup>
-    <div class="nofriends" v-if="alone">You don't have any friend 😕</div>
   </div>
 </template>
 
