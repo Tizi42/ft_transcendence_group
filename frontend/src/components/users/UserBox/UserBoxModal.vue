@@ -26,6 +26,7 @@ defineExpose(
 
 <style scoped>
 .pageCenter {
+  cursor: default;
   position: fixed;
   display: flex;
   align-items: center;
