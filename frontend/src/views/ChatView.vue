@@ -25,61 +25,63 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Ref, ref, defineComponent } from "vue";
+<script lang="ts" setup>
+import { Ref, ref, onBeforeMount, onUnmounted, onMounted } from "vue";
 import socket from "../socket";
 import MessagesView from "../components/MessagesView.vue";
+import { createDOMCompilerError } from "@vue/compiler-dom";
 
 const lastMessage: Ref<any> = ref([]);
 const profile: Ref<any> = ref("");
 const profileFrom: Ref<Array<any>> = ref([]);
 const chosenProfile: Ref<any> = ref("");
 
-export default defineComponent({
-  async created() {
-    await fetch("http://localhost:3000/api/private", {
-      credentials: "include",
+onBeforeMount(async () => {
+  await fetch("http://localhost:3000/api/private", {
+    credentials: "include",
+  })
+    .then((response) => {
+      return response.json();
     })
-      .then((response) => {
-        return response.json();
-      })
-      .then((user) => {
-        profile.value = user;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    socket.emit("all_dest", (response: any[]) => {
-      this.getAllDest(response);
+    .then((user) => {
+      profile.value = user;
+    })
+    .catch((error) => {
+      console.log(error);
     });
-  },
-  methods: {
-    getAllDest(response: any[]) {
-      let dest: any[];
-      dest = response;
-      for (let i = 0; i < dest.length; i++) {
-        if (dest[i].dest.id !== 1) {
-          profileFrom.value.push(dest[i].dest);
-          this.getLastMessage(dest[i].dest.id);
-        }
-      }
-      chosenProfile.value = profileFrom.value[profileFrom.value.length - 1];
-    },
-    getLastMessage(id: number) {
-      socket.emit("last_message", id, (response: any) => {
-        lastMessage.value.push(response.content);
-      });
-    },
-    renderCorresponding(prof: any) {
-      console.log("before = ", chosenProfile.value);
-      chosenProfile.value = prof;
-      console.log("after = ", chosenProfile.value);
-    },
-  },
+  socket.emit("all_dest", (response: any[]) => {
+    getAllDest(response);
+  });
 });
-</script>
 
-<script lang="ts" setup></script>
+onUnmounted(() => {
+  socket.off("send_message");
+});
+
+function getAllDest(response: any[]) {
+  let dest: any[];
+  dest = response;
+  for (let i = 0; i < dest.length; i++) {
+    if (dest[i].dest.id !== 1) {
+      profileFrom.value.push(dest[i].dest);
+      getLastMessage(dest[i].dest.id);
+    }
+  }
+  chosenProfile.value = profileFrom.value[profileFrom.value.length - 1];
+}
+
+function getLastMessage(id: number) {
+  socket.emit("last_message", id, (response: any) => {
+    lastMessage.value.push(response.content);
+  });
+}
+
+function renderCorresponding(prof: any) {
+  console.log("before = ", chosenProfile.value);
+  chosenProfile.value = prof;
+  console.log("after = ", chosenProfile.value);
+}
+</script>
 
 <style>
 .chatPage {
