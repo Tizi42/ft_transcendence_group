@@ -33,19 +33,24 @@ import { onBeforeMount } from "vue";
 import { getUrlOf } from "@/router";
 import { User } from "@backend/users/Users.entity";
 import LeaderBoard from "@/components/Leaderboard/Leaderboard.vue";
+import { useUserStore } from "@/stores/user";
 
+const user = useUserStore();
 const dataReady: Ref<Array<boolean>> = ref([false, false]);
 const leaderboard: Ref<Array<User[]>> = ref([[], []]);
 const orders: Ref<Array<number>> = ref([1, 1]);
 const alone: Ref<boolean> = ref(true);
 
 async function reloadOne(index: number) {
+  dataReady.value[index] = false;
   let response: Response = await fetch(
     getUrlOf(
       "api/users/leaderboard?order=" +
         orders.value[index].toString() +
         "&global=" +
-        (index == 0 ? "true" : "false")
+        (index == 0 ? "true" : "false") +
+        "&mine=" +
+        user.id
     ),
     {
       credentials: "include",

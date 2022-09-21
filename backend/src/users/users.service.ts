@@ -24,6 +24,10 @@ export class UsersService {
       private readonly dataSource: DataSource,
   ) {}
 
+  readonly LVL_FRIENDS: number = 0;
+  readonly LVL_PENDING: number = 1;
+  readonly LVL_REVERSE_PENDING: number = 2;
+  readonly LVL_NO_RELATION: number = 3;
   /*
   **    UPDATE
   */
@@ -243,7 +247,7 @@ export class UsersService {
   }
 
   async showFriendWith(id: number) : Promise<User[]> {
-    const user = await this.usersRepository.findOneBy({ id });
+    const user: User = await this.usersRepository.findOneBy({ id });
     if (user == null)
     {
       console.log("no user matches this id");
@@ -255,7 +259,7 @@ export class UsersService {
   }
 
   async showFriendPendingReqTo(id: number) : Promise<User[]> {
-    const user = await this.usersRepository.findOneBy({ id });
+    const user: User = await this.usersRepository.findOneBy({ id });
     if (user == null)
     {
       console.log("no user matches this id");
@@ -267,7 +271,7 @@ export class UsersService {
   }
 
   async showFriendPendingReqFrom(id: number) : Promise<User[]> {
-    const user = await this.usersRepository.findOneBy({ id });
+    const user: User = await this.usersRepository.findOneBy({ id });
     if (user == null)
     {
       console.log("no user matches this id");
@@ -277,7 +281,22 @@ export class UsersService {
         where: { id: Any(user.friendPendingReqFrom) }
       });
   }
-
+  
+  async getFriendLevel(id: number, target: number): Promise<number> {
+    if (id == target)
+      return this.LVL_FRIENDS;
+    const user1: User = await this.usersRepository.findOneBy({ id: id });
+    const user2: User = await this.usersRepository.findOneBy({ id: target });
+    if (user1 == null || user2 == null)
+      return this.LVL_NO_RELATION;
+    if (user1.friendWith.includes(user2.id))
+      return this.LVL_FRIENDS;
+    if (user1.friendPendingReqTo.includes(user2.id))
+      return this.LVL_PENDING;
+    if (user1.friendPendingReqFrom.includes(user2.id))
+      return this.LVL_REVERSE_PENDING;
+    return this.LVL_NO_RELATION;
+  }
 
   /*
   **    BLOCKED

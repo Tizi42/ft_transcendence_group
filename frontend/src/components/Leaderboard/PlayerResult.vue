@@ -2,7 +2,7 @@
   <div class="playerResults">
     <div class="playerInfo">
       <div class="positionLb">{{ pos }}</div>
-      <img class="profile" :src="pp" />
+      <img class="profile" :src="pp" @click="showInfoBox" />
       <div class="namePlayer">{{ player.displayName }}</div>
       <div class="username">@{{ player.username }}</div>
     </div>
@@ -13,12 +13,20 @@
     </div>
   </div>
   <div class="nofriends" v-if="alone">You don't have any friend 😕</div>
+  <teleport to="body">
+    <UserBoxModal v-if="addWindow" @hide="hide">
+      <UserBox :target="player" />
+    </UserBoxModal>
+  </teleport>
 </template>
 
 <script lang="ts" setup>
 //  imports
 import { User } from "@backend/users/Users.entity";
 import { defineComponent, defineExpose, defineProps } from "vue";
+import { ref } from "vue";
+import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
+import UserBox from "../users/UserBox/UserBox.vue";
 
 //  variables
 interface Props {
@@ -29,6 +37,16 @@ interface Props {
 }
 
 const props: Readonly<Props> = defineProps<Props>();
+const addWindow = ref(false);
+
+function showInfoBox() {
+  addWindow.value = true;
+  console.log("set add window true");
+}
+
+function hide() {
+  addWindow.value = false;
+}
 
 // usefull functions
 function getWinRate(): string {

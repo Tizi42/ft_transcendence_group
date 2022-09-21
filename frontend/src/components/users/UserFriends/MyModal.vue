@@ -36,7 +36,6 @@ defineExpose(
 }
 .modal-container {
   font-size: 26px;
-  background-color: rgba(255, 255, 255, 1);
   position: fixed;
   z-index: 999;
   top: 30%;
