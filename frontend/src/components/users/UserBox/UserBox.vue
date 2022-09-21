@@ -26,7 +26,10 @@
         </button>
         <div class="target-name">{{ target.displayName }}</div>
       </div>
-      <div class="target-username">@{{ target.username }}</div>
+      <div class="target-username">
+        <div>@{{ target.username }}</div>
+        <div>#{{ target.id }}</div>
+      </div>
     </div>
     <div class="statsBox" v-if="show">
       <div class="subtitleBox">
@@ -152,6 +155,7 @@ defineExpose(
 
 .target-username {
   color: #888888;
+  line-height: 1.4em;
 }
 
 .avatarFrame {
