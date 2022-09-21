@@ -36,19 +36,20 @@ socket.on("loged", (to: string) => {
 // });
 
 socket.emit("login");
-var ball;
-var l_paddle;
-var r_paddle;
+let ball: Phaser.Physics.Arcade.Image;
+let l_paddle: Phaser.Physics.Arcade.Image;
+let r_paddle: Phaser.Physics.Arcade.Image;
 
-var isGameStarted = 0;
-var pos = 0;
+let isGameStarted = 0;
+let pos = 0;
 
-var player;
-var other;
-var initialVelocityX = 100;
-var initialVelocityY = 100;
-var lastVelX = 0;
-var lastVelY = 0;
+let player: any;
+let other: any;
+let initialVelocityX = 100;
+let initialVelocityY = 100;
+let lastVelX = 0;
+let lastVelY = 0;
+// let gameConfig: Phaser.Types.Core.GameConfig;
 
 export default {
   data() {
@@ -109,9 +110,9 @@ export default {
               this.cameras.main.height / 2,
               "background"
             );
-            var scaleX = this.cameras.main.width / this.background.width;
-            var scaleY = this.cameras.main.height / this.background.height;
-            var scale = Math.max(scaleX, scaleY);
+            let scaleX = this.cameras.main.width / this.background.width;
+            let scaleY = this.cameras.main.height / this.background.height;
+            let scale = Math.max(scaleX, scaleY);
             this.background.setScale(scale);
 
             l_paddle = this.physics.add.sprite(

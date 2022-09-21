@@ -6,7 +6,7 @@ import VueAxios from "vue-axios";
 import { defineCustomElements as defineIonPhaser } from "@ion-phaser/core/loader";
 
 const app = createApp(App);
-
+app.config.compilerOptions.isCustomElement = (tag) => tag.startsWith("ion-");
 defineIonPhaser(window);
 
 app.use(router);

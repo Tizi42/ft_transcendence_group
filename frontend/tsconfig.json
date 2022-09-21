@@ -12,8 +12,13 @@
     "useDefineForClassFields": true,
     "sourceMap": true,
     "baseUrl": ".",
+    "typeRoots": [
+			"node_modules/@types",
+			"node_modules/phaser/types"
+		],
     "types": [
-      "webpack-env"
+      "webpack-env",
+      "Phaser"
     ],
     "paths": {
       "@/*": [
