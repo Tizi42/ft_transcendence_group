@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Message } from "src/chat/message.entity";
-import { Any, DataSource, In, Not, Repository } from "typeorm";
+import { Any, DataSource, In, Not, QueryRunner, Repository } from "typeorm";
 import { User } from "./Users.entity";
 import { FriendshipDto } from "./utils/friendship.dto";
 import { UserDetails } from "./utils/types";
@@ -19,9 +19,10 @@ export class UsersService {
       private readonly usersRepository: Repository<User>,
 
       @InjectRepository(Message)
-      private readonly messageRepository: Repository<Message>
-  ) {}
+      private readonly messageRepository: Repository<Message>,
 
+      private readonly dataSource: DataSource,
+  ) {}
 
   /*
   **    UPDATE
@@ -85,6 +86,13 @@ export class UsersService {
   async removeAll(): Promise<void> {
     await this.messageRepository.delete({});
     await this.usersRepository.delete({});
+    await this.restartIdSeq();
+  }
+
+  async restartIdSeq() {
+    await this.dataSource.createQueryRunner().query(
+      `ALTER SEQUENCE users_id_seq RESTART WITH 1;`
+    )
   }
 
 
