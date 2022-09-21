@@ -20,39 +20,39 @@ export class ChatGateway  {
         private readonly chatService: ChatService,
       ) {}
 
-    // async handleConnection(socket: Socket) {
-    //     const users = [];
+    async handleConnection(socket: Socket) {
+        const users = [];
     
-    //     await this.chatService.getUserFromSocket(socket);
-    //     for (let [id, socket] of this.server.of("/").sockets) {
-    //       users.push({
-    //         userID: id,
-    //         username: socket.data.username,
-    //       });
-    //     }
-    //     socket.emit('users', users);
-    // }
+        await this.chatService.getUserFromSocket(socket);
+        for (let [id, socket] of this.server.of("/").sockets) {
+          users.push({
+            userID: id,
+            username: socket.data.username,
+          });
+        }
+        socket.emit('users', users);
+    }
 
-    // @SubscribeMessage('request_all_users')
-    // async requestAllUsers(socket: Socket) {
-    //     const users = [];
+    @SubscribeMessage('request_all_users')
+    async requestAllUsers(socket: Socket) {
+        const users = [];
 
-    //     await this.chatService.getUserFromSocket(socket);
-    //     for (let [id, socket] of this.server.of("/").sockets) {
-    //     users.push({
-    //         userID: id,
-    //         username: socket.data.username,
-    //     });
-    //     }
-    //     socket.emit('users', users);
-    // }
+        await this.chatService.getUserFromSocket(socket);
+        for (let [id, socket] of this.server.of("/").sockets) {
+        users.push({
+            userID: id,
+            username: socket.data.username,
+        });
+        }
+        socket.emit('users', users);
+    }
 
     @SubscribeMessage('send_message')
-    async listenForMessages(
+    async listenForMessages(@ConnectedSocket() socket: Socket,
     @MessageBody() data: messageInfos) {
-        // @ConnectedSocket() socket: Socket,
-        // const author = await this.chatService.getUserFromSocket(socket);
-        // console.log('socket: ', author);
+        // ,
+        const author = await this.chatService.getUserFromSocket(socket);
+        console.log('socket: ', author);
 
         console.log('Message from: ');
         console.log(data.author);
