@@ -1,4 +1,4 @@
-import { Controller, Get, Req, Res, UseGuards, Post, HttpCode, Body, UnauthorizedException } from "@nestjs/common";
+import { Controller, Get, Req, Res, UseGuards, Post, HttpCode, Body, UnauthorizedException, Query, Header } from "@nestjs/common";
 import { Response } from "express";
 import { User } from "src/users/Users.entity";
 import { UsersService } from "src/users/users.service";
@@ -27,6 +27,20 @@ export class AuthController {
         const { accessToken } = this.authService.login(request.user, false);
         res.cookie('jwt', accessToken);
         console.log(request.user);
+        console.log("jwt 1 = ", accessToken);
+        res.redirect('http://localhost:8080/2FA');
+    }
+
+    // for development only: allow to log in with an existing email in db
+    @Get('dev-only')
+    async devUserLogin(@Query('email') email: string, @Res({ passthrough: true }) res: Response) {
+      const user = await this.usersService.findOneByEmail(email);
+      if (!user) {
+        return "No such user";
+      }
+      const { accessToken } = this.authService.login(user, false);
+        res.cookie('jwt', accessToken);
+        console.log(user);
         console.log("jwt 1 = ", accessToken);
         res.redirect('http://localhost:8080/2FA');
     }

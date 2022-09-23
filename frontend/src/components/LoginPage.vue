@@ -1,5 +1,8 @@
 <template>
   <button class="btn" data="Sign in with 42" @click="handleLogin()"></button>
+  <router-link :to="{ name: 'dev-login' }" class="btn" id="link">
+    Log in with email
+  </router-link>
 </template>
 
 <script setup lang="ts">
@@ -52,6 +55,14 @@ defineExpose(
   cursor: pointer;
   margin-top: 20px;
   z-index: 1;
+}
+
+#link {
+  text-decoration: none;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 18px;
+  color: rgba(255, 218, 0, 1);
 }
 
 .btn::before {
