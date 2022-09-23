@@ -3,8 +3,10 @@ import { Socket, Server } from 'socket.io';
 import { GameRoom, Player } from "./dto/game.dto";
 
 @WebSocketGateway({
-    cors: {
-        origin: '*',
+  cors: {
+    origin: 'http://localhost:8080',
+    methods: ["GET", "POST"],
+    credentials: true
   },
 })
 

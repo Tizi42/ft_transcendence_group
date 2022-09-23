@@ -1,16 +1,13 @@
 <template>
-  <div class="game">
-    <div @click="initializeGame" class="flex">
-      <a class="btn">Initialize</a>
-    </div>
-    <div @click="searchGame" class="flex">
-      <a class="btn">searchGame</a>
-    </div>
+  <div class="game-frame">
+    <button @click="initializeGame">Initialize</button>
+    <button @click="searchGame">Search</button>
     <ion-phaser v-bind:game.prop="game" v-bind:initialize.prop="initialize" />
   </div>
 </template>
 
 <script lang="ts">
+import { defineComponent } from "vue";
 import Phaser from "phaser";
 import socket from "@/socket";
 // import background from "../assets/game_assets/background.png";
@@ -51,7 +48,7 @@ let lastVelX = 0;
 let lastVelY = 0;
 // let gameConfig: Phaser.Types.Core.GameConfig;
 
-export default {
+export default defineComponent({
   data() {
     return {
       initialize: false,
@@ -191,5 +188,5 @@ export default {
       this.initialize = true;
     },
   },
-};
+});
 </script>

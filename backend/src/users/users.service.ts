@@ -127,11 +127,12 @@ export class UsersService {
   }
 
   async findOneById(id: number): Promise<User | undefined> {
-      return this.usersRepository.findOneBy({ id: id });
+    return this.usersRepository.findOneBy({ id: id });
   }
 
   async findOneByEmail(email: string): Promise<User | undefined> {
-      return this.usersRepository.findOneBy({ email: email });
+    console.log("Finding user by email...");
+    return this.usersRepository.findOneBy({ email: email });
   }
 
 
