@@ -13,12 +13,14 @@
         :ready="dataReady[0]"
         :leaderboard="leaderboard[0]"
         :reorder="reloadAndOrder(0)"
+        :alone="false"
       />
       <LeaderBoard
         title="Friends"
         :ready="dataReady[1]"
         :leaderboard="leaderboard[1]"
         :reorder="reloadAndOrder(1)"
+        :alone="alone"
       />
     </div>
   </div>
@@ -26,18 +28,30 @@
 
 <script lang="ts" setup>
 import "@/assets/styles/historyAndLeaderboard.css";
-import { defineComponent, defineExpose, ref } from "vue";
+import { defineComponent, defineExpose, Ref, ref } from "vue";
 import { onBeforeMount } from "vue";
 import { getUrlOf } from "@/router";
+import { User } from "@backend/users/Users.entity";
 import LeaderBoard from "@/components/Leaderboard/Leaderboard.vue";
+import { useUserStore } from "@/stores/user";
 
-const dataReady = ref([false, false]);
-const leaderboard = ref([{}, {}]);
-const orders = ref([1, 1]);
+const user = useUserStore();
+const dataReady: Ref<Array<boolean>> = ref([false, false]);
+const leaderboard: Ref<Array<User[]>> = ref([[], []]);
+const orders: Ref<Array<number>> = ref([1, 1]);
+const alone: Ref<boolean> = ref(true);
 
 async function reloadOne(index: number) {
-  let response = await fetch(
-    getUrlOf("api/users/leaderboard/" + orders.value[index].toString()),
+  dataReady.value[index] = false;
+  let response: Response = await fetch(
+    getUrlOf(
+      "api/users/leaderboard?order=" +
+        orders.value[index].toString() +
+        "&global=" +
+        (index == 0 ? "true" : "false") +
+        "&mine=" +
+        user.id
+    ),
     {
       credentials: "include",
     }
@@ -49,6 +63,8 @@ async function reloadOne(index: number) {
 async function reloadAll() {
   reloadOne(0);
   reloadOne(1);
+  alone.value = true;
+  if (leaderboard.value[1].length > 1) alone.value = false;
 }
 
 function reloadAndOrder(index: number) {

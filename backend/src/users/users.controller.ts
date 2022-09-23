@@ -3,13 +3,12 @@ import { FriendshipDto } from "./utils/friendship.dto";
 import { User } from "./Users.entity";
 import { UsersService } from "./users.service";
 import { UserDto } from "./utils/user.dto";
-import { Express, Request, Response } from "express";
+import { Express, Response } from "express";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { sharp } from "sharp";
 import { extname } from "path";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
-import { identity } from "rxjs";
 import RequestWithUser from "./utils/requestWithUser.interface";
 
 export const storage = {
@@ -73,7 +72,7 @@ export class UsersController {
   }
 
   @Get('info/:id')
-  getOne(@Param('id') id: number): Promise<User>  {
+  getOne(@Param('id') id: number): Promise<User> {
     console.log("id is " + id);
     return this.usersService.findOne(id);
   };
@@ -81,12 +80,6 @@ export class UsersController {
   @Post('/add')
   create(@Body() user: UserDto) {
     return this.usersService.addOne(user);
-  }
-
-  // to delete 
-  @Get('/rm/:id')
-  remove(@Param('id') id: number) {
-    return this.usersService.remove(id);
   }
 
   // to delete 
@@ -133,6 +126,13 @@ export class UsersController {
   getFriendPendingReqFrom(@Param('id') id: number) {
 	  return this.usersService.showFriendPendingReqFrom(id);
   }
+
+  @Get('/friendship')
+  async friendLevelWith(@Query('target') target: number,
+    @Query('mine') id: number): Promise<number> {
+	  return await this.usersService.getFriendLevel(id, target);
+  }
+
   /*
   **    BLOCKED
   */
@@ -161,8 +161,10 @@ export class UsersController {
   **    LEADERBOARD
   */
 
-  @Get('/leaderboard/:id')
-  getLeaderboard(@Param('id') order: number) {
-    return this.usersService.getLeaderboard(order);
+  @Get('/leaderboard')
+  getLeaderboard(@Query('order') order: number,
+    @Query('global') global: boolean,
+    @Query('mine') id: number) {
+    return this.usersService.getLeaderboard(order, id, global);
   }
 }
