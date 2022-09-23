@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Message } from "src/chat/message.entity";
-import { Any, DataSource, Not, Repository } from "typeorm";
+import { Any, DataSource, In, Not, QueryRunner, Repository } from "typeorm";
 import { User } from "./Users.entity";
 import { FriendshipDto } from "./utils/friendship.dto";
 import { UserDetails } from "./utils/types";
@@ -19,10 +19,15 @@ export class UsersService {
       private readonly usersRepository: Repository<User>,
 
       @InjectRepository(Message)
-      private readonly messageRepository: Repository<Message>
+      private readonly messageRepository: Repository<Message>,
+
+      private readonly dataSource: DataSource,
   ) {}
 
-
+  readonly LVL_FRIENDS: number = 0;
+  readonly LVL_PENDING: number = 1;
+  readonly LVL_REVERSE_PENDING: number = 2;
+  readonly LVL_NO_RELATION: number = 3;
   /*
   **    UPDATE
   */
@@ -85,6 +90,13 @@ export class UsersService {
   async removeAll(): Promise<void> {
     await this.messageRepository.delete({});
     await this.usersRepository.delete({});
+    await this.restartIdSeq();
+  }
+
+  async restartIdSeq() {
+    await this.dataSource.createQueryRunner().query(
+      `ALTER SEQUENCE users_id_seq RESTART WITH 1;`
+    )
   }
 
 
@@ -236,7 +248,7 @@ export class UsersService {
   }
 
   async showFriendWith(id: number) : Promise<User[]> {
-    const user = await this.usersRepository.findOneBy({ id });
+    const user: User = await this.usersRepository.findOneBy({ id });
     if (user == null)
     {
       console.log("no user matches this id");
@@ -248,7 +260,7 @@ export class UsersService {
   }
 
   async showFriendPendingReqTo(id: number) : Promise<User[]> {
-    const user = await this.usersRepository.findOneBy({ id });
+    const user: User = await this.usersRepository.findOneBy({ id });
     if (user == null)
     {
       console.log("no user matches this id");
@@ -260,7 +272,7 @@ export class UsersService {
   }
 
   async showFriendPendingReqFrom(id: number) : Promise<User[]> {
-    const user = await this.usersRepository.findOneBy({ id });
+    const user: User = await this.usersRepository.findOneBy({ id });
     if (user == null)
     {
       console.log("no user matches this id");
@@ -270,7 +282,22 @@ export class UsersService {
         where: { id: Any(user.friendPendingReqFrom) }
       });
   }
-
+  
+  async getFriendLevel(id: number, target: number): Promise<number> {
+    if (id == target)
+      return this.LVL_FRIENDS;
+    const user1: User = await this.usersRepository.findOneBy({ id: id });
+    const user2: User = await this.usersRepository.findOneBy({ id: target });
+    if (user1 == null || user2 == null)
+      return this.LVL_NO_RELATION;
+    if (user1.friendWith.includes(user2.id))
+      return this.LVL_FRIENDS;
+    if (user1.friendPendingReqTo.includes(user2.id))
+      return this.LVL_PENDING;
+    if (user1.friendPendingReqFrom.includes(user2.id))
+      return this.LVL_REVERSE_PENDING;
+    return this.LVL_NO_RELATION;
+  }
 
   /*
   **    BLOCKED
@@ -341,7 +368,18 @@ export class UsersService {
         where: { id: Any(user.blocked) }
 	  });
   }
-
+    
+  async getBlockedBy(id: number) : Promise<User[]> {
+    const user = await this.usersRepository.findOneBy({ id });
+    if (user == null)
+    {
+      console.log("no user matches this id");
+      return null;
+    }
+    return this.usersRepository.find({
+        where: { id: Any(user.blockedBy) }
+      });
+  }
 
   /*
   **    AUTHENTICATION
@@ -370,18 +408,6 @@ export class UsersService {
           isFirstEnablingTwoFactor: value,
       });
   }
-    
-  async getBlockedBy(id: number) : Promise<User[]> {
-    const user = await this.usersRepository.findOneBy({ id });
-    if (user == null)
-    {
-      console.log("no user matches this id");
-      return null;
-    }
-    return this.usersRepository.find({
-        where: { id: Any(user.blockedBy) }
-      });
-  }
 
 
   /*
@@ -397,35 +423,74 @@ export class UsersService {
     this.usersRepository.save(target);
   }
 
-  getLeadByVictories() : Promise<User[]> {
-    return this.usersRepository.find(
-      {order: {totalVictories: "DESC"},
-      where: {totalGames: Not(0)},
+  async getLeadByVictories(global: boolean, id: number) : Promise<User[]> {
+    if (global)
+      return this.usersRepository.find(
+        {order: {totalVictories: "DESC"},
+        where: {totalGames: Not(0)},
+      });
+    return this.usersRepository.find({
+      order: {totalVictories: "DESC"},
+      where: [
+        {
+          totalGames: Not(0),
+          id: In((await this.findOne(id)).friendWith),
+        },
+        {
+          id: id,
+        },
+      ],
     });
   }
 
-  getLeadByWinRate() : Promise<User[]> {
+  async getLeadByWinRate(global: boolean, id: number) : Promise<User[]> {
+    if (global)
+      return this.usersRepository.find({
+        order: {winRate: "DESC"},
+        where: {totalGames: Not(0)},
+      });
     return this.usersRepository.find({
       order: {winRate: "DESC"},
-      where: {totalGames: Not(0)},
+      where: [
+        {
+          totalGames: Not(0),
+          id: In((await this.findOne(id)).friendWith),
+        },
+        {
+          id: id,
+        },
+      ],
     });
   }
 
-  getLeadByGames() : Promise<User[]> {
+  async getLeadByGames(global: boolean, id: number) : Promise<User[]> {
+    if (global)
+      return this.usersRepository.find({
+        order: {totalGames: "DESC"},
+        where: {totalGames: Not(0)},
+      });
     return this.usersRepository.find({
       order: {totalGames: "DESC"},
-      where: {totalGames: Not(0)},
+      where: [
+        {
+          totalGames: Not(0),
+          id: In((await this.findOne(id)).friendWith),
+        },
+        {
+          id: id,
+        },
+      ],
     });
   }
 
-  getLeaderboard(order: number) : Promise<User[]> {
+  getLeaderboard(order: number, id: number, global: boolean) : Promise<User[]> {
     switch (order) {
       case 0:
-        return this.getLeadByVictories();
+        return this.getLeadByVictories(global, id);
       case 1:
-        return this.getLeadByWinRate();
+        return this.getLeadByWinRate(global, id);
       default:
-        return this.getLeadByGames();
+        return this.getLeadByGames(global, id);
     }
   }
 }

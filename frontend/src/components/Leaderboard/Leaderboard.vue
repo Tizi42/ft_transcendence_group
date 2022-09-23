@@ -17,7 +17,11 @@
       </div>
     </div>
     <div class="tableContainer">
-      <ContentLeaderboard :leaderboard="leaderboard" v-if="ready" />
+      <ContentLeaderboard
+        :leaderboard="leaderboard"
+        :alone="alone"
+        v-if="ready"
+      />
       <div class="loading" v-else>loading...</div>
     </div>
   </div>
@@ -25,10 +29,21 @@
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose, defineProps } from "vue";
-import ContentLeaderboard from "./ContentLeaderboard.vue";
 import { Ref, ref } from "vue";
+import { User } from "@backend/users/Users.entity";
+import ContentLeaderboard from "./ContentLeaderboard.vue";
 
-const props = defineProps(["title", "ready", "leaderboard", "reorder"]);
+type ReorderFunction = (order: number) => void;
+
+interface Props {
+  leaderboard: Array<User>;
+  ready: boolean;
+  title: string;
+  reorder: ReorderFunction;
+  alone: boolean;
+}
+
+const props: Readonly<Props> = defineProps<Props>();
 const selectedOrder: Ref<number> = ref(1);
 const cssClassTab: Ref<Array<string>> = ref([
   "tabContainer",
