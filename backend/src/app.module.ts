@@ -11,7 +11,6 @@ import { BattlesModule } from './battles/battles.module';
 import { typeOrmConfig } from './common/typeorm.config';
 import { DataSource } from 'typeorm';
 import { ChatModule } from './chat/chat.module';
-import { UsersModule } from './users/users.module';
 
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 
@@ -23,7 +22,6 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     UsersModule,
     GameModule,
     BattlesModule,
-    UsersModule,
     ChatModule
   ],
   controllers: [AppController],
