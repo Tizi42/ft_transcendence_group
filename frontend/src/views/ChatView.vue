@@ -43,7 +43,6 @@ onBeforeMount(async () => {
     .then((response) => response.json())
     .then((data) => {
       getAllDest(data);
-      console.log("ma data ", data);
     })
     .catch((err) => console.error(err));
 });
