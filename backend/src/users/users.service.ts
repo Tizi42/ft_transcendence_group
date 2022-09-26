@@ -408,7 +408,7 @@ export class UsersService {
       });
   }
   
-  async updateIsOnline(userId: number, value: boolean) {
+  async updateIsOnline(userId: number, value: string) {
     return this.usersRepository.update(userId, {
         online: value,
     });

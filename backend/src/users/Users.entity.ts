@@ -53,6 +53,6 @@ export class User {
   @Column({default: -1, nullable: true})
   winRate: number;
   
-  @Column({ default: false })
-  online: boolean;
+  @Column({ default: "offline" })
+  online: string;
 }
