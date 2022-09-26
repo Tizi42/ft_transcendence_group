@@ -26,8 +26,8 @@ export class AuthController {
     handle42Redirect(@Req() request: RequestWithUser, @Res({ passthrough: true }) res: Response) {
         const { accessToken } = this.authService.login(request.user, false);
         res.cookie('jwt', accessToken);
-        console.log(request.user);
-        console.log("jwt 1 = ", accessToken);
+        ////console.log(request.user);
+        //console.log("jwt 1 = ", accessToken);
         res.redirect('http://localhost:8080/2FA');
     }
 
@@ -40,8 +40,8 @@ export class AuthController {
       }
       const { accessToken } = this.authService.login(user, false);
         res.cookie('jwt', accessToken);
-        console.log(user);
-        console.log("jwt 1 = ", accessToken);
+        //console.log(user);
+        //console.log("jwt 1 = ", accessToken);
         res.redirect('http://localhost:8080/2FA');
     }
 

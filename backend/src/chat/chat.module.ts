@@ -16,7 +16,7 @@ import { Message } from './message.entity';
         JwtModule,
     ],
     providers: [
-        // ChatGateway,
+        ChatGateway,
         ChatService,
         AuthService,
     ],

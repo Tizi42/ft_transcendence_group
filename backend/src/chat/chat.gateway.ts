@@ -18,16 +18,19 @@ export class ChatGateway implements OnGatewayConnection {
   ) {}
 
   async handleConnection(socket: Socket) {
-    const users = [];
 
-    await this.chatService.getUserFromSocket(socket);
-    for (let [id, socket] of this.server.of("/").sockets) {
-      users.push({
-        userID: id,
-        username: socket.data.username,
-      });
-    }
-    socket.emit('users', users);
+    console.log("Connection in Chat: ", socket.id);
+
+    // const users = [];
+
+    // await this.chatService.getUserFromSocket(socket);
+    // for (let [id, socket] of this.server.of("/").sockets) {
+    //   users.push({
+    //     userID: id,
+    //     username: socket.data.username,
+    //   });
+    // }
+    // socket.emit('users', users);
   }
 
   @SubscribeMessage('request_all_users')
