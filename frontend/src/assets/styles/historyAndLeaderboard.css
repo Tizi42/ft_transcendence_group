@@ -64,9 +64,9 @@
 }
 
 .v-center {
-  height: 30vh;
+  height: 20vh;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 
 .tableContainer {
@@ -282,6 +282,11 @@ li {
 
 .name {
   width: 70%;
+}
+
+.score {
+  width: 2vw;
+  text-align: center;
 }
 
 .winner .name {

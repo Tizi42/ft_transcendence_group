@@ -63,7 +63,6 @@ export class UsersController {
 
   @Get('info/:id')
   getOne(@Param('id') id: number): Promise<User> {
-    console.log("id is " + id);
     return this.usersService.findOne(id);
   };
 
