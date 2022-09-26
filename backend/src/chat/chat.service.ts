@@ -42,10 +42,6 @@ export class ChatService {
             .find((cookie: string) => cookie.startsWith('jwt'))
             .split('=')[1];
         const user = await this.authService.getUserFromAuthenticationToken(cookieJwt);
-
-        if (!user) {
-            throw new WsException('Invalid Credentials !');
-        }
         socket.data = user;
         return user;
     }

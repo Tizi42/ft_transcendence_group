@@ -6,11 +6,7 @@
         <div class="name">Conan Edogawa</div>
         <img class="pp" src="@/assets/profile/conan.png" />
       </div>
-      <fulfilling-bouncing-circle-spinner
-        :animation-duration="4000"
-        :size="20"
-        color="#ffcb00"
-      />
+      ...
       <div class="opponentRight">
         <img class="pp" src="@/assets/profile/ran.png" />
         <div class="name">Ran Mouri</div>
@@ -56,18 +52,17 @@
 <script lang="ts" setup>
 //  imports
 import { defineComponent, defineExpose, defineProps } from "vue";
-import { FulfillingBouncingCircleSpinner } from "epic-spinners";
 
 //  variables
 defineProps(["battle"]);
 
 //  usefull functions
-function getTime(fullDate): string {
+function getTime(fullDate: string): string {
   let splitted = fullDate.split("T")[1].split(":");
   return splitted[0] + ":" + splitted[1];
 }
 
-function getDate(fullDate): string {
+function getDate(fullDate: string): string {
   let splitted = fullDate.split("T")[0].split("-");
   return splitted[1] + "." + splitted[2];
 }

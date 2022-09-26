@@ -74,11 +74,16 @@
   height: 200px;
   margin: auto;
   display: flex;
+  transition: transform 0.3s ease-in-out;
 }
 
 .link-container img {
   margin: auto;
   width: 70%;
+}
+
+.link-container:hover {
+  transform: scale(1.15);
 }
   
 nav a.router-link-exact-active {
