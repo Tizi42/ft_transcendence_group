@@ -3,10 +3,15 @@ import { Request, Response } from 'express';
 import { AppService } from './app.service';
 import { JwtTwoFactorGuard } from './auth/guards/jwt-2fa-auth.guard';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { UsersService } from './users/users.service';
+import RequestWithUser from './users/utils/requestWithUser.interface';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private usersService: UsersService
+  ) {}
 
   @Get()
   getHello(): string {
@@ -29,7 +34,8 @@ export class AppController {
 
   @Get('logout')
   @UseGuards(JwtAuthGuard)
-  logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  logout(@Req() request: RequestWithUser, @Res({ passthrough: true }) res: Response) {
     res.clearCookie('jwt');
+    this.usersService.updateIsOnline(request.user.id, false);
   }
 }

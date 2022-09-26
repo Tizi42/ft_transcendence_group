@@ -408,7 +408,12 @@ export class UsersService {
           isFirstEnablingTwoFactor: value,
       });
   }
-
+  
+  async updateIsOnline(userId: number, value: boolean) {
+    return this.usersRepository.update(userId, {
+        online: value,
+    });
+  }
 
   /*
   **    GAME STATS
