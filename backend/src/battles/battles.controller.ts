@@ -29,8 +29,7 @@ export class BattlesController {
 
   @Get(':id')
   getAllFor(@Param('id') id: number) : Promise<Battle[]> {
-    let battles = this.battlesService.findAllFor(id);
-    return (battles);
+    return (this.battlesService.findAllFor(id));
   }
 
   @Get('/end/:id/:winner')

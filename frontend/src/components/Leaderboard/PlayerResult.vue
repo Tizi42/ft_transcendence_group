@@ -41,7 +41,6 @@ const addWindow = ref(false);
 
 function showInfoBox() {
   addWindow.value = true;
-  console.log("set add window true");
 }
 
 function hide() {

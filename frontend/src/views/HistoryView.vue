@@ -42,28 +42,26 @@ const noMatch: Ref<Array<boolean>> = ref([true, true]);
 
 // loading functions
 async function reloadOne(index: number) {
-  let response: Response;
   dataReady.value[index] = false;
-  if (index == 0) {
-    response = await fetch(getUrlOf("api/battles"), {
+  console.log(user.id);
+  let response: Response = await fetch(
+    getUrlOf("api/battles/" + (index == 0 ? "" : user.id)),
+    {
       credentials: "include",
-    });
-  } else {
-    response = await fetch(getUrlOf("api/battles/" + user.id), {
-      credentials: "include",
-    });
-  }
+    }
+  );
   history.value[index] = await response.json();
   setTimeout(() => {
     dataReady.value[index] = true;
   }, 500);
 }
+
 async function reloadData() {
   await reloadOne(0);
   await reloadOne(1);
-  if (history.value[0].length > 1) noMatch.value[0] = false;
+  if (history.value[0].length > 0) noMatch.value[0] = false;
   else noMatch.value[0] = true;
-  if (history.value[1].length > 1) noMatch.value[1] = false;
+  if (history.value[1].length > 0) noMatch.value[1] = false;
   else noMatch.value[1] = true;
 }
 
