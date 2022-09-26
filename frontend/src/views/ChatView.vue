@@ -1,8 +1,13 @@
 <template>
   <div class="chatPage">
-    <h1>This is the CHAT page</h1>
+    <h1>Start chating</h1>
     <div class="chatroom">
       <div class="box list">
+        <div class="onglets">
+          <p>Friends</p>
+          <p>Channel</p>
+        </div>
+        <input type="text" placeholder="Search.." />
         <div
           class="block"
           v-for="(prof, index) in profileFrom"
@@ -106,6 +111,10 @@ function renderCorresponding(prof: any) {
   box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.3);
   height: 100%;
   margin-right: 1%;
+}
+.onglets {
+  display: flex;
+  flex-direction: row;
 }
 .list {
   width: 15%;

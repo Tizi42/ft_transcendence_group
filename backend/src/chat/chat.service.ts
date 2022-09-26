@@ -26,7 +26,7 @@ export class ChatService {
     }
     async getAllDest(): Promise<Chat[]> {
         console.log("GET DESTS");
-        return await this.chatRepository.find({ relations: ['dest'] });
+        return await this.chatRepository.find({ relations: ['dest'], take: 3 });
     }
     async getMessagesById(id: number): Promise<Chat[]>{
         const query = await this.chatRepository.createQueryBuilder()
