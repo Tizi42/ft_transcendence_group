@@ -57,7 +57,9 @@ async function reloadOne(index: number) {
     }
   );
   leaderboard.value[index] = await response.json();
-  dataReady.value[index] = true;
+  setTimeout(() => {
+    dataReady.value[index] = true;
+  }, 500);
 }
 
 async function reloadAll() {
