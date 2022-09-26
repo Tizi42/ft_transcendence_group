@@ -1,9 +1,9 @@
-import { io } from "/usr/local/lib/node_modules/socket.io-client";
+import { io } from "socket.io-client";
 
 const URL = "http://localhost:3000";
-const socket = io(URL, { autoConnect: true });
+const socket = io(URL, { withCredentials: true });
 
-socket.onAny((event, ...args) => {
+socket.onAny((event: any, ...args: any[]) => {
   console.log(event, args);
 });
 export default socket;

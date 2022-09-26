@@ -27,9 +27,8 @@
 
 <script lang="ts" setup>
 import { Ref, ref, onBeforeMount, onUnmounted, onMounted } from "vue";
-import socket from "../socket";
+import socket from "@/socket";
 import MessagesView from "../components/MessagesView.vue";
-import { createDOMCompilerError } from "@vue/compiler-dom";
 
 const lastMessage: Ref<any> = ref([]);
 const profile: Ref<any> = ref("");
@@ -37,25 +36,20 @@ const profileFrom: Ref<Array<any>> = ref([]);
 const chosenProfile: Ref<any> = ref("");
 
 onBeforeMount(async () => {
-  await fetch("http://localhost:3000/api/private", {
-    credentials: "include",
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .then((user) => {
-      profile.value = user;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-  socket.emit("all_dest", (response: any[]) => {
-    getAllDest(response);
+  socket.on("connection", async (user) => {
+    profile.value = user;
   });
+  fetch("http://localhost:3000/api/chat/dest")
+    .then((response) => response.json())
+    .then((data) => {
+      getAllDest(data);
+      console.log("ma data ", data);
+    })
+    .catch((err) => console.error(err));
 });
 
 onUnmounted(() => {
-  socket.off("send_message");
+  // socket.off("send_message");
 });
 
 function getAllDest(response: any[]) {
@@ -71,7 +65,7 @@ function getAllDest(response: any[]) {
 }
 
 function getLastMessage(id: number) {
-  socket.emit("last_message", id, (response: any) => {
+  socket.emit("last_from", id, (response: any) => {
     lastMessage.value.push(response.content);
   });
 }

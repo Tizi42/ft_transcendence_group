@@ -42,26 +42,17 @@ const prop = defineProps(["chosenProfile"]);
 console.log("how : ", prop.chosenProfile.id);
 
 onMounted(async () => {
-  await fetch("http://localhost:3000/api/private", {
-    credentials: "include",
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .then((user) => {
-      profile.value = user;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  socket.on("connection", async (user) => {
+    profile.value = user;
+  });
   getMessages();
 });
 
 function onSubmit() {
   const data = {
     content: input.value,
-    author: 1,
-    dest: prop.chosenProfile.id,
+    author: profile.value.id,
+    dest: 2,
   };
   console.log("dest =", data.dest);
   socket.emit("send_message", data);
@@ -69,14 +60,9 @@ function onSubmit() {
   window.location.reload();
 }
 function getMessages() {
-  fetch("http://localhost:3000/api/chat/messages/" + 5)
-    .then((response) => response.json())
-    .then((data) => {
-      data.forEach((el: any) => {
-        history.value.push(el);
-      });
-    })
-    .catch((err) => console.error(err));
+  socket.emit("received_messages", 2, (history: any) => {
+    history.value.push(history);
+  });
 }
 </script>
 
