@@ -1,5 +1,5 @@
 <template>
-  <div class="tableContent">
+  <div>
     <TransitionGroup name="list" tag="ul" v-if="show && !noMatch">
       <li v-for="battle in items" :key="battle.id">
         <MatchResult
@@ -10,7 +10,9 @@
         />
       </li>
     </TransitionGroup>
-    <div v-if="noMatch">no match</div>
+    <div class="nofriends v-center" v-if="noMatch">
+      You never played our wonderful game &#128530;
+    </div>
   </div>
 </template>
 

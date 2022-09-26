@@ -63,6 +63,12 @@
   margin-top: 5%;
 }
 
+.v-center {
+  height: 30vh;
+  display: flex;
+  justify-content: space-between;
+}
+
 .tableContainer {
   color: white;
   position: relative;

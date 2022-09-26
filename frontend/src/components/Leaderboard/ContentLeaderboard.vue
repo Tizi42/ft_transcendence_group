@@ -1,5 +1,5 @@
 <template>
-  <div class="tableContent">
+  <div>
     <TransitionGroup name="list" tag="ul">
       <li v-for="(player, id) in items" :key="id">
         <PlayerResult
