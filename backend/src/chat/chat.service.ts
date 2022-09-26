@@ -39,15 +39,15 @@ export class ChatService {
     }
     async getUserFromSocket(socket: Socket) {
         const cookieJwt = socket.handshake.headers.cookie
-            .split('; ')
-            .find((cookie: string) => cookie.startsWith('jwt'))
-            .split('=')[1];
-        const user = await this.authService.getUserFromAuthenticationToken(cookieJwt);
+        .split('; ')
+        .find((cookie: string) => cookie.startsWith('jwt'))
+        .split('=')[1];
+    const user = await this.authService.getUserFromAuthenticationToken(cookieJwt);
 
-        if (!user) {
-            throw new WsException('Invalid Credentials !');
-        }
-        socket.data = user;
-        return user;
+    if (!user) {
+        throw new WsException('Invalid Credentials !');
+    }
+    socket.data = user;
+    return user;
     }
 }

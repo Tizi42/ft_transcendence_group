@@ -1,25 +1,40 @@
-# stage - dev
-FROM node:lts-alpine As dev
-WORKDIR	/app
-COPY --chown=node:node package*.json ./
-RUN npm ci
-ENV NODE_ENV development
-COPY --chown=node:node . .
-USER node
+######################
+#   target - dev     #
+######################
 
-# stage - build for production
-FROM node:lts-alpine As build
-WORKDIR /app
-COPY --chown=node:node package*.json ./
-COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modules
-COPY --chown=node:node . .
-RUN npm run build
-ENV NODE_ENV production
-RUN npm ci --only=production && npm cache clean --force
-USER node
+FROM    node:lts-alpine As dev
+WORKDIR /usr/src/app
+COPY    --chown=node:node package*.json /usr/src/app
+RUN     npm ci \
+        && chown -R node /usr/src/app/* \
+        && chmod -R 755 /usr/src/app/*
+COPY    --chown=node:node . /usr/src/app
+ENV     NODE_ENV development
+USER    node
+CMD     [ "npm", "run", "start:dev" ]
 
-# stage - production
-FROM node:lts-alpine As production
-COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
-COPY --chown=node:node --from=build /usr/src/app/dist ./dist
-CMD [ "node", "dist/main.js" ]
+#################################
+#   target - build for prod     #
+#################################
+
+FROM    node:lts-alpine As build
+WORKDIR /usr/src/app
+COPY    --chown=node:node package*.json /usr/src/app
+COPY    --chown=node:node --from=development /usr/src/app/node_modules ./node_modules
+COPY    --chown=node:node . /usr/src/app
+RUN     npm ci --only=production \
+        && npm cache clean --force \
+        && chown -R node /usr/src/app/* \
+        && chmod -R 755 /usr/src/app/*
+ENV     NODE_ENV production
+USER    node
+CMD     [ "npm", "run", "build" ]
+
+#######################
+#   target - prod     #
+#######################
+
+FROM    node:lts-alpine As production
+COPY    --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
+COPY    --chown=node:node --from=build /usr/src/app/dist ./dist
+CMD     [ "node", "dist/main.js" ]
