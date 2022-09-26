@@ -4,11 +4,11 @@
       <div class="opponentLeft">
         <div class="score">{{ match.score1 }}</div>
         <div class="name">{{ name1 }}</div>
-        <img class="profile" :src="pp1" />
+        <img class="profile" :src="pp1" @click="showInfoBox(0)" />
       </div>
       ...
       <div class="opponentRight">
-        <img class="profile" :src="pp2" />
+        <img class="profile" :src="pp2" @click="showInfoBox(1)" />
         <div class="name">{{ name2 }}</div>
         <div class="score">{{ match.score2 }}</div>
       </div>
@@ -20,11 +20,11 @@
       <div class="opponentLeft winner">
         <div class="score">{{ match.score1 }}</div>
         <div class="name">{{ name1 }}</div>
-        <img class="profile" :src="pp1" />
+        <img class="profile" :src="pp1" @click="showInfoBox(0)" />
       </div>
       vs
       <div class="opponentRight looser">
-        <img class="profile" :src="pp2" />
+        <img class="profile" :src="pp2" @click="showInfoBox(1)" />
         <div class="name">{{ name2 }}</div>
         <div class="score">{{ match.score2 }}</div>
       </div>
@@ -33,11 +33,11 @@
       <div class="opponentLeft looser">
         <div class="score">{{ match.score1 }}</div>
         <div class="name">{{ name1 }}</div>
-        <img class="profile" :src="pp1" />
+        <img class="profile" :src="pp1" @click="showInfoBox(0)" />
       </div>
       vs
       <div class="opponentRight winner">
-        <img class="profile" :src="pp2" />
+        <img class="profile" :src="pp2" @click="showInfoBox(1)" />
         <div class="name">{{ name2 }}</div>
         <div class="score">{{ match.score2 }}</div>
       </div>
@@ -47,6 +47,14 @@
       <div class="time">{{ getTime(match.date_start) }}</div>
     </div>
   </div>
+  <teleport to="body">
+    <UserBoxModal v-if="addWindow[0]" @hide="hide(0)">
+      <UserBox :target="players[0]" />
+    </UserBoxModal>
+    <UserBoxModal v-if="addWindow[1]" @hide="hide(1)">
+      <UserBox :target="players[1]" />
+    </UserBoxModal>
+  </teleport>
 </template>
 
 <script lang="ts" setup>
@@ -55,6 +63,9 @@ import { getUrlOf } from "@/router";
 import { Battle } from "@backend/battles/battle.entity";
 import { defineComponent, defineExpose, defineProps, ref, Ref } from "vue";
 import { onMounted } from "vue";
+import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
+import UserBox from "../users/UserBox/UserBox.vue";
+import { User } from "@backend/users/Users.entity";
 
 //  variables
 interface Props {
@@ -65,8 +76,19 @@ interface Props {
 
 const props: Readonly<Props> = defineProps<Props>();
 const show: Ref<boolean> = ref(false);
-const name1: Ref<string> = ref("name1");
-const name2: Ref<string> = ref("name2");
+const name1: Ref<string> = ref("");
+const name2: Ref<string> = ref("");
+const players: Ref<Array<User>> = ref([]);
+const addWindow: Ref<Array<boolean>> = ref([false, false]);
+
+//  pop-up functions
+function showInfoBox(nb: number) {
+  addWindow.value[nb] = true;
+}
+
+function hide(nb: number) {
+  addWindow.value[nb] = false;
+}
 
 //  usefull functions
 function getTime(fullDate: Date): string {
@@ -87,10 +109,20 @@ async function getName(id: number): Promise<string> {
   return await response.text();
 }
 
+async function getPlayer(id: number): Promise<User> {
+  let response: Response;
+  response = await fetch(getUrlOf("api/users/info/" + id), {
+    credentials: "include",
+  });
+  return await response.json();
+}
+
 //  lifecycle hook
 onMounted(async () => {
   name1.value = await getName(props.match.opponent1);
   name2.value = await getName(props.match.opponent2);
+  players.value.push(await getPlayer(props.match.opponent1));
+  players.value.push(await getPlayer(props.match.opponent2));
   show.value = true;
 });
 
