@@ -1,8 +1,13 @@
 <template>
   <div class="tableContent">
-    <TransitionGroup name="list" tag="ul">
+    <TransitionGroup name="list" tag="ul" v-if="show && !noMatch">
       <li v-for="battle in items" :key="battle.id">
-        <MatchResult v-if="show" :battle="battle" />
+        <MatchResult
+          v-if="show"
+          :match="battle"
+          :pp1="getPictureUrl(battle.opponent1)"
+          :pp2="getPictureUrl(battle.opponent2)"
+        />
       </li>
     </TransitionGroup>
     <div v-if="noMatch">no match</div>
@@ -12,8 +17,7 @@
 <script lang="ts" setup>
 //  imports
 import { defineComponent, defineExpose, defineProps } from "vue";
-import { onMounted, onUpdated } from "vue";
-import { ref, Ref } from "vue";
+import { onMounted, ref, Ref } from "vue";
 import MatchResult from "./MatchResult.vue";
 import { Battle } from "@backend/battles/battle.entity";
 
@@ -26,6 +30,10 @@ interface Props {
 const props: Readonly<Props> = defineProps<Props>();
 const items: Ref<Array<Battle>> = ref([]);
 const show: Ref<boolean> = ref(false);
+
+function getPictureUrl(id: number): string {
+  return "http://localhost:3000/api/users/avatar/" + id.toString();
+}
 
 //  usefull functions
 async function reshowData() {
@@ -41,10 +49,6 @@ async function reshowData() {
 
 //  lifecycle hook
 onMounted(async () => {
-  await reshowData();
-});
-
-onUpdated(async () => {
   await reshowData();
 });
 

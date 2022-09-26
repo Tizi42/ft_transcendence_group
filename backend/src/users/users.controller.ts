@@ -67,6 +67,11 @@ export class UsersController {
     return this.usersService.findOne(id);
   };
 
+  @Get('name/:id')
+  getName(@Param('id') id: number): Promise<String> {
+    return this.usersService.getName(id);
+  };
+
   @Post('/add')
   create(@Body() user: UserDto) {
     return this.usersService.addOne(user);
