@@ -44,25 +44,32 @@ console.log("how : ", prop.chosenProfile.id);
 onMounted(async () => {
   socket.on("connection", async (user) => {
     profile.value = user;
+    getMessages();
   });
-  getMessages();
 });
 
 function onSubmit() {
   const data = {
     content: input.value,
     author: profile.value.id,
-    dest: 2,
+    dest: prop.chosenProfile.id,
   };
   console.log("dest =", data.dest);
   socket.emit("send_message", data);
   input.value = null;
   window.location.reload();
 }
+
 function getMessages() {
-  socket.emit("received_messages", 2, (history: any) => {
-    history.value.push(history);
-  });
+  console.log("profile = ", prop.chosenProfile.id);
+  fetch("http://localhost:3000/api/chat/messages/" + prop.chosenProfile.id)
+    .then((response) => response.json())
+    .then((data) => {
+      data.forEach((el: any) => {
+        history.value.push(el);
+      });
+    })
+    .catch((err) => console.error(err));
 }
 </script>
 
