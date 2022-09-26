@@ -1,18 +1,16 @@
 <template>
-  <div>
-    <TransitionGroup name="list" tag="ul" v-if="show && !noMatch">
-      <li v-for="battle in items" :key="battle.id">
-        <MatchResult
-          v-if="show"
-          :match="battle"
-          :pp1="getPictureUrl(battle.opponent1)"
-          :pp2="getPictureUrl(battle.opponent2)"
-        />
-      </li>
-    </TransitionGroup>
-    <div class="nofriends v-center" v-if="noMatch">
-      You never played our wonderful game &#128530;
-    </div>
+  <TransitionGroup name="list" tag="ul" v-if="show && !noMatch">
+    <li v-for="battle in items" :key="battle.id">
+      <MatchResult
+        v-if="show"
+        :match="battle"
+        :pp1="getPictureUrl(battle.opponent1)"
+        :pp2="getPictureUrl(battle.opponent2)"
+      />
+    </li>
+  </TransitionGroup>
+  <div class="nofriends v-center" v-if="noMatch">
+    You never played our wonderful game &#128530;
   </div>
 </template>
 

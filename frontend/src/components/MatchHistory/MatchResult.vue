@@ -2,7 +2,7 @@
   <div class="match" v-if="show">
     <div class="matchResults" v-if="!match.isFinished">
       <div class="opponentLeft">
-        <div class="score">{{ match.score1 }}</div>
+        <div class="score">{{ match.score1 }}pts</div>
         <div class="name">{{ name1 }}</div>
         <img class="profile" :src="pp1" @click="showInfoBox(0)" />
       </div>
@@ -10,7 +10,7 @@
       <div class="opponentRight">
         <img class="profile" :src="pp2" @click="showInfoBox(1)" />
         <div class="name">{{ name2 }}</div>
-        <div class="score">{{ match.score2 }}</div>
+        <div class="score">{{ match.score2 }}pts</div>
       </div>
     </div>
     <div
@@ -18,7 +18,7 @@
       v-else-if="match.isFinished && match.winner == match.opponent1"
     >
       <div class="opponentLeft winner">
-        <div class="score">{{ match.score1 }}</div>
+        <div class="score">{{ match.score1 }}pts</div>
         <div class="name">{{ name1 }}</div>
         <img class="profile" :src="pp1" @click="showInfoBox(0)" />
       </div>
@@ -26,12 +26,12 @@
       <div class="opponentRight looser">
         <img class="profile" :src="pp2" @click="showInfoBox(1)" />
         <div class="name">{{ name2 }}</div>
-        <div class="score">{{ match.score2 }}</div>
+        <div class="score">{{ match.score2 }}pts</div>
       </div>
     </div>
     <div class="matchResults" v-else>
       <div class="opponentLeft looser">
-        <div class="score">{{ match.score1 }}</div>
+        <div class="score">{{ match.score1 }}pts</div>
         <div class="name">{{ name1 }}</div>
         <img class="profile" :src="pp1" @click="showInfoBox(0)" />
       </div>
@@ -39,7 +39,7 @@
       <div class="opponentRight winner">
         <img class="profile" :src="pp2" @click="showInfoBox(1)" />
         <div class="name">{{ name2 }}</div>
-        <div class="score">{{ match.score2 }}</div>
+        <div class="score">{{ match.score2 }}pts</div>
       </div>
     </div>
     <div class="matchDate">
@@ -93,12 +93,12 @@ function hide(nb: number) {
 //  usefull functions
 function getTime(fullDate: Date): string {
   let splitted = fullDate.toString().split("T")[1].split(":");
-  return splitted[0] + ":" + splitted[1];
+  return splitted[0] + "h" + splitted[1];
 }
 
 function getDate(fullDate: Date): string {
   let splitted = fullDate.toString().split("T")[0].split("-");
-  return splitted[1] + "." + splitted[2];
+  return splitted[1] + "/" + splitted[2] + "/" + splitted[0];
 }
 
 async function getName(id: number): Promise<string> {
