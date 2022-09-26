@@ -137,6 +137,7 @@ export default defineComponent({
             l_paddle.setImmovable(true);
             r_paddle.setImmovable(true);
             socket.emit("queue_register", "normal");
+            console.log("Queue register emitted");
           },
           update() {
             if (isGameStarted == 1) {

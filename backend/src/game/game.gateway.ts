@@ -9,7 +9,6 @@ import { GameRoom, Player } from "./dto/game.dto";
     credentials: true
   },
 })
-
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer() server: Server;
 
