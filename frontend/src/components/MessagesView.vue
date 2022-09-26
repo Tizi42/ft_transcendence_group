@@ -32,7 +32,7 @@ export default defineComponent({
 </script>
 
 <script setup lang="ts">
-import { onBeforeMount, Ref, ref, defineProps, onMounted } from "vue";
+import { Ref, ref, defineProps, onMounted } from "vue";
 import socket from "../socket";
 
 const input: Ref<any> = ref("");
