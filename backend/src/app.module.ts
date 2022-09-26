@@ -5,11 +5,11 @@ import { AppService } from './app.service';
 import { getEnvPath } from './common/helper/env.helper';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
 import { BattlesModule } from './battles/battles.module';
 import { typeOrmConfig } from './common/typeorm.config';
 import { DataSource } from 'typeorm';
 import { ChatModule } from './chat/chat.module';
+import { UsersModule } from './users/users.module';
 
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 
@@ -18,8 +18,8 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     ConfigModule.forRoot({ envFilePath, isGlobal: true }),
     TypeOrmModule.forRootAsync(typeOrmConfig),
     AuthModule,
-    UsersModule,
     BattlesModule,
+    UsersModule,
     ChatModule
   ],
   controllers: [AppController],

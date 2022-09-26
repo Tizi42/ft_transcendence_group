@@ -33,13 +33,15 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: "friends",
-        name: "firends",
-        component: () => import("../components/users/UserFriends.vue"),
+        name: "friends",
+        component: () =>
+          import("../components/users/UserFriends/UserFriends.vue"),
       },
       {
         path: "settings",
         name: "settings",
-        component: () => import("../components/users/UserSettings.vue"),
+        component: () =>
+          import("../components/users/UserSettings/UserSettings.vue"),
       },
     ],
   },
@@ -76,7 +78,7 @@ const router = createRouter({
 });
 
 async function getStatus() {
-  return fetch("http://localhost:3000/api/private", {
+  return fetch(getUrlOf("api/private"), {
     credentials: "include",
   })
     .then((response) => {
@@ -95,7 +97,7 @@ async function getStatus() {
 }
 
 async function getPreAuth() {
-  return fetch("http://localhost:3000/api/preAuth", {
+  return fetch(getUrlOf("api/preAuth"), {
     credentials: "include",
   })
     .then((response) => {
@@ -111,6 +113,12 @@ async function getPreAuth() {
       console.log("ERROR : ", error);
       return false;
     });
+}
+
+export function getUrlOf(str: string, port = 3000): string {
+  return (
+    "http://" + window.location.hostname + ":" + port.toString() + "/" + str
+  );
 }
 
 router.beforeEach(async (to, from, next) => {

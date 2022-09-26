@@ -3,12 +3,12 @@ import { FriendshipDto } from "./utils/friendship.dto";
 import { User } from "./Users.entity";
 import { UsersService } from "./users.service";
 import { UserDto } from "./utils/user.dto";
-import { Express, Request, Response } from "express";
+import { Express, Response } from "express";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
+import { sharp } from "sharp";
 import { extname } from "path";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
-import { identity } from "rxjs";
 import RequestWithUser from "./utils/requestWithUser.interface";
 
 export const storage = {
@@ -30,12 +30,6 @@ export class UsersController {
     return this.usersService.findAll();
   };
 
-  @Get(':id')
-  getOne(@Param('id') id: number): Promise<User>  {
-    console.log("id is " + id);
-    return this.usersService.findOne(id);
-  };
-
   @UseGuards(JwtAuthGuard)
   @Put('uploads/avatar')
   @UseInterceptors(FileInterceptor('file', storage))
@@ -46,13 +40,20 @@ export class UsersController {
 
   @Get('avatar/:id')
   async getAvatar(@Param('id') id: number, @Res() res: Response): Promise<any> {
+    console.log("send id");
     let user = await this.usersService.findOne(id);
     if (user.pictureLocalFilename === "")
     {
-      console.log("Using default avatar from 42 api...");
-      return res.redirect(user.picture42URL); //?
+      console.log("Using default avatar...");
+      return res.sendFile("default.png", { root: 'src/uploads/avatar'});
     }
     return res.sendFile(user.pictureLocalFilename, { root: 'src/uploads/avatar'});
+  }
+
+  @Get('avatar_default')
+  getDefaultAvatar(@Res() res: Response) {
+    console.log("send default");
+    return res.sendFile("default.png", { root: 'src/uploads/avatar'});
   }
 
   @Post('info/:id')
@@ -60,16 +61,15 @@ export class UsersController {
       return this.usersService.updateUserDisplayName(id, name);
   }
 
+  @Get('info/:id')
+  getOne(@Param('id') id: number): Promise<User> {
+    console.log("id is " + id);
+    return this.usersService.findOne(id);
+  };
 
   @Post('/add')
   create(@Body() user: UserDto) {
     return this.usersService.addOne(user);
-  }
-
-  // to delete 
-  @Get('/rm/:id')
-  remove(@Param('id') id: number) {
-    return this.usersService.remove(id);
   }
 
   // to delete 
@@ -84,7 +84,17 @@ export class UsersController {
 
   @Post('/friends/add')
   addFriend(@Body() friendship: FriendshipDto) {
-    return this.usersService.createFriendship(friendship);
+    return this.usersService.sendFriendRequest(friendship);
+  }
+
+  @Post('/friends/accept')
+  acceptFriend(@Body() friendship: FriendshipDto) {
+    return this.usersService.acceptFriendRequest(friendship);
+  }
+
+  @Post('/friends/ignore')
+  ignoreFriendRequest(@Body() friendship: FriendshipDto) {
+    return this.usersService.removeFriendRequest(friendship);
   }
 
   @Post('/friends/rm')
@@ -93,13 +103,24 @@ export class UsersController {
   }
 
   @Get('/friends/:id')
-  showFriends(@Param('id') id: number) {
+  getFriends(@Param('id') id: number) {
 	  return this.usersService.showFriendWith(id);
   }
 
-  @Get('/friendsof/:id')
-  showFriendships(@Param('id') id: number) {
-	  return this.usersService.showFriendOf(id);
+  @Get('/friends/to/:id')
+  getFriendPendingReqTo(@Param('id') id: number) {
+	  return this.usersService.showFriendPendingReqTo(id);
+  }
+
+  @Get('/friends/from/:id')
+  getFriendPendingReqFrom(@Param('id') id: number) {
+	  return this.usersService.showFriendPendingReqFrom(id);
+  }
+
+  @Get('/friendship')
+  async friendLevelWith(@Query('target') target: number,
+    @Query('mine') id: number): Promise<number> {
+	  return await this.usersService.getFriendLevel(id, target);
   }
 
   /*
@@ -124,5 +145,16 @@ export class UsersController {
   @Get('/blockby/:id')
   getBlockedby(@Param('id') id: number) {
 	  return this.usersService.getBlockedBy(id);
+  }
+
+  /*
+  **    LEADERBOARD
+  */
+
+  @Get('/leaderboard')
+  getLeaderboard(@Query('order') order: number,
+    @Query('global') global: boolean,
+    @Query('mine') id: number) {
+    return this.usersService.getLeaderboard(order, id, global);
   }
 }

@@ -28,6 +28,7 @@ export default defineComponent({
 
 <script lang="ts" setup>
 import { onBeforeMount, ref, Ref } from "vue";
+import { getUrlOf } from "@/router";
 
 const profile: Ref<any> = ref("");
 const isTwoFactorAuthentication: Ref<boolean> = ref(false);
@@ -36,7 +37,7 @@ const firstEnablingTwoFactor: Ref<boolean> = ref(false);
 function generateNewQrCode() {
   if (firstEnablingTwoFactor.value === false) {
     firstEnablingTwoFactor.value = true;
-    fetch("http://localhost:3000/api/auth/2fa/reGenerate", {
+    fetch(getUrlOf("api/auth/2fa/reGenerate"), {
       credentials: "include",
     })
       .then((response) => {
@@ -52,7 +53,7 @@ function generateNewQrCode() {
 }
 
 onBeforeMount(async () => {
-  await fetch("http://localhost:3000/api/private", {
+  await fetch(getUrlOf("api/private"), {
     credentials: "include",
   })
     .then((response) => {
