@@ -18,7 +18,7 @@ export class ChatGateway implements OnGatewayConnection {
   ) {}
 
   async handleConnection(socket: Socket) {
-    await this.chatService.getUserFromSocket(socket);
+    // await this.chatService.getUserFromSocket(socket);
 
     this.server.sockets.emit('new_connection');
   }
