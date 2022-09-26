@@ -27,7 +27,10 @@ export class AuthController {
         const { accessToken } = this.authService.login(request.user, false);
         res.cookie('jwt', accessToken);
         console.log(request.user);
-        console.log("jwt 1 = ", accessToken);
+        console.log("jwt = ", accessToken);
+        if (!request.user.isTwoFactorAuthenticationEnabled) {
+            this.usersService.updateIsOnline(request.user.id, true);
+        }
         res.redirect('http://localhost:8080/2FA');
     }
 
@@ -87,6 +90,7 @@ export class AuthController {
         }
         const { accessToken } = this.authService.login(request.user, true);
         request.res.cookie('jwt', accessToken);
+        this.usersService.updateIsOnline(request.user.id, true);
         return request.user;
     }
 }

@@ -18,30 +18,9 @@ export class ChatGateway implements OnGatewayConnection {
   ) {}
 
   async handleConnection(socket: Socket) {
-    const users = [];
-
     await this.chatService.getUserFromSocket(socket);
-    for (let [id, socket] of this.server.of("/").sockets) {
-      users.push({
-        userID: id,
-        username: socket.data.username,
-      });
-    }
-    socket.emit('users', users);
-  }
 
-  @SubscribeMessage('request_all_users')
-  async requestAllUsers(socket: Socket) {
-    const users = [];
-
-    await this.chatService.getUserFromSocket(socket);
-    for (let [id, socket] of this.server.of("/").sockets) {
-      users.push({
-        userID: id,
-        username: socket.data.username,
-      });
-    }
-    socket.emit('users', users);
+    this.server.sockets.emit('new_connection');
   }
 
   @SubscribeMessage('send_message')
@@ -60,8 +39,7 @@ export class ChatGateway implements OnGatewayConnection {
   @SubscribeMessage('request_all_messages')
   async requestAllMessages(@ConnectedSocket() socket: Socket) {
     await this.chatService.getUserFromSocket(socket);
-    const messages = await this.chatService.getAllMessages();
 
-    socket.emit('send_all_messages', messages);
+    return await this.chatService.getAllMessages();
   }
 }

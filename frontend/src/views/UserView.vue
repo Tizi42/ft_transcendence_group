@@ -17,14 +17,21 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose } from "vue";
+import { defineComponent, defineExpose, onBeforeMount } from "vue";
 import ProfileBanner from "@/components/users/ProfileBanner.vue";
+import socket from "@/socket";
 
 defineExpose(
   defineComponent({
     name: "UserView",
   })
 );
+
+onBeforeMount(() => {
+  socket.on("new_connection", () => {
+    console.log("on user page");
+  });
+});
 </script>
 
 <style scoped>
