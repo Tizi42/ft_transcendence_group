@@ -3,23 +3,30 @@
     <div class="container-channels">
       <div class="nav-channels">
         <button
-          v-bind:class="{ players_col: isPlayers }"
-          @click="selectPlayers"
+          id="players-col"
+          :class="{ selected: isActive === 'players' }"
+          @click="select('players')"
         >
           Players
         </button>
         <button
-          v-bind:class="{ channels_col: isChannels }"
-          @click="selectChannels"
+          id="channels-col"
+          :class="{ selected: isActive === 'channels' }"
+          @click="select('channels')"
         >
           Channels
         </button>
       </div>
-      <div class="list-friends">
-        <p v-for="friend in user.friends" :key="friend">{{ friend }}</p>
+      <div class="list-friends" v-if="isActive === 'players'">
+        <ul>
+          <li v-for="friend in user.friends" :key="friend">{{ friend }}</li>
+          <li>user 1</li>
+        </ul>
       </div>
-      <div class="list-channels">
-        <p>channel</p>
+      <div class="list-channels" v-else>
+        <ul>
+          <li>channel</li>
+        </ul>
       </div>
     </div>
     <div class="container-chat">
@@ -48,8 +55,7 @@ import "@/assets/styles/chat.css";
 const messages: Ref<Array<any>> = ref([]);
 const messageText: Ref<string> = ref("");
 const user = useUserStore();
-const isPlayers: Ref<boolean> = ref(false);
-const isChannels: Ref<boolean> = ref(false);
+const isActive: Ref<string> = ref("players");
 
 socket.on("new_connection", async () => {
   user.doFetchFriends();
@@ -61,14 +67,8 @@ const sendMessage = () => {
   });
 };
 
-const selectPlayers = () => {
-  isPlayers.value = !isPlayers.value;
-  isChannels.value = !isChannels.value;
-};
-
-const selectChannels = () => {
-  isPlayers.value = !isPlayers.value;
-  isChannels.value = !isChannels.value;
+const select = (id: string) => {
+  isActive.value = id;
 };
 
 onBeforeMount(async () => {
