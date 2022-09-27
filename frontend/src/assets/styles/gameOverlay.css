@@ -1,0 +1,98 @@
+@import url("authentication.css");
+
+.page2FA .box .description {
+  margin-top: 1em;
+  font-family: "Outfit";
+  color: #eeeeee;
+  font-size: 20px;
+  width: 70%;
+  display: block;
+  padding-top: 3em;
+  padding-bottom: 3em;
+  padding-left: 10%;
+  padding-right: 10%;
+  background-color: #1e2a02ff;
+  border-radius: 22px;
+  line-height: 1.5em;
+}
+
+.startBtn {
+  display: block;
+  font-family: "Outfit Bold";
+  background: #1e2a02;
+  box-shadow: 0px 0px 4px 3px rgba(0, 0, 0, 0.25);
+  border-radius: 22px;
+  line-height: 2.3em;
+  border: none;
+  font-size: 28px;
+  color: var(--main-color);
+  width: 40%;
+  margin-top: 1.5em;
+  transition: transform 0.5s ease;
+}
+
+.startBtn:hover,
+.cancelBtn:hover {
+  transform: scale(1.1, 1.1);
+  cursor: pointer;
+}
+
+.cancelBtn {
+  display: block;
+  font-family: "Outfit Bold";
+  box-shadow: 0px 0px 4px 3px rgba(0, 0, 0, 0.25);
+  border-radius: 22px;
+  line-height: 2.3em;
+  border: 3px solid #FFCB00;
+  font-size: 24px;
+  color: var(--main-color);
+  width: 20%;
+  margin-top: 1.5em;
+  transition: transform 0.5s ease;
+}
+
+.popUpTxt {
+  margin-top: 1em;
+  font-size: 34px;
+  color: var(--main-color);
+}
+
+.titleGame {
+  color: var(--main-color);
+  font-size: 40px;
+}
+
+.boxMenu {
+  justify-content: space-between;
+  padding-top: 5vh;
+  padding-bottom: 5vh;
+}
+
+.gameMode {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 90%;
+}
+
+.previousChoice,
+.nextChoice {
+  width: 37px;
+  height: 37px;
+  background-size: 37px 37px;
+  transition: transform 0.5s ease;
+}
+
+.previousChoice:hover,
+.nextChoice:hover {
+  transform: scale(1.2, 1.2);    
+  cursor: pointer;
+}
+
+.previousChoice {
+  background-image: url("@/assets/icons/prevArrow.svg");
+}
+
+.nextChoice {
+  background-image: url("@/assets/icons/nextArrow.svg");
+}

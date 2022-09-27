@@ -26,9 +26,10 @@
   --main-gradient-background: linear-gradient(
     116.6deg,
     #005f3e -20.9%,
-    #feca00 99.99%,
-    #ffda00 100%
+    #fecb00 99.99%,
+    #ffcb00 100%
   );
+  --main-red: #d4391d;
 }
 
 #app {
