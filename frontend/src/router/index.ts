@@ -8,6 +8,7 @@ import LeaderboardView from "../views/LeaderboardView.vue";
 import HistoryView from "../views/HistoryView.vue";
 import PlayView from "../views/PlayView.vue";
 import DevLogin from "../components/DevLogin.vue";
+import socketService from "@/socket";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -130,24 +131,26 @@ router.beforeEach(async (to, from, next) => {
   const isAuthenticated = await getStatus();
   const isPreAuth = await getPreAuth();
 
+  console.log("isPreAuth: ", isPreAuth);
+  console.log("isAuth: ", isAuthenticated);
+
+  if (!isPreAuth && !(to.name === "login" || to.name === "dev-login")) {
+    next({ name: "login" });
+  }
+
   if (to.name === "2FA") {
-    if (!isPreAuth && !isAuthenticated) {
-      next({ name: "login" });
-    } else if (isPreAuth && !isAuthenticated) {
+    if (!isAuthenticated) {
       next();
     } else if (isAuthenticated) {
       if (from.fullPath === "/user/settings") {
         next();
       } else {
-        next({ name: "settings" });
+        next({ name: "game" });
       }
     }
-  } else if (
-    !(to.name === "login" || to.name === "dev-login") &&
-    !isAuthenticated
-  ) {
-    next({ name: "login" });
-  } else next();
+  }
+
+  next();
 });
 
 export default router;
