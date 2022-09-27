@@ -15,8 +15,11 @@ export class User {
   @Column({default: "nobody@42.intra.fr"})
   email: string;
 
-  @Column({default: ""})
+  @Column({default: "http://localhost:3000/api/users/avatar_default"})
   picture: string;
+
+  @Column({default: ""})
+  pictureLocalFilename: string;
   
   @Column({ nullable: true })
   twoFactorAuthenticationSecret: string;
@@ -31,7 +34,10 @@ export class User {
   friendWith: number[];
 
   @Column("int", { array: true, default: {} })
-  friendOf: number[];
+  friendPendingReqTo: number[];
+
+  @Column("int", { array: true, default: {} })
+  friendPendingReqFrom: number[];
 
   @Column("int", { array: true, default: {} })
   blocked: number[];
@@ -39,9 +45,18 @@ export class User {
   @Column("int", { array: true, default: {} })
   blockedBy: number[];
 
-  @Column('bool', { nullable : true })
-  isConnected: boolean;
+  @Column({default: 0})
+  totalGames: number;
 
+  @Column({default: 0})
+  totalVictories: number;
+
+  @Column({default: -1, nullable: true})
+  winRate: number;
+  
+  @Column({ default: "offline" })
+  online: string;
+  
   @OneToMany( () => Chat, (messages) => messages.author )
   messages?: Chat[];
 

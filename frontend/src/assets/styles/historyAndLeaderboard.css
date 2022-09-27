@@ -5,6 +5,7 @@
   width: 70vw;
   margin-top: 3em;
   margin-bottom: 3em;
+  cursor: default;
 }
 
 .title img {
@@ -15,7 +16,7 @@
 .title h1 {
   color: var(--main-color);
   font-family: "Outfit SemiBold";
-  font-size: 40px;
+  font-size: 42px;
   margin: 0;
 }
 
@@ -36,6 +37,9 @@
   align-items: left;
   text-align: left;
   flex-direction: column;
+  font-family: "Outfit";
+  overflow: hidden;
+  margin: 0;
 }
 
 .content {
@@ -45,11 +49,24 @@
   align-items: center;
   text-align: center;
   flex-direction: column;
+  cursor: default;
+  font-size: 16px;
 }
 
-.loading {
-  display: flex;
+.loading,
+.nofriends {
+  display: block;
   align-items: center;
+  text-align: center;
+  width: 100%;
+  margin: 0 auto;
+  margin-top: 5%;
+}
+
+.v-center {
+  height: 20vh;
+  display: flex;
+  justify-content: space-around;
 }
 
 .tableContainer {
@@ -84,7 +101,7 @@
   height: 44px;
   align-items: center;
   justify-content: center;
-  font-size: 19px;
+  font-size: 21px;
   transition: font-size 0.5s ease;
 }
 
@@ -100,7 +117,7 @@
 }
 
 .titleContainer:hover {
-  font-size: 21px;
+  font-size: 23px;
 }
 
 .mainTable {
@@ -161,7 +178,7 @@
   display: flex;
   width: 30vw;
   margin-right: 2vw;
-  font-size: 14px;
+  font-size: 16px;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
@@ -182,19 +199,24 @@
   justify-content: center;
   color: #ffffff;
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
   opacity: 0.5;
   transition: all 0.5s ease;
 }
 
 .selectedTabContainer {
   opacity: 0.8;
-  font-size: 14px;
+  font-size: 16px;
+}
+
+.selectedTabContainer:hover {
+  cursor: pointer;
 }
 
 .tabContainer:hover {
   opacity: 0.65;
-  font-size: 14px;
+  font-size: 16px;
+  cursor: pointer;
 }
 
 ul {
@@ -216,7 +238,6 @@ li {
 }
 
 .list-enter-from {
-  transform: translateX(30px);
   opacity: 0;
 }
 
@@ -240,13 +261,6 @@ li {
   width: 10vw;
 }
 
-.opponentRight,
-.opponentLeft {
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
 .opponentRight {
   justify-content: start;
   text-align: left;
@@ -257,14 +271,22 @@ li {
   text-align: right;
 }
 
-.pp {
-  width: 50px;
-  margin-left: 1em;
-  margin-right: 1em;
+.opponentLeft,
+.opponentRight {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 2vw;
+  width: 18vw;
 }
 
 .name {
   width: 70%;
+}
+
+.score {
+  width: 2vw;
+  text-align: center;
 }
 
 .winner .name {
@@ -301,10 +323,26 @@ li {
   width: 30vw;
 }
 
+.playerInfo .positionLb {
+  width: 2vw;
+}
+
+.playerInfo .namePlayer {
+  width: 11vw;
+  margin-left: 2vw;
+  text-align: left;
+}
+
+.playerInfo .username {
+  width: 10vw;
+  text-align: left;
+  opacity: 0.7;
+}
+
 .results {
   margin-right: 2vw;
   display: flex;
-  font-size: 14px;
+  font-size: 16px;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
@@ -319,5 +357,21 @@ li {
 }
 
 .profile {
+  display: block;
   width: 50px;
+  height: 50px;
+  border-radius: 100%;
+  background-size: cover;
+  object-fit: cover;
+  opacity: 1;
+  transition: all 0.3s ease-out;
+}
+
+.profile:hover {
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+li {
+  list-style: none;
 }

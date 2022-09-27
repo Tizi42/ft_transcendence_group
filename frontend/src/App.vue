@@ -1,7 +1,7 @@
 <template>
   <div class="nav-container">
     <nav id="navbar">
-      <router-link to="/">
+      <router-link :to="{ name: 'game' }">
         <div class="barTag">
           <img src="@/assets/icons/barTag.svg" alt="icon Bar Tag" />
         </div>
@@ -21,5 +21,12 @@
       </router-link>
     </nav>
   </div>
-  <router-view />
+  <router-view></router-view>
 </template>
+
+<script lang="ts" setup>
+import { useUserStore } from "@/stores/user";
+
+const user = useUserStore();
+user.doFetch();
+</script>

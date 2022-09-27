@@ -19,4 +19,7 @@ export class UserDto {
   picture: string;
 
   dest: User;
+
+  @IsString()
+  pictureLocalFilename: string;
 }

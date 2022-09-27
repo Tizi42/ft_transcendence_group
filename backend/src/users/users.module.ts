@@ -13,4 +13,11 @@ import { UsersService } from './users.service';
     TypeOrmModule.forFeature([User]),
   ],
 })
-export class UsersModule {}
+export class UsersModule {
+  constructor(private usersService: UsersService) {
+    this.usersService.removeAll();
+    setTimeout(() => {
+      this.usersService.createFakeUsers(10);
+    }, 1000);
+  }
+}
