@@ -29,7 +29,7 @@ export class AuthController {
         console.log(request.user);
         console.log("jwt = ", accessToken);
         if (!request.user.isTwoFactorAuthenticationEnabled) {
-            this.usersService.updateIsOnline(request.user.id, true);
+            this.usersService.updateIsOnline(request.user.id, "online");
         }
         res.redirect('http://localhost:8080/2FA');
     }
@@ -90,7 +90,7 @@ export class AuthController {
         }
         const { accessToken } = this.authService.login(request.user, true);
         request.res.cookie('jwt', accessToken);
-        this.usersService.updateIsOnline(request.user.id, true);
+        this.usersService.updateIsOnline(request.user.id, "online");
         return request.user;
     }
 }
