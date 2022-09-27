@@ -8,7 +8,7 @@ import { GameRoom, Player } from "./dto/game.dto";
     methods: ["GET", "POST"],
     credentials: true
   },
-})
+})  
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer() server: Server;
 
@@ -19,33 +19,40 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     handleConnection(socket: Socket): void {
         const socketId = socket.id;
-        console.log(`New connecting... socket id:`, socketId);
+        console.log("bonjour ", socketId);
         GameGateway.participants.set(socketId, '');
-        GameGateway.clients.set(socketId, new Player(false));
+        if (!GameGateway.clients.has(socketId)) {
+            GameGateway.clients.set(socketId, new Player(false));
+        }
     }
 
     handleDisconnect(socket: Socket): void {
         const socketId = socket.id;
-        console.log(`Disconnection... socket id:`, socketId);
         const roomId = GameGateway.participants.get(socketId);
         const room = GameGateway.rooms.get(roomId);
-
+        console.log("aurevoir ", socketId);
+        GameGateway.participants.delete(socketId);
+        GameGateway.clients.delete(socketId);
         GameGateway.queues.delete(socketId);
     }
 
     @SubscribeMessage('login')
     async loginAttempt(socket: Socket, data: string) {
-        // login the client no matter what for the moment (todo: use auth)
         const socketId = socket.id;
+        console.log(socketId, " loged");
+        if (!GameGateway.clients.has(socketId)) {
+            GameGateway.clients.set(socketId, new Player(false));
+        }
         if (GameGateway.clients.get(socketId).loged === false) {
             GameGateway.clients.get(socketId).loged = true;
-            this.server.sockets.emit('loged', socketId);
         }
+        this.server.sockets.emit('searching');
     }
 
     @SubscribeMessage('queue_register')
     async queueRegister(socket: Socket, mode: string) {
         const socketId = socket.id;
+        console.log(socketId, " i ssearching a game");
         if (!GameGateway.queues.has(socketId)) {
             GameGateway.queues.set(socketId, mode);
         }
@@ -55,6 +62,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             if (user != socketId && mode == m) {
                 const room_name = socketId + " vs " + user;
                 var game = new GameRoom();
+                game.room_name = room_name;
                 game.server = this.server;
                 game.mode = m;
                 game.player1 = socketId;
@@ -71,17 +79,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             }
         }
     }
-    @SubscribeMessage('update_paddle')
-    async updatePaddle(socket: Socket, pos: string) {
+    @SubscribeMessage('update_pos')
+    async updatePaddle(socket: Socket, data: any) {
         const socketId = socket.id;
-        const roomId = GameGateway.participants.get(socketId);
-        GameGateway.rooms.get(roomId).update_gamestate(socketId, pos);
+        console.log(socketId);
+        console.log(data[0]);
+        console.log(data[1]);
+        console.log(data);
+        GameGateway.rooms.get(data[0]).update_gamestate(socketId, data[1]);
     }
-    // static createGameRoom(roomDto: RoomDto): void {
-    //     const roomId = roomDto.roomId;
-    //     if (this.rooms.has(roomId)) {
-    //         throw new ConflictException({code: 'room.conflict', message: `Room with '${roomId}' already exists`})
-    //     }
-    //     this.rooms.set(roomId, new RoomData(roomDto.creatorUsername));
-    // }
 }

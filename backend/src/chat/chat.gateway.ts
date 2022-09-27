@@ -2,13 +2,7 @@ import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, We
 import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
 
-@WebSocketGateway({
-  cors: {
-    origin: 'http://localhost:8080',
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
-})
+@WebSocketGateway()
 export class ChatGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: Server;

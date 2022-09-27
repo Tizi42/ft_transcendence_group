@@ -1,8 +1,7 @@
 import { Socket, Server } from 'socket.io';
-import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect,} from '@nestjs/websockets';
-import { LargeNumberLike } from 'crypto';
 
 export class GameRoom {
+    room_name: string;
     server: Server;
     lag: number = 30;
     player1: string;
@@ -38,6 +37,7 @@ export class GameRoom {
             'ball_speed': this.ball_speed,
             'ball_dir_x': this.ball_dir_x,
             'ball_dir_y': this.ball_dir_y,
+            'room_name': this.room_name,
         });
         this.server.sockets.to(this.player2).emit('game_found', {
             'to': this.player2,
@@ -45,6 +45,7 @@ export class GameRoom {
             'ball_speed': this.ball_speed,
             'ball_dir_x': this.ball_dir_x,
             'ball_dir_y': this.ball_dir_y,
+            'room_name': this.room_name,
         });
     }
 
