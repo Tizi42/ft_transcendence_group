@@ -18,7 +18,7 @@ export class ChatGateway implements OnGatewayConnection {
   ) {}
 
   async handleConnection(socket: Socket) {
-    // await this.chatService.getUserFromSocket(socket);
+    console.log("socket io id = ", socket.id);
 
     this.server.sockets.emit('new_connection');
   }
