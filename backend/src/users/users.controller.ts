@@ -62,8 +62,12 @@ export class UsersController {
 
   @Get('info/:id')
   getOne(@Param('id') id: number): Promise<User> {
-    console.log("id is " + id);
     return this.usersService.findOne(id);
+  };
+
+  @Get('name/:id')
+  getName(@Param('id') id: number): Promise<String> {
+    return this.usersService.getName(id);
   };
 
   @Post('/add')
