@@ -51,25 +51,21 @@
     border: none;
 }
 
-.nav-channels button.players_col {
+.nav-channels .selected {
     background-color: #CABF50;
 }
 
-.nav-channels button.channels_col {
-    background-color: #CABF50;
-}
-
-.players_col, .channels_col {
+#players-col, #channels-col {
     flex: 1;
     margin: 0;
     padding: 1em;
     cursor: pointer;
 }
 
-.players_col {
+#players-col {
     border-top-left-radius: 1.7em;
 }
 
-.channels_col {
+#channels-col {
     border-top-right-radius: 1.7em;
 }
