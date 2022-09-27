@@ -18,6 +18,8 @@
   src: url("../../assets/fonts/Outfit/Outfit-Light.otf") format("opentype");
 }
 
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
 :root {
   --main-color: #ffcb00;
   --main-gradient-background: linear-gradient(
@@ -34,10 +36,11 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  overflow: hidden;
 }
-  
+
 .nav-container {
-  position: absolute;
+  position: fixed;
   width: 102px;
   height: 100%;
   left: 0px;
@@ -59,7 +62,6 @@
   border: none;
   box-shadow: 4px 0px 4px rgba(0, 0, 0, 0.25);
 }
-  
 .nav-container:hover #navbar {
   transform: translateX(0);
   transition-delay: 0s;
@@ -71,11 +73,16 @@
   height: 200px;
   margin: auto;
   display: flex;
+  transition: transform 0.3s ease-in-out;
 }
 
 .link-container img {
   margin: auto;
   width: 70%;
+}
+
+.link-container:hover {
+  transform: scale(1.15);
 }
   
 nav a.router-link-exact-active {
@@ -85,8 +92,8 @@ nav a.router-link-exact-active {
   
 body {
   margin: 0;
-  overflow: hidden;
   background-color: #1e2a02;
+  overflow: hidden;
 }
   
 .nav-container,

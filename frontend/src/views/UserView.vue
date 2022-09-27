@@ -1,85 +1,73 @@
 <template>
-  <div class="about">
-    <h1>Hey {{ profile.username }}</h1>
-    <ul>
-      <li><span>Id : </span>{{ profile.id }}</li>
-      <li><span>Email : </span>{{ profile.email }}</li>
-      <li><span>Display Name : </span>{{ profile.displayName }}</li>
-      <li>
-        <span>Picture profile : </span>
-        <img :src="profile.picture" width="100" />
-      </li>
-    </ul>
-    <label for="button2FA">
-      <span v-if="enabled2FA">2FA on</span>
-      <span v-else>2FA off</span>
-      <input
-        type="checkbox"
-        id="button2FA"
-        v-model="enabled2FA"
-        @click="toggle2FA()"
-      />
-    </label>
+  <div id="user-page">
+    <ProfileBanner />
+    <div class="user-navbar">
+      <router-link to="/user/stats">
+        <div class="user-navbar-item">STATS</div>
+      </router-link>
+      <router-link to="/user/friends">
+        <div class="user-navbar-item">FRIENDS</div>
+      </router-link>
+      <router-link to="/user/settings">
+        <div class="user-navbar-item">SETTINGS</div>
+      </router-link>
+    </div>
+    <router-view></router-view>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { Ref, ref, onBeforeMount, defineComponent, defineExpose } from "vue";
-import { useRouter } from "vue-router";
-
-const profile: Ref<any> = ref("");
-const router = useRouter();
-const enabled2FA = ref(false);
-
-onBeforeMount(async () => {
-  await fetch("http://localhost:3000/api/private", {
-    credentials: "include",
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .then((user) => {
-      profile.value = user;
-      enabled2FA.value = profile.value.isTwoFactorAuthenticationEnabled;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-});
-
-async function toggle2FA() {
-  if (enabled2FA.value === false) {
-    router.push({
-      name: "2FA",
-    });
-  } else {
-    await fetch("http://localhost:3000/api/auth/2fa/turn-off", {
-      credentials: "include",
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((result) => {
-        console.log("success : ", result);
-      })
-      .catch((error) => {
-        console.log("error : ", error);
-      });
-  }
-}
+import { defineComponent, defineExpose, onBeforeMount } from "vue";
+import ProfileBanner from "@/components/users/ProfileBanner.vue";
+import socket from "@/socket";
 
 defineExpose(
   defineComponent({
     name: "UserView",
   })
 );
+
+onBeforeMount(() => {
+  socket.on("new_connection", () => {
+    console.log("on user page");
+  });
+});
 </script>
 
-<style>
-.about {
-  color: white;
+<style scoped>
+.user-navbar {
+  width: 86%;
+  margin-left: 7%;
+  margin-right: 7%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+  border-bottom: 1px solid rgba(147, 150, 148, 0.5);
 }
-li {
-  list-style: none;
+
+.user-navbar a {
+  text-decoration: none;
+}
+
+.user-navbar a:hover .user-navbar-item {
+  color: rgba(255, 203, 0, 1);
+}
+
+.user-navbar a.router-link-active .user-navbar-item {
+  color: rgba(255, 203, 0, 1);
+  border-bottom: 3px solid rgba(255, 203, 0, 1);
+}
+
+.user-navbar-item {
+  font-family: "Outfit";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 26px;
+  line-height: 1.6;
+  margin: 0px 28px 6px;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
 }
 </style>

@@ -71,25 +71,3 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
-
-Ce qu'est Socket.IO
-
-Socket.IO est une bibliothèque qui permet une communication à faible latence, bidirectionnelle et basée sur les événements entre un client et un serveur.
-Il repose sur le protocole WebSocket et offre des garanties supplémentaires telles qu'un mode dégradé en HTTP long-polling ou la reconnexion automatique.
-
-Socket.IO n'est PAS une implémentation WebSocket, il dispose de son propre protocole de communication.
-
-WebSocket:
-protocole reseau de la couche application. visant à créer des canaux de communication full-duplex par-dessus une connexion TCP pour les navigateurs web
-
-Pourquooi socket.io et pas ws ? 
--> reconnexion automatique/ mise en memoire tampon des paquets en cas de deconnection/ accusés de réception / Côté serveur, vous pouvez envoyer un événement à tous les clients connectés ou à un sous-ensemble de clients / 
--> Pour nous : le Multiplexage !! Les Namespaces vous permettent de diviser la logique de votre application sur une seule connexion partagée. Cela peut être utile par exemple si vous souhaitez créer un canal "admin" que seuls les utilisateurs autorisés peuvent rejoindre.
-
-LES NAMESPACES : pour créer des channel 
-https://socket.io/fr/docs/v4/namespaces/
-
-Implementation en back via un gateway 
-##WebSocket
-
-https://socket.io/fr/get-started/chat

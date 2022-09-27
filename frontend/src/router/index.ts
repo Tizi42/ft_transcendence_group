@@ -1,11 +1,13 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import GameView from "../views/GameView.vue";
 import LoginView from "../views/LoginView.vue";
+import UserView from "../views/UserView.vue";
+import UserStats from "../components/users/UserStats.vue";
 import TwoFactorView from "../views/TwoFactorView.vue";
 import LeaderboardView from "../views/LeaderboardView.vue";
 import HistoryView from "../views/HistoryView.vue";
 import PlayView from "../views/PlayView.vue";
-import UserView from "../views/UserView.vue";
+import DevLogin from "../components/DevLogin.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -22,12 +24,37 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/user",
     name: "user",
+    redirect: "/user/stats",
     component: UserView,
+    children: [
+      {
+        path: "stats",
+        name: "stats",
+        component: UserStats,
+      },
+      {
+        path: "friends",
+        name: "friends",
+        component: () =>
+          import("../components/users/UserFriends/UserFriends.vue"),
+      },
+      {
+        path: "settings",
+        name: "settings",
+        component: () =>
+          import("../components/users/UserSettings/UserSettings.vue"),
+      },
+    ],
   },
   {
     path: "/login",
     name: "login",
     component: LoginView,
+  },
+  {
+    path: "/dev-login",
+    name: "dev-login",
+    component: DevLogin,
   },
   {
     path: "/2FA",
@@ -57,7 +84,7 @@ const router = createRouter({
 });
 
 async function getStatus() {
-  return fetch("http://localhost:3000/api/private", {
+  return fetch(getUrlOf("api/private"), {
     credentials: "include",
   })
     .then((response) => {
@@ -76,7 +103,7 @@ async function getStatus() {
 }
 
 async function getPreAuth() {
-  return fetch("http://localhost:3000/api/preAuth", {
+  return fetch(getUrlOf("api/preAuth"), {
     credentials: "include",
   })
     .then((response) => {
@@ -94,6 +121,12 @@ async function getPreAuth() {
     });
 }
 
+export function getUrlOf(str: string, port = 3000): string {
+  return (
+    "http://" + window.location.hostname + ":" + port.toString() + "/" + str
+  );
+}
+
 router.beforeEach(async (to, from, next) => {
   const isAuthenticated = await getStatus();
   const isPreAuth = await getPreAuth();
@@ -104,13 +137,16 @@ router.beforeEach(async (to, from, next) => {
     } else if (isPreAuth && !isAuthenticated) {
       next();
     } else if (isAuthenticated) {
-      if (from.fullPath === "/user") {
+      if (from.fullPath === "/user/settings") {
         next();
       } else {
-        next({ name: "user" });
+        next({ name: "settings" });
       }
     }
-  } else if (to.name !== "login" && !isAuthenticated) {
+  } else if (
+    !(to.name === "login" || to.name === "dev-login") &&
+    !isAuthenticated
+  ) {
     next({ name: "login" });
   } else next();
 });

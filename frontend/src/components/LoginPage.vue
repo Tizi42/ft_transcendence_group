@@ -1,52 +1,30 @@
 <template>
-  <button
-    v-if="!loggedIn"
-    class="btn"
-    data="Sign in with 42"
-    @click="handleLogin()"
-  ></button>
-  <button v-else class="btn" data="Logout" @click="handleLogout()"></button>
+  <button class="btn" data="Sign in with 42" @click="handleLogin()"></button>
+  <router-link :to="{ name: 'dev-login' }" class="btn" id="link">
+    Log in with email
+  </router-link>
 </template>
 
-<script lang="ts">
-import { defineComponent, onBeforeMount, ref, Ref } from "vue";
-import { useCookie } from "vue-cookie-next";
-
-export default defineComponent({
-  name: "LoginPage",
-});
-</script>
-
 <script setup lang="ts">
-const { isCookieAvailable } = useCookie();
-const loggedIn: Ref<boolean> = ref(false);
+import { defineComponent, onBeforeMount, defineExpose } from "vue";
+import { useRouter } from "vue-router";
+import { getUrlOf } from "@/router";
+
+const router = useRouter();
 
 function handleLogin() {
-  window.location.href = "http://localhost:3000/api/auth/42/login";
-}
-
-async function handleLogout() {
-  if (isCookieAvailable("jwt")) {
-    await fetch("http://localhost:3000/api/logout", {
-      credentials: "include",
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-  window.location.reload();
+  window.location.href = getUrlOf("api/auth/42/login");
 }
 
 onBeforeMount(async () => {
-  await fetch("http://localhost:3000/api/private", {
+  await fetch(getUrlOf("api/private"), {
     credentials: "include",
   })
     .then((response) => {
       if (response.status === 200) {
-        loggedIn.value = true;
+        router.push({
+          name: "game",
+        });
       }
       return response.json();
     })
@@ -54,6 +32,12 @@ onBeforeMount(async () => {
       console.log("ERROR : ", error);
     });
 });
+
+defineExpose(
+  defineComponent({
+    name: "LoginPage",
+  })
+);
 </script>
 
 <style>
@@ -71,6 +55,14 @@ onBeforeMount(async () => {
   cursor: pointer;
   margin-top: 20px;
   z-index: 1;
+}
+
+#link {
+  text-decoration: none;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 18px;
+  color: rgba(255, 218, 0, 1);
 }
 
 .btn::before {

@@ -1,4 +1,4 @@
-import { Controller, Get, Req, Res, UseGuards, Post, HttpCode, Body, UnauthorizedException } from "@nestjs/common";
+import { Controller, Get, Req, Res, UseGuards, Post, HttpCode, Body, UnauthorizedException, Query } from "@nestjs/common";
 import { Response } from "express";
 import { User } from 'src/users/users.entity';
 import { UsersService } from "src/users/users.service";
@@ -27,8 +27,28 @@ export class AuthController {
         const { accessToken } = this.authService.login(request.user, false);
         res.cookie('jwt', accessToken);
         console.log(request.user);
-        console.log("jwt 1 = ", accessToken);
+        console.log("jwt = ", accessToken);
+        if (!request.user.isTwoFactorAuthenticationEnabled) {
+            this.usersService.updateIsOnline(request.user.id, "online");
+        }
         res.redirect('http://localhost:8080/2FA');
+    }
+
+    // for development only: allow to log in with an existing email in db
+    @Get('dev-only')
+    async devUserLogin(@Query('email') email: string, @Res({ passthrough: true }) res: Response) {
+      const user = await this.usersService.findOneByEmail(email);
+      if (!user) {
+        return "No such user";
+      }
+      const { accessToken } = this.authService.login(user, false);
+      res.cookie('jwt', accessToken);
+      console.log(user);
+      console.log("jwt 1 = ", accessToken);
+      if (!user.isTwoFactorAuthenticationEnabled) {
+        this.usersService.updateIsOnline(user.id, "online");
+      }
+      res.redirect('http://localhost:8080/2FA');
     }
 
     @Post('2fa/generate')
@@ -87,6 +107,7 @@ export class AuthController {
         }
         const { accessToken } = this.authService.login(request.user, true);
         request.res.cookie('jwt', accessToken);
+        this.usersService.updateIsOnline(request.user.id, "online");
         return request.user;
     }
 }
