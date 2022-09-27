@@ -1,4 +1,4 @@
-import { Controller, Get, Req, Res, UseGuards, Post, HttpCode, Body, UnauthorizedException } from "@nestjs/common";
+import { Controller, Get, Req, Res, UseGuards, Post, HttpCode, Body, UnauthorizedException, Logger } from "@nestjs/common";
 import { Response } from "express";
 import { User } from "src/users/Users.entity";
 import { UsersService } from "src/users/users.service";
@@ -26,8 +26,6 @@ export class AuthController {
     handle42Redirect(@Req() request: RequestWithUser, @Res({ passthrough: true }) res: Response) {
         const { accessToken } = this.authService.login(request.user, false);
         res.cookie('jwt', accessToken);
-        console.log(request.user);
-        console.log("jwt = ", accessToken);
         if (!request.user.isTwoFactorAuthenticationEnabled) {
             this.usersService.updateIsOnline(request.user.id, "online");
         }

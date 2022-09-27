@@ -1,0 +1,75 @@
+/* Global config */
+
+.chat {
+    color: white;
+    background: var(--main-gradient-background);
+    height: 100vh;
+    width: 100vw;
+    padding-top: 2em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.chat > .container-chat {
+    flex: auto;
+}
+
+.chat > .container-channels {
+    width: 23%;
+    min-width: 220px;
+}
+
+.container-channels, .container-chat {
+    color: white;
+    background-color: #1E2B02;
+    margin: 20px;
+    margin-top: 40px;
+    height: 82%;
+    border-radius: 2em;
+}
+
+.container-channels {
+    margin-left: 10%;
+}
+
+.container-chat {
+    margin-right: 10%;
+}
+
+/* Channels config */
+
+.nav-channels {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.nav-channels button {
+    color: white;
+    background-color: #1E2B02;
+    border: none;
+}
+
+.nav-channels button.players_col {
+    background-color: #CABF50;
+}
+
+.nav-channels button.channels_col {
+    background-color: #CABF50;
+}
+
+.players_col, .channels_col {
+    flex: 1;
+    margin: 0;
+    padding: 1em;
+    cursor: pointer;
+}
+
+.players_col {
+    border-top-left-radius: 1.7em;
+}
+
+.channels_col {
+    border-top-right-radius: 1.7em;
+}

@@ -1,11 +1,26 @@
 <template>
   <div class="chat">
-    <h1>This is the chat page</h1>
-    <div class="container-list-users">
-      <h3>List of all existing users</h3>
-      <ul v-for="user in listOfUsers" :key="user">
-        <li>{{ user.username }}: {{ user.online }}</li>
-      </ul>
+    <div class="container-channels">
+      <div class="nav-channels">
+        <button
+          v-bind:class="{ players_col: isPlayers }"
+          @click="selectPlayers"
+        >
+          Players
+        </button>
+        <button
+          v-bind:class="{ channels_col: isChannels }"
+          @click="selectChannels"
+        >
+          Channels
+        </button>
+      </div>
+      <div class="list-friends">
+        <p v-for="friend in user.friends" :key="friend">{{ friend }}</p>
+      </div>
+      <div class="list-channels">
+        <p>channel</p>
+      </div>
     </div>
     <div class="container-chat">
       <div class="container-messages">
@@ -27,10 +42,34 @@
 <script lang="ts" setup>
 import { onBeforeMount, Ref, ref } from "vue";
 import socket from "@/socket";
+import { useUserStore } from "@/stores/user";
+import "@/assets/styles/chat.css";
 
 const messages: Ref<Array<any>> = ref([]);
 const messageText: Ref<string> = ref("");
-const listOfUsers: Ref<Array<any>> = ref([]);
+const user = useUserStore();
+const isPlayers: Ref<boolean> = ref(false);
+const isChannels: Ref<boolean> = ref(false);
+
+socket.on("new_connection", async () => {
+  user.doFetchFriends();
+});
+
+const sendMessage = () => {
+  socket.emit("send_message", messageText.value, () => {
+    messageText.value = "";
+  });
+};
+
+const selectPlayers = () => {
+  isPlayers.value = !isPlayers.value;
+  isChannels.value = !isChannels.value;
+};
+
+const selectChannels = () => {
+  isPlayers.value = !isPlayers.value;
+  isChannels.value = !isChannels.value;
+};
 
 onBeforeMount(async () => {
   socket.emit("request_all_messages", {}, (response: any) => {
@@ -41,48 +80,6 @@ onBeforeMount(async () => {
     messages.value.push(message);
   });
 
-  socket.on("new_connection", async () => {
-    await fetch("http://localhost:3000/api/users", {
-      credentials: "include",
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data: any) => {
-        listOfUsers.value = data;
-      })
-      .catch((error) => {
-        console.log("ERROR : ", error);
-      });
-  });
-
-  await fetch("http://localhost:3000/api/users", {
-    credentials: "include",
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .then((data: any) => {
-      listOfUsers.value = data;
-    })
-    .catch((error) => {
-      console.log("ERROR : ", error);
-    });
+  user.doFetchFriends();
 });
-
-const sendMessage = () => {
-  socket.emit("send_message", messageText.value, () => {
-    messageText.value = "";
-  });
-};
 </script>
-
-<style>
-.chat {
-  color: white;
-}
-
-.container-chat {
-  border-top: 1px solid white;
-}
-</style>
