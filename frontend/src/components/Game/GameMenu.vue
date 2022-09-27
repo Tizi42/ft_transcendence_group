@@ -16,6 +16,7 @@
   <teleport to="body">
     <SimpleModal v-if="addWindow" @hide="hide">
       <div class="popUpTxt">Finding your opponent...</div>
+      <LoadingRing color="#ffcb00" size="50px" heigh="50px" />
       <div class="cancelBtn" @click="hide">Cancel</div>
     </SimpleModal>
   </teleport>
@@ -26,6 +27,7 @@ import { defineComponent, defineExpose } from "vue";
 import { ref } from "vue";
 import SimpleModal from "./SimpleModal.vue";
 import "@/assets/styles/gameOverlay.css";
+import LoadingRing from "../utils/LoadingRing.vue";
 
 const addWindow = ref(false);
 

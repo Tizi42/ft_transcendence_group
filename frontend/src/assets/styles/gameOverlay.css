@@ -53,6 +53,7 @@
 
 .popUpTxt {
   margin-top: 1em;
+  margin-bottom: 1em;
   font-size: 34px;
   color: var(--main-color);
 }
