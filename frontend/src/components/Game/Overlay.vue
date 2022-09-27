@@ -1,12 +1,9 @@
 <template>
-  <div class="container">
-    <Overlay />
-  </div>
+  <div>Overlay</div>
 </template>
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose } from "vue";
-import Overlay from "../components/Game/Overlay.vue";
 
 defineExpose(
   defineComponent({
