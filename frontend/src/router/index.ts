@@ -7,6 +7,7 @@ import TwoFactorView from "../views/TwoFactorView.vue";
 import LeaderboardView from "../views/LeaderboardView.vue";
 import HistoryView from "../views/HistoryView.vue";
 import PlayView from "../views/PlayView.vue";
+import DevLogin from "../components/DevLogin.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -49,6 +50,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/login",
     name: "login",
     component: LoginView,
+  },
+  {
+    path: "/dev-login",
+    name: "dev-login",
+    component: DevLogin,
   },
   {
     path: "/2FA",
@@ -137,7 +143,10 @@ router.beforeEach(async (to, from, next) => {
         next({ name: "settings" });
       }
     }
-  } else if (to.name !== "login" && !isAuthenticated) {
+  } else if (
+    !(to.name === "login" || to.name === "dev-login") &&
+    !isAuthenticated
+  ) {
     next({ name: "login" });
   } else next();
 });
