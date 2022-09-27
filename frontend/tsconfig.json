@@ -22,6 +22,12 @@
       "@backend/*" : [
         "../backend/src/*"
       ],
+      "@styles/*" : [
+        "src/assets/styles/*"
+      ],
+      "@utils/*" : [
+        "src/components/utils/*"
+      ],
     },
     "lib": [
       "esnext",

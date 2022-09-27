@@ -138,6 +138,10 @@ export class UsersService {
     return this.usersRepository.findOneBy({ id });
   }
 
+  getName(id: number): Promise<String> {
+    return this.findOne(id).then((user) => user.displayName);
+  }
+
   async findOneById(id: number): Promise<User | undefined> {
       return this.usersRepository.findOneBy({ id: id });
   }

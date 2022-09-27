@@ -57,14 +57,16 @@ async function reloadOne(index: number) {
     }
   );
   leaderboard.value[index] = await response.json();
-  dataReady.value[index] = true;
+  setTimeout(() => {
+    dataReady.value[index] = true;
+  }, 500);
 }
 
 async function reloadAll() {
-  reloadOne(0);
-  reloadOne(1);
-  alone.value = true;
+  await reloadOne(0);
+  await reloadOne(1);
   if (leaderboard.value[1].length > 1) alone.value = false;
+  else alone.value = true;
 }
 
 function reloadAndOrder(index: number) {
