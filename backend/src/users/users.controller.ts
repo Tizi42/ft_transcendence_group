@@ -6,7 +6,6 @@ import { UserDto } from "./utils/user.dto";
 import { Express, Response } from "express";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
-import { sharp } from "sharp";
 import { extname } from "path";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import RequestWithUser from "./utils/requestWithUser.interface";
