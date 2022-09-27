@@ -52,10 +52,6 @@ onBeforeMount(async () => {
     .catch((err) => console.error(err));
 });
 
-onUnmounted(() => {
-  // socket.off("send_message");
-});
-
 function getAllDest(response: any[]) {
   let dest: any[];
   dest = response;
