@@ -20,7 +20,7 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     AuthModule,
     BattlesModule,
     UsersModule,
-    //ChatModule
+    ChatModule
   ],
   controllers: [AppController],
   providers: [AppService],
