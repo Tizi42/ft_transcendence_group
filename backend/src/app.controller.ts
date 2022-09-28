@@ -1,27 +1,21 @@
-import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AppService } from './app.service';
 import { JwtTwoFactorGuard } from './auth/guards/jwt-2fa-auth.guard';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { UsersService } from './users/users.service';
 import RequestWithUser from './users/utils/requestWithUser.interface';
-import { UserDetails } from './users/utils/types';
 
 @Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
-    private usersService: UsersService
+    private usersService: UsersService,
   ) {}
 
   @Get()
   getHello(): string {
     return this.appService.getHello();
-  }
-
-  @Post('createNewUser')
-  create(@Body() body: UserDetails){
-    this.usersService.createNewUser(body);
   }
 
   @UseGuards(JwtTwoFactorGuard)
