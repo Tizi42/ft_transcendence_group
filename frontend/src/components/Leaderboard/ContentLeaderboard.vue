@@ -20,7 +20,7 @@ import { defineComponent, defineExpose, defineProps } from "vue";
 import { onMounted, onUpdated } from "vue";
 import { ref, Ref } from "vue";
 import PlayerResult from "./PlayerResult.vue";
-import { User } from "@backend/users/Users.entity";
+import { User } from "@backend/users/users.entity";
 
 //  variables
 interface Props {

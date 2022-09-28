@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@types/cookie-parser": "^1.4.3",
+    "cookie-parser": "^1.4.6",
+    "qrcode": "^1.5.1"
+  }
+}
