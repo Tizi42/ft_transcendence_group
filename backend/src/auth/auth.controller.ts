@@ -1,6 +1,6 @@
 import { Controller, Get, Req, Res, UseGuards, Post, HttpCode, Body, UnauthorizedException, Query } from "@nestjs/common";
 import { Response } from "express";
-import { User } from "src/users/users.entity";
+import { User } from "src/users/Users.entity";
 import { UsersService } from "src/users/users.service";
 import RequestWithUser from "src/users/utils/requestWithUser.interface";
 import { AuthService } from "./auth.service";

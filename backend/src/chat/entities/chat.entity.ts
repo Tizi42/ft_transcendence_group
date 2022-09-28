@@ -1,4 +1,4 @@
-import { User } from "src/users/users.entity";
+import { User } from "src/users/Users.entity";
 import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn } from "typeorm";
 
 @Entity({ name: 'chat' })

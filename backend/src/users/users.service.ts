@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Chat } from "src/chat/entities/chat.entity";
 import { Any, DataSource, In, Not, QueryRunner, Repository } from "typeorm";
-import { User } from "./users.entity";
+import { User } from "./Users.entity";
 import { FriendshipDto } from "./utils/friendship.dto";
 import { UserDetails } from "./utils/types";
 import { UserDto } from "./utils/user.dto";
