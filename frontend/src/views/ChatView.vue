@@ -17,14 +17,6 @@
           Channels
         </button>
       </div>
-      <!-- <div class="chat-options">
-        <img
-          class="icon-button"
-          src="@/assets/icons/icon-add.png"
-          alt="add button"
-          @click="onAdd"
-        />
-      </div> -->
       <ul class="list-friends" v-if="isActive === 'players'">
         <li v-for="friend in user.friends" :key="friend">
           <div class="avatar-frame">
@@ -66,7 +58,9 @@
             placeholder="Your message.."
             class="message-text"
           />
-          <button type="submit">send</button>
+          <button type="submit">
+            <img src="@/assets/icons/send-icon.png" alt="send-message" />
+          </button>
         </form>
       </div>
     </div>
@@ -81,7 +75,7 @@ import "@/assets/styles/chat.css";
 
 const messages: Ref<Array<any>> = ref([]);
 const messageText: Ref<string> = ref("");
-const user = useUserStore();
+const user: any = useUserStore();
 const isActive: Ref<string> = ref("players");
 
 socket.on("new_connection", async () => {
