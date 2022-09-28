@@ -54,5 +54,5 @@ export class User {
   winRate: number;
   
   @Column({ default: "offline" })
-  online: string;
+  status: string;
 }

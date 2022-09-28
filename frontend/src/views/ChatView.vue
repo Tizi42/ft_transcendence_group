@@ -17,29 +17,56 @@
           Channels
         </button>
       </div>
-      <div class="list-friends" v-if="isActive === 'players'">
-        <ul>
-          <li v-for="friend in user.friends" :key="friend">{{ friend }}</li>
-          <li>user 1</li>
-        </ul>
-      </div>
-      <div class="list-channels" v-else>
-        <ul>
-          <li>channel</li>
-        </ul>
-      </div>
+      <!-- <div class="chat-options">
+        <img
+          class="icon-button"
+          src="@/assets/icons/icon-add.png"
+          alt="add button"
+          @click="onAdd"
+        />
+      </div> -->
+      <ul class="list-friends" v-if="isActive === 'players'">
+        <li v-for="friend in user.friends" :key="friend">
+          <div class="avatar-frame">
+            <img :src="friend.picture" />
+          </div>
+          <div class="friend-frame">
+            <div v-if="friend.status === 'offline'" class="red-point"></div>
+            <div v-if="friend.status === 'online'" class="green-point"></div>
+            <h3>{{ friend.username }}</h3>
+          </div>
+        </li>
+      </ul>
+      <ul class="list-channels" v-else>
+        <li>channel</li>
+      </ul>
     </div>
     <div class="container-chat">
       <div class="container-messages">
         <div v-for="message in messages" :key="message">
-          [ {{ message.author.username }} ]: {{ message.content }}
+          <div
+            class="messages"
+            id="from-others"
+            v-if="message.author.id != user.id"
+          >
+            <img :src="message.author.picture" />
+            <p>{{ message.content }}</p>
+          </div>
+          <div class="messages" id="from-user" v-else>
+            <img :src="message.author.picture" />
+            <p>{{ message.content }}</p>
+          </div>
         </div>
       </div>
       <div class="message-input">
         <form @submit.prevent="sendMessage">
-          <label>Message : </label>
-          <input v-model="messageText" />
-          <button type="submit">Send</button>
+          <input
+            v-model="messageText"
+            type="text"
+            placeholder="Your message.."
+            class="message-text"
+          />
+          <button type="submit">send</button>
         </form>
       </div>
     </div>
@@ -62,6 +89,7 @@ socket.on("new_connection", async () => {
 });
 
 const sendMessage = () => {
+  console.log("here");
   socket.emit("send_message", messageText.value, () => {
     messageText.value = "";
   });
