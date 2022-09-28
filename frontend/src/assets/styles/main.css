@@ -13,7 +13,6 @@
   src: url("../../assets/fonts/Outfit/Outfit-SemiBold.otf") format("opentype");
 }
 
-
 @font-face {
   font-family: "Outfit Light";
   src: url("../../assets/fonts/Outfit/Outfit-Light.otf") format("opentype");
@@ -63,7 +62,6 @@
   border: none;
   box-shadow: 4px 0px 4px rgba(0, 0, 0, 0.25);
 }
-
 .nav-container:hover #navbar {
   transform: translateX(0);
   transition-delay: 0s;

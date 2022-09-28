@@ -22,7 +22,7 @@
 
 <script lang="ts" setup>
 //  imports
-import { User } from "@backend/users/Users.entity";
+import { User } from "@backend/users/users.entity";
 import { defineComponent, defineExpose, defineProps } from "vue";
 import { ref } from "vue";
 import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
