@@ -56,7 +56,7 @@ export class User {
   
   @Column({ default: "offline" })
   status: string;
-  
+
   @OneToMany( () => Chat, (messages) => messages.author )
   messages?: Chat[];
 }
