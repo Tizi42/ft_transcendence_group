@@ -39,6 +39,7 @@ import { ref } from "vue";
 import SimpleModal from "./SimpleModal.vue";
 import "@/assets/styles/gameOverlay.css";
 import LoadingRing from "../utils/LoadingRing.vue";
+import router from "@/router";
 
 const addWindow: Ref<boolean> = ref(false);
 const show: Ref<boolean> = ref(false);
@@ -68,21 +69,18 @@ async function changeMode(next: boolean) {
   }, 500);
 }
 
-function handler(event: Event) {
-  if (event) {
-    alert(event.target);
-  }
-}
-
 //  pop-up functions
 function hide() {
   addWindow.value = false;
   console.log("cancel game");
 }
 
-function startGame() {
+async function startGame() {
   addWindow.value = true;
   console.log("start game");
+  setTimeout(() => {
+    router.push("pong");
+  }, 4000);
 }
 
 onMounted(() => {
