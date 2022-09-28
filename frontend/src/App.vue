@@ -9,12 +9,12 @@
           <img src="@/assets/icons/pingpong.svg" alt="icon PingPong" />
         </div>
       </router-link>
-      <router-link to="chat">
+      <router-link :to="{ name: 'chat' }">
         <div class="link-container">
           <img src="@/assets/icons/chat.svg" alt="icon Chat" />
         </div>
       </router-link>
-      <router-link to="user">
+      <router-link :to="{ name: 'user' }">
         <div class="link-container">
           <img src="@/assets/icons/profile.svg" alt="icon User" />
         </div>

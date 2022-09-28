@@ -70,9 +70,14 @@ export class UsersController {
     return this.usersService.getName(id);
   };
 
+  // @Post('/add')
+  // create(@Body() user: UserDto) {
+  //   return this.usersService.addOne(user);
+  // }
+
   @Post('/add')
   create(@Body() user: UserDto) {
-    return this.usersService.addOne(user);
+    return this.usersService.createNewUser(user);
   }
 
   // to delete 

@@ -26,7 +26,7 @@ export class ChatService {
     }
     async getAllDest(): Promise<Chat[]> {
         console.log("GET DESTS");
-        return await this.chatRepository.find({ relations: ['dest'], take: 3 });
+        return await this.chatRepository.find({ relations: ['dest'] });
     }
     async getMessagesById(id: number): Promise<Chat[]>{
         const query = await this.chatRepository.createQueryBuilder()
@@ -34,7 +34,7 @@ export class ChatService {
         .where('"destId" = :id', { id: id })
         .orWhere('"authorId" = :id', { id: id })
         .getRawMany();
-        // console.log(query);
+        console.log("query = ", query);
         return query;
     }
     async getUserFromSocket(socket: Socket) {

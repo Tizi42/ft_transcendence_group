@@ -2,7 +2,7 @@
   <div class="box chat">
     <div id="echange">
       <div v-for="(message, index) in history" :key="index">
-        <div v-if="message.authorId === 1" class="messageBlockOut">
+        <div v-if="message.authorId === 11" class="messageBlockOut">
           <p class="message message-out">
             {{ message.content }}
           </p>
@@ -16,9 +16,11 @@
         </div>
       </div>
     </div>
-    <form @submit.prevent="onSubmit" @keyup.enter="onSubmit" class="form">
-      <textarea v-model="input" placeholder="Your message..." class="input" />
-      <button :disabled="input === ''" class="send-button">Send</button>
+    <form @submit.prevent="onSubmit" class="form">
+      <input v-model="input" placeholder="Your message..." class="input" />
+      <button type="submit" :disabled="input === ''" class="send-button">
+        Send
+      </button>
     </form>
   </div>
 </template>
@@ -32,27 +34,28 @@ export default defineComponent({
 </script>
 
 <script setup lang="ts">
-import { Ref, ref, defineProps, onMounted } from "vue";
+import { Ref, ref, defineProps, onMounted, onBeforeMount } from "vue";
 import socket from "../socket";
+import { getUrlOf } from "@/router";
+import { useUserStore } from "@/stores/user";
 
 const input: Ref<any> = ref("");
 const history: Ref<any> = ref([]);
 const profile: Ref<any> = ref([]);
 const prop = defineProps(["chosenProfile"]);
 console.log("how : ", prop.chosenProfile.id);
+const user = useUserStore();
 
-onMounted(async () => {
-  socket.on("connection", async (user) => {
-    profile.value = user;
-    getMessages();
-  });
+onBeforeMount(async () => {
+  console.log("profile = ", user.id);
+  getMessages();
 });
 
 function onSubmit() {
   const data = {
     content: input.value,
-    author: profile.value.id,
-    dest: prop.chosenProfile.id,
+    author: user.id,
+    dest: 7,
   };
   console.log("dest =", data.dest);
   socket.emit("send_message", data);
@@ -61,11 +64,12 @@ function onSubmit() {
 }
 
 function getMessages() {
-  console.log("profile = ", prop.chosenProfile.id);
-  fetch("http://localhost:3000/api/chat/messages/" + prop.chosenProfile.id)
+  console.log("profile = ", 7);
+  fetch(getUrlOf("api/chat/messages/" + 7))
     .then((response) => response.json())
     .then((data) => {
       data.forEach((el: any) => {
+        console.log("history = ", el);
         history.value.push(el);
       });
     })

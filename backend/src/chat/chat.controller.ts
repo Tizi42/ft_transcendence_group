@@ -25,9 +25,10 @@ export class ChatController {
 
   @Get('messages/:id')
   async chatWith(@Res() res, @Param('id') id) {
+    console.log("id =", id);
     const boxes = await this.chatService.getMessagesById(id);
     for (let i = 0; i < boxes.length; i++) {
-      boxes[i].author = await this.userService.findOne(1);
+      boxes[i].author = await this.userService.findOne(11);
       boxes[i].dest = await this.userService.findOne(id);
     }
     console.log("hi there = ", boxes[0], "==");
