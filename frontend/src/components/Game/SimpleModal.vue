@@ -1,7 +1,7 @@
 <template>
   <div class="pageCenter">
     <div class="modalContainer" ref="modal">
-      <slot />
+      <slot></slot>
     </div>
   </div>
 </template>
@@ -42,14 +42,13 @@ defineExpose(
   gap: 15px;
   color: #ffffff;
 }
-
 .modalContainer {
   display: flex;
   align-items: center;
   text-align: center;
   justify-content: space-around;
-  gap: 15px;
   flex-direction: column;
+  gap: 15px;
   padding-top: 2em;
   padding-bottom: 2em;
   width: 50vw;
