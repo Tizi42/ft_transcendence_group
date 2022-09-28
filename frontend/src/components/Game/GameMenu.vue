@@ -68,6 +68,12 @@ async function changeMode(next: boolean) {
   }, 500);
 }
 
+function handler(event: Event) {
+  if (event) {
+    alert(event.target);
+  }
+}
+
 //  pop-up functions
 function hide() {
   addWindow.value = false;
@@ -81,6 +87,20 @@ function startGame() {
 
 onMounted(() => {
   show.value = true;
+  window.addEventListener("keyup", (event) => {
+    if (event.key == "Enter") {
+      startGame();
+    }
+    if (event.key == "Escape") {
+      hide();
+    }
+    if (event.key == "ArrowLeft" && !addWindow.value) {
+      changeMode(false);
+    }
+    if (event.key == "ArrowRight" && !addWindow.value) {
+      changeMode(true);
+    }
+  });
 });
 
 defineExpose(
