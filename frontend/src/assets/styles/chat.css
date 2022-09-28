@@ -96,6 +96,7 @@
     flex-direction: row;
     align-items: center;
     padding: 0.5em;
+    cursor: pointer;
 }
 
 .list-friends li .friend-frame {
@@ -156,9 +157,6 @@
 }
 
 .message-input {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     padding-bottom: 1em;
 }
 
@@ -185,7 +183,11 @@
     border: none;
     margin-left: 10px;
     transition: transform 0.5s ease;
-    background: #FECA00;
+    background-color: #1E2B02;
+}
+
+.message-input button img {
+    width: 30px;
 }
 
 .message-input button:hover {
