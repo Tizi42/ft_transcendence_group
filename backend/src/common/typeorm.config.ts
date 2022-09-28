@@ -2,7 +2,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModuleAsyncOptions } from "@nestjs/typeorm";
 import { Battle } from "src/battles/battle.entity";
 import { Chat } from "src/chat/entities/chat.entity";
-import { User } from "src/users/users.entity";
+import { User } from "src/users/Users.entity";
 
 export const typeOrmConfig : TypeOrmModuleAsyncOptions = 
 {

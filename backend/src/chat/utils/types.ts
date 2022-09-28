@@ -1,4 +1,4 @@
-import { User } from "src/users/users.entity";
+import { User } from "src/users/Users.entity";
 
 export type messageInfos = {
     // author: string;
