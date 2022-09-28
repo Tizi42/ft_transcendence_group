@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AppService } from './app.service';
 import { JwtTwoFactorGuard } from './auth/guards/jwt-2fa-auth.guard';
@@ -8,8 +8,6 @@ import RequestWithUser from './users/utils/requestWithUser.interface';
 
 @Controller()
 export class AppController {
-  private readonly logger = new Logger(AppController.name)
-
   constructor(
     private readonly appService: AppService,
     private usersService: UsersService,
@@ -23,15 +21,15 @@ export class AppController {
   @UseGuards(JwtTwoFactorGuard)
   @Get('private')
   getPrivate(@Req() req: Request) : Express.User {
-    this.logger.verbose("cookies : ", JSON.stringify(req.cookies));
-    this.logger.verbose("user : ", JSON.stringify(req.user));
+    console.log("private cookies : ", req.cookies);
+    console.log("private user : ", req.user);
     return req.user;
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('preAuth')
   getPreAuth(@Req() req: Request) {
-    this.logger.verbose("is Pre Authenticated ! ");
+    console.log("is Pre Authenticated ! ");
   }
 
   @Get('logout')
