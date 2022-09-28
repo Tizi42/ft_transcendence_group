@@ -34,6 +34,8 @@
 import { Ref, ref, onBeforeMount, onUnmounted, onMounted } from "vue";
 import socket from "@/socket";
 import MessagesView from "../components/MessagesView.vue";
+import { getUrlOf } from "@/router";
+import { useUserStore } from "@/stores/user";
 
 const lastMessage: Ref<any> = ref([]);
 const profile: Ref<any> = ref("");
@@ -41,10 +43,8 @@ const profileFrom: Ref<Array<any>> = ref([]);
 const chosenProfile: Ref<any> = ref("");
 
 onBeforeMount(async () => {
-  socket.on("connection", async (user) => {
-    profile.value = user;
-  });
-  fetch("http://localhost:3000/api/chat/dest")
+  const user = useUserStore();
+  fetch(getUrlOf("api/chat/dest"))
     .then((response) => response.json())
     .then((data) => {
       getAllDest(data);

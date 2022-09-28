@@ -21,15 +21,14 @@ export class ChatGateway implements OnGatewayConnection {
       ) {}
 
     async handleConnection(socket: Socket) {
-        const author = await this.chatService.getUserFromSocket(socket);
-        this.server.sockets.emit('connection', author);
+      console.log(socket.id);
     }
 
     @SubscribeMessage('send_message')
     async listenForMessages(@ConnectedSocket() socket: Socket,
     @MessageBody() data: messageInfos) {
-        const author = await this.chatService.getUserFromSocket(socket);
-        console.log('socket: ', author);
+        // const author = await this.chatService.getUserFromSocket(socket);
+        // console.log('socket: ', author);
 
         console.log('Message from: ');
         console.log(data.author);
