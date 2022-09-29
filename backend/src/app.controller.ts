@@ -21,16 +21,12 @@ export class AppController {
   @UseGuards(JwtTwoFactorGuard)
   @Get('private')
   getPrivate(@Req() req: Request) : Express.User {
-    console.log("private cookies : ", req.cookies);
-    console.log("private user : ", req.user);
     return req.user;
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('preAuth')
-  getPreAuth(@Req() req: Request) {
-    console.log("is Pre Authenticated ! ");
-  }
+  getPreAuth(@Req() req: Request) {}
 
   @Get('logout')
   @UseGuards(JwtAuthGuard)
