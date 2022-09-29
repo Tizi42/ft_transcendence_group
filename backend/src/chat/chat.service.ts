@@ -18,36 +18,42 @@ export class ChatService {
     async saveMessage(content: messageInfos): Promise<Chat> {
         console.log("SAVE");
         const newMessage = this.chatRepository.create(content);
-        return await this.chatRepository.save(newMessage);
+        await this.chatRepository.save(newMessage);
+
+        return newMessage;
     }
+
     async getMessages(): Promise<Chat[]> {
         console.log("GET MESSAGES");
         return await this.chatRepository.find({ relations: ['author'] });
     }
+
     async getAllDest(): Promise<Chat[]> {
         console.log("GET DESTS");
         return await this.chatRepository.find({ relations: ['dest'] });
     }
+
     async getMessagesById(id: number): Promise<Chat[]>{
         const query = await this.chatRepository.createQueryBuilder()
-        .select("*")
-        .where('"destId" = :id', { id: id })
-        .orWhere('"authorId" = :id', { id: id })
-        .getRawMany();
-        console.log("query = ", query);
+            .select("*")
+            .where('"destId" = :id', { id: id })
+            .orWhere('"authorId" = :id', { id: id })
+            .getRawMany();
+        // console.log("query = ", query);
         return query;
     }
+
     async getUserFromSocket(socket: Socket) {
         const cookieJwt = socket.handshake.headers.cookie
-        .split('; ')
-        .find((cookie: string) => cookie.startsWith('jwt'))
-        .split('=')[1];
-    const user = await this.authService.getUserFromAuthenticationToken(cookieJwt);
+            .split('; ')
+            .find((cookie: string) => cookie.startsWith('jwt'))
+            .split('=')[1];
+        const user = await this.authService.getUserFromAuthenticationToken(cookieJwt);
 
-    if (!user) {
-        throw new WsException('Invalid Credentials !');
-    }
-    socket.data = user;
-    return user;
+        if (!user) {
+            throw new WsException('Invalid Credentials !');
+        }
+        socket.data = user;
+        return user;
     }
 }
