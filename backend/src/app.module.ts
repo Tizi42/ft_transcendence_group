@@ -8,8 +8,8 @@ import { AuthModule } from './auth/auth.module';
 import { BattlesModule } from './battles/battles.module';
 import { typeOrmConfig } from './common/typeorm.config';
 import { DataSource } from 'typeorm';
-import { ChatModule } from './chat/chat.module';
 import { UsersModule } from './users/users.module';
+import { ChatModule } from './chat/chat.module';
 
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 
@@ -20,7 +20,7 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     AuthModule,
     BattlesModule,
     UsersModule,
-    //ChatModule
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],
