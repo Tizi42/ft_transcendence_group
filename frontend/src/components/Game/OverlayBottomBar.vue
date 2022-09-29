@@ -1,6 +1,21 @@
 <template>
   <div class="overlayBottomBar">
-    <button class="settingsBtn emoji" />
+    <FloatingMenu>
+      <template #button>
+        <button class="settingsBtn emoji" />
+      </template>
+      <template #choices>
+        <div>Choice 1</div>
+        <div>Choice 2</div>
+        <div>Choice 3</div>
+        <div>Choice 4</div>
+        <div>Choice 1</div>
+        <div>Choice 2</div>
+        <div>Choice 3</div>
+        <div>Choice 4</div>
+        <div>Choice 1</div>
+      </template>
+    </FloatingMenu>
     <div class="chatBarContainer">
       <input
         id="inputChat"
@@ -21,10 +36,10 @@
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose, onMounted, ref, Ref } from "vue";
+import FloatingMenu from "../utils/FloatingMenu.vue";
 
 const message: Ref<string> = ref("");
 const isChatting: Ref<boolean> = ref(false);
-
 function sendMsg() {
   if (message.value != "") {
     console.log("sending msg :", message.value);
