@@ -1,4 +1,5 @@
 import { IsEmail, IsNotEmpty, IsString } from "class-validator";
+import { User } from "../Users.entity";
 
 export class UserDto {
   @IsNotEmpty()
@@ -16,6 +17,8 @@ export class UserDto {
   @IsNotEmpty()
   @IsString()
   picture: string;
+
+  dest: User;
 
   @IsString()
   pictureLocalFilename: string;
