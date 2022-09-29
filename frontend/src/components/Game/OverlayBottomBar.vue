@@ -1,19 +1,17 @@
 <template>
   <div class="overlayBottomBar">
-    <FloatingMenu>
+    <FloatingMenu grid="true">
       <template #button>
-        <button class="settingsBtn emoji" />
+        <div class="settingsBtn emoji" />
       </template>
       <template #choices>
-        <div>Choice 1</div>
-        <div>Choice 2</div>
-        <div>Choice 3</div>
-        <div>Choice 4</div>
-        <div>Choice 1</div>
-        <div>Choice 2</div>
-        <div>Choice 3</div>
-        <div>Choice 4</div>
-        <div>Choice 1</div>
+        <div v-for="image in emojiArray" :key="image" class="emoji-choice">
+          <img
+            :src="getImgUrl(image)"
+            v-bind:alt="image"
+            @click="sendEmoji(image)"
+          />
+        </div>
       </template>
     </FloatingMenu>
     <div class="chatBarContainer">
@@ -39,6 +37,7 @@ import { defineComponent, defineExpose, onMounted, ref, Ref } from "vue";
 import FloatingMenu from "../utils/FloatingMenu.vue";
 
 const message: Ref<string> = ref("");
+const emojiArray: Array<string> = [];
 const isChatting: Ref<boolean> = ref(false);
 function sendMsg() {
   if (message.value != "") {
@@ -47,8 +46,22 @@ function sendMsg() {
   }
 }
 
+function getImgUrl(pic: string) {
+  return require("../../assets/" + pic);
+}
+
+function loadEmojis() {
+  for (var i = 1; i < 38; i++) {
+    emojiArray.push("icons/emojis/" + i + ".svg");
+  }
+}
+
 function chatting(is: boolean) {
   isChatting.value = is;
+}
+
+function sendEmoji(id: string) {
+  console.log("send emoji", id);
 }
 
 function openEmojiBox() {
@@ -56,6 +69,7 @@ function openEmojiBox() {
 }
 
 onMounted(() => {
+  loadEmojis();
   window.addEventListener("keyup", (event) => {
     if (event.key == "Enter") {
       if (isChatting.value) sendMsg();
@@ -101,6 +115,9 @@ defineExpose(
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 12px;
   transition: transform 0.2s ease-out;
+  background-position: center;
+  background-size: 37px 37px;
+  background-repeat: no-repeat;
 }
 
 .settingsBtn:hover {
@@ -146,6 +163,40 @@ defineExpose(
 }
 
 .sendMsg:hover {
+  cursor: pointer;
+}
+
+.emoji {
+  background-image: url("@/assets/icons/emoji.svg");
+}
+
+.sound {
+  background-image: url("@/assets/icons/sound.svg");
+}
+
+.help {
+  background-image: url("@/assets/icons/question.svg");
+}
+
+.settings {
+  background-image: url("@/assets/icons/settings.svg");
+}
+
+.emoji-choice {
+  width: 20%;
+  min-width: 20%;
+  min-height: 25%;
+  display: flex;
+  align-items: left;
+  justify-content: center;
+}
+
+.emoji-choice img {
+  display: block;
+  width: 80%;
+}
+
+.emoji-choice:hover {
   cursor: pointer;
 }
 </style>
