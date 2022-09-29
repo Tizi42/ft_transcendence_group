@@ -73,37 +73,6 @@
     </div>
   </div>
 </template>
-<!-- <template>
-  <div class="chatPage">
-    <h1>Start chating</h1>
-    <div class="chatroom">
-      <div class="box list">
-        <div class="onglets">
-          <p>Friends</p>
-          <p>Channel</p>
-        </div>
-        <input type="text" placeholder="Search.." />
-        <div
-          class="block"
-          v-for="profile in profileFrom"
-          :key="profile"
-          @click="renderCorresponding(profile)"
-        >
-          <img :src="profile.picture" class="photo select" />
-          <div class="infos">
-            <p id="userinfos">
-              {{ profile.username }}
-            </p>
-            <p id="messagelist">
-              {{ lastMessage[profile] }}
-            </p>
-          </div>
-        </div>
-      </div>
-      <MessagesView :receiver="receiver"></MessagesView>
-    </div>
-  </div>
-</template> -->
 
 <script lang="ts" setup>
 import { Ref, ref, onBeforeMount } from "vue";
@@ -132,7 +101,7 @@ const onSubmit = () => {
     author: user.id,
     dest: receiver.value,
   };
-  
+
   socket.emit("send_message", data, () => {
     messageText.value = "";
   });
