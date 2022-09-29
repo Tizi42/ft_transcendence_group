@@ -1,5 +1,8 @@
-import { Controller, Get, Post, Body, Res, Param, Inject } from '@nestjs/common';
+import { Controller, Get, Post, Body, Res, Param, Inject, UseGuards, Req } from '@nestjs/common';
+import { Response } from 'express';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UsersService } from 'src/users/users.service';
+import RequestWithUser from 'src/users/utils/requestWithUser.interface';
 import { ChatService } from './chat.service';
 import { Chat } from './entities/chat.entity';
 import { messageInfos } from './utils/types';
@@ -13,7 +16,6 @@ export class ChatController {
 
   @Post()
   saveMessage(@Body() body: messageInfos): Promise<Chat> {
-  // console.log("[SAVE]" + body.author);
     return this.chatService.saveMessage(body);
   }
 
@@ -23,15 +25,15 @@ export class ChatController {
     return res.json(boxes);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('messages/:id')
-  async chatWith(@Res() res, @Param('id') id) {
-    console.log("id =", id);
+  async chatWith(@Req() req: RequestWithUser, @Res() res: Response, @Param('id') id: number) {
     const boxes = await this.chatService.getMessagesById(id);
+    
     for (let i = 0; i < boxes.length; i++) {
-      boxes[i].author = await this.userService.findOne(11);
+      boxes[i].author = await this.userService.findOne(req.user.id);
       boxes[i].dest = await this.userService.findOne(id);
     }
-    console.log("hi there = ", boxes[0], "==");
     return res.json(boxes);
   }
 

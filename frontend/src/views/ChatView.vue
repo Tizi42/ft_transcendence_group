@@ -21,7 +21,7 @@
         <li
           v-for="friend in user.friends"
           :key="friend"
-          @click="renderCorresponding(friend)"
+          @click="getMessages(friend.id)"
         >
           <div class="avatar-frame">
             <img :src="friend.picture" />
@@ -38,8 +38,9 @@
         <li>channel</li>
       </ul>
     </div>
-    <!-- <MessagesView :chosenProfile="chosenProfile"></MessagesView> -->
+    <!-- <MessagesView :receiver="receiver"></MessagesView> -->
     <div class="container-chat">
+      <h3>on discussion with {{ receiver }}</h3>
       <div class="container-messages">
         <div v-for="message in history" :key="message">
           <div
@@ -99,13 +100,13 @@
           </div>
         </div>
       </div>
-      <MessagesView :chosenProfile="chosenProfile"></MessagesView>
+      <MessagesView :receiver="receiver"></MessagesView>
     </div>
   </div>
 </template> -->
 
 <script lang="ts" setup>
-import { Ref, ref, onBeforeMount, onUnmounted, onMounted } from "vue";
+import { Ref, ref, onBeforeMount } from "vue";
 import socket from "@/socket";
 import MessagesView from "../components/MessagesView.vue";
 import { getUrlOf } from "@/router";
@@ -115,9 +116,9 @@ import "@/assets/styles/chat.css";
 const lastMessage: Ref<any> = ref([]);
 const profile: Ref<any> = ref("");
 const profileFrom: Ref<Array<any>> = ref([]);
-const chosenProfile: Ref<any> = ref("");
 const user: any = useUserStore();
 const isActive: Ref<string> = ref("players");
+const receiver: Ref<number> = ref(-1);
 const messageText: Ref<string> = ref("");
 const history: Ref<any> = ref([]);
 
@@ -125,65 +126,66 @@ const select = (id: string) => {
   isActive.value = id;
 };
 
-function onSubmit() {
+const onSubmit = () => {
   const data = {
     content: messageText.value,
     author: user.id,
-    dest: 1,
+    dest: receiver.value,
   };
-  console.log("dest =", data.dest);
-  socket.emit("send_message", data);
-  messageText.value = "";
-  window.location.reload();
+  
+  socket.emit("send_message", data, () => {
+    messageText.value = "";
+  });
 }
 
-function getMessages() {
-  console.log("profile = ", 1);
-  fetch(getUrlOf("api/chat/messages/" + 1))
-    .then((response) => response.json())
-    .then((data) => {
-      data.forEach((el: any) => {
-        console.log("history = ", el);
-        history.value.push(el);
-      });
-    })
-    .catch((err) => console.error(err));
-}
-
-onBeforeMount(async () => {
-  await fetch(getUrlOf("api/chat/dest"))
+const getMessages = async (id: number) => {
+  receiver.value = id;
+  history.value = [];
+  await fetch(getUrlOf("api/chat/messages/" + id), {
+    credentials: "include",
+  })
     .then((response) => {
       return response.json();
     })
     .then((data) => {
-      getAllDest(data);
+      history.value = data;
     })
     .catch((err) => {
       console.error(err);
     });
+}
+
+onBeforeMount(async () => {
+  // await fetch(getUrlOf("api/chat/dest"))
+  //   .then((response) => {
+  //     return response.json();
+  //   })
+  //   .then((data) => {
+  //     getAllDest(data);
+  //   })
+  //   .catch((err) => {
+  //     console.error(err);
+  //   });
+  socket.on("receive_message", () => {
+    getMessages(receiver.value);
+  });
+
   user.doFetchFriends();
-  getMessages();
 });
 
-function getAllDest(dest: any[]) {
-  for (let i = 0; i < dest.length; i++) {
-    if (dest[i].dest.id !== user.id) {
-      profileFrom.value.push(dest[i].dest);
-      getLastMessage(dest[i].dest.id);
-    }
-  }
-  chosenProfile.value = profileFrom.value[profileFrom.value.length - 1];
-}
+// function getAllDest(dest: any[]) {
+//   for (let i = 0; i < dest.length; i++) {
+//     if (dest[i].dest.id !== user.id) {
+//       profileFrom.value.push(dest[i].dest);
+//       getLastMessage(dest[i].dest.id);
+//     }
+//   }
+//   receiver.value = profileFrom.value[profileFrom.value.length - 1];
+// }
 
 function getLastMessage(id: number) {
   socket.emit("last_from", id, (response: any) => {
     lastMessage.value.push(response.content);
   });
-}
-
-function renderCorresponding(prof: any) {
-  console.log("before = ", chosenProfile.value);
-  chosenProfile.value = prof;
-  console.log("after = ", chosenProfile.value);
 }
 </script>
