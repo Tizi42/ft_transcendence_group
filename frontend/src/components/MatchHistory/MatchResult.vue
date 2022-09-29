@@ -65,7 +65,7 @@ import { defineComponent, defineExpose, defineProps, ref, Ref } from "vue";
 import { onMounted } from "vue";
 import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
 import UserBox from "../users/UserBox/UserBox.vue";
-import { User } from "@backend/users/Users.entity";
+import { User } from "@backend/users/users.entity";
 
 //  variables
 interface Props {

@@ -65,7 +65,7 @@ import { ref, defineComponent, defineExpose, defineProps } from "vue";
 import { Ref, onBeforeMount } from "vue";
 import { useUserStore } from "@/stores/user";
 import axios from "axios";
-import { User } from "@backend/users/Users.entity";
+import { User } from "@backend/users/users.entity";
 import { getUrlOf } from "@/router";
 
 interface Props {

@@ -10,7 +10,7 @@ import RequestWithUser from './users/utils/requestWithUser.interface';
 export class AppController {
   constructor(
     private readonly appService: AppService,
-    private usersService: UsersService
+    private usersService: UsersService,
   ) {}
 
   @Get()

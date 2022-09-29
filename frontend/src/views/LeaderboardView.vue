@@ -31,7 +31,7 @@ import "@/assets/styles/historyAndLeaderboard.css";
 import { defineComponent, defineExpose, Ref, ref } from "vue";
 import { onBeforeMount } from "vue";
 import { getUrlOf } from "@/router";
-import { User } from "@backend/users/Users.entity";
+import { User } from "@backend/users/users.entity";
 import LeaderBoard from "@/components/Leaderboard/Leaderboard.vue";
 import { useUserStore } from "@/stores/user";
 
