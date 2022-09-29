@@ -25,7 +25,7 @@
       <Transition name="bounce" appear>
         <div class="popUpContent" v-if="addWindow">
           <div class="popUpTxt">Finding your opponent...</div>
-          <LoadingRing color="#ffcb00" size="50px" heigh="50px" />
+          <LoadingRing color="#ffcb00" size="50px" height="50px" />
           <div class="cancelBtn" @click="hide">Cancel</div>
         </div>
       </Transition>
