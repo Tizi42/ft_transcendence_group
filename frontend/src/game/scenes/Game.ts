@@ -3,9 +3,9 @@ import socket from "@/socket";
 import { Ball } from "../sprites/ball";
 import { Racket } from "../sprites/racket";
 
-socket.on("searching", () => {
-  console.log(" search !");
-});
+// socket.on("searching", () => {
+//   console.log(" search !");
+// });
 
 export default class Pong extends Phaser.Scene {
   ball: Ball;
@@ -20,12 +20,12 @@ export default class Pong extends Phaser.Scene {
 
   constructor() {
     super("GameScene");
-    console.log("login emmited");
-    socket.emit("login");
-    socket.emit("queue_register", "normal");
-    socket.on("connection", () => {
-      console.log(socket.id, " connected !");
-    });
+    // console.log("login emmited");
+    // socket.emit("login");
+    // socket.emit("queue_register", "normal");
+    // socket.on("connection", () => {
+    //   console.log(socket.id, " connected !");
+    // });
   }
 
   init() {
@@ -39,34 +39,34 @@ export default class Pong extends Phaser.Scene {
   }
 
   create() {
-    socket.on("game_found", (data) => {
-      console.log(socket.id, " game found !");
-      this.room_name = data.room_name;
-      const socketId = socket.id;
-      if (socketId === data.to) {
-        this.pos = data.player;
-        this.ball.initialVelocityX = data.ball_speed * data.ball_dir_x;
-        this.ball.initialVelocityY = data.ball_speed * data.ball_dir_y;
-        this.gameState = 1;
-      }
-    });
-    socket.on("game_state", (data) => {
-      if (this.room_name != data.room_name) {
-        this.room_name = data.room_name;
-      }
-      console.log(socket.id, " update !");
-      const socketId = socket.id;
-      if (socketId === data.to) {
-        this.versus.y = data.pos;
-        this.ball.update_state(
-          data.ball_pos_x,
-          data.ball_pos_y,
-          data.ball_dir_x,
-          data.ball_dir_y,
-          data.ball_speed
-        );
-      }
-    });
+    // socket.on("game_found", (data) => {
+    //   console.log(socket.id, " game found !");
+    //   this.room_name = data.room_name;
+    //   const socketId = socket.id;
+    //   if (socketId === data.to) {
+    //     this.pos = data.player;
+    //     this.ball.initialVelocityX = data.ball_speed * data.ball_dir_x;
+    //     this.ball.initialVelocityY = data.ball_speed * data.ball_dir_y;
+    //     this.gameState = 1;
+    //   }
+    // });
+    // socket.on("game_state", (data) => {
+    //   if (this.room_name != data.room_name) {
+    //     this.room_name = data.room_name;
+    //   }
+    //   console.log(socket.id, " update !");
+    //   const socketId = socket.id;
+    //   if (socketId === data.to) {
+    //     this.versus.y = data.pos;
+    //     this.ball.update_state(
+    //       data.ball_pos_x,
+    //       data.ball_pos_y,
+    //       data.ball_dir_x,
+    //       data.ball_dir_y,
+    //       data.ball_speed
+    //     );
+    //   }
+    // });
     this.cursors = this.input.keyboard.createCursorKeys();
     const background = this.add.image(
       this.cameras.main.width / 2,
@@ -104,8 +104,8 @@ export default class Pong extends Phaser.Scene {
       }
       this.gameState = 2;
     } else if (this.gameState == 2 && this.room_name != "") {
-      console.log(this.room_name);
-      socket.emit("update_pos", this.room_name, this.player.y);
+      // console.log(this.room_name);
+      // socket.emit("update_pos", this.room_name, this.player.y);
       if (this.cursors.up.isDown) {
         this.player.setVelocityY(-100);
       } else if (this.cursors.down.isDown) {
