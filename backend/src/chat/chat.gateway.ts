@@ -30,20 +30,16 @@ export class ChatGateway implements OnGatewayConnection {
     @MessageBody() data: messageInfos,
     @ConnectedSocket() socket: Socket,
   ) {
-    // const author = await this.chatService.getUserFromSocket(socket);
-    // const message = await this.chatService.saveMessage(data, author);
-
     console.log('Message from: ');
     console.log(data.author);
     console.log('who says: ' + data.content);
-    // data.author = author;
     console.log('Message from: ');
     console.log(data.author);
-    this.chatService.saveMessage(data);
+    const message = this.chatService.saveMessage(data);
 
-    // this.server.sockets.emit('receive_message', message);
+    this.server.sockets.emit('receive_message');
 
-    // return message;
+    return message;
   }
 
   @SubscribeMessage('last_from')
