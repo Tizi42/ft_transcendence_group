@@ -6,11 +6,10 @@
       </template>
       <template #choices>
         <div v-for="image in emojiArray" :key="image" class="emoji-choice">
-          <img
-            :src="getImgUrl(image)"
-            v-bind:alt="image"
+          <div
             @click="sendEmoji(image)"
-          />
+            :style="{ 'background-image': 'url(' + getImgUrl(image) + ')' }"
+          ></div>
         </div>
       </template>
     </FloatingMenu>
@@ -191,12 +190,16 @@ defineExpose(
   justify-content: center;
 }
 
-.emoji-choice img {
+.emoji-choice div {
   display: block;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: all 0.5s ease;
   width: 80%;
 }
 
-.emoji-choice:hover {
+.emoji-choice div:hover {
   cursor: pointer;
+  transform: scale(1.2);
 }
 </style>
