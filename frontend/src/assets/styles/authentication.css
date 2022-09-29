@@ -52,7 +52,10 @@ h4 {
   line-height: 1.4em;
 }
 
-input[type="submit"] {
+.container-turn-on input[type="submit"],
+.container-auth input[type="submit"],
+#search-form input[type="submit"]
+{
   display: block;
   font-family: "Outfit Bold";
   background: #1e2a02;
@@ -67,16 +70,25 @@ input[type="submit"] {
   transition: transform 0.5s ease;
 }
 
-input[type="submit"]:hover {
+.container-turn-on input[type="submit"]:hover,
+.container-auth input[type="submit"]:hover,
+#search-form input[type="submit"]:hover
+{
   transform: scale(1.05, 1.05);
   cursor: pointer;
 }
 
-input[type="submit"]:focus {
+.container-turn-on input[type="submit"]:focus,
+.container-auth input[type="submit"]:focus,
+#search-form input[type="submit"]:focus
+{
   transform: scale(1.05, 1.05);
 }
 
-input[type="text"] {
+.container-turn-on input[type="text"],
+.container-auth input[type="text"],
+#search-form input[type="text"]
+{
   display: block;
   font-family: "Outfit";
   text-align: center;
@@ -91,16 +103,27 @@ input[type="text"] {
   transition: transform 0.5s ease;
 }
 
-input[type="text"]:hover,
-input[type="text"]:focus {
+.container-turn-on input[type="text"]:hover,
+.container-turn-on input[type="text"]:focus,
+.container-auth input[type="text"]:hover,
+.container-auth input[type="text"]:focus,
+#search-form input[type="text"]:hover,
+#search-form input[type="text"]:focus
+{
   transform: scale(1.05, 1.05);
 }
 
-input[type="text"]:focus {
+.container-turn-on input[type="text"]:focus,
+.container-auth input[type="text"]:focus,
+#search-form input[type="text"]:focus
+{
   outline: none;
 }
 
-::placeholder {
+.container-turn-on ::placeholder,
+.container-auth ::placeholder,
+#search-form ::placeholder
+{
   color: rgba(255, 255, 255, 0.3);
 }
 

@@ -1,6 +1,7 @@
 import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
+import { messageInfos } from './utils/types';
 
 @WebSocketGateway({
   cors: {
@@ -9,6 +10,7 @@ import { ChatService } from './chat.service';
     credentials: true,
   },
 })
+
 export class ChatGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: Server;
@@ -18,28 +20,43 @@ export class ChatGateway implements OnGatewayConnection {
   ) {}
 
   async handleConnection(socket: Socket) {
-    // await this.chatService.getUserFromSocket(socket);
+    console.log("socket io id = ", socket.id);
 
-    this.server.sockets.emit('new_connection');
+    // this.server.sockets.emit('new_connection');
   }
 
   @SubscribeMessage('send_message')
   async handleMessage(
-    @MessageBody() content: string,
+    @MessageBody() data: messageInfos,
     @ConnectedSocket() socket: Socket,
   ) {
-    const author = await this.chatService.getUserFromSocket(socket);
-    const message = await this.chatService.saveMessage(content, author);
+    // const author = await this.chatService.getUserFromSocket(socket);
+    // const message = await this.chatService.saveMessage(data, author);
 
-    this.server.sockets.emit('receive_message', message);
+    console.log('Message from: ');
+    console.log(data.author);
+    console.log('who says: ' + data.content);
+    // data.author = author;
+    console.log('Message from: ');
+    console.log(data.author);
+    this.chatService.saveMessage(data);
 
-    return message;
+    // this.server.sockets.emit('receive_message', message);
+
+    // return message;
   }
 
-  @SubscribeMessage('request_all_messages')
-  async requestAllMessages(@ConnectedSocket() socket: Socket) {
-    await this.chatService.getUserFromSocket(socket);
-
-    return await this.chatService.getAllMessages();
+  @SubscribeMessage('last_from')
+  async lastFrom(@MessageBody() id: number) {
+    const messages = await this.chatService.getMessagesById(id);
+    const last = messages[messages.length - 1];
+      return last;
   }
+
+  // @SubscribeMessage('request_all_messages')
+  // async requestAllMessages(@ConnectedSocket() socket: Socket) {
+  //   await this.chatService.getUserFromSocket(socket);
+
+  //   return await this.chatService.getAllMessages();
+  // }
 }
