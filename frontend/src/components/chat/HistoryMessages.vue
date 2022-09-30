@@ -1,11 +1,7 @@
 <template>
   <div class="container-messages">
     <div v-for="message in historyMessages" :key="message">
-      <div
-        class="messages"
-        id="from-others"
-        v-if="message.authorId != user.id"
-      >
+      <div v-if="message.authorId != user.id" class="messages" id="from-others">
         <img :src="message.dest.picture" />
         <p>{{ message.content }}</p>
       </div>
@@ -18,8 +14,8 @@
 </template>
 
 <script lang="ts" setup>
-import { useUserStore } from '@/stores/user';
-import { defineComponent } from 'vue';
+import { useUserStore } from "@/stores/user";
+import { defineComponent, defineProps, defineExpose } from "vue";
 
 const user: any = useUserStore();
 

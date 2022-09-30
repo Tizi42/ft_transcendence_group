@@ -15,8 +15,8 @@
 </template>
 
 <script lang="ts" setup>
-import socket from '@/socket';
-import { defineComponent, ref, Ref } from 'vue';
+import socket from "@/socket";
+import { defineComponent, ref, Ref, defineProps, defineExpose } from "vue";
 
 interface Props {
   user: any;
@@ -28,7 +28,7 @@ const messageText: Ref<string> = ref("");
 
 const onSubmit = () => {
   if (messageText.value === "") {
-    return ;
+    return;
   }
   const data = {
     content: messageText.value,
@@ -39,7 +39,7 @@ const onSubmit = () => {
   socket.emit("send_message", data, () => {
     messageText.value = "";
   });
-}
+};
 
 defineExpose(
   defineComponent({
