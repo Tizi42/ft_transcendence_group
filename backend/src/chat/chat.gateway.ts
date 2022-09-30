@@ -30,11 +30,11 @@ export class ChatGateway implements OnGatewayConnection {
     @MessageBody() data: messageInfos,
     @ConnectedSocket() socket: Socket,
   ) {
-    console.log('Message from: ');
-    console.log(data.author);
-    console.log('who says: ' + data.content);
-    console.log('Message from: ');
-    console.log(data.author);
+    // console.log('Message from: ');
+    // console.log(data.author);
+    // console.log('who says: ' + data.content);
+    // console.log('Message from: ');
+    // console.log(data.author);
     const message = this.chatService.saveMessage(data);
 
     this.server.sockets.emit('receive_message');

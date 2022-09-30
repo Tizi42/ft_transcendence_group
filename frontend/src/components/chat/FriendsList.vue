@@ -21,10 +21,8 @@
 <script lang="ts" setup>
 import { getUrlOf } from '@/router';
 import socket from '@/socket';
-import { useUserStore } from '@/stores/user';
 import { defineComponent, onBeforeMount, ref, Ref } from 'vue';
 
-const user: any = useUserStore();
 const receiver: Ref<number> = ref(-1);
 const history: Ref<any> = ref([]);
 
@@ -78,14 +76,18 @@ onBeforeMount(() => {
   socket.on("receive_message", () => {
     getMessages(receiver.value);
   });
-
-  user.doFetchFriends();
 });
 
 const emit = defineEmits([
   'selectReceiver',
   'getHistory'
 ]);
+
+interface Props {
+  user: any;
+}
+
+defineProps<Props>();
 
 defineExpose(
   defineComponent({
