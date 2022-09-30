@@ -1,42 +1,17 @@
 <template>
   <div class="chat">
     <div class="container-channels">
-      <div class="nav-channels">
-        <button
-          id="players-col"
-          :class="{ selected: isActive === 'players' }"
-          @click="select('players')"
-        >
-          Players
-        </button>
-        <button
-          id="channels-col"
-          :class="{ selected: isActive === 'channels' }"
-          @click="select('channels')"
-        >
-          Channels
-        </button>
-      </div>
-      <ul class="list-friends" v-if="isActive === 'players'">
-        <li
-          v-for="friend in user.friends"
-          :key="friend"
-          @click="getMessages(friend.id)"
-        >
-          <div class="avatar-frame">
-            <img :src="friend.picture" />
-          </div>
-          <div class="friend-frame">
-            <div v-if="friend.status === 'offline'" class="red-point"></div>
-            <div v-if="friend.status === 'online'" class="green-point"></div>
-            <h3>{{ friend.username }}</h3>
-            <!-- <p>{{ lastMessage[profile] }}</p> -->
-          </div>
-        </li>
-      </ul>
-      <ul class="list-channels" v-else>
-        <li>channel</li>
-      </ul>
+      <NavChat
+        @selectedNav="handleSelectedNav"
+        @resetReceiver="handleSelectedReceiver"
+        @clearHistory="handleHistory"
+      />
+      <FriendsList
+        v-if="isActive === 'players'"
+        @selectReceiver="handleSelectedReceiver"
+        @getHistory="handleHistory"
+      />
+      <ChannelsList v-else />
     </div>
     <!-- <MessagesView :receiver="receiver"></MessagesView> -->
     <div class="container-chat">
@@ -57,7 +32,7 @@
           </div>
         </div>
       </div>
-      <div class="message-input">
+      <div class="message-input" v-if="receiver != -1">
         <form @submit.prevent="onSubmit">
           <input
             v-model="messageText"
@@ -75,12 +50,15 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref, ref, onBeforeMount } from "vue";
+import { Ref, ref, onBeforeMount, defineComponent } from "vue";
 import socket from "@/socket";
 import MessagesView from "../components/MessagesView.vue";
 import { getUrlOf } from "@/router";
 import { useUserStore } from "@/stores/user";
 import "@/assets/styles/chat.css";
+import NavChat from "@/components/chat/NavChat.vue";
+import FriendsList from "@/components/chat/FriendsList.vue";
+import ChannelsList from "@/components/chat/ChannelsList.vue";
 
 const lastMessage: Ref<any> = ref([]);
 const profile: Ref<any> = ref("");
@@ -91,9 +69,17 @@ const receiver: Ref<number> = ref(-1);
 const messageText: Ref<string> = ref("");
 const history: Ref<any> = ref([]);
 
-const select = (id: string) => {
-  isActive.value = id;
+const handleSelectedNav = (event: string) => {
+  isActive.value = event;
 };
+
+const handleSelectedReceiver = (event: number) => {
+  receiver.value = event;
+}
+
+const handleHistory = (event: Array<any>) => {
+  history.value = event;
+}
 
 const onSubmit = () => {
   const data = {
@@ -107,54 +93,13 @@ const onSubmit = () => {
   });
 }
 
-const getMessages = async (id: number) => {
-  receiver.value = id;
-  history.value = [];
-  await fetch(getUrlOf("api/chat/messages/" + id), {
-    credentials: "include",
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .then((data) => {
-      history.value = data;
-    })
-    .catch((err) => {
-      console.error(err);
-    });
-}
-
 onBeforeMount(async () => {
-  // await fetch(getUrlOf("api/chat/dest"))
-  //   .then((response) => {
-  //     return response.json();
-  //   })
-  //   .then((data) => {
-  //     getAllDest(data);
-  //   })
-  //   .catch((err) => {
-  //     console.error(err);
-  //   });
-  socket.on("receive_message", () => {
-    getMessages(receiver.value);
-  });
-
   user.doFetchFriends();
 });
 
-// function getAllDest(dest: any[]) {
-//   for (let i = 0; i < dest.length; i++) {
-//     if (dest[i].dest.id !== user.id) {
-//       profileFrom.value.push(dest[i].dest);
-//       getLastMessage(dest[i].dest.id);
-//     }
-//   }
-//   receiver.value = profileFrom.value[profileFrom.value.length - 1];
-// }
-
-function getLastMessage(id: number) {
-  socket.emit("last_from", id, (response: any) => {
-    lastMessage.value.push(response.content);
-  });
-}
+defineExpose(
+  defineComponent({
+    name: "ChatView",
+  })
+);
 </script>
