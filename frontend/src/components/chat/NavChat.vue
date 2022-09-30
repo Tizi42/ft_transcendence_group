@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, ref, Ref } from 'vue';
+import { defineComponent, ref, Ref, defineEmits, defineExpose } from "vue";
 import "@/assets/styles/chat.css";
 
 const isActive: Ref<string> = ref("players");
@@ -29,16 +29,12 @@ const select = (id: string) => {
   isActive.value = id;
   receiver.value = -1;
   history.value = [];
-  emit('selectedNav', isActive.value);
-  emit('resetReceiver', -1);
-  emit('clearHistory', []);
+  emit("selectedNav", isActive.value);
+  emit("resetReceiver", -1);
+  emit("clearHistory", []);
 };
 
-const emit = defineEmits([
-  'selectedNav',
-  'resetReceiver',
-  'clearHistory'
-]);
+const emit = defineEmits(["selectedNav", "resetReceiver", "clearHistory"]);
 
 defineExpose(
   defineComponent({

@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent } from 'vue';
+import { defineComponent, defineExpose } from "vue";
 
 defineExpose(
   defineComponent({

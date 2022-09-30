@@ -19,9 +19,17 @@
 </template>
 
 <script lang="ts" setup>
-import { getUrlOf } from '@/router';
-import socket from '@/socket';
-import { defineComponent, onBeforeMount, ref, Ref } from 'vue';
+import { getUrlOf } from "@/router";
+import socket from "@/socket";
+import {
+  defineComponent,
+  onBeforeMount,
+  ref,
+  Ref,
+  defineEmits,
+  defineProps,
+  defineExpose,
+} from "vue";
 
 const receiver: Ref<number> = ref(-1);
 const history: Ref<any> = ref([]);
@@ -41,9 +49,9 @@ const getMessages = async (id: number) => {
     .catch((err) => {
       console.error(err);
     });
-  emit('selectReceiver', id);
-  emit('getHistory', history.value);
-}
+  emit("selectReceiver", id);
+  emit("getHistory", history.value);
+};
 
 // function getAllDest(dest: any[]) {
 //   for (let i = 0; i < dest.length; i++) {
@@ -78,10 +86,7 @@ onBeforeMount(() => {
   });
 });
 
-const emit = defineEmits([
-  'selectReceiver',
-  'getHistory'
-]);
+const emit = defineEmits(["selectReceiver", "getHistory"]);
 
 interface Props {
   user: any;
