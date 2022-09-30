@@ -17,17 +17,13 @@
     <div class="container-chat">
       <h3>on discussion with {{ receiver }}</h3>
       <HistoryMessages :historyMessages="history" />
-      <MessageInput
-        v-if="receiver != -1"
-        :user="user"
-        :receiver="receiver"
-      />
+      <MessageInput v-if="receiver != -1" :user="user" :receiver="receiver" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { Ref, ref, onBeforeMount, defineComponent } from "vue";
+import { Ref, ref, onBeforeMount, defineComponent, defineExpose } from "vue";
 import { useUserStore } from "@/stores/user";
 import "@/assets/styles/chat.css";
 import NavChat from "@/components/chat/NavChat.vue";
@@ -47,11 +43,11 @@ const handleSelectedNav = (event: string) => {
 
 const handleSelectedReceiver = (event: number) => {
   receiver.value = event;
-}
+};
 
 const handleHistory = (event: Array<any>) => {
   history.value = event;
-}
+};
 
 onBeforeMount(async () => {
   user.doFetchFriends();
