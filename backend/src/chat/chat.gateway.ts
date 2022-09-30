@@ -36,9 +36,6 @@ export class ChatGateway implements OnGatewayConnection {
     console.log('Message from: ');
     console.log(data.author);
     console.log('who says: ' + data.content);
-    // data.author = author;
-    console.log('Message from: ');
-    console.log(data.author);
     this.chatService.saveMessage(data);
 
     // this.server.sockets.emit('receive_message', message);
@@ -50,7 +47,8 @@ export class ChatGateway implements OnGatewayConnection {
   async lastFrom(@MessageBody() id: number) {
     const messages = await this.chatService.getMessagesById(id);
     const last = messages[messages.length - 1];
-      return last;
+    console.log("last : ", last);
+    return last;
   }
 
   // @SubscribeMessage('request_all_messages')

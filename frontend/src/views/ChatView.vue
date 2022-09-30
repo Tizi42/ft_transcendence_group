@@ -26,11 +26,11 @@
           <div class="avatar-frame">
             <img :src="friend.picture" />
           </div>
-          <div class="friend-frame">
+          <div class="profile-frame">
             <div v-if="friend.status === 'offline'" class="red-point"></div>
             <div v-if="friend.status === 'online'" class="green-point"></div>
             <h3>{{ friend.username }}</h3>
-            <!-- <p>{{ lastMessage[profile] }}</p> -->
+            <p>{{ lastMessage[friend] }}</p>
           </div>
         </li>
       </ul>
@@ -38,8 +38,8 @@
         <li>channel</li>
       </ul>
     </div>
-    <!-- <MessagesView :chosenProfile="chosenProfile"></MessagesView> -->
-    <div class="container-chat">
+    <MessagesView :chosenProfile="chosenProfile"></MessagesView>
+    <!-- <div class="container-chat">
       <div class="container-messages">
         <div v-for="message in history" :key="message">
           <div
@@ -69,40 +69,9 @@
           </button>
         </form>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
-<!-- <template>
-  <div class="chatPage">
-    <h1>Start chating</h1>
-    <div class="chatroom">
-      <div class="box list">
-        <div class="onglets">
-          <p>Friends</p>
-          <p>Channel</p>
-        </div>
-        <input type="text" placeholder="Search.." />
-        <div
-          class="block"
-          v-for="profile in profileFrom"
-          :key="profile"
-          @click="renderCorresponding(profile)"
-        >
-          <img :src="profile.picture" class="photo select" />
-          <div class="infos">
-            <p id="userinfos">
-              {{ profile.username }}
-            </p>
-            <p id="messagelist">
-              {{ lastMessage[profile] }}
-            </p>
-          </div>
-        </div>
-      </div>
-      <MessagesView :chosenProfile="chosenProfile"></MessagesView>
-    </div>
-  </div>
-</template> -->
 
 <script lang="ts" setup>
 import { Ref, ref, onBeforeMount, onUnmounted, onMounted } from "vue";
@@ -118,37 +87,10 @@ const profileFrom: Ref<Array<any>> = ref([]);
 const chosenProfile: Ref<any> = ref("");
 const user: any = useUserStore();
 const isActive: Ref<string> = ref("players");
-const messageText: Ref<string> = ref("");
-const history: Ref<any> = ref([]);
 
 const select = (id: string) => {
   isActive.value = id;
 };
-
-function onSubmit() {
-  const data = {
-    content: messageText.value,
-    author: user.id,
-    dest: 1,
-  };
-  console.log("dest =", data.dest);
-  socket.emit("send_message", data);
-  messageText.value = "";
-  window.location.reload();
-}
-
-function getMessages() {
-  console.log("profile = ", 1);
-  fetch(getUrlOf("api/chat/messages/" + 1))
-    .then((response) => response.json())
-    .then((data) => {
-      data.forEach((el: any) => {
-        console.log("history = ", el);
-        history.value.push(el);
-      });
-    })
-    .catch((err) => console.error(err));
-}
 
 onBeforeMount(async () => {
   await fetch(getUrlOf("api/chat/dest"))
@@ -162,7 +104,6 @@ onBeforeMount(async () => {
       console.error(err);
     });
   user.doFetchFriends();
-  getMessages();
 });
 
 function getAllDest(dest: any[]) {

@@ -3,7 +3,8 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { WsException } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
-import { Repository } from "typeorm";
+import { User } from 'src/users/Users.entity';
+import { Not, Repository } from "typeorm";
 import { Chat } from './entities/chat.entity';
 import { messageInfos } from './utils/types';
 
@@ -26,7 +27,8 @@ export class ChatService {
     }
     async getAllDest(): Promise<Chat[]> {
         console.log("GET DESTS");
-        return await this.chatRepository.find({ relations: ['dest'] });
+        return await this.chatRepository.find({ 
+                relations: ['dest'] });
     }
     async getMessagesById(id: number): Promise<Chat[]>{
         const query = await this.chatRepository.createQueryBuilder()
