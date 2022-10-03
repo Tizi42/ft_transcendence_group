@@ -3,7 +3,6 @@ import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, Jo
 
 @Entity({ name: 'chat' })
 export class Chat {
-    
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -18,4 +17,5 @@ export class Chat {
 
     @ManyToOne( () => User, (author) => author.messages )
     author: User;
+
 }

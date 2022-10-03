@@ -3,19 +3,40 @@
     <div class="overlayBox">
       <OverlayTopBar />
       <GameBox />
-      <OverlayBottomBar />
+      <OverlayBottomBar
+        :user="user"
+        :opponent="opponent"
+        @getLastMessageUp="showLastMessage"
+      />
       <ReadyButton />
       <ReadyButton />
+      <MessageBox
+        v-if="lastMessage != undefined"
+        :message="lastMessage"
+        :user="user"
+      />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose } from "vue";
+import { Ref, ref } from "vue";
 import OverlayTopBar from "./OverlayTopBar.vue";
 import OverlayBottomBar from "./OverlayBottomBar.vue";
 import GameBox from "./GameBox.vue";
 import ReadyButton from "./ReadyButton.vue";
+import MessageBox from "./MessageBox.vue";
+import { useUserStore } from "@/stores/user";
+import { Chat } from "@backend/chat/entities/chat.entity";
+
+const user = useUserStore();
+const opponent = 4;
+const lastMessage: Ref<Chat | undefined> = ref();
+
+function showLastMessage(message: Chat) {
+  lastMessage.value = message;
+}
 
 defineExpose(
   defineComponent({
