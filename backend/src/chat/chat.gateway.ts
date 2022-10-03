@@ -10,7 +10,6 @@ import { messageInfos } from './utils/types';
     credentials: true,
   },
 })
-
 export class ChatGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: Server;
@@ -21,8 +20,6 @@ export class ChatGateway implements OnGatewayConnection {
 
   async handleConnection(socket: Socket) {
     console.log("socket io id = ", socket.id);
-
-    // this.server.sockets.emit('new_connection');
   }
 
   @SubscribeMessage('send_message')
@@ -30,12 +27,7 @@ export class ChatGateway implements OnGatewayConnection {
     @MessageBody() data: messageInfos,
     @ConnectedSocket() socket: Socket,
   ) {
-    // console.log('Message from: ');
-    // console.log(data.author);
-    // console.log('who says: ' + data.content);
-    // console.log('Message from: ');
-    // console.log(data.author);
-    const message = this.chatService.saveMessage(data);
+    const message = await this.chatService.saveMessage(data);
 
     this.server.sockets.emit('receive_message');
 
