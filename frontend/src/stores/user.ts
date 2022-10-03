@@ -1,7 +1,22 @@
-import { ref } from "vue";
+import { ref, Ref } from "vue";
 import { defineStore } from "pinia";
 
-export const useUserStore = defineStore("user", () => {
+type voidFunction = () => void;
+
+export interface userInfoStore {
+  id: Ref<number>;
+  displayName: Ref<string>;
+  email: Ref<string>;
+  avatarUrl: Ref<string>;
+  enabled2FA: Ref<boolean>;
+  friends: Ref<Array<number>>;
+  pending: Ref<Array<number>>;
+  doFetch: voidFunction;
+  doFetchFriends: voidFunction;
+  doFetchPending: voidFunction;
+}
+
+export const useUserStore = defineStore("user", (): userInfoStore => {
   const id = ref(0);
   const displayName = ref("");
   const email = ref("");
