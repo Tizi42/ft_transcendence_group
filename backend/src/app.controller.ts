@@ -21,6 +21,8 @@ export class AppController {
   @UseGuards(JwtTwoFactorGuard)
   @Get('private')
   getPrivate(@Req() req: Request) : Express.User {
+    // console.log("private cookies : ", req.cookies);
+    // console.log("private user : ", req.user);
     return req.user;
   }
 
