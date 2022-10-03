@@ -1,5 +1,6 @@
 import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { AppGateway } from 'src/gateway';
 import { ChatService } from './chat.service';
 import { messageInfos } from './utils/types';
 
@@ -10,16 +11,12 @@ import { messageInfos } from './utils/types';
     credentials: true,
   },
 })
-export class ChatGateway implements OnGatewayConnection {
-  @WebSocketServer()
-  server: Server;
+export class ChatGateway extends AppGateway {
 
   constructor(
     private readonly chatService: ChatService,
-  ) {}
-
-  async handleConnection(socket: Socket) {
-    console.log("socket io id = ", socket.id);
+  ) {
+    super(chatService);
   }
 
   @SubscribeMessage('send_message')
