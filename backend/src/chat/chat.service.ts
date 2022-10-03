@@ -16,7 +16,7 @@ export class ChatService {
     ) {}
 
     async saveMessage(content: messageInfos): Promise<Chat> {
-        console.log("SAVE");
+        // console.log("SAVE");
         const newMessage = this.chatRepository.create(content);
         await this.chatRepository.save(newMessage);
 
@@ -44,16 +44,27 @@ export class ChatService {
     }
 
     async getUserFromSocket(socket: Socket) {
-        const cookieJwt = socket.handshake.headers.cookie
+        const cookies = socket.handshake.headers.cookie;
+        if (!cookies) {
+            return null;
+        }
+        const cookieJwt = cookies
             .split('; ')
-            .find((cookie: string) => cookie.startsWith('jwt'))
+            .find((cookie: string) => cookie.startsWith('jwt'));
+        
+        if (!cookieJwt) {
+            return null;
+        }
+        const tokenJwt = cookieJwt
             .split('=')[1];
-        const user = await this.authService.getUserFromAuthenticationToken(cookieJwt);
 
+        const user = await this.authService.getUserFromAuthenticationToken(tokenJwt);
+        
         if (!user) {
             throw new WsException('Invalid Credentials !');
         }
         socket.data = user;
+
         return user;
     }
 }

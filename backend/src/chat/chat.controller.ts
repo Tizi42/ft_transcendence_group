@@ -38,7 +38,7 @@ export class ChatController {
       boxes[i].author = await this.userService.findOne(req.user.id);
       boxes[i].dest = await this.userService.findOne(id);
     }
-    console.log("boxes = ", boxes);
+    // console.log("boxes = ", boxes);
     return res.json(boxes);
   }
 
