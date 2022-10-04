@@ -1,8 +1,6 @@
 import { Chat } from "src/chat/entities/chat.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
-export type UserRoleType = "admin" | "owner" | "ghost"
-
 @Entity({ name: 'users' })
 export class User {
   @PrimaryGeneratedColumn()
@@ -61,12 +59,5 @@ export class User {
 
   @OneToMany( () => Chat, (messages) => messages.author )
   messages?: Chat[];
-
-  @Column({
-      type: "enum",
-      enum: ["admin", "editor", "ghost"],
-      default: "ghost"
-  })
-  role: UserRoleType;
 }
 
