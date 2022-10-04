@@ -15,7 +15,7 @@
       <ChannelsList v-else />
     </div>
     <div class="container-chat">
-      <h3>on discussion with {{ receiver }}</h3>
+      <img src="@/assets/icons/multiBubble.svg" />
       <HistoryMessages :history="history" />
       <MessageInput v-if="receiver != -1" :user="user" :receiver="receiver" />
     </div>

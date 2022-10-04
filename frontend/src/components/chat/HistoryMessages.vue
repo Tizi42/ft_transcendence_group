@@ -1,7 +1,11 @@
 <template>
   <div class="container-messages">
     <div v-for="message in history" :key="message">
-      <div v-if="message.author.id != user.id" class="messages" id="from-others">
+      <div
+        v-if="message.author.id != user.id"
+        class="messages"
+        id="from-others"
+      >
         <img :src="message.author.picture" />
         <p>{{ message.content }}</p>
       </div>
