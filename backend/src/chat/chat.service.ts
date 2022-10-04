@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { WsException } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
-import { User } from 'src/users/Users.entity';
+import { User } from 'src/users/users.entity';
 import { Repository } from "typeorm";
 import { Chat } from './entities/chat.entity';
 import { messageInfos } from './utils/types';
