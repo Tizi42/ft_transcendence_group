@@ -1,24 +1,33 @@
 <template>
-  <div class="messageBox">{{ message.content }}</div>
+  <div class="messageBox">{{ message }}</div>
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, defineProps, onBeforeMount } from "vue";
+import { defineComponent, defineExpose, defineProps } from "vue";
+import { onBeforeMount, onUpdated } from "vue";
+import { ref, Ref } from "vue";
 import { userInfoStore } from "@/stores/user";
-import { Chat } from "@backend/chat/entities/chat.entity";
-import { User } from "@backend/users/Users.entity";
+import { User } from "@backend/src/users/Users.entity";
 
 interface Props {
-  message: Chat;
+  message: string;
+  author: User;
+  dest: User;
   user: userInfoStore;
 }
-const props: Readonly<Props> = defineProps<Props>();
 
-onBeforeMount(() => {
-  const author: User = props.message.author;
-  if (author.id == props.user.id.value) {
-    console.log("i wrote this");
+const props: Readonly<Props> = defineProps<Props>();
+const iWrote: Ref<boolean> = ref(false);
+const show: Ref<boolean> = ref(false);
+
+onBeforeMount(async () => {
+  if (props.author.id == props.user.id.value) {
+    iWrote.value = true;
   }
+});
+
+onUpdated(() => {
+  console.log("updated");
 });
 
 defineExpose(

@@ -6,36 +6,57 @@
       <OverlayBottomBar
         :user="user"
         :opponent="opponent"
-        @getLastMessageUp="showLastMessage"
+        @getLastMessageUp="fillMessageInfo"
       />
       <ReadyButton />
       <ReadyButton />
-      <MessageBox
-        v-if="lastMessage != undefined"
-        :message="lastMessage"
-        :user="user"
-      />
+      <Transition name="bounce">
+        <MessageBox
+          v-if="show"
+          :message="lastMessage"
+          :author="lastMessageAuthor"
+          :dest="lastMessageDest"
+          :user="user"
+        />
+      </Transition>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose } from "vue";
+import { defineComponent, defineExpose, onBeforeMount } from "vue";
 import { Ref, ref } from "vue";
 import OverlayTopBar from "./OverlayTopBar.vue";
 import OverlayBottomBar from "./OverlayBottomBar.vue";
 import GameBox from "./GameBox.vue";
 import ReadyButton from "./ReadyButton.vue";
 import MessageBox from "./MessageBox.vue";
-import { useUserStore } from "@/stores/user";
+import { userInfoStore, useUserStore } from "@/stores/user";
 import { Chat } from "@backend/chat/entities/chat.entity";
+import { timeStamp } from "console";
 
-const user = useUserStore();
+const user: Pick<userInfoStore, never> = useUserStore();
 const opponent = 4;
-const lastMessage: Ref<Chat | undefined> = ref();
+const lastMessage: Ref<string> = ref("");
+const lastMessageAuthor: Ref<number> = ref(-1);
+const lastMessageDest: Ref<number> = ref(-1);
+const lastMessageTime: Ref<Date> = ref(new Date());
+const show: Ref<boolean> = ref(false);
 
-function showLastMessage(message: Chat) {
-  lastMessage.value = message;
+function fillMessageInfo(message: Chat) {
+  show.value = false;
+  setTimeout(() => {
+    lastMessage.value = message.content;
+    lastMessageAuthor.value = message.author;
+    lastMessageDest.value = message.dest;
+    lastMessageTime.value = new Date();
+    show.value = true;
+    setTimeout(() => {
+      const curTime = new Date();
+      if (curTime.getTime() - lastMessageTime.value.getTime() > 3500)
+        show.value = false;
+    }, 4000);
+  }, 100);
 }
 
 defineExpose(
@@ -43,6 +64,10 @@ defineExpose(
     name: "GameOverlay",
   })
 );
+
+onBeforeMount(() => {
+  show.value = false;
+});
 </script>
 
 <style scoped>
