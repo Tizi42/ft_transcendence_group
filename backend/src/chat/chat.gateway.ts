@@ -1,35 +1,30 @@
-import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { ConnectedSocket, MessageBody, SubscribeMessage } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { AppGateway } from 'src/gateway';
+import { UsersService } from 'src/users/users.service';
 import { ChatService } from './chat.service';
-import { messageInfos } from './utils/types';
 
-@WebSocketGateway({
-  cors: {
-    origin: 'http://localhost:8080',
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
-})
-export class ChatGateway implements OnGatewayConnection {
-  @WebSocketServer()
-  server: Server;
+export class ChatGateway extends AppGateway {
 
   constructor(
-    private readonly chatService: ChatService,
-  ) {}
-
-  async handleConnection(socket: Socket) {
-    console.log("socket io id = ", socket.id);
+    readonly chatService: ChatService,
+    readonly usersService: UsersService,
+  ) {
+    super(chatService, usersService);
   }
+
+  async handleConnection(socket: Socket) {}
+
+  handleDisconnect(client: any) {}
 
   @SubscribeMessage('send_message')
   async handleMessage(
-    @MessageBody() data: messageInfos,
+    @MessageBody() data: any,
     @ConnectedSocket() socket: Socket,
   ) {
     const message = await this.chatService.saveMessage(data);
 
-    this.server.sockets.emit('receive_message');
+    this.server.sockets.to(data.dest).to(data.author).emit('receive_message');
 
     return message;
   }
