@@ -8,7 +8,7 @@
       </div>
       <img
         class="icon-button"
-        src="@/assets/icons/icon-add.png"
+        src="./../../../assets/icons/icon-add.png"
         alt="add button"
         @click="onAdd"
       />
@@ -19,7 +19,7 @@
       </teleport>
       <img
         class="icon-button"
-        src="@/assets/icons/icon-filter.png"
+        src="./../../../assets/icons/icon-filter.png"
         alt="filter button"
       />
     </div>
@@ -36,8 +36,8 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, ref, onBeforeMount } from "vue";
-import { useUserStore } from "@/stores/user";
+import { defineComponent, ref, onBeforeMount } from "vue";
+import { useUserStore } from "./../../../stores/user";
 import FriendItem from "./FriendItem.vue";
 import FriendReqItem from "./FriendReqItem.vue";
 import AddFriend from "./AddFriend.vue";

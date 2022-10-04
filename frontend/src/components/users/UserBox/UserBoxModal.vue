@@ -7,8 +7,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineComponent, defineExpose, defineEmits } from "vue";
-import { useClickOutside } from "@/composables/useClickOutside";
+import { ref, defineComponent } from "vue";
+import { useClickOutside } from "./../../../composables/useClickOutside";
 
 const emit = defineEmits(["hide"]);
 const modal = ref(null);

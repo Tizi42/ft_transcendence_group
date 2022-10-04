@@ -10,9 +10,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineComponent, defineExpose, onBeforeMount } from "vue";
+import { ref, defineComponent, onBeforeMount } from "vue";
 import BlockedUserItem from "./BlockedUserItem.vue";
-import { useUserStore } from "@/stores/user";
+import { useUserStore } from "./../../../stores/user";
 
 const user = useUserStore();
 const blocked = ref([]);

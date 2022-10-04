@@ -33,7 +33,7 @@
     </div>
     <div class="statsBox" v-if="show">
       <div class="subtitleBox">
-        <img src="@/assets/icons/stats.svg" />
+        <img src="./../../../assets/icons/stats.svg" />
         Statistics
       </div>
       <table class="statistics">
@@ -53,7 +53,7 @@
     </div>
     <div class="friendsBox" v-if="show">
       <div class="subtitleBox">
-        <img src="@/assets/icons/friends.svg" />
+        <img src="./../../../assets/icons/friends.svg" />
         Friends ({{ nbFriends }})
       </div>
     </div>
@@ -61,12 +61,12 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineComponent, defineExpose, defineProps } from "vue";
+import { ref, defineComponent } from "vue";
 import { Ref, onBeforeMount } from "vue";
-import { useUserStore } from "@/stores/user";
+import { useUserStore } from "./../../../stores/user";
 import axios from "axios";
-import { User } from "@backend/users/users.entity";
-import { getUrlOf } from "@/router";
+import { User } from "./../../../../backend/users/users.entity";
+import { getUrlOf } from "./../../../router";
 
 interface Props {
   target: User;
@@ -187,11 +187,11 @@ defineExpose(
 }
 
 #cancelButton {
-  background-image: url("@/assets/icons/removeUser.svg");
+  background-image: url("./../../../assets/icons/removeUser.svg");
 }
 
 #sendButton {
-  background-image: url("@/assets/icons/addUser.svg");
+  background-image: url("./../../../assets/icons/addUser.svg");
 }
 
 #cancelButton .hoverInfo,

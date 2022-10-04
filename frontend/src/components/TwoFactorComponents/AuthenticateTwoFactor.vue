@@ -14,8 +14,8 @@
 
 <script lang="ts">
 import { defineComponent, ref, Ref } from "vue";
-import "@/assets/styles/authentication.css";
-import { getUrlOf } from "@/router";
+import "./../../assets/styles/authentication.css";
+import { getUrlOf } from "./../../router";
 
 export default defineComponent({
   name: "AuthenticateTwoFactor",
@@ -23,7 +23,7 @@ export default defineComponent({
 </script>
 
 <script lang="ts" setup>
-import router from "@/router";
+import router from "./../../router";
 
 const authenticationCode: Ref<string> = ref("");
 

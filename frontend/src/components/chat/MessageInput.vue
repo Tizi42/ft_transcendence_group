@@ -8,15 +8,15 @@
         class="message-text"
       />
       <button type="submit">
-        <img src="@/assets/icons/send-icon.png" alt="send-message" />
+        <img src="./../../assets/icons/send-icon.png" alt="send-message" />
       </button>
     </form>
   </div>
 </template>
 
 <script lang="ts" setup>
-import socket from "@/socket";
-import { defineComponent, ref, Ref, defineProps, defineExpose } from "vue";
+import socket from "./../../socket";
+import { defineComponent, ref, Ref } from "vue";
 
 interface Props {
   user: any;

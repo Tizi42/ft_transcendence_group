@@ -2,7 +2,7 @@
   <div class="page">
     <div class="title">
       <div class="titleName">
-        <img src="@/assets/icons/clock.svg" />
+        <img src="./../assets/icons/clock.svg" />
         <h1>Match history</h1>
       </div>
       <button class="reload" @click="reloadData()"></button>
@@ -25,14 +25,14 @@
 </template>
 
 <script lang="ts" setup>
-import "@/assets/styles/historyAndLeaderboard.css";
-import { defineComponent, defineExpose } from "vue";
+import "./../assets/styles/historyAndLeaderboard.css";
+import { defineComponent } from "vue";
 import { onBeforeMount } from "vue";
 import { Ref, ref } from "vue";
-import { getUrlOf } from "@/router";
-import TableHistory from "@/components/MatchHistory/TableHistory.vue";
-import { useUserStore } from "@/stores/user";
-import { Battle } from "@backend/battles/battle.entity";
+import { getUrlOf } from "./../router";
+import TableHistory from "./../components/MatchHistory/TableHistory.vue";
+import { useUserStore } from "./../stores/user";
+import { Battle } from "./../backend/battles/battle.entity";
 
 // variables
 const user = useUserStore();

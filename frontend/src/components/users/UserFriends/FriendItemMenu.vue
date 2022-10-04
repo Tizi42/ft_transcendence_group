@@ -13,11 +13,9 @@ import {
   ref,
   defineComponent,
   defineExpose,
-  defineProps,
-  defineEmits,
 } from "vue";
-import { useUserStore } from "@/stores/user";
-import { useClickOutside } from "@/composables/useClickOutside";
+import { useUserStore } from "./../../../stores/user";
+import { useClickOutside } from "./../../../composables/useClickOutside";
 import axios from "axios";
 
 const user = useUserStore();

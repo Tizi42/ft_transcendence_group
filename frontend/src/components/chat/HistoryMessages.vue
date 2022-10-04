@@ -14,8 +14,8 @@
 </template>
 
 <script lang="ts" setup>
-import { useUserStore } from "@/stores/user";
-import { defineComponent, defineProps, defineExpose } from "vue";
+import { useUserStore } from "./../../stores/user";
+import { defineComponent } from "vue";
 
 const user: any = useUserStore();
 

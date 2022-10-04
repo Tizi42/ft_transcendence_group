@@ -6,7 +6,7 @@
         tabindex="-1"
       >
         <img
-          src="@/assets/icons/googleAuthticator.svg"
+          src="./../assets/icons/googleAuthticator.svg"
           alt="google authenticator logo"
           class="GAlogo"
         />
@@ -18,8 +18,8 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose } from "vue";
-import TwoFactorPage from "@/components/TwoFactorPage.vue";
+import { defineComponent } from "vue";
+import TwoFactorPage from "./../components/TwoFactorPage.vue";
 
 defineExpose(
   defineComponent({

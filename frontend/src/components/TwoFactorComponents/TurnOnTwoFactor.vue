@@ -23,9 +23,9 @@ export default defineComponent({
 </script>
 
 <script lang="ts" setup>
-import router from "@/router";
-import "@/assets/styles/authentication.css";
-import { getUrlOf } from "@/router";
+import router from "./../../router";
+import "./../../assets/styles/authentication.css";
+import { getUrlOf } from "./../../router";
 
 const authenticationCode: Ref<string> = ref("");
 

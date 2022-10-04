@@ -16,11 +16,11 @@
 
 <script lang="ts" setup>
 //  imports
-import { defineComponent, defineExpose, defineProps } from "vue";
+import { defineComponent } from "vue";
 import { onMounted, onUpdated } from "vue";
 import { ref, Ref } from "vue";
 import PlayerResult from "./PlayerResult.vue";
-import { User } from "@backend/users/users.entity";
+import { User } from "./../../../backend/users/users.entity";
 
 //  variables
 interface Props {

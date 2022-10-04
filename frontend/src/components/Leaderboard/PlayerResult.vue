@@ -22,8 +22,8 @@
 
 <script lang="ts" setup>
 //  imports
-import { User } from "@backend/users/users.entity";
-import { defineComponent, defineExpose, defineProps } from "vue";
+import { User } from "./../../../backend/users/users.entity";
+import { defineComponent } from "vue";
 import { ref } from "vue";
 import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
 import UserBox from "../users/UserBox/UserBox.vue";

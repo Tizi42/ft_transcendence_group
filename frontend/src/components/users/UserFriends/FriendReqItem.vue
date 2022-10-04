@@ -28,8 +28,8 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, defineProps } from "vue";
-import { useUserStore } from "@/stores/user";
+import { defineComponent } from "vue";
+import { useUserStore } from "./../../../stores/user";
 import axios from "axios";
 
 const user = useUserStore();

@@ -10,13 +10,13 @@
       <div class="name">{{ blocked.displayName }}</div>
       <div class="email">( {{ blocked.email }} )</div>
     </div>
-    <img class="bin" src="@/assets/icons/bin.png" @click="onRemoveBlock" />
+    <img class="bin" src="./../../../assets/icons/bin.png" @click="onRemoveBlock" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, defineProps, defineEmits } from "vue";
-import { useUserStore } from "@/stores/user";
+import { defineComponent } from "vue";
+import { useUserStore } from "./../../../stores/user";
 import axios from "axios";
 
 const user = useUserStore();

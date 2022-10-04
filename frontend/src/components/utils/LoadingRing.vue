@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, defineProps } from "vue";
+import { defineComponent } from "vue";
 
 interface Props {
   size: string;

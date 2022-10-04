@@ -6,9 +6,9 @@
 </template>
 
 <script setup lang="ts">
-import { defineComponent, onBeforeMount, defineExpose } from "vue";
+import { defineComponent, onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
-import { getUrlOf } from "@/router";
+import { getUrlOf } from "./../router";
 
 const router = useRouter();
 

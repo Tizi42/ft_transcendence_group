@@ -31,8 +31,8 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, defineProps, ref, computed } from "vue";
-import { useUserStore } from "@/stores/user";
+import { defineComponent, ref, computed } from "vue";
+import { useUserStore } from "./../../../stores/user";
 import FriendItemMenu from "./FriendItemMenu.vue";
 
 const user = useUserStore();

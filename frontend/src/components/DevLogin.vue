@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts" setup defer>
-import { ref, defineComponent, defineExpose } from "vue";
+import { ref, defineComponent } from "vue";
 let email = ref("");
 function onSubmit() {
   window.location.href =

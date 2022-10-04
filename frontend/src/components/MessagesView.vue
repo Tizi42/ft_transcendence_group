@@ -34,10 +34,10 @@ export default defineComponent({
 </script>
 
 <script setup lang="ts">
-import { Ref, ref, defineProps, onMounted, onBeforeMount } from "vue";
+import { Ref, ref, onMounted, onBeforeMount } from "vue";
 import socket from "../socket";
-import { getUrlOf } from "@/router";
-import { useUserStore } from "@/stores/user";
+import { getUrlOf } from "./../router";
+import { useUserStore } from "./../stores/user";
 
 const input: Ref<any> = ref("");
 const history: Ref<any> = ref([]);

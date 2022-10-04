@@ -1,13 +1,13 @@
 <template>
   <div class="container">
-    <img id="ping-pong" src="@/assets/icons/pingPongIcon.png" />
+    <img id="ping-pong" src="./../assets/icons/pingPongIcon.png" />
     <LoginPage />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import LoginPage from "@/components/LoginPage.vue";
+import LoginPage from "./../components/LoginPage.vue";
 
 export default defineComponent({
   name: "LoginView",

@@ -28,9 +28,9 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, defineProps } from "vue";
+import { defineComponent } from "vue";
 import { Ref, ref } from "vue";
-import { User } from "@backend/users/users.entity";
+import { User } from "./../../../backend/users/users.entity";
 import ContentLeaderboard from "./ContentLeaderboard.vue";
 import LoadingRing from "../utils/LoadingRing.vue";
 

@@ -19,15 +19,13 @@
 </template>
 
 <script lang="ts" setup>
-import { getUrlOf } from "@/router";
-import socket from "@/socket";
+import { getUrlOf } from "./../../router";
+import socket from "./../../socket";
 import {
   defineComponent,
   onBeforeMount,
   ref,
   Ref,
-  defineEmits,
-  defineProps,
   defineExpose,
 } from "vue";
 

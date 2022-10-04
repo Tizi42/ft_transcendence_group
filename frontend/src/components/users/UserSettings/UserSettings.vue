@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, ref } from "vue";
+import { defineComponent, ref } from "vue";
 import AccountOptions from "./AccountOptions.vue";
 import BlockedUsers from "./BlockedUsers.vue";
 import { useRouter } from "vue-router";

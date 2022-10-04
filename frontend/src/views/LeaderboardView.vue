@@ -2,7 +2,7 @@
   <div class="page">
     <div class="title">
       <div class="titleName">
-        <img src="@/assets/icons/leaderboard.svg" />
+        <img src="./../assets/icons/leaderboard.svg" />
         <h1>Leaderboard</h1>
       </div>
       <button class="reload" @click="reloadAll()"></button>
@@ -27,13 +27,13 @@
 </template>
 
 <script lang="ts" setup>
-import "@/assets/styles/historyAndLeaderboard.css";
-import { defineComponent, defineExpose, Ref, ref } from "vue";
+import "./../assets/styles/historyAndLeaderboard.css";
+import { defineComponent, Ref, ref } from "vue";
 import { onBeforeMount } from "vue";
-import { getUrlOf } from "@/router";
-import { User } from "@backend/users/users.entity";
-import LeaderBoard from "@/components/Leaderboard/Leaderboard.vue";
-import { useUserStore } from "@/stores/user";
+import { getUrlOf } from "./../router";
+import { User } from "./../backend/users/users.entity";
+import LeaderBoard from "./../components/Leaderboard/Leaderboard.vue";
+import { useUserStore } from "./../stores/user";
 
 const user = useUserStore();
 const dataReady: Ref<Array<boolean>> = ref([false, false]);

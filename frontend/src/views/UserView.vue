@@ -17,9 +17,9 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, onBeforeMount } from "vue";
-import ProfileBanner from "@/components/users/ProfileBanner.vue";
-import socket from "@/socket";
+import { defineComponent, onBeforeMount } from "vue";
+import ProfileBanner from "./../components/users/ProfileBanner.vue";
+import socket from "./../socket.ts";
 
 defineExpose(
   defineComponent({

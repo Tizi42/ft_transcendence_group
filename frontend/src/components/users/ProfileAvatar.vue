@@ -20,9 +20,9 @@
 </template>
 
 <script lang="ts" setup defer>
-import { ref, defineComponent, defineExpose } from "vue";
+import { ref, defineComponent } from "vue";
 import axios from "axios";
-import { useUserStore } from "@/stores/user";
+import { useUserStore } from "./../../stores/user";
 
 const user = useUserStore();
 const upload = ref();

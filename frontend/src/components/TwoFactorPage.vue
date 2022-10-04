@@ -14,7 +14,7 @@ import { defineComponent } from "vue";
 import GenerateTwoFactorVue from "./TwoFactorComponents/GenerateTwoFactor.vue";
 import TurnOnTwoFactorVue from "./TwoFactorComponents/TurnOnTwoFactor.vue";
 import AuthenticateTwoFactorVue from "./TwoFactorComponents/AuthenticateTwoFactor.vue";
-import "@/assets/styles/authentication.css";
+import "./../assets/styles/authentication.css";
 
 export default defineComponent({
   name: "TwoFactorPage",
@@ -28,7 +28,7 @@ export default defineComponent({
 
 <script lang="ts" setup>
 import { onBeforeMount, ref, Ref } from "vue";
-import { getUrlOf } from "@/router";
+import { getUrlOf } from "./../router";
 
 const profile: Ref<any> = ref("");
 const isTwoFactorAuthentication: Ref<boolean> = ref(false);

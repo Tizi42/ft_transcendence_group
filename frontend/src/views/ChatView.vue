@@ -23,13 +23,13 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref, ref, onBeforeMount, defineComponent, defineExpose } from "vue";
-import { useUserStore } from "@/stores/user";
-import "@/assets/styles/chat.css";
-import NavChat from "@/components/chat/NavChat.vue";
-import FriendsList from "@/components/chat/FriendsList.vue";
-import ChannelsList from "@/components/chat/ChannelsList.vue";
-import HistoryMessages from "@/components/chat/HistoryMessages.vue";
+import { Ref, ref, onBeforeMount, defineComponent } from "vue";
+import { useUserStore } from "./../stores/user";
+import "./../assets/styles/chat.css";
+import NavChat from "./../components/chat/NavChat.vue";
+import FriendsList from "./../components/chat/FriendsList.vue";
+import ChannelsList from "./../components/chat/ChannelsList.vue";
+import HistoryMessages from "./../components/chat/HistoryMessages.vue";
 import MessageInput from "../components/chat/MessageInput.vue";
 
 const user: any = useUserStore();

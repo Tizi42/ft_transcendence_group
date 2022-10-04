@@ -28,9 +28,9 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeMount, defineComponent, defineExpose } from "vue";
+import { onBeforeMount, defineComponent } from "vue";
 import { useRouter } from "vue-router";
-import { useUserStore } from "@/stores/user";
+import { useUserStore } from "./../../../stores/user";
 
 const user = useUserStore();
 const router = useRouter();

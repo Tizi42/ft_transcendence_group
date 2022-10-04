@@ -16,10 +16,10 @@
 
 <script lang="ts" setup>
 //  imports
-import { defineComponent, defineExpose, defineProps } from "vue";
+import { defineComponent } from "vue";
 import { onMounted, ref, Ref } from "vue";
 import MatchResult from "./MatchResult.vue";
-import { Battle } from "@backend/battles/battle.entity";
+import { Battle } from "./../../../backend/battles/battle.entity";
 
 //  variable
 interface Props {

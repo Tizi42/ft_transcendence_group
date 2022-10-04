@@ -13,8 +13,8 @@
 </template>
 
 <script lang="ts" setup>
-import { Battle } from "@backend/battles/battle.entity";
-import { defineComponent, defineExpose, defineProps } from "vue";
+import { Battle } from "./../../../backend/battles/battle.entity";
+import { defineComponent } from "vue";
 import ContentHistory from "./ContentHistory.vue";
 import LoadingRing from "../utils/LoadingRing.vue";
 
