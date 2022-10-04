@@ -1,6 +1,6 @@
 <template>
   <div class="container-messages">
-    <div v-for="message in historyMessages" :key="message">
+    <div v-for="message in history" :key="message">
       <div v-if="message.authorId != user.id" class="messages" id="from-others">
         <img :src="message.dest.picture" />
         <p>{{ message.content }}</p>
@@ -20,7 +20,7 @@ import { defineComponent, defineProps, defineExpose } from "vue";
 const user: any = useUserStore();
 
 interface Props {
-  historyMessages: Array<any>;
+  history: Array<any>;
 }
 
 defineProps<Props>();
