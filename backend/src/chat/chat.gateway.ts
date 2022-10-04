@@ -24,16 +24,7 @@ export class ChatGateway extends AppGateway {
   ) {
     const message = await this.chatService.saveMessage(data);
 
-    for (let [id, socket] of this.server.of("/").sockets) {
-      if (socket.data) {
-        if (socket.data.id === data.dest) {
-          this.server.sockets.to(id).emit('receive_message');
-        }
-        if (socket.data.id === data.author) {
-          this.server.sockets.to(id).emit('receive_message');
-        }
-      }
-    }
+    this.server.sockets.to(data.dest).to(data.author).emit('receive_message');
 
     return message;
   }
