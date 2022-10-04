@@ -32,14 +32,7 @@ export class ChatController {
     @Res() res: Response,
     @Param('id') id: number
   ) {
-    const boxes = await this.chatService.getMessagesById(id);
-    
-    for (let i = 0; i < boxes.length; i++) {
-      boxes[i].author = await this.userService.findOne(req.user.id);
-      boxes[i].dest = await this.userService.findOne(id);
-    }
-    // console.log("boxes = ", boxes);
-    return res.json(boxes);
+    return res.json(await this.chatService.getMessagesById(id, req.user.id));
   }
 
   @Get('dest')
@@ -48,9 +41,10 @@ export class ChatController {
     return res.json(dest);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async lastMessages(@Param('id') id: number) {
-    const messages = await this.chatService.getMessagesById(id);
+  async lastMessages(@Req() req: RequestWithUser, @Param('id') id: number) {
+    const messages = await this.chatService.getMessagesById(id, req.user.id);
     const last = messages[messages.length - 1];
     console.log("LAST = ", id);
     console.log(last);
