@@ -18,8 +18,6 @@ import { defineComponent, defineExpose, onBeforeMount, ref, Ref } from "vue";
 import { defineProps, defineEmits } from "vue";
 import { userInfoStore } from "@/stores/user";
 import socket from "@/socket";
-import { getUrlOf } from "@/router";
-import { Chat } from "@backend/chat/entities/chat.entity";
 
 interface Props {
   user: userInfoStore;
@@ -29,7 +27,6 @@ interface Props {
 const props: Readonly<Props> = defineProps<Props>();
 const emit = defineEmits(["getChatting", "getLastMessage"]);
 const message: Ref<string> = ref("");
-const history: Ref<Array<Chat>> = ref([]);
 
 function sendMsg() {
   if (message.value != "") {
@@ -38,9 +35,8 @@ function sendMsg() {
       author: props.user.id,
       dest: props.opponent,
     };
-    socket.emit("send_message", data, () => {
-      message.value = "";
-    });
+    socket.emit("send_message_ingame", data);
+    message.value = "";
   }
 }
 
@@ -48,26 +44,9 @@ function chatting(is: boolean) {
   emit("getChatting", is);
 }
 
-const getMessages = async (id: number) => {
-  history.value = [];
-  await fetch(getUrlOf("api/chat/messages/" + id), {
-    credentials: "include",
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .then((data) => {
-      history.value = data;
-    })
-    .catch((err) => {
-      console.error(err);
-    });
-};
-
 onBeforeMount(() => {
-  socket.on("receive_message", async () => {
-    await getMessages(props.opponent);
-    emit("getLastMessage", history.value[history.value.length - 1]);
+  socket.on("receive_message_ingame", async (data) => {
+    emit("getLastMessage", data);
   });
 });
 

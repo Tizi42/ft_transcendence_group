@@ -50,8 +50,6 @@ function getImgUrl(pic: string) {
 }
 
 function changeLastMessage(message: Chat) {
-  console.log("catched");
-  console.log(message);
   emit("getLastMessageUp", message);
 }
 
