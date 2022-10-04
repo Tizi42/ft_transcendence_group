@@ -99,6 +99,10 @@
     cursor: pointer;
 }
 
+.list-friends li .selected {
+    background-color: red;
+}
+
 .list-friends li .friend-frame {
     flex: 2;
 }
@@ -146,6 +150,11 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+.container-chat img {
+    height: 42px;
+    margin-top: 5px;
 }
 
 .container-chat > .container-messages {
