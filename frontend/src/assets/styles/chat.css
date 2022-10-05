@@ -255,3 +255,67 @@
     margin: 0;
     font-size: 1.1em;
 }
+
+/* Channels options, list */
+
+.options-channel {
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.options-channel img {
+    height: 20px;
+    width: 20px;
+    cursor: pointer;
+    transition: transform 0.5s ease;
+    margin-right: 10px;
+}
+
+.options-channel img:hover {
+    transform: scale(1.1, 1.1);
+}
+
+#search-in-my-channels div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.5s ease;
+}
+
+#search-in-my-channels div:hover {
+    transform: scale(1.03, 1.03);
+}
+
+#search-in-my-channels #input-search-channels {
+    width: 60%;
+    border-radius: 15px;
+    border: none;
+    background-color: #141817;
+    color: white;
+    padding: 0.4em;
+}
+
+#search-in-my-channels #input-search-channels:focus {
+    outline: none;
+    border: 1px solid #CABF50;
+}
+
+#search-in-my-channels button {
+    border: none;
+    background-color: #1E2B02;
+    padding: 0;
+}
+
+#search-in-my-channels button img {
+    width: 30px;
+    height: 30px;
+}
+
+.list-channels li {
+    margin: 0;
+    border-top: 1px solid white;
+}
