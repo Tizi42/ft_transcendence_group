@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Message } from "src/chat/message.entity";
+import { Chat } from "src/chat/entities/chat.entity";
 import { Any, DataSource, In, Not, QueryRunner, Repository } from "typeorm";
-import { User } from "./Users.entity";
+import { User } from "./users.entity";
 import { FriendshipDto } from "./utils/friendship.dto";
 import { UserDetails } from "./utils/types";
 import { UserDto } from "./utils/user.dto";
@@ -18,8 +18,8 @@ export class UsersService {
       @InjectRepository(User)
       private readonly usersRepository: Repository<User>,
 
-      @InjectRepository(Message)
-      private readonly messageRepository: Repository<Message>,
+      @InjectRepository(Chat)
+      private readonly chatRepository: Repository<Chat>,
 
       private readonly dataSource: DataSource,
   ) {}
@@ -88,7 +88,7 @@ export class UsersService {
   }
 
   async removeAll(): Promise<void> {
-    await this.messageRepository.delete({});
+    await this.chatRepository.delete({});
     await this.usersRepository.delete({});
     await this.restartIdSeq();
   }
@@ -136,6 +136,10 @@ export class UsersService {
   
   findOne(id: number): Promise<User> {
     return this.usersRepository.findOneBy({ id });
+  }
+
+  getName(id: number): Promise<String> {
+    return this.findOne(id).then((user) => user.displayName);
   }
 
   async findOneById(id: number): Promise<User | undefined> {
@@ -409,9 +413,9 @@ export class UsersService {
       });
   }
   
-  async updateIsOnline(userId: number, value: boolean) {
+  async updateIsOnline(userId: number, value: string) {
     return this.usersRepository.update(userId, {
-        online: value,
+        status: value,
     });
   }
 

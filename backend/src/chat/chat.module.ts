@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthModule } from 'src/auth/auth.module';
 import { AuthService } from 'src/auth/auth.service';
-import { User } from 'src/users/Users.entity';
+import { User } from 'src/users/users.entity';
 import { UsersModule } from 'src/users/users.module';
+import { ChatController } from './chat.controller';
 import { ChatGateway } from './chat.gateway';
 import { ChatService } from './chat.service';
-import { Message } from './message.entity';
+import { Chat } from './entities/chat.entity';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([User, Message]),
+        TypeOrmModule.forFeature([User, Chat]),
         UsersModule,
         JwtModule,
     ],
@@ -19,10 +19,14 @@ import { Message } from './message.entity';
         ChatGateway,
         ChatService,
         AuthService,
+        ChatController,
     ],
     exports: [
         ChatService,
-        TypeOrmModule.forFeature([Message]),
+        TypeOrmModule.forFeature([Chat]),
     ],
+    controllers: [
+      ChatController,
+    ]
 })
 export class ChatModule {}

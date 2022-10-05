@@ -1,12 +1,11 @@
 import { Body, Controller, Get, Param, Query, Res, Req, Post, Put, UseInterceptors, UploadedFile, UseGuards } from "@nestjs/common";
 import { FriendshipDto } from "./utils/friendship.dto";
-import { User } from "./Users.entity";
+import { User } from "./users.entity";
 import { UsersService } from "./users.service";
 import { UserDto } from "./utils/user.dto";
 import { Express, Response } from "express";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
-import { sharp } from "sharp";
 import { extname } from "path";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import RequestWithUser from "./utils/requestWithUser.interface";
@@ -73,13 +72,22 @@ export class UsersController {
 
   @Get('info/:id')
   getOne(@Param('id') id: number): Promise<User> {
-    console.log("id is " + id);
     return this.usersService.findOne(id);
   };
 
+  @Get('name/:id')
+  getName(@Param('id') id: number): Promise<String> {
+    return this.usersService.getName(id);
+  };
+
+  // @Post('/add')
+  // create(@Body() user: UserDto) {
+  //   return this.usersService.addOne(user);
+  // }
+
   @Post('/add')
   create(@Body() user: UserDto) {
-    return this.usersService.addOne(user);
+    return this.usersService.createNewUser(user);
   }
 
   // to delete 

@@ -22,7 +22,7 @@
         :alone="alone"
         v-if="ready"
       />
-      <div class="loading" v-else>loading...</div>
+      <LoadingRing color="#ffcb00" size="64px" height="30vh" v-else />
     </div>
   </div>
 </template>
@@ -30,8 +30,9 @@
 <script lang="ts" setup>
 import { defineComponent, defineExpose, defineProps } from "vue";
 import { Ref, ref } from "vue";
-import { User } from "@backend/users/Users.entity";
+import { User } from "@backend/users/users.entity";
 import ContentLeaderboard from "./ContentLeaderboard.vue";
+import LoadingRing from "../utils/LoadingRing.vue";
 
 type ReorderFunction = (order: number) => void;
 

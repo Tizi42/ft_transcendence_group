@@ -1,6 +1,6 @@
-import { Controller, Get, Req, Res, UseGuards, Post, HttpCode, Body, UnauthorizedException, Query, Header } from "@nestjs/common";
+import { Controller, Get, Req, Res, UseGuards, Post, HttpCode, Body, UnauthorizedException, Logger, Query } from "@nestjs/common";
 import { Response } from "express";
-import { User } from "src/users/Users.entity";
+import { User } from "src/users/users.entity";
 import { UsersService } from "src/users/users.service";
 import RequestWithUser from "src/users/utils/requestWithUser.interface";
 import { AuthService } from "./auth.service";
@@ -42,13 +42,13 @@ export class AuthController {
         return "No such user";
       }
       const { accessToken } = this.authService.login(user, false);
-        res.cookie('jwt', accessToken);
-        //console.log(user);
-        //console.log("jwt 1 = ", accessToken);
-        if (!user.isTwoFactorAuthenticationEnabled) {
-            this.usersService.updateIsOnline(user.id, true);
-        }
-        res.redirect('http://localhost:8080/2FA');
+      res.cookie('jwt', accessToken);
+    //   console.log(user);
+    //   console.log("jwt 1 = ", accessToken);
+    //   if (!user.isTwoFactorAuthenticationEnabled) {
+        // this.usersService.updateIsOnline(user.id, "online");
+    //   }
+      res.redirect('http://localhost:8080/2FA');
     }
 
     @Post('2fa/generate')
@@ -107,7 +107,7 @@ export class AuthController {
         }
         const { accessToken } = this.authService.login(request.user, true);
         request.res.cookie('jwt', accessToken);
-        this.usersService.updateIsOnline(request.user.id, true);
+        // this.usersService.updateIsOnline(request.user.id, "online");
         return request.user;
     }
 }

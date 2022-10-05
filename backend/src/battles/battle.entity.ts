@@ -1,3 +1,4 @@
+import { User } from "src/users/users.entity";
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'battles' })
@@ -14,6 +15,12 @@ export class Battle {
   
     @Column()
     opponent2: number;
+
+    @Column({ default: 0 })
+    score1: number;
+
+    @Column({ default: 0 })
+    score2: number;
   
     @Column({ default: undefined, nullable: true })
     winner: number;

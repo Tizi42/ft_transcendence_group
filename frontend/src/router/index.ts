@@ -8,7 +8,6 @@ import LeaderboardView from "../views/LeaderboardView.vue";
 import HistoryView from "../views/HistoryView.vue";
 import PlayView from "../views/PlayView.vue";
 import DevLogin from "../components/DevLogin.vue";
-import socketService from "@/socket";
 
 const routes: Array<RouteRecordRaw> = [
   {

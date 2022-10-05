@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "src/users/Users.entity";
+import { User } from "src/users/users.entity";
 import { UsersService } from "src/users/users.service";
 import { Repository } from "typeorm";
 import { Battle } from "./battle.entity";
@@ -42,7 +42,7 @@ export class BattlesService {
             { opponent1: userId, },
             { opponent2: userId },
         ],
-        order: {date_start: "ASC"},
+        order: {date_start: "DESC"},
     });
   }
 
@@ -77,5 +77,32 @@ export class BattlesService {
     newBattle.opponent1 = game.opponent1;
     newBattle.opponent2 = game.opponent2;
 	  this.battlesRepository.insert(newBattle);
+  }
+
+  getRandomInt(max: number = 100) : number {
+    return Math.floor(Math.random() * max);
+  }
+
+  createFakeBattles(nb: number, maxId: number)
+  {
+    for (var i = 0; i < nb; i++) {
+      let newBattle = new Battle();
+      newBattle.opponent1 = this.getRandomInt(maxId - 2) + 1;
+      newBattle.opponent2 = newBattle.opponent1 + 1;
+      newBattle.winner = (this.getRandomInt(2) >= 1 ? newBattle.opponent1 : newBattle.opponent2);
+      if (newBattle.winner == newBattle.opponent1) {
+        newBattle.score1 = 10;
+        newBattle.score2 = this.getRandomInt(9);
+      } else {
+        newBattle.score1 = this.getRandomInt(9);
+        newBattle.score2 = 10;
+      }
+      newBattle.isFinished = true;
+      this.battlesRepository.insert(newBattle);
+    }
+  }
+
+  removeAll() {
+    this.battlesRepository.clear();
   }
 }
