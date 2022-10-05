@@ -19,19 +19,12 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(accessToken: string, refreshToken: string, profile: Profile, done: VerifyCallback): Promise<any> {
-
-        console.log("accessToken : ", accessToken);
-        console.log("refreshToken : ", refreshToken);
-        console.log("profile : ", profile);
-
         const user = await this.authService.validateUser({
             username: profile.username,
             displayName: profile.displayName,
             email: profile.emails[0].value,
             picture: profile.photos[0].value,
         });
-
-        console.log(user);
         
         done(null, user);
     }

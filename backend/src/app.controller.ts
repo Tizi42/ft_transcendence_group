@@ -10,7 +10,7 @@ import RequestWithUser from './users/utils/requestWithUser.interface';
 export class AppController {
   constructor(
     private readonly appService: AppService,
-    private usersService: UsersService
+    private usersService: UsersService,
   ) {}
 
   @Get()
@@ -36,6 +36,6 @@ export class AppController {
   @UseGuards(JwtAuthGuard)
   logout(@Req() request: RequestWithUser, @Res({ passthrough: true }) res: Response) {
     res.clearCookie('jwt');
-    this.usersService.updateIsOnline(request.user.id, false);
+    this.usersService.updateIsOnline(request.user.id, "offline");
   }
 }

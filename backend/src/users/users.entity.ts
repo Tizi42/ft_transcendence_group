@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Chat } from "src/chat/entities/chat.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'users' })
 export class User {
@@ -53,6 +54,10 @@ export class User {
   @Column({default: -1, nullable: true})
   winRate: number;
   
-  @Column({ default: false })
-  online: boolean;
+  @Column({ default: "offline" })
+  status: string;
+
+  @OneToMany( () => Chat, (messages) => messages.author )
+  messages?: Chat[];
 }
+

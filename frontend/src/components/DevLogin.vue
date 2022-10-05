@@ -61,7 +61,6 @@ defineExpose(
   color: rgba(30, 42, 2, 1);
   opacity: 1;
 }
-
 .button {
   margin-left: auto;
   margin-right: 0px;
@@ -74,7 +73,6 @@ defineExpose(
   color: white;
   background-color: rgb(51, 71, 3);
 }
-
 .button:hover {
   cursor: pointer;
   transform: scale(1.1, 1.1);

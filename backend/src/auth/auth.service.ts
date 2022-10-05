@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Response } from 'express';
 import { authenticator } from 'otplib';
-import { User } from 'src/users/Users.entity';
+import { User } from "src/users/users.entity";
 import { UsersService } from 'src/users/users.service';
 import { UserDetails } from 'src/users/utils/types';
 import { Repository } from 'typeorm';

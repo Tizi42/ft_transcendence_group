@@ -12,7 +12,7 @@
       <div class="gamesNb">{{ player.totalGames }}</div>
     </div>
   </div>
-  <div class="nofriends" v-if="alone">You don't have any friend 😕</div>
+  <div class="nofriends" v-if="alone">You don't have any friend &#128533;</div>
   <teleport to="body">
     <UserBoxModal v-if="addWindow" @hide="hide">
       <UserBox :target="player" />
@@ -22,7 +22,7 @@
 
 <script lang="ts" setup>
 //  imports
-import { User } from "@backend/users/Users.entity";
+import { User } from "@backend/users/users.entity";
 import { defineComponent, defineExpose, defineProps } from "vue";
 import { ref } from "vue";
 import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
@@ -41,7 +41,6 @@ const addWindow = ref(false);
 
 function showInfoBox() {
   addWindow.value = true;
-  console.log("set add window true");
 }
 
 function hide() {

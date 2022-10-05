@@ -1,88 +1,61 @@
 <template>
   <div class="chat">
-    <h1>This is the chat page</h1>
-    <div class="container-list-users">
-      <h3>List of all existing users</h3>
-      <ul v-for="user in listOfUsers" :key="user">
-        <li>{{ user.username }}: {{ user.online }}</li>
-      </ul>
+    <div class="container-channels">
+      <NavChat
+        @selectedNav="handleSelectedNav"
+        @resetReceiver="handleSelectedReceiver"
+        @clearHistory="handleHistory"
+      />
+      <FriendsList
+        v-if="isActive === 'players'"
+        @selectReceiver="handleSelectedReceiver"
+        @getHistory="handleHistory"
+        :user="user"
+      />
+      <ChannelsList v-else />
     </div>
     <div class="container-chat">
-      <div class="container-messages">
-        <div v-for="message in messages" :key="message">
-          [ {{ message.author.username }} ]: {{ message.content }}
-        </div>
-      </div>
-      <div class="message-input">
-        <form @submit.prevent="sendMessage">
-          <label>Message : </label>
-          <input v-model="messageText" />
-          <button type="submit">Send</button>
-        </form>
-      </div>
+      <h3>on discussion with {{ receiver }}</h3>
+      <HistoryMessages :history="history" />
+      <MessageInput v-if="receiver != -1" :user="user" :receiver="receiver" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onBeforeMount, Ref, ref } from "vue";
-import socket from "@/socket";
+import { Ref, ref, onBeforeMount, defineComponent, defineExpose } from "vue";
+import { useUserStore } from "@/stores/user";
+import "@/assets/styles/chat.css";
+import NavChat from "@/components/chat/NavChat.vue";
+import FriendsList from "@/components/chat/FriendsList.vue";
+import ChannelsList from "@/components/chat/ChannelsList.vue";
+import HistoryMessages from "@/components/chat/HistoryMessages.vue";
+import MessageInput from "../components/chat/MessageInput.vue";
 
-const messages: Ref<Array<any>> = ref([]);
-const messageText: Ref<string> = ref("");
-const listOfUsers: Ref<Array<any>> = ref([]);
+const user: any = useUserStore();
+const isActive: Ref<string> = ref("players");
+const receiver: Ref<number> = ref(-1);
+const history: Ref<Array<any>> = ref([]);
+
+const handleSelectedNav = (event: string) => {
+  isActive.value = event;
+};
+
+const handleSelectedReceiver = (event: number) => {
+  receiver.value = event;
+};
+
+const handleHistory = (event: Array<any>) => {
+  history.value = event;
+};
 
 onBeforeMount(async () => {
-  socket.emit("request_all_messages", {}, (response: any) => {
-    messages.value = response;
-  });
-
-  socket.on("receive_message", (message: any) => {
-    messages.value.push(message);
-  });
-
-  socket.on("new_connection", async () => {
-    await fetch("http://localhost:3000/api/users", {
-      credentials: "include",
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data: any) => {
-        listOfUsers.value = data;
-      })
-      .catch((error) => {
-        console.log("ERROR : ", error);
-      });
-  });
-
-  await fetch("http://localhost:3000/api/users", {
-    credentials: "include",
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .then((data: any) => {
-      listOfUsers.value = data;
-    })
-    .catch((error) => {
-      console.log("ERROR : ", error);
-    });
+  user.doFetchFriends();
 });
 
-const sendMessage = () => {
-  socket.emit("send_message", messageText.value, () => {
-    messageText.value = "";
-  });
-};
+defineExpose(
+  defineComponent({
+    name: "ChatView",
+  })
+);
 </script>
-
-<style>
-.chat {
-  color: white;
-}
-
-.container-chat {
-  border-top: 1px solid white;
-}
-</style>
