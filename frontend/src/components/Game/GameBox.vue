@@ -15,7 +15,7 @@ defineExpose(
 <style scoped>
 .gameBox {
   width: 70%;
-  height: 65%;
+  height: 70%;
   background: #1e2b02;
   border: 5px solid #ffcb00;
   border-radius: 22px;
