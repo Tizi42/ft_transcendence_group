@@ -5,6 +5,7 @@
       class="chatBar"
       v-model="message"
       placeholder="Chat here..."
+      maxlength="80"
       @focusin="chatting(true)"
       @focusout="chatting(false)"
       @submit="sendMsg"
