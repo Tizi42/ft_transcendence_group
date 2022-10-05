@@ -1,5 +1,6 @@
 <template>
-  <div class="messageBox">{{ message }}</div>
+  <div class="messageBox left" v-if="iWrotehis">{{ message }}</div>
+  <div class="messageBox right" v-else>{{ message }}</div>
 </template>
 
 <script lang="ts" setup>
@@ -7,7 +8,7 @@ import { defineComponent, defineExpose, defineProps } from "vue";
 import { onBeforeMount, onUpdated } from "vue";
 import { ref, Ref } from "vue";
 import { userInfoStore } from "@/stores/user";
-import { User } from "@backend/src/users/Users.entity";
+import { User } from "@backend/users/users.entity";
 
 interface Props {
   message: string;
@@ -17,12 +18,11 @@ interface Props {
 }
 
 const props: Readonly<Props> = defineProps<Props>();
-const iWrote: Ref<boolean> = ref(false);
-const show: Ref<boolean> = ref(false);
+const iWrotehis: Ref<boolean> = ref(false);
 
 onBeforeMount(async () => {
   if (props.author.id == props.user.id.value) {
-    iWrote.value = true;
+    iWrotehis.value = true;
   }
 });
 
@@ -40,5 +40,13 @@ defineExpose(
 <style scoped>
 .messageBox {
   position: fixed;
+}
+
+.left {
+  left: 0px;
+}
+
+.right {
+  right: 0px;
 }
 </style>
