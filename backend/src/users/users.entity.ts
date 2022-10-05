@@ -60,3 +60,4 @@ export class User {
   @OneToMany( () => Chat, (messages) => messages.author )
   messages?: Chat[];
 }
+
