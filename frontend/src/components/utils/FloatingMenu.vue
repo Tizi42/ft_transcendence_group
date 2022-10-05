@@ -1,5 +1,5 @@
 <template>
-  <div class="menuContainer">
+  <div class="menuContainer" ref="menuRef">
     <div @click="toggleMenu()">
       <slot name="button"></slot>
     </div>
@@ -12,8 +12,9 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, Ref, ref } from "vue";
-import { defineProps, withDefaults } from "vue";
+import { useClickOutside } from "@/composables/useClickOutside";
+import { defineComponent, defineExpose, onMounted, Ref, ref } from "vue";
+import { defineProps, withDefaults, defineEmits } from "vue";
 
 interface Props {
   height?: string;
@@ -33,7 +34,10 @@ withDefaults(defineProps<Props>(), {
   left: "",
   bottom: "80px",
 });
+
 // variables
+const emit = defineEmits(["hide"]);
+const menuRef = ref();
 const show: Ref<boolean> = ref(false);
 
 function toggleMenu() {
@@ -47,6 +51,10 @@ function openMenu() {
 function closeMenu() {
   show.value = false;
 }
+
+useClickOutside(menuRef, () => {
+  emit("hide");
+});
 
 defineExpose(
   defineComponent({
