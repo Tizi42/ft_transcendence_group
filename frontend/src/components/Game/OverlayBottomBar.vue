@@ -1,6 +1,6 @@
 <template>
   <div class="overlayBottomBar">
-    <FloatingMenu grid="true" ref="menuRef">
+    <FloatingMenu grid="true" @hide="hideMenu">
       <template #button>
         <div class="settingsBtn emoji" />
       </template>
@@ -33,6 +33,7 @@
 import { defineComponent, defineExpose, onMounted, ref, Ref } from "vue";
 import { defineProps } from "vue";
 import { userInfoStore } from "@/stores/user";
+import { useClickOutside } from "@/composables/useClickOutside";
 import FloatingMenu from "../utils/FloatingMenu.vue";
 import SmallChat from "./SmallChat.vue";
 import socket from "@/socket";
@@ -72,6 +73,11 @@ function sendEmoji(id: number) {
   socket.emit("send_emoji_ingame", data);
 }
 
+function hideMenu() {
+  console.log("hide");
+  menuRef.value.methods.closeMenu();
+}
+
 onMounted(() => {
   loadEmojis();
   window.addEventListener("keyup", (event) => {
@@ -86,11 +92,10 @@ onMounted(() => {
     if (event.key == "Escape" && isChatting.value) {
       document.getElementById("inputChat")?.blur();
     } else if (event.key == "Escape") {
-      console.log("close");
       menuRef.value.methods.closeMenu();
     }
     if (event.key == "t" && !isChatting.value) {
-      menuRef.value.methods.openMenu();
+      menuRef.value.methods.toogleMenu();
     }
   });
 });
