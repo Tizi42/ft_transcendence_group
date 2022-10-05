@@ -91,7 +91,6 @@
 
 .list-friends li {
     margin: 0;
-    background-color: #005F3E;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -99,8 +98,12 @@
     cursor: pointer;
 }
 
-.list-friends li .selected {
-    background-color: red;
+.notSelected {
+    background-color: #005F3E;
+}
+
+.selected {
+    background-color: #CABF50;
 }
 
 .list-friends li .friend-frame {
@@ -231,6 +234,12 @@
 #from-others img {
     margin-left: 6%;
     margin-right: 10px;
+    cursor: pointer;
+    transition: transform 0.5s ease;
+}
+
+#from-others img:hover {
+    transform: scale(1.05, 1.05);
 }
 
 #from-user img {
