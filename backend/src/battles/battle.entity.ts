@@ -1,4 +1,3 @@
-import { User } from "src/users/Users.entity";
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'battles' })
