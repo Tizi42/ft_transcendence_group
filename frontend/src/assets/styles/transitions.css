@@ -43,3 +43,37 @@
     opacity: 1;
   }
 }
+
+.fadeGroup-move,
+.fadeGroup-enter-active,
+.fadeGroup-leave-active {
+  transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+}
+
+.fadeGroup-enter-from,
+.fadeGroup-leave-to {
+  opacity: 0;
+  transform: scaleY(0.01)
+}
+
+.fadeGroup-leave-active {
+  position: absolute;
+}
+
+.fadeGroupR-move,
+.fadeGroupR-enter-active,
+.fadeGroupR-leave-active {
+  transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+}
+
+.fadeGroupR-enter-from,
+.fadeGroupR-leave-to {
+  opacity: 0;
+  transform: scaleY(0.01);
+}
+
+.fadeGroupR-leave-active {
+  position: absolute;
+  right: 0;
+}
+

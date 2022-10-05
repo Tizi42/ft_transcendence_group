@@ -1,10 +1,16 @@
 <template>
   <div class="overlayTopBar">
-    <div class="timer">{{ timer[0] }}:{{ timer[1] }}</div>
+    <TimerStart :time="time" />
     <div class="infoBar">
       <div class="playerInfoLeft">
         <img :src="getPictureUrl(user.id)" class="profile" />
-        {{ user.displayName }}
+        <UserChat
+          :user="user"
+          :message="messageL"
+          transition="fadeGroup"
+          :mine="true"
+          align="flex-start"
+        />
       </div>
       <div class="scores">
         <div class="scoreNb">{{ scores[0] }}</div>
@@ -12,7 +18,13 @@
         <div class="scoreNb">{{ scores[1] }}</div>
       </div>
       <div class="playerInfoRight">
-        {{ opponent.displayName }}
+        <UserChat
+          :user="opponent"
+          :message="messageR"
+          transition="fadeGroupR"
+          :mine="false"
+          align="flex-end"
+        />
         <img :src="getPictureUrl(opponent.id)" class="profile" />
       </div>
     </div>
@@ -23,12 +35,17 @@
 import { defineComponent, defineExpose, defineProps } from "vue";
 import { onMounted, Ref, ref } from "vue";
 import { User } from "@backend/users/users.entity";
+import { Chat } from "@backend/chat/entities/chat.entity";
+import TimerStart from "../utils/TimerStart.vue";
+import UserChat from "./UserChat.vue";
 
 interface Props {
   user: User;
   opponent: User;
   time: Date;
   scores: Array<number>;
+  messageL: Chat | null;
+  messageR: Chat | null;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
@@ -132,5 +149,10 @@ defineExpose(
 
 .profile:hover {
   transform: scale(1.2);
+}
+
+.userBox {
+  display: flex;
+  flex-direction: column;
 }
 </style>

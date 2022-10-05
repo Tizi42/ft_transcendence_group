@@ -6,24 +6,17 @@
         :opponent="opponent"
         :time="timer"
         :scores="scores"
+        :messageL="messageL"
+        :messageR="messageR"
       />
       <GameBox />
       <OverlayBottomBar
         :user="user"
         :opponent="opponentId"
-        @getLastMessageUp="fillMessageInfo"
+        @getLastMessageUp="updateMessage"
       />
       <ReadyButton v-if="readyStatus[0]" />
       <ReadyButton v-if="readyStatus[1]" />
-      <Transition name="bounce">
-        <MessageBox
-          v-if="show"
-          :message="lastMessage"
-          :author="lastMessageAuthor"
-          :dest="lastMessageDest"
-          :user="user"
-        />
-      </Transition>
     </div>
   </div>
 </template>
@@ -35,39 +28,24 @@ import OverlayTopBar from "./OverlayTopBar.vue";
 import OverlayBottomBar from "./OverlayBottomBar.vue";
 import GameBox from "./GameBox.vue";
 import ReadyButton from "./ReadyButton.vue";
-import MessageBox from "./MessageBox.vue";
 import { userInfoStore, useUserStore } from "@/stores/user";
 import { Chat } from "@backend/chat/entities/chat.entity";
 import { User } from "@backend/users/users.entity";
 import { getUrlOf } from "@/router";
 
-const user: Pick<userInfoStore, never> = useUserStore();
+const user = useUserStore();
 const opponent: Ref<User | null> = ref(null);
 const opponentId = 4;
-const lastMessage: Ref<string> = ref("");
-const lastMessageAuthor: Ref<number> = ref(-1);
-const lastMessageDest: Ref<number> = ref(-1);
-const lastMessageTime: Ref<Date> = ref(new Date());
-const show: Ref<boolean> = ref(false);
+const messageL: Ref<Chat | null> = ref(null);
+const messageR: Ref<Chat | null> = ref(null);
 const dataReady: Ref<boolean> = ref(false);
 const readyStatus: Ref<Array<boolean>> = ref([false, false]);
 const timer: Ref<Date> = ref(new Date());
 const scores: Array<number> = [0, 0];
 
-function fillMessageInfo(message: Chat) {
-  show.value = false;
-  setTimeout(() => {
-    lastMessage.value = message.content;
-    lastMessageAuthor.value = message.author;
-    lastMessageDest.value = message.dest;
-    lastMessageTime.value = new Date();
-    show.value = true;
-    setTimeout(() => {
-      const curTime = new Date();
-      if (curTime.getTime() - lastMessageTime.value.getTime() > 3500)
-        show.value = false;
-    }, 4000);
-  }, 100);
+function updateMessage(msg: Chat) {
+  if (msg.author == user.id) messageL.value = msg;
+  else messageR.value = msg;
 }
 
 async function getOpponent(index: number) {
@@ -91,10 +69,6 @@ defineExpose(
     name: "GameOverlay",
   })
 );
-
-onBeforeMount(() => {
-  show.value = false;
-});
 </script>
 
 <style scoped>

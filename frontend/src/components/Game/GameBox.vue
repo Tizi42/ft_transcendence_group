@@ -1,5 +1,5 @@
 <template>
-  <div class="gameBox">Game Box</div>
+  <div class="gameBox">GameBox</div>
 </template>
 
 <script lang="ts" setup>
@@ -23,5 +23,10 @@ defineExpose(
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
+}
+
+.container {
+  position: relative;
+  padding: 0;
 }
 </style>
