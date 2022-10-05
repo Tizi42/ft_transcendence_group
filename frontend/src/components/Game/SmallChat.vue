@@ -26,7 +26,7 @@ interface Props {
 }
 
 const props: Readonly<Props> = defineProps<Props>();
-const emit = defineEmits(["getChatting", "getLastMessage"]);
+const emit = defineEmits(["getChatting"]);
 const message: Ref<string> = ref("");
 
 function sendMsg() {
@@ -44,12 +44,6 @@ function sendMsg() {
 function chatting(is: boolean) {
   emit("getChatting", is);
 }
-
-onBeforeMount(() => {
-  socket.on("receive_message_ingame", async (data) => {
-    emit("getLastMessage", data);
-  });
-});
 
 defineExpose(
   defineComponent({

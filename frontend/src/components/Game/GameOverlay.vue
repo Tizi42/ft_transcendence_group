@@ -8,13 +8,11 @@
         :scores="scores"
         :messageL="messageL"
         :messageR="messageR"
+        :emojiL="emojiL"
+        :emojiR="emojiR"
       />
       <GameBox />
-      <OverlayBottomBar
-        :user="user"
-        :opponent="opponentId"
-        @getLastMessageUp="updateMessage"
-      />
+      <OverlayBottomBar :user="user" :opponent="opponentId" />
       <ReadyButton v-if="readyStatus[0]" />
       <ReadyButton v-if="readyStatus[1]" />
     </div>
@@ -28,24 +26,39 @@ import OverlayTopBar from "./OverlayTopBar.vue";
 import OverlayBottomBar from "./OverlayBottomBar.vue";
 import GameBox from "./GameBox.vue";
 import ReadyButton from "./ReadyButton.vue";
-import { userInfoStore, useUserStore } from "@/stores/user";
+import { useUserStore } from "@/stores/user";
 import { Chat } from "@backend/chat/entities/chat.entity";
 import { User } from "@backend/users/users.entity";
 import { getUrlOf } from "@/router";
+import socket from "@/socket";
 
 const user = useUserStore();
 const opponent: Ref<User | null> = ref(null);
 const opponentId = 4;
 const messageL: Ref<Chat | null> = ref(null);
 const messageR: Ref<Chat | null> = ref(null);
+const emojiL: Ref<number> = ref(3);
+const emojiR: Ref<number> = ref(0);
 const dataReady: Ref<boolean> = ref(false);
 const readyStatus: Ref<Array<boolean>> = ref([false, false]);
 const timer: Ref<Date> = ref(new Date());
 const scores: Array<number> = [0, 0];
 
+type emojiInfo = {
+  author: string;
+  dest: string;
+  content: number;
+};
+
 function updateMessage(msg: Chat) {
   if (msg.author == user.id) messageL.value = msg;
   else messageR.value = msg;
+}
+
+function updateEmoji(msg: emojiInfo) {
+  console.log("update emoji", msg.content);
+  if (msg.author == user.id.toString()) emojiL.value = msg.content;
+  else emojiR.value = msg.content;
 }
 
 async function getOpponent(index: number) {
@@ -62,6 +75,12 @@ async function getOpponent(index: number) {
 onBeforeMount(async () => {
   await getOpponent(opponentId);
   timer.value = new Date();
+  socket.on("receive_message_ingame", async (data) => {
+    updateMessage(data);
+  });
+  socket.on("receive_emoji_ingame", async (data) => {
+    updateEmoji(data);
+  });
 });
 
 defineExpose(
