@@ -15,8 +15,8 @@
       <ChannelsList v-else />
     </div>
     <div class="container-chat">
-      <h3>on discussion with {{ receiver }}</h3>
-      <HistoryMessages :history="history" />
+      <img src="@/assets/icons/multiBubble.svg" />
+      <HistoryMessages :history="history" :target="receiverProfile" />
       <MessageInput v-if="receiver != -1" :user="user" :receiver="receiver" />
     </div>
   </div>
@@ -31,18 +31,33 @@ import FriendsList from "@/components/chat/FriendsList.vue";
 import ChannelsList from "@/components/chat/ChannelsList.vue";
 import HistoryMessages from "@/components/chat/HistoryMessages.vue";
 import MessageInput from "../components/chat/MessageInput.vue";
+import { getUrlOf } from "@/router";
+import { User } from "@backend/users/users.entity";
 
 const user: any = useUserStore();
 const isActive: Ref<string> = ref("players");
 const receiver: Ref<number> = ref(-1);
 const history: Ref<Array<any>> = ref([]);
+const receiverProfile: Ref<User | undefined> = ref();
 
 const handleSelectedNav = (event: string) => {
   isActive.value = event;
 };
 
-const handleSelectedReceiver = (event: number) => {
+const handleSelectedReceiver = async (event: number) => {
   receiver.value = event;
+  if (receiver.value != -1) {
+    await fetch(getUrlOf("api/users/info/" + receiver.value))
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        receiverProfile.value = data;
+      })
+      .catch((error) => {
+        console.log("ERROR : ", error);
+      });
+  }
 };
 
 const handleHistory = (event: Array<any>) => {
