@@ -3,6 +3,7 @@ import { Socket } from 'socket.io';
 import { AppGateway } from '../gateway';
 import { UsersService } from '../users/users.service';
 import { ChatService } from './chat.service';
+import { emojiInfo } from './utils/types';
 
 export class ChatGateway extends AppGateway {
 
@@ -29,13 +30,6 @@ export class ChatGateway extends AppGateway {
     return message;
   }
 
-  @SubscribeMessage('send_message_ingame')
-  async handleMessageNotSave(
-    @MessageBody() data: any,
-  ) {
-    this.server.sockets.to(data.dest).to(data.author).emit('receive_message_ingame', data);
-  }
-
   @SubscribeMessage('last_from')
   async lastFrom(@MessageBody() id: number) {
     const messages = await this.chatService.getMessagesById(id);
@@ -49,4 +43,18 @@ export class ChatGateway extends AppGateway {
 
   //   return await this.chatService.getAllMessages();
   // }
+
+  @SubscribeMessage('send_message_ingame')
+  async handleMessageNotSave(
+    @MessageBody() data: any,
+  ) {
+    this.server.sockets.to(data.dest).to(data.author).emit('receive_message_ingame', data);
+  }
+
+  @SubscribeMessage('send_emoji_ingame')
+  async sendEmojiInGame(
+    @MessageBody() data: emojiInfo,
+  ) {
+    this.server.sockets.to(data.dest).to(data.author).emit('receive_emoji_ingame', data);
+  }
 }

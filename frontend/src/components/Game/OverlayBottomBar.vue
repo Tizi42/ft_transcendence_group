@@ -1,13 +1,17 @@
 <template>
   <div class="overlayBottomBar">
-    <FloatingMenu grid="true">
+    <FloatingMenu grid="true" ref="menuRef">
       <template #button>
         <div class="settingsBtn emoji" />
       </template>
       <template #choices>
-        <div v-for="image in emojiArray" :key="image" class="emoji-choice">
+        <div
+          v-for="(image, index) in emojiArray"
+          :key="index + 1"
+          class="emoji-choice"
+        >
           <div
-            @click="sendEmoji(image)"
+            @click="sendEmoji(index + 1)"
             :style="{ 'background-image': 'url(' + getImgUrl(image) + ')' }"
           ></div>
         </div>
@@ -17,7 +21,6 @@
       :user="user"
       :opponent="opponent"
       @getChatting="changeChattingStatus"
-      @getLastMessage="changeLastMessage"
       ref="chatRef"
     />
     <button class="settingsBtn sound" />
@@ -28,29 +31,25 @@
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose, onMounted, ref, Ref } from "vue";
-import { defineProps, defineEmits } from "vue";
+import { defineProps } from "vue";
 import { userInfoStore } from "@/stores/user";
 import FloatingMenu from "../utils/FloatingMenu.vue";
 import SmallChat from "./SmallChat.vue";
-import { Chat } from "@backend/chat/entities/chat.entity";
+import socket from "@/socket";
 
 interface Props {
   user: userInfoStore;
   opponent: number;
 }
 
-defineProps<Props>();
-const emit = defineEmits(["getLastMessageUp", "test"]);
+const props: Readonly<Props> = defineProps<Props>();
 const emojiArray: Array<string> = [];
 const isChatting: Ref<boolean> = ref(false);
 const chatRef = ref();
+const menuRef = ref();
 
 function getImgUrl(pic: string) {
   return require("../../assets/" + pic);
-}
-
-function changeLastMessage(message: Chat) {
-  emit("getLastMessageUp", message);
 }
 
 function loadEmojis() {
@@ -63,12 +62,14 @@ function changeChattingStatus(event: boolean) {
   isChatting.value = event;
 }
 
-function sendEmoji(id: string) {
-  console.log("send emoji", id);
-}
-
-function openEmojiBox() {
-  console.log("openEmojiBox");
+function sendEmoji(id: number) {
+  const data = {
+    content: id,
+    author: props.user.id,
+    dest: props.opponent,
+  };
+  console.log("sending emoji", id);
+  socket.emit("send_emoji_ingame", data);
 }
 
 onMounted(() => {
@@ -84,9 +85,12 @@ onMounted(() => {
     }
     if (event.key == "Escape" && isChatting.value) {
       document.getElementById("inputChat")?.blur();
+    } else if (event.key == "Escape") {
+      console.log("close");
+      menuRef.value.methods.closeMenu();
     }
     if (event.key == "t" && !isChatting.value) {
-      openEmojiBox();
+      menuRef.value.methods.openMenu();
     }
   });
 });

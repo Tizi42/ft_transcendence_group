@@ -40,9 +40,22 @@ function toggleMenu() {
   show.value = !show.value;
 }
 
+function openMenu() {
+  show.value = true;
+}
+
+function closeMenu() {
+  show.value = false;
+}
+
 defineExpose(
   defineComponent({
     name: "FloatingMenu",
+    methods: {
+      toggleMenu,
+      openMenu,
+      closeMenu,
+    },
   })
 );
 </script>

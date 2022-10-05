@@ -1,14 +1,21 @@
 <template>
   <div class="overlayTopBar">
     <TimerStart :time="time" />
-    <div class="infoBar">
+    <div class="infoBar" v-if="show">
       <div class="playerInfoLeft">
         <img :src="getPictureUrl(user.id)" class="profile" />
+        <Transition name="bounce">
+          <img
+            v-if="emojiL > 0 && showEmoji"
+            :src="getImgUrl(emojiArray[emojiL - 1])"
+            class="emojiBoxShow"
+          />
+        </Transition>
         <UserChat
           :user="user"
           :message="messageL"
-          transition="fadeGroup"
           :mine="true"
+          transition="fadeGroup"
           align="flex-start"
         />
       </div>
@@ -21,19 +28,26 @@
         <UserChat
           :user="opponent"
           :message="messageR"
-          transition="fadeGroupR"
           :mine="false"
+          transition="fadeGroupR"
           align="flex-end"
         />
         <img :src="getPictureUrl(opponent.id)" class="profile" />
+        <Transition name="bounce">
+          <img
+            v-if="emojiL > 0 && showEmoji"
+            :src="getImgUrl(emojiArray[emojiL - 1])"
+            class="emojiBoxShowR"
+          />
+        </Transition>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, defineProps } from "vue";
-import { onMounted, Ref, ref } from "vue";
+import { defineComponent, defineExpose, defineProps, onUpdated } from "vue";
+import { Ref, ref, onMounted } from "vue";
 import { User } from "@backend/users/users.entity";
 import { Chat } from "@backend/chat/entities/chat.entity";
 import TimerStart from "../utils/TimerStart.vue";
@@ -46,29 +60,39 @@ interface Props {
   scores: Array<number>;
   messageL: Chat | null;
   messageR: Chat | null;
+  emojiL: number;
+  emojiR: number;
 }
 
-const props: Readonly<Props> = defineProps<Props>();
-const timer: Ref<Array<string>> = ref(["00", "00"]);
+defineProps<Props>();
+const show: Ref<boolean> = ref(false);
+const showEmoji: Ref<boolean> = ref(false);
+const emojiArray: Array<string> = [];
+
+function getImgUrl(pic: string) {
+  return require("../../assets/" + pic);
+}
+
+function loadEmojis() {
+  for (var i = 1; i < 38; i++) {
+    emojiArray.push("icons/emojis/" + i + ".svg");
+  }
+}
 
 function getPictureUrl(id: number): string {
   return "http://localhost:3000/api/users/avatar/" + id.toString();
 }
 
-function updateTimer() {
-  const curTime = new Date();
-  let milliDiff = curTime.getTime() - props.time.getTime();
-  let minutes = Math.floor(milliDiff / 60000);
-  let seconds = Math.floor(milliDiff / 1000) - 60 * minutes;
-  timer.value[0] = (minutes < 10 ? "0" : "") + minutes.toString();
-  timer.value[1] = (seconds < 10 ? "0" : "") + seconds.toString();
-  setTimeout(() => {
-    updateTimer();
-  }, 100);
-}
-
 onMounted(() => {
-  updateTimer();
+  loadEmojis();
+  show.value = true;
+});
+
+onUpdated(() => {
+  showEmoji.value = true;
+  setTimeout(() => {
+    showEmoji.value = false;
+  }, 3000);
 });
 
 defineExpose(
@@ -79,6 +103,28 @@ defineExpose(
 </script>
 
 <style scoped>
+.emojiBoxShow {
+  display: block;
+  position: absolute;
+  width: 50px;
+  min-width: 50px;
+  height: 50px;
+  min-height: 50px;
+  left: 50px;
+  opacity: 1;
+}
+
+.emojiBoxShowR {
+  display: block;
+  position: absolute;
+  width: 50px;
+  min-width: 50px;
+  height: 50px;
+  min-height: 50px;
+  right: 50px;
+  opacity: 1;
+}
+
 .overlayTopBar {
   width: 70%;
   height: 15%;
@@ -88,6 +134,7 @@ defineExpose(
 }
 
 .infoBar {
+  position: relative;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -102,12 +149,6 @@ defineExpose(
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
-}
-
-.timer {
-  font-family: Arial, Helvetica, sans-serif;
-  color: #bebebe;
-  font-size: 18px;
 }
 
 .scoreNb {
