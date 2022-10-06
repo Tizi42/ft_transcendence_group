@@ -28,7 +28,7 @@ interface Props {
 
 withDefaults(defineProps<Props>(), {
   height: "30vh",
-  width: "17vw",
+  width: "400px",
   top: "",
   right: "0px",
   left: "",
@@ -90,8 +90,10 @@ defineExpose(
   overflow: scroll;
   scrollbar-width: none;
   box-shadow: var(--main-shadow);
-  background: var(--main-revgradient-background);
-  background: #668a25;
-  border: solid 4px #1e2a02;
+  background: #00000077;
+}
+
+.menuBox::-webkit-scrollbar {
+  display: none;
 }
 </style>

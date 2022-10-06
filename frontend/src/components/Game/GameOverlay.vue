@@ -36,7 +36,7 @@ import socket from "@/socket";
 
 const user = useUserStore();
 const opponent: Ref<User | null> = ref(null);
-const opponentId = 4;
+const opponentId = user.id == 4 ? 11 : 4;
 const messageL: Ref<Chat | null> = ref(null);
 const messageR: Ref<Chat | null> = ref(null);
 const emojiL: Ref<number> = ref(3);
