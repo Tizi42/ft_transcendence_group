@@ -1,6 +1,12 @@
 <template>
   <div class="overlayBottomBar">
-    <FloatingMenu grid="true">
+    <FloatingMenu
+      direction="row"
+      height="30vh"
+      width="400px"
+      background="#00000077"
+      right="0px"
+    >
       <template #button>
         <div class="settingsBtn emoji" />
       </template>
@@ -23,9 +29,50 @@
       @getChatting="changeChattingStatus"
       ref="chatRef"
     />
-    <button class="settingsBtn sound" />
-    <button class="settingsBtn help" />
-    <button class="settingsBtn settings" />
+    <FloatingMenu
+      direction="column"
+      width="200px"
+      height=""
+      background="#000000aa"
+      left="0px"
+    >
+      <template #button>
+        <button class="settingsBtn sound" />
+      </template>
+      <template #choices>
+        <div class="setting-choice">Sound off</div>
+        <div class="setting-choice">Quit game</div>
+      </template>
+    </FloatingMenu>
+    <FloatingMenu
+      direction="column"
+      width="200px"
+      height=""
+      background="#000000aa"
+      left="0px"
+    >
+      <template #button>
+        <button class="settingsBtn help" />
+      </template>
+      <template #choices>
+        <div class="setting-choice">Rules are ....</div>
+      </template>
+    </FloatingMenu>
+    <FloatingMenu
+      direction="column"
+      width="200px"
+      height=""
+      background="#000000aa"
+      left="0px"
+    >
+      <template #button>
+        <button class="settingsBtn settings" />
+      </template>
+      <template #choices>
+        <div class="setting-choice">Sound off</div>
+        <div class="setting-choice">Quit game</div>
+      </template>
+    </FloatingMenu>
   </div>
 </template>
 
@@ -33,7 +80,6 @@
 import { defineComponent, defineExpose, onMounted, ref, Ref } from "vue";
 import { defineProps } from "vue";
 import { userInfoStore } from "@/stores/user";
-import { useClickOutside } from "@/composables/useClickOutside";
 import FloatingMenu from "../utils/FloatingMenu.vue";
 import SmallChat from "./SmallChat.vue";
 import socket from "@/socket";
@@ -147,6 +193,11 @@ defineExpose(
 
 .settings {
   background-image: url("@/assets/icons/settings.svg");
+}
+
+.setting-choice {
+  line-height: 2em;
+  font-size: 1.2em;
 }
 
 .emoji-choice {
