@@ -19,8 +19,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/chat",
     name: "chat",
-    component: () =>
-      import("../views/ChatView.vue"),
+    component: () => import("../views/ChatView.vue"),
   },
   {
     path: "/user",

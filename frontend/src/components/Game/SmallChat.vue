@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, onBeforeMount, ref, Ref } from "vue";
+import { defineComponent, defineExpose, ref, Ref } from "vue";
 import { defineProps, defineEmits } from "vue";
 import { userInfoStore } from "@/stores/user";
 import socket from "@/socket";
