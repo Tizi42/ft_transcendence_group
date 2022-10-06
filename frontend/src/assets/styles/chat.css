@@ -278,7 +278,7 @@
     transform: scale(1.1, 1.1);
 }
 
-#search-in-my-channels div {
+.search-in-my-channels #div-search-my-channels {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -286,12 +286,22 @@
     transition: transform 0.5s ease;
 }
 
-#search-in-my-channels div:hover {
+.search-in-my-channels #div-search-all-channels {
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    align-items: center;
+    transition: transform 0.5s ease;
+    margin-right: 25px;
+    margin-top: 10px;
+}
+
+.search-in-my-channels #div-search-my-channels:hover,
+.search-in-my-channels #div-search-all-channels:hover {
     transform: scale(1.03, 1.03);
 }
 
-#search-in-my-channels #input-search-channels {
-    width: 60%;
+.search-in-my-channels .input-search-channels {
     border-radius: 15px;
     border: none;
     background-color: #141817;
@@ -299,20 +309,34 @@
     padding: 0.4em;
 }
 
-#search-in-my-channels #input-search-channels:focus {
+.search-in-my-channels .input-search-channels:focus {
     outline: none;
     border: 1px solid #CABF50;
 }
 
-#search-in-my-channels button {
+.search-in-my-channels #input-search-my-channels {
+    width: 60%;
+}
+
+.search-in-my-channels #input-search-all-channels {
+    width: 30%;
+}
+
+.search-in-my-channels button {
     border: none;
     background-color: #1E2B02;
     padding: 0;
 }
 
-#search-in-my-channels button img {
+.search-in-my-channels button img {
     width: 30px;
     height: 30px;
+    cursor: pointer;
+    transition: transform 0.5s ease;
+}
+
+.search-in-my-channels button img:hover {
+    transform: scale(1.1, 1.1);
 }
 
 .list-channels li {

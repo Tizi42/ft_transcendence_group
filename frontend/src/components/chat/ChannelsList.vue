@@ -1,9 +1,10 @@
 <template>
   <div class="options-channel">
-    <form id="search-in-my-channels" @submit.prevent="onSubmit">
-      <div>
+    <form class="search-in-my-channels" @submit.prevent="onSubmit">
+      <div id="div-search-my-channels">
         <input
-          id="input-search-channels"
+          class="input-search-channels"
+          id="input-search-my-channels"
           type="text"
           placeholder="Search..."
           v-model="inputSearch"
@@ -16,7 +17,7 @@
     <img src="@/assets/icons/icon-add.png" alt="Create new channel" />
   </div>
   <ul class="list-channels">
-    <li>channel</li>
+    <li>my channels</li>
   </ul>
 </template>
 

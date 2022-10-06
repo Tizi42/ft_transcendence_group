@@ -24,13 +24,7 @@
 
 <script lang="ts" setup>
 import { useUserStore } from "@/stores/user";
-import {
-  defineComponent,
-  defineProps,
-  defineExpose,
-  Ref,
-  ref,
-} from "vue";
+import { defineComponent, defineProps, defineExpose, Ref, ref } from "vue";
 import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
 import UserBox from "../users/UserBox/UserBox.vue";
 import { User } from "@backend/users/users.entity";
