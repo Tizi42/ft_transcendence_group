@@ -51,7 +51,7 @@ import NavChat from "@/components/chat/NavChat.vue";
 import FriendsList from "@/components/chat/FriendsList.vue";
 import ChannelsList from "@/components/chat/ChannelsList.vue";
 import HistoryMessages from "@/components/chat/HistoryMessages.vue";
-import MessageInput from "../components/chat/MessageInput.vue";
+import MessageInput from "@/components/chat/MessageInput.vue";
 import { getUrlOf } from "@/router";
 import { User } from "@backend/users/users.entity";
 
