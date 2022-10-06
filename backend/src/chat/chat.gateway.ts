@@ -30,12 +30,12 @@ export class ChatGateway extends AppGateway {
     return message;
   }
 
-  @SubscribeMessage('last_from')
-  async lastFrom(@MessageBody() id: number) {
-    const messages = await this.chatService.getMessagesById(id);
-    const last = messages[messages.length - 1];
-      return last;
-  }
+  // @SubscribeMessage('last_from')
+  // async lastFrom(@MessageBody() id: number) {
+  //   const messages = await this.chatService.getMessagesById(id);
+  //   const last = messages[messages.length - 1];
+  //     return last;
+  // }
 
   // @SubscribeMessage('request_all_messages')
   // async requestAllMessages(@ConnectedSocket() socket: Socket) {

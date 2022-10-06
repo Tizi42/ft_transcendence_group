@@ -12,7 +12,7 @@ RUN     npm install
 
 COPY    . /usr/src/app/
 
-CMD     [ "npm", "run", "serve" ]
+CMD     [ "npm", "run", "dev" ]
 
 ###############################
 #   target - dev - your pc    #
@@ -32,4 +32,4 @@ COPY    --chown=node:node . /usr/src/app/
 
 USER    node
 
-CMD     [ "npm", "run", "serve" ]
+CMD     [ "npm", "run", "dev" ]
