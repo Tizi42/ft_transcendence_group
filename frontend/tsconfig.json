@@ -19,7 +19,6 @@
 		],
     "types": [
       "Phaser",
-      // "webpack-env",
       "vite/client"
     ],
     "paths": {

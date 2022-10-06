@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import eslint from 'vite-plugin-eslint'
 import * as path from 'path';
 
 export default defineConfig({
@@ -9,7 +10,7 @@ export default defineConfig({
     },
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue'],
   },
-  plugins: [vue()],
+  plugins: [vue(), eslint()],
   server: {
     host: true,
     port: 8080,
