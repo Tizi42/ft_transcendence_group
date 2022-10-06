@@ -10,6 +10,8 @@
         :messageR="messageR"
         :emojiL="emojiL"
         :emojiR="emojiR"
+        :emojiDateL="emojiDateL"
+        :emojiDateR="emojiDateR"
       />
       <GameBox />
       <OverlayBottomBar :user="user" :opponent="opponentId" />
@@ -39,6 +41,8 @@ const messageL: Ref<Chat | null> = ref(null);
 const messageR: Ref<Chat | null> = ref(null);
 const emojiL: Ref<number> = ref(3);
 const emojiR: Ref<number> = ref(0);
+const emojiDateL: Ref<Date> = ref(new Date());
+const emojiDateR: Ref<Date> = ref(new Date());
 const dataReady: Ref<boolean> = ref(false);
 const readyStatus: Ref<Array<boolean>> = ref([false, false]);
 const timer: Ref<Date> = ref(new Date());
@@ -56,9 +60,13 @@ function updateMessage(msg: Chat) {
 }
 
 function updateEmoji(msg: emojiInfo) {
-  console.log("update emoji", msg.content);
-  if (msg.author == user.id.toString()) emojiL.value = msg.content;
-  else emojiR.value = msg.content;
+  if (msg.author == user.id.toString()) {
+    emojiL.value = msg.content;
+    emojiDateL.value = new Date();
+  } else {
+    emojiR.value = msg.content;
+    emojiDateR.value = new Date();
+  }
 }
 
 async function getOpponent(index: number) {
