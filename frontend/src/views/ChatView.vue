@@ -15,8 +15,29 @@
       <ChannelsList v-else />
     </div>
     <div class="container-chat">
-      <img src="@/assets/icons/multiBubble.svg" />
-      <HistoryMessages :history="history" :target="receiverProfile" />
+      <form
+        class="search-in-my-channels"
+        @submit.prevent="onSubmit"
+        v-if="isActive === 'channels'"
+      >
+        <div id="div-search-all-channels">
+          <input
+            class="input-search-channels"
+            id="input-search-all-channels"
+            type="text"
+            placeholder="Search all channels..."
+            v-model="inputSearch"
+          />
+          <button type="submit">
+            <img src="@/assets/icons/search.svg" />
+          </button>
+        </div>
+      </form>
+      <HistoryMessages
+        :history="history"
+        :target="receiverProfile"
+        :isActive="isActive"
+      />
       <MessageInput v-if="receiver != -1" :user="user" :receiver="receiver" />
     </div>
   </div>
@@ -30,7 +51,7 @@ import NavChat from "@/components/chat/NavChat.vue";
 import FriendsList from "@/components/chat/FriendsList.vue";
 import ChannelsList from "@/components/chat/ChannelsList.vue";
 import HistoryMessages from "@/components/chat/HistoryMessages.vue";
-import MessageInput from "../components/chat/MessageInput.vue";
+import MessageInput from "@/components/chat/MessageInput.vue";
 import { getUrlOf } from "@/router";
 import { User } from "@backend/users/users.entity";
 

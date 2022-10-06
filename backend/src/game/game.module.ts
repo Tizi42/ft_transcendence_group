@@ -7,7 +7,7 @@ import { GameGateway } from './game.gateway';
   controllers: [GameController],
   providers: [
     GameService,
-    GameGateway,
+    //GameGateway,
   ]
 })
 export class GameModule {}

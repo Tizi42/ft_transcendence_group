@@ -16,7 +16,6 @@
 
 <script lang="ts" setup>
 import socket from "@/socket";
-import { User } from "@backend/users/users.entity";
 import { defineComponent, ref, Ref, defineProps, defineExpose } from "vue";
 
 interface Props {
