@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { WsException } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
+import { User } from 'src/users/users.entity';
 import { Repository } from "typeorm";
 import { Chat } from './entities/chat.entity';
 import { messageInfos } from './utils/types';
@@ -33,12 +34,26 @@ export class ChatService {
         return await this.chatRepository.find({ relations: ['dest'] });
     }
 
-    async getMessagesById(id: number): Promise<Chat[]>{
-        const query = await this.chatRepository.createQueryBuilder()
-            .select("*")
-            .where('"destId" = :id', { id: id })
-            .orWhere('"authorId" = :id', { id: id })
-            .getRawMany();
+    async getMessagesById(destId: number, authorId: number): Promise<Chat[]>{
+        const query = await this.chatRepository.find({
+            relations: ['dest', 'author'],
+            where: [{
+                dest: {
+                    id: destId,
+                },
+                author: {
+                    id: authorId,
+                }
+            },
+            {
+                author: {
+                    id: destId,
+                },
+                dest: {
+                    id: authorId,
+                }
+            }],
+        });
         // console.log("query = ", query);
         return query;
     }

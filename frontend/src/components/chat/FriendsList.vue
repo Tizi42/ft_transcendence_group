@@ -4,6 +4,10 @@
       v-for="friend in user.friends"
       :key="friend"
       @click="getMessages(friend.id)"
+      :class="{
+        selected: selectedFriend == friend.id,
+        notSelected: selectedFriend != friend.id,
+      }"
     >
       <div class="avatar-frame">
         <img :src="friend.picture" />
@@ -33,8 +37,10 @@ import {
 
 const receiver: Ref<number> = ref(-1);
 const history: Ref<any> = ref([]);
+const selectedFriend: Ref<number> = ref(-1);
 
 const getMessages = async (id: number) => {
+  selectedFriend.value = id;
   receiver.value = id;
   history.value = [];
   await fetch(getUrlOf("api/chat/messages/" + id), {
