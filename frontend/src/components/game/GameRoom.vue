@@ -10,21 +10,27 @@
 </template>
 
 <script lang="ts" setup>
-import { defineExpose, defineComponent, ref } from "vue";
+import { defineComponent, ref, Ref } from "vue";
 import socket from "@/socket";
-import GamePlay from "GamePlay.vue"
 import GameStatus from "@/game/type"
+import GamePlay from "./GamePlay.vue"
 
 interface Player {
   name: string;
   id: number;
 }
 
-const statu: Ref<GameStatus> = ref("not_ready");
+const status: Ref<GameStatus> = ref("not_ready");
 const score_left = ref(0);
 const score_right = ref(0);
-let player_left: Player;
-let player_right: Player;
+let player_left: Player = {
+  name: "tmp1",
+  id: -1
+};
+let player_right: Player= {
+  name: "tmp1",
+  id: -1
+};
 
 function onFindGame() {
   socket.emit("queue_register");

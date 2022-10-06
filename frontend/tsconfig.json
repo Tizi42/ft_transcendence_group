@@ -18,8 +18,9 @@
 			"node_modules/phaser/types"
 		],
     "types": [
-      "webpack-env",
-      "Phaser"
+      "Phaser",
+      // "webpack-env",
+      "vite/client"
     ],
     "paths": {
       "@/*": [
