@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Query, Res, Req, Post, Put, UseInterceptors, UploadedFile, UseGuards } from "@nestjs/common";
 import { FriendshipDto } from "./utils/friendship.dto";
-import { User } from "./Users.entity";
+import { User } from "./users.entity";
 import { UsersService } from "./users.service";
 import { UserDto } from "./utils/user.dto";
 import { Express, Response } from "express";
