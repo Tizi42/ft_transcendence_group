@@ -15,7 +15,21 @@
       <ChannelsList v-else />
     </div>
     <div class="container-chat">
-      <img src="@/assets/icons/multiBubble.svg" />
+      <img src="@/assets/icons/multiBubble.svg" v-if="isActive === 'players'" />
+      <form class="search-in-my-channels" @submit.prevent="onSubmit" v-else >
+        <div id="div-search-all-channels">
+          <input
+            class="input-search-channels"
+            id="input-search-all-channels"
+            type="text"
+            placeholder="Search all channels..."
+            v-model="inputSearch"
+          />
+          <button type="submit">
+            <img src="@/assets/icons/search.svg" />
+          </button>
+        </div>
+      </form>
       <HistoryMessages :history="history" :target="receiverProfile" />
       <MessageInput v-if="receiver != -1" :user="user" :receiver="receiver" />
     </div>
