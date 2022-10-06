@@ -35,9 +35,9 @@
         />
         <div class="profileBox">
           <EmoteBox
-            :emoji="emojiL"
+            :emoji="emojiR"
             :emojiArray="emojiArray"
-            :time="emojiDateL"
+            :time="emojiDateR"
             side="right"
           />
           <img :src="getPictureUrl(opponent.id)" class="profile" />

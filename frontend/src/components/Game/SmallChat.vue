@@ -65,12 +65,16 @@ defineExpose(
   border-radius: 22px;
 }
 
+.chatBarContainer input {
+  font-family: "Outfit";
+  color: #575757;
+}
+
 .chatBar {
   border: none;
   background: none;
   width: 100%;
   padding-left: 1em;
-  color: #575757;
   font-size: 18px;
   line-height: 25px;
 }

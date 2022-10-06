@@ -1,7 +1,12 @@
 <template>
   <TransitionGroup name="fadeEmote">
     <div v-for="item in items" :key="item">
-      <img :src="getImgUrl(emojiArray[item - 1])" :class="getClassStyle()" />
+      <img
+        :src="getImgUrl(emojiArray[item - 1])"
+        :class="getClassStyle()"
+        @load="onLoaded"
+        v-show="show"
+      />
     </div>
   </TransitionGroup>
 </template>
@@ -20,6 +25,12 @@ interface Props {
 const props: Readonly<Props> = defineProps<Props>();
 const items: Ref<Array<number>> = ref([]);
 const lastUpdate: Ref<Date> = ref(new Date());
+const show: Ref<boolean> = ref(false);
+
+function onLoaded() {
+  console.log("loaded");
+  show.value = true;
+}
 
 function getClassStyle(): string {
   return props.side == "left" ? "emojiBoxShow" : "emojiBoxShowR";
