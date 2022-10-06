@@ -37,6 +37,7 @@ function sendMsg() {
       dest: props.opponent,
     };
     socket.emit("send_message_ingame", data);
+    document.getElementById("inputChat")?.blur();
     message.value = "";
   }
 }

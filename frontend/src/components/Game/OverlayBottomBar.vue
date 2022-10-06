@@ -2,10 +2,11 @@
   <div class="overlayBottomBar">
     <FloatingMenu
       direction="row"
-      height="30vh"
-      width="400px"
+      height="300px"
+      width="300px"
       background="#0c1200ee"
       right="0px"
+      padding="0px 20px"
       ref="menuRef"
     >
       <template #button>
@@ -41,15 +42,27 @@
         <button class="settingsBtn sound" />
       </template>
       <template #choices>
-        <img src="../../assets/icons/soundOff.svg" class="soundIcon" />
-        <img src="../../assets/icons/sound.svg" class="soundIcon" />
-        <img src="../../assets/icons/soundUp.svg" class="soundIcon" />
+        <img
+          src="../../assets/icons/soundOff_grey.svg"
+          class="soundIcon"
+          @click="emit('changeSound', 0)"
+        />
+        <img
+          src="../../assets/icons/sound_grey.svg"
+          class="soundIcon"
+          @click="emit('changeSound', -1)"
+        />
+        <img
+          src="../../assets/icons/soundUp.svg"
+          class="soundIcon"
+          @click="emit('changeSound', 1)"
+        />
       </template>
     </FloatingMenu>
     <FloatingMenu
       direction="column"
       width="500px"
-      height=""
+      height="350px"
       background="#0c1200ee"
       left="0px"
     >
@@ -81,8 +94,18 @@
         <button class="settingsBtn settings" />
       </template>
       <template #choices>
-        <div class="setting-choice">Change background</div>
-        <div class="setting-choice red">Quit game</div>
+        <div
+          class="setting-choice"
+          @click="emit('changeBackground')"
+        >
+          Change background
+        </div>
+        <div
+          class="setting-choice red"
+          @click="emit('quitGame')"
+        >
+          Quit game
+        </div>
       </template>
     </FloatingMenu>
   </div>
@@ -106,6 +129,7 @@ const props: Readonly<Props> = defineProps<Props>();
 const isChatting: Ref<boolean> = ref(false);
 const chatRef = ref();
 const menuRef = ref();
+const emit = defineEmits(["quitGame", "changeSound", "changeBackground"]);
 
 function changeChattingStatus(event: boolean) {
   isChatting.value = event;
@@ -117,7 +141,6 @@ function sendEmoji(id: number) {
     author: props.user.id,
     dest: props.opponent,
   };
-  console.log("sending emoji", id);
   socket.emit("send_emoji_ingame", data);
 }
 
@@ -131,10 +154,12 @@ onMounted(() => {
         isChatting.value = true;
       }
     }
-    if (event.key == "Escape" && isChatting.value) {
-      document.getElementById("inputChat")?.blur();
-    } else if (event.key == "Escape") {
-      menuRef.value.methods.closeMenu();
+    if (event.key == "Escape") {
+      if (isChatting.value) {
+        document.getElementById("inputChat")?.blur();
+      } else {
+        menuRef.value.methods.closeMenu();
+      }
     }
     if (event.key == "t" && !isChatting.value) {
       menuRef.value.methods.toggleMenu();
@@ -208,6 +233,12 @@ defineExpose(
 .setting-choice {
   line-height: 2em;
   font-size: 1.2em;
+  transition: all 0.3s ease;
+}
+
+.setting-choice:hover {
+  cursor: pointer;
+  transform: scale(1.1);
 }
 
 .red {
@@ -215,7 +246,6 @@ defineExpose(
 }
 
 .rulesTxt {
-  padding: 20px;
   line-height: 1.5em;
   font-size: 1.2em;
 }
@@ -245,5 +275,11 @@ defineExpose(
 .soundIcon {
   width: 40px;
   height: 40px;
+  transition: all 0.3s ease;
+}
+
+.soundIcon:hover {
+  cursor: pointer;
+  transform: scale(1.2);
 }
 </style>
