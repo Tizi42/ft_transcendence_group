@@ -15,8 +15,8 @@
 
 <script lang="ts" setup>
 import { useClickOutside } from "@/composables/useClickOutside";
-import { defineComponent, defineExpose, onMounted, Ref, ref } from "vue";
-import { defineProps, withDefaults } from "vue";
+import { defineComponent, onMounted, Ref, ref } from "vue";
+import { defineExpose, defineProps, withDefaults } from "vue";
 
 interface Props {
   height?: string;
@@ -30,7 +30,7 @@ interface Props {
   direction: string;
 }
 
-const props: Readonly<Props> = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   height: "",
   width: "",
   top: "",

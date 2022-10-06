@@ -54,7 +54,7 @@ const emojiDateR: Ref<Date> = ref(new Date());
 const dataReady: Ref<boolean> = ref(false);
 const readyStatus: Ref<Array<boolean>> = ref([false, false]);
 const timer: Ref<Date> = ref(new Date());
-const scores: Array<number> = [0, 0]
+const scores: Array<number> = [0, 0];
 const emojisURL: Array<URL> = [];
 
 type emojiInfo = {
@@ -62,12 +62,14 @@ type emojiInfo = {
   dest: string;
   content: number;
 };
-  
+
 function loadEmojis() {
   for (var i = 1; i < 38; i++) {
-    emojisURL.push(new URL("../../assets/icons/emojis/" + i + ".svg", import.meta.url));
+    emojisURL.push(
+      new URL("../../assets/icons/emojis/" + i + ".svg", import.meta.url)
+    );
   }
-};
+}
 
 function updateMessage(msg: Chat) {
   if (msg.author == user.id) messageL.value = msg;

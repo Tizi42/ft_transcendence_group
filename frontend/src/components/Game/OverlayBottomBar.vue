@@ -1,4 +1,4 @@
-<template>    
+<template>
   <div class="overlayBottomBar">
     <FloatingMenu
       direction="row"
@@ -18,10 +18,7 @@
           :key="index"
           class="emoji-choice"
         >
-          <img
-            :src="url.toString()"
-            @click="sendEmoji(index + 1)"
-          />
+          <img :src="url.toString()" @click="sendEmoji(index + 1)" />
         </div>
       </template>
     </FloatingMenu>
@@ -94,16 +91,10 @@
         <button class="settingsBtn settings" />
       </template>
       <template #choices>
-        <div
-          class="setting-choice"
-          @click="emit('changeBackground')"
-        >
+        <div class="setting-choice" @click="emit('changeBackground')">
           Change background
         </div>
-        <div
-          class="setting-choice red"
-          @click="emit('quitGame')"
-        >
+        <div class="setting-choice red" @click="emit('quitGame')">
           Quit game
         </div>
       </template>
@@ -113,7 +104,7 @@
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose, onMounted, ref, Ref } from "vue";
-import { defineProps } from "vue";
+import { defineProps, defineEmits } from "vue";
 import { userInfoStore } from "@/stores/user";
 import FloatingMenu from "../utils/FloatingMenu.vue";
 import SmallChat from "./SmallChat.vue";

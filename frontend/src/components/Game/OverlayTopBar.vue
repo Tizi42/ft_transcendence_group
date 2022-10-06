@@ -48,7 +48,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, defineProps, onUpdated } from "vue";
+import { defineComponent, defineExpose, defineProps } from "vue";
 import { Ref, ref, onMounted } from "vue";
 import { User } from "@backend/users/users.entity";
 import { Chat } from "@backend/chat/entities/chat.entity";
