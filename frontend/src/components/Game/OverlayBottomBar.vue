@@ -1,4 +1,4 @@
-<template>
+<template>    
   <div class="overlayBottomBar">
     <FloatingMenu
       direction="row"
@@ -12,14 +12,14 @@
       </template>
       <template #choices>
         <div
-          v-for="(image, index) in emojiArray"
-          :key="index + 1"
+          v-for="(url, index) in emojisURL"
+          :key="index"
           class="emoji-choice"
         >
-          <div
+          <img
+            :src="url.toString()"
             @click="sendEmoji(index + 1)"
-            :style="{ 'background-image': 'url(' + getImgUrl(image) + ')' }"
-          ></div>
+          />
         </div>
       </template>
     </FloatingMenu>
@@ -87,6 +87,7 @@ import socket from "@/socket";
 interface Props {
   user: userInfoStore;
   opponent: number;
+  emojisURL: Array<URL>;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
@@ -94,16 +95,6 @@ const emojiArray: Array<string> = [];
 const isChatting: Ref<boolean> = ref(false);
 const chatRef = ref();
 const menuRef = ref();
-
-function getImgUrl(pic: string) {
-  return require("../../assets/" + pic);
-}
-
-function loadEmojis() {
-  for (var i = 1; i < 38; i++) {
-    emojiArray.push("icons/emojis/" + i + ".svg");
-  }
-}
 
 function changeChattingStatus(event: boolean) {
   isChatting.value = event;
@@ -120,7 +111,6 @@ function sendEmoji(id: number) {
 }
 
 onMounted(() => {
-  loadEmojis();
   window.addEventListener("keyup", (event) => {
     if (event.key == "Enter") {
       if (isChatting.value) {
@@ -209,7 +199,7 @@ defineExpose(
   justify-content: center;
 }
 
-.emoji-choice div {
+.emoji-choice img {
   display: block;
   background-position: center;
   background-repeat: no-repeat;
@@ -217,7 +207,7 @@ defineExpose(
   width: 80%;
 }
 
-.emoji-choice div:hover {
+.emoji-choice img:hover {
   cursor: pointer;
   transform: scale(1.2);
 }

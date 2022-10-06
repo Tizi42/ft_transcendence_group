@@ -6,7 +6,7 @@
         <div class="profileBox">
           <EmoteBox
             :emoji="emojiL"
-            :emojiArray="emojiArray"
+            :emojisURL="emojisURL"
             :time="emojiDateL"
             side="left"
           />
@@ -36,7 +36,7 @@
         <div class="profileBox">
           <EmoteBox
             :emoji="emojiR"
-            :emojiArray="emojiArray"
+            :emojisURL="emojisURL"
             :time="emojiDateR"
             side="right"
           />
@@ -63,6 +63,7 @@ interface Props {
   scores: Array<number>;
   messageL: Chat | null;
   messageR: Chat | null;
+  emojisURL: Array<URL>;
   emojiL: number;
   emojiR: number;
   emojiDateL: Date;
@@ -71,20 +72,12 @@ interface Props {
 
 defineProps<Props>();
 const show: Ref<boolean> = ref(false);
-const emojiArray: Array<string> = [];
-
-function loadEmojis() {
-  for (var i = 1; i < 38; i++) {
-    emojiArray.push("icons/emojis/" + i + ".svg");
-  }
-}
 
 function getPictureUrl(id: number): string {
   return "http://localhost:3000/api/users/avatar/" + id.toString();
 }
 
 onMounted(() => {
-  loadEmojis();
   show.value = true;
 });
 

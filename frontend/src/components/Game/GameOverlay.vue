@@ -8,13 +8,14 @@
         :scores="scores"
         :messageL="messageL"
         :messageR="messageR"
+        :emojisURL="emojisURL"
         :emojiL="emojiL"
         :emojiR="emojiR"
         :emojiDateL="emojiDateL"
         :emojiDateR="emojiDateR"
       />
       <GameBox />
-      <OverlayBottomBar :user="user" :opponent="opponentId" />
+      <OverlayBottomBar :user="user" :opponent="opponentId" :emojisURL="emojisURL" />
       <ReadyButton v-if="readyStatus[0]" />
       <ReadyButton v-if="readyStatus[1]" />
     </div>
@@ -22,7 +23,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, onBeforeMount, onMounted } from "vue";
+import { defineComponent, defineExpose, onBeforeMount } from "vue";
 import { Ref, ref } from "vue";
 import OverlayTopBar from "./OverlayTopBar.vue";
 import OverlayBottomBar from "./OverlayBottomBar.vue";
@@ -46,7 +47,14 @@ const emojiDateR: Ref<Date> = ref(new Date());
 const dataReady: Ref<boolean> = ref(false);
 const readyStatus: Ref<Array<boolean>> = ref([false, false]);
 const timer: Ref<Date> = ref(new Date());
-const scores: Array<number> = [0, 0];
+const scores: Array<number> = [0, 0]
+const emojisURL: Array<URL> = [];
+  
+function loadEmojis() {
+  for (var i = 1; i < 38; i++) {
+    emojisURL.push(new URL("../../assets/icons/emojis/" + i + ".svg", import.meta.url));
+  }
+};
 
 type emojiInfo = {
   author: string;
@@ -82,6 +90,7 @@ async function getOpponent(index: number) {
 
 onBeforeMount(async () => {
   await getOpponent(opponentId);
+  loadEmojis();
   timer.value = new Date();
   socket.on("receive_message_ingame", async (data) => {
     updateMessage(data);
