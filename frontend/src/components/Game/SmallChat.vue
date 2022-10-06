@@ -78,6 +78,7 @@ defineExpose(
   padding-left: 1em;
   font-size: 18px;
   line-height: 25px;
+  color: #575757;
 }
 
 .chatBar:focus {
