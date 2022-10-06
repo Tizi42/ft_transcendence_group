@@ -1,15 +1,15 @@
 <template>
   <div class="container">
-    <GamePlay></GamePlay>
+    <GameRoom />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import GamePlay from "../components/game/GamePlay.vue";
+import GameRoom from "../components/game/GameRoom.vue";
 
 export default defineComponent({
   name: "PlayView",
-  components: { GamePlay },
+  components: { GameRoom },
 });
 </script>
