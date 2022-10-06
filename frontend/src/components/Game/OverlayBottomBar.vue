@@ -35,7 +35,7 @@
       direction="row"
       width="200px"
       height="60px"
-      background="#0c1200ee"
+      background="#0c1200fa"
       right="0px"
     >
       <template #button>
@@ -63,7 +63,7 @@
       direction="column"
       width="500px"
       height="350px"
-      background="#0c1200ee"
+      background="#0c1200fa"
       left="0px"
     >
       <template #button>
@@ -87,7 +87,7 @@
       direction="column"
       width="250px"
       height="100px"
-      background="#0c1200ee"
+      background="#0c1200fa"
       left="0px"
     >
       <template #button>
