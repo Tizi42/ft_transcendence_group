@@ -1,5 +1,12 @@
 <template>
-  <div class="container-messages">
+  <div
+    v-if="history.length === 0 && isActive === 'players'"
+    class="welcome-chat"
+  >
+    <img src="@/assets/icons/multiBubble.svg" />
+    <h1>Let's chat</h1>
+  </div>
+  <div class="container-messages" v-else>
     <div v-for="message in history" :key="message">
       <div
         v-if="message.author.id != user.id"
@@ -32,6 +39,7 @@ import { User } from "@backend/users/users.entity";
 interface Props {
   history: Array<any>;
   target: Ref<User>;
+  isActive: string;
 }
 
 const props: Readonly<Props> = defineProps<Props>();

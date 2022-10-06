@@ -152,7 +152,7 @@
     margin-right: 10%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    /* justify-content: center; */
 }
 
 .container-chat img {
@@ -166,6 +166,10 @@
 
 .container-chat > .message-input {
     height: 50px;
+}
+
+.welcome-chat {
+    margin-top: 20px;
 }
 
 .message-input {
