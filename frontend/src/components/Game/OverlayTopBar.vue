@@ -3,14 +3,15 @@
     <TimerStart :time="time" />
     <div class="infoBar" v-if="show">
       <div class="playerInfoLeft">
-        <img :src="getPictureUrl(user.id)" class="profile" />
-        <Transition name="bounce">
-          <img
-            v-if="emojiL > 0 && showEmoji"
-            :src="getImgUrl(emojiArray[emojiL - 1])"
-            class="emojiBoxShow"
+        <div class="profileBox">
+          <EmoteBox
+            :emoji="emojiL"
+            :emojiArray="emojiArray"
+            :time="emojiDateL"
+            side="left"
           />
-        </Transition>
+          <img :src="getPictureUrl(user.id)" class="profile" />
+        </div>
         <UserChat
           :user="user"
           :message="messageL"
@@ -32,14 +33,15 @@
           transition="fadeGroupR"
           align="flex-end"
         />
-        <img :src="getPictureUrl(opponent.id)" class="profile" />
-        <Transition name="bounce">
-          <img
-            v-if="emojiL > 0 && showEmoji"
-            :src="getImgUrl(emojiArray[emojiL - 1])"
-            class="emojiBoxShowR"
+        <div class="profileBox">
+          <EmoteBox
+            :emoji="emojiL"
+            :emojiArray="emojiArray"
+            :time="emojiDateL"
+            side="right"
           />
-        </Transition>
+          <img :src="getPictureUrl(opponent.id)" class="profile" />
+        </div>
       </div>
     </div>
   </div>
@@ -52,6 +54,7 @@ import { User } from "@backend/users/users.entity";
 import { Chat } from "@backend/chat/entities/chat.entity";
 import TimerStart from "../utils/TimerStart.vue";
 import UserChat from "./UserChat.vue";
+import EmoteBox from "./EmoteBox.vue";
 
 interface Props {
   user: User;
@@ -62,16 +65,13 @@ interface Props {
   messageR: Chat | null;
   emojiL: number;
   emojiR: number;
+  emojiDateL: Date;
+  emojiDateR: Date;
 }
 
 defineProps<Props>();
 const show: Ref<boolean> = ref(false);
-const showEmoji: Ref<boolean> = ref(false);
 const emojiArray: Array<string> = [];
-
-function getImgUrl(pic: string) {
-  return require("../../assets/" + pic);
-}
 
 function loadEmojis() {
   for (var i = 1; i < 38; i++) {
@@ -88,13 +88,6 @@ onMounted(() => {
   show.value = true;
 });
 
-onUpdated(() => {
-  showEmoji.value = true;
-  setTimeout(() => {
-    showEmoji.value = false;
-  }, 3000);
-});
-
 defineExpose(
   defineComponent({
     name: "OverlayTopBar",
@@ -103,28 +96,6 @@ defineExpose(
 </script>
 
 <style scoped>
-.emojiBoxShow {
-  display: block;
-  position: absolute;
-  width: 50px;
-  min-width: 50px;
-  height: 50px;
-  min-height: 50px;
-  left: 50px;
-  opacity: 1;
-}
-
-.emojiBoxShowR {
-  display: block;
-  position: absolute;
-  width: 50px;
-  min-width: 50px;
-  height: 50px;
-  min-height: 50px;
-  right: 50px;
-  opacity: 1;
-}
-
 .overlayTopBar {
   width: 70%;
   height: 15%;
@@ -176,6 +147,13 @@ defineExpose(
   text-align: right;
 }
 
+.profileBox {
+  display: block;
+  width: 80px;
+  height: 80px;
+  width: auto;
+}
+
 .profile {
   display: block;
   width: 80px;
@@ -190,10 +168,5 @@ defineExpose(
 
 .profile:hover {
   transform: scale(1.2);
-}
-
-.userBox {
-  display: flex;
-  flex-direction: column;
 }
 </style>

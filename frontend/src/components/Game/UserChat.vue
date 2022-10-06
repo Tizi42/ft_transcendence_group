@@ -29,7 +29,6 @@ interface Props {
 
 const props: Readonly<Props> = defineProps<Props>();
 const items: Ref<Array<string>> = ref([props.user.displayName]);
-const lastMessageTime: Ref<Date> = ref(new Date());
 
 onBeforeMount(() => {
   if (props.message == null) return;
@@ -50,14 +49,12 @@ function getClassOf(key: number): string {
 
 function addItem(item: string) {
   items.value.push(item);
-  lastMessageTime.value = new Date();
   setTimeout(() => {
     remove(item);
   }, 6000);
 }
 
 onUpdated(() => {
-  console.log(items.value.length);
   if (props.message == null || items.value.length > 2) return;
   let content = props.message.content;
   addItem(content);
