@@ -6,6 +6,8 @@ export class GameRoom {
     lag: number = 30;
     player1: string;
     player2: string;
+    playerL: number;
+    playerR: number;
     score_player1: number = 0;
     score_player2: number = 0;
     mode: string;
@@ -27,8 +29,10 @@ export class GameRoom {
     ball_speed: number = 100;
 
 
-    constructor() {
+    constructor(left: number, right: number) {
         this.tick = Date.now();
+        this.playerL = left;
+        this.playerR = right;
     }
     start() {
         this.server.sockets.to(this.player1).emit('game_found', {
@@ -129,12 +133,4 @@ export class GameRoom {
         this.update_clients();
     }
  
-}
-
-export class Player {
-    loged: boolean;
-
-    constructor(logState: boolean) {
-        this.loged = logState;
-    }
 }
