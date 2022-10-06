@@ -1,6 +1,6 @@
 <template>
   <div class="overlayBottomBar">
-    <FloatingMenu grid="true" @hide="hideMenu">
+    <FloatingMenu grid="true">
       <template #button>
         <div class="settingsBtn emoji" />
       </template>
@@ -71,11 +71,6 @@ function sendEmoji(id: number) {
   };
   console.log("sending emoji", id);
   socket.emit("send_emoji_ingame", data);
-}
-
-function hideMenu() {
-  console.log("hide");
-  menuRef.value.methods.closeMenu();
 }
 
 onMounted(() => {
