@@ -15,7 +15,14 @@
         :emojiDateR="emojiDateR"
       />
       <GameBox />
-      <OverlayBottomBar :user="user" :opponent="opponentId" :emojisURL="emojisURL" />
+      <OverlayBottomBar
+        :user="user"
+        :opponent="opponentId"
+        :emojisURL="emojisURL"
+        @changeSound="changeSound"
+        @quitGame="quitGame"
+        @changeBackground="changeBackground"
+      />
       <ReadyButton v-if="readyStatus[0]" />
       <ReadyButton v-if="readyStatus[1]" />
     </div>
@@ -49,17 +56,17 @@ const readyStatus: Ref<Array<boolean>> = ref([false, false]);
 const timer: Ref<Date> = ref(new Date());
 const scores: Array<number> = [0, 0]
 const emojisURL: Array<URL> = [];
-  
-function loadEmojis() {
-  for (var i = 1; i < 38; i++) {
-    emojisURL.push(new URL("../../assets/icons/emojis/" + i + ".svg", import.meta.url));
-  }
-};
 
 type emojiInfo = {
   author: string;
   dest: string;
   content: number;
+};
+  
+function loadEmojis() {
+  for (var i = 1; i < 38; i++) {
+    emojisURL.push(new URL("../../assets/icons/emojis/" + i + ".svg", import.meta.url));
+  }
 };
 
 function updateMessage(msg: Chat) {
@@ -86,6 +93,18 @@ async function getOpponent(index: number) {
   setTimeout(() => {
     dataReady.value = true;
   }, 500);
+}
+
+function changeSound(value: number) {
+  console.log("user wants to change sound", value);
+}
+
+function quitGame() {
+  console.log("user wants to leave game");
+}
+
+function changeBackground() {
+  console.log("user wants to change background");
 }
 
 onBeforeMount(async () => {

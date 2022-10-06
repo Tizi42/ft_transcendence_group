@@ -15,7 +15,7 @@
 
 <script lang="ts" setup>
 import { useClickOutside } from "@/composables/useClickOutside";
-import { defineComponent, defineExpose, Ref, ref } from "vue";
+import { defineComponent, defineExpose, onMounted, Ref, ref } from "vue";
 import { defineProps, withDefaults } from "vue";
 
 interface Props {
@@ -26,6 +26,7 @@ interface Props {
   left?: string;
   bottom?: string;
   background?: string;
+  padding?: string;
   direction: string;
 }
 
@@ -36,6 +37,7 @@ const props: Readonly<Props> = withDefaults(defineProps<Props>(), {
   right: "",
   left: "",
   bottom: "65px",
+  padding: "",
   background: "",
 });
 
@@ -45,10 +47,6 @@ const show: Ref<boolean> = ref(false);
 
 function getOpacity(): string {
   return show.value == true ? "0.2" : "1";
-}
-
-function getRotate(): string {
-  return show.value == true ? "-90deg" : "0deg";
 }
 
 function toggleMenu() {
@@ -65,6 +63,14 @@ function closeMenu() {
 
 useClickOutside(menuRef, () => {
   closeMenu();
+});
+
+onMounted(() => {
+  window.addEventListener("keyup", (event) => {
+    if (event.key == "Escape") {
+      closeMenu();
+    }
+  });
 });
 
 defineExpose(
@@ -99,6 +105,7 @@ defineExpose(
   background: #eeeeee;
   border-radius: 22px;
   overflow: scroll;
+  padding: v-bind(padding);
   scrollbar-width: none;
   box-shadow: var(--main-shadow);
   background: v-bind(background);
@@ -110,7 +117,6 @@ defineExpose(
 
 .buttonMenu {
   opacity: v-bind(getOpacity());
-  transform: rotate(v-bind(getRotate()));
   transition: all 0.3s ease-in-out;
 }
 </style>
