@@ -1,11 +1,11 @@
 <template>
   <div class="menuContainer" ref="menuRef">
-    <div @click="toggleMenu()">
+    <div @click="toggleMenu()" class="buttonMenu">
       <slot name="button"></slot>
     </div>
-    <div v-if="show">
+    <div>
       <Transition name="slide-bot">
-        <div class="menuBox">
+        <div class="menuBox" v-show="show">
           <slot name="choices"></slot>
         </div>
       </Transition>
@@ -43,6 +43,14 @@ const props: Readonly<Props> = withDefaults(defineProps<Props>(), {
 const menuRef = ref();
 const show: Ref<boolean> = ref(false);
 
+function getOpacity(): string {
+  return show.value == true ? "0.2" : "1";
+}
+
+function getRotate(): string {
+  return show.value == true ? "-90deg" : "0deg";
+}
+
 function toggleMenu() {
   show.value = !show.value;
 }
@@ -78,8 +86,8 @@ defineExpose(
 .menuBox {
   display: flex;
   flex-direction: v-bind(direction);
-  justify-content: left;
-  align-items: left;
+  justify-content: space-evenly;
+  align-items: center;
   flex-wrap: wrap;
   position: absolute;
   top: v-bind(top);
@@ -98,5 +106,11 @@ defineExpose(
 
 .menuBox::-webkit-scrollbar {
   display: none;
+}
+
+.buttonMenu {
+  opacity: v-bind(getOpacity());
+  transform: rotate(v-bind(getRotate()));
+  transition: all 0.3s ease-in-out;
 }
 </style>

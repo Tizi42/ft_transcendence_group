@@ -29,11 +29,11 @@
 }
 
 .slide-bot-enter-active {
-  animation: slide-bot 0.5s;
+  animation: slide-bot 0.3s;
 }
 
 .slide-bot-leave-active {
-  animation: slide-bot 0.5s reverse;
+  animation: slide-bot 0.3s reverse;
 }
 
 @keyframes slide-bot {

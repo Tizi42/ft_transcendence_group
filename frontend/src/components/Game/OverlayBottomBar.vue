@@ -4,8 +4,9 @@
       direction="row"
       height="30vh"
       width="400px"
-      background="#00000077"
+      background="#0c1200ee"
       right="0px"
+      ref="menuRef"
     >
       <template #button>
         <div class="settingsBtn emoji" />
@@ -30,47 +31,58 @@
       ref="chatRef"
     />
     <FloatingMenu
-      direction="column"
+      direction="row"
       width="200px"
-      height=""
-      background="#000000aa"
-      left="0px"
+      height="60px"
+      background="#0c1200ee"
+      right="0px"
     >
       <template #button>
         <button class="settingsBtn sound" />
       </template>
       <template #choices>
-        <div class="setting-choice">Sound off</div>
-        <div class="setting-choice">Quit game</div>
+        <img src="../../assets/icons/soundOff.svg" class="soundIcon" />
+        <img src="../../assets/icons/sound.svg" class="soundIcon" />
+        <img src="../../assets/icons/soundUp.svg" class="soundIcon" />
       </template>
     </FloatingMenu>
     <FloatingMenu
       direction="column"
-      width="200px"
+      width="500px"
       height=""
-      background="#000000aa"
+      background="#0c1200ee"
       left="0px"
     >
       <template #button>
         <button class="settingsBtn help" />
       </template>
       <template #choices>
-        <div class="setting-choice">Rules are ....</div>
+        <div class="rulesTxt">
+          Use
+          <img src="../../assets/icons/upArrow.svg" class="inlineImg" />
+          and
+          <img src="../../assets/icons/downArrow.svg" class="inlineImg" />
+          to move your paddle.<br /><br />
+          Points are earned when one fails to<br />
+          return the ball to the other.<br /><br />
+          You need 11 points to win.<br /><br />
+          GL HF!
+        </div>
       </template>
     </FloatingMenu>
     <FloatingMenu
       direction="column"
-      width="200px"
-      height=""
-      background="#000000aa"
+      width="250px"
+      height="100px"
+      background="#0c1200ee"
       left="0px"
     >
       <template #button>
         <button class="settingsBtn settings" />
       </template>
       <template #choices>
-        <div class="setting-choice">Sound off</div>
-        <div class="setting-choice">Quit game</div>
+        <div class="setting-choice">Change background</div>
+        <div class="setting-choice red">Quit game</div>
       </template>
     </FloatingMenu>
   </div>
@@ -91,7 +103,6 @@ interface Props {
 }
 
 const props: Readonly<Props> = defineProps<Props>();
-const emojiArray: Array<string> = [];
 const isChatting: Ref<boolean> = ref(false);
 const chatRef = ref();
 const menuRef = ref();
@@ -126,7 +137,7 @@ onMounted(() => {
       menuRef.value.methods.closeMenu();
     }
     if (event.key == "t" && !isChatting.value) {
-      menuRef.value.methods.toogleMenu();
+      menuRef.value.methods.toggleMenu();
     }
   });
 });
@@ -158,7 +169,7 @@ defineExpose(
   border: 2px solid var(--main-color);
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 12px;
-  transition: transform 0.2s ease-out;
+  transition: all 0.2s ease-out;
   background-position: center;
   background-size: 37px 37px;
   background-repeat: no-repeat;
@@ -185,8 +196,27 @@ defineExpose(
   background-image: url("@/assets/icons/settings.svg");
 }
 
+.inlineImg {
+  height: 1.5em;
+  display: inline-block;
+  position: relative;
+  top: 7px;
+  padding-right: 5px;
+  padding-left: 5px;
+}
+
 .setting-choice {
   line-height: 2em;
+  font-size: 1.2em;
+}
+
+.red {
+  color: var(--main-red);
+}
+
+.rulesTxt {
+  padding: 20px;
+  line-height: 1.5em;
   font-size: 1.2em;
 }
 
@@ -210,5 +240,10 @@ defineExpose(
 .emoji-choice img:hover {
   cursor: pointer;
   transform: scale(1.2);
+}
+
+.soundIcon {
+  width: 40px;
+  height: 40px;
 }
 </style>
