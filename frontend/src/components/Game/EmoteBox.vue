@@ -2,7 +2,7 @@
   <TransitionGroup name="fadeEmote">
     <div v-for="item in items" :key="item">
       <img
-        :src="getImgUrl(emojiArray[item - 1])"
+        :src="emojisURL[item - 1].toString()"
         :class="getClassStyle()"
         @load="onLoaded"
         v-show="show"
@@ -17,7 +17,7 @@ import { Ref, ref, onUpdated } from "vue";
 
 interface Props {
   emoji: number;
-  emojiArray: Array<string>;
+  emojisURL: Array<URL>;
   time: Date;
   side: string;
 }
@@ -28,16 +28,11 @@ const lastUpdate: Ref<Date> = ref(new Date());
 const show: Ref<boolean> = ref(false);
 
 function onLoaded() {
-  console.log("loaded");
   show.value = true;
 }
 
 function getClassStyle(): string {
   return props.side == "left" ? "emojiBoxShow" : "emojiBoxShowR";
-}
-
-function getImgUrl(pic: string) {
-  return require("../../assets/" + pic);
 }
 
 function remove(item: number) {
