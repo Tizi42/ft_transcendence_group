@@ -3,11 +3,13 @@
     <div @click="toggleMenu()">
       <slot name="button"></slot>
     </div>
-    <Transition name="slide-bot">
-      <div class="menuBox" v-if="show">
-        <slot name="choices"></slot>
-      </div>
-    </Transition>
+    <div v-if="show">
+      <Transition name="slide-bot">
+        <div class="menuBox">
+          <slot name="choices"></slot>
+        </div>
+      </Transition>
+    </div>
   </div>
 </template>
 
@@ -36,7 +38,6 @@ withDefaults(defineProps<Props>(), {
 });
 
 // variables
-const emit = defineEmits(["hide"]);
 const menuRef = ref();
 const show: Ref<boolean> = ref(false);
 
@@ -53,7 +54,7 @@ function closeMenu() {
 }
 
 useClickOutside(menuRef, () => {
-  emit("hide");
+  closeMenu();
 });
 
 defineExpose(
