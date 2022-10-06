@@ -1,8 +1,9 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
-import { AppGateway } from 'src/gateway';
-import { UsersService } from 'src/users/users.service';
+import { Socket } from 'socket.io';
+import { AppGateway } from '../gateway';
+import { UsersService } from '../users/users.service';
 import { ChatService } from './chat.service';
+import { emojiInfo } from './utils/types';
 
 export class ChatGateway extends AppGateway {
 
@@ -42,4 +43,18 @@ export class ChatGateway extends AppGateway {
 
   //   return await this.chatService.getAllMessages();
   // }
+
+  @SubscribeMessage('send_message_ingame')
+  async handleMessageNotSave(
+    @MessageBody() data: any,
+  ) {
+    this.server.sockets.to(data.dest).to(data.author).emit('receive_message_ingame', data);
+  }
+
+  @SubscribeMessage('send_emoji_ingame')
+  async sendEmojiInGame(
+    @MessageBody() data: emojiInfo,
+  ) {
+    this.server.sockets.to(data.dest).to(data.author).emit('receive_emoji_ingame', data);
+  }
 }

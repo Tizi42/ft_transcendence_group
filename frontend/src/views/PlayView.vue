@@ -1,15 +1,14 @@
 <template>
-  <div class="container">
-    <GameRoom />
-  </div>
+  <GameMenu />
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-import GameRoom from "../components/game/GameRoom.vue";
+<script lang="ts" setup>
+import { defineComponent, defineExpose } from "vue";
+import GameMenu from "../components/game/GameMenu.vue";
 
-export default defineComponent({
-  name: "PlayView",
-  components: { GameRoom },
-});
+defineExpose(
+  defineComponent({
+    name: "PlayView",
+  })
+);
 </script>

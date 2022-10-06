@@ -442,7 +442,6 @@ export class UsersService {
       order: {totalVictories: "DESC"},
       where: [
         {
-          totalGames: Not(0),
           id: In((await this.findOne(id)).friendWith),
         },
         {
@@ -462,7 +461,6 @@ export class UsersService {
       order: {winRate: "DESC"},
       where: [
         {
-          totalGames: Not(0),
           id: In((await this.findOne(id)).friendWith),
         },
         {
@@ -482,7 +480,6 @@ export class UsersService {
       order: {totalGames: "DESC"},
       where: [
         {
-          totalGames: Not(0),
           id: In((await this.findOne(id)).friendWith),
         },
         {
