@@ -1,34 +1,27 @@
 <template>
-  <div class="container-chat">
-    <div class="container-messages">
-      <div v-for="message in history" :key="message">
-        <div
-          class="messages"
-          id="from-others"
-          v-if="message.authorId != user.id"
-        >
-          <img :src="message.dest.picture" />
-          <p>{{ message.content }}</p>
+  <div class="box chat">
+    <div id="echange">
+      <div v-for="(message, index) in history" :key="index">
+        <div v-if="message.authorId === 11" class="messageBlockOut">
+          <p class="message message-out">
+            {{ message.content }}
+          </p>
+          <img :src="message.author.picture" class="photo" />
         </div>
-        <div class="messages" id="from-user" v-else>
-          <img :src="message.author.picture" />
-          <p>{{ message.content }}</p>
+        <div v-else class="messageBlockIn">
+          <img :src="message.dest.picture" class="photo" />
+          <p class="message message-in">
+            {{ message.content }}
+          </p>
         </div>
       </div>
     </div>
-    <div class="message-input">
-      <form @submit.prevent="onSubmit">
-        <input
-          v-model="input"
-          type="text"
-          placeholder="Your message.."
-          class="message-text"
-        />
-        <button type="submit">
-          <img src="@/assets/icons/send-icon.png" alt="send-message" />
-        </button>
-      </form>
-    </div>
+    <form @submit.prevent="onSubmit" class="form">
+      <input v-model="input" placeholder="Your message..." class="input" />
+      <button type="submit" :disabled="input === ''" class="send-button">
+        Send
+      </button>
+    </form>
   </div>
 </template>
 
@@ -41,7 +34,7 @@ export default defineComponent({
 </script>
 
 <script setup lang="ts">
-import { Ref, ref, defineProps, onMounted, onUpdated } from "vue";
+import { Ref, ref, defineProps, onMounted, onBeforeMount } from "vue";
 import socket from "../socket";
 import { getUrlOf } from "@/router";
 import { useUserStore } from "@/stores/user";
@@ -50,21 +43,19 @@ const input: Ref<any> = ref("");
 const history: Ref<any> = ref([]);
 const profile: Ref<any> = ref([]);
 const prop = defineProps(["chosenProfile"]);
-const user = useUserStore();
 console.log("how : ", prop.chosenProfile.id);
+const user = useUserStore();
 
-onMounted(async () => {
+onBeforeMount(async () => {
   console.log("profile = ", user.id);
   getMessages();
 });
-
-console.log("profile chosen = ", prop.chosenProfile.id);
 
 function onSubmit() {
   const data = {
     content: input.value,
     author: user.id,
-    dest: 3,
+    dest: 7,
   };
   console.log("dest =", data.dest);
   socket.emit("send_message", data);
@@ -73,7 +64,8 @@ function onSubmit() {
 }
 
 function getMessages() {
-  fetch(getUrlOf("api/chat/messages/" + 3))
+  console.log("profile = ", 7);
+  fetch(getUrlOf("api/chat/messages/" + 7))
     .then((response) => response.json())
     .then((data) => {
       data.forEach((el: any) => {
@@ -84,3 +76,44 @@ function getMessages() {
     .catch((err) => console.error(err));
 }
 </script>
+
+<style scoped>
+.chat {
+  width: 100%;
+  margin-right: 5%;
+}
+.input {
+  border-radius: 12px;
+  background: #ffffff;
+  width: 90%;
+}
+.message {
+  border-radius: 10px;
+  font-size: 80%;
+  box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.3);
+}
+.message-in {
+  background: #f1f0f0;
+  color: black;
+  min-width: 50px;
+  padding: 10px;
+}
+.message-out {
+  color: white;
+  background: #0d4134e7;
+  min-width: 50px;
+  padding: 10px;
+}
+.messageBlockOut {
+  display: flex;
+  justify-content: right;
+}
+.messageBlockIn {
+  display: flex;
+  justify-content: left;
+}
+#echange {
+  display: flex;
+  flex-direction: column;
+}
+</style>

@@ -3,8 +3,8 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { WsException } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
-import { User } from 'src/users/Users.entity';
-import { Not, Repository } from "typeorm";
+import { User } from 'src/users/users.entity';
+import { Repository } from "typeorm";
 import { Chat } from './entities/chat.entity';
 import { messageInfos } from './utils/types';
 
@@ -17,39 +17,66 @@ export class ChatService {
     ) {}
 
     async saveMessage(content: messageInfos): Promise<Chat> {
-        console.log("SAVE");
         const newMessage = this.chatRepository.create(content);
-        return await this.chatRepository.save(newMessage);
+        await this.chatRepository.save(newMessage);
+
+        return newMessage;
     }
+
     async getMessages(): Promise<Chat[]> {
-        console.log("GET MESSAGES");
         return await this.chatRepository.find({ relations: ['author'] });
     }
+
     async getAllDest(): Promise<Chat[]> {
-        console.log("GET DESTS");
-        return await this.chatRepository.find({ 
-                relations: ['dest'] });
+        return await this.chatRepository.find({ relations: ['dest'] });
     }
-    async getMessagesById(id: number): Promise<Chat[]>{
-        const query = await this.chatRepository.createQueryBuilder()
-        .select("*")
-        .where('"destId" = :id', { id: id })
-        .orWhere('"authorId" = :id', { id: id })
-        .getRawMany();
+
+    async getMessagesById(destId: number, authorId: number): Promise<Chat[]>{
+        const query = await this.chatRepository.find({
+            relations: ['channel', 'author'],
+            where: [{
+                channel: {
+                    id: destId,
+                },
+                author: {
+                    id: authorId,
+                }
+            },
+            {
+                author: {
+                    id: destId,
+                },
+                channel: {
+                    id: authorId,
+                }
+            }],
+        });
         console.log("query = ", query);
         return query;
     }
-    async getUserFromSocket(socket: Socket) {
-        const cookieJwt = socket.handshake.headers.cookie
-        .split('; ')
-        .find((cookie: string) => cookie.startsWith('jwt'))
-        .split('=')[1];
-    const user = await this.authService.getUserFromAuthenticationToken(cookieJwt);
 
-    if (!user) {
-        throw new WsException('Invalid Credentials !');
-    }
-    socket.data = user;
-    return user;
+    async getUserFromSocket(socket: Socket) {
+        const cookies = socket.handshake.headers.cookie;
+        if (!cookies) {
+            return null;
+        }
+        const cookieJwt = cookies
+            .split('; ')
+            .find((cookie: string) => cookie.startsWith('jwt'));
+        
+        if (!cookieJwt) {
+            return null;
+        }
+        const tokenJwt = cookieJwt
+            .split('=')[1];
+
+        const user = await this.authService.getUserFromAuthenticationToken(tokenJwt);
+        
+        if (!user) {
+            throw new WsException('Invalid Credentials !');
+        }
+        socket.data = user;
+
+        return user;
     }
 }

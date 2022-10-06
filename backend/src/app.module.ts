@@ -10,6 +10,8 @@ import { typeOrmConfig } from './common/typeorm.config';
 import { DataSource } from 'typeorm';
 import { UsersModule } from './users/users.module';
 import { ChatModule } from './chat/chat.module';
+import { AppGateway } from './gateway';
+import { ChannelModule } from './channel/channel.module';
 
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 
@@ -21,9 +23,13 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     BattlesModule,
     UsersModule,
     ChatModule,
+    ChannelModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    AppGateway,
+  ],
 })
 export class AppModule {
   constructor(private dataSource: DataSource) {}

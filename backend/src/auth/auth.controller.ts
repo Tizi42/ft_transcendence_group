@@ -1,6 +1,6 @@
-import { Controller, Get, Req, Res, UseGuards, Post, HttpCode, Body, UnauthorizedException, Query } from "@nestjs/common";
+import { Controller, Get, Req, Res, UseGuards, Post, HttpCode, Body, UnauthorizedException, Logger, Query } from "@nestjs/common";
 import { Response } from "express";
-import { User } from "src/users/Users.entity";
+import { User } from "src/users/users.entity";
 import { UsersService } from "src/users/users.service";
 import RequestWithUser from "src/users/utils/requestWithUser.interface";
 import { AuthService } from "./auth.service";
@@ -26,11 +26,9 @@ export class AuthController {
     handle42Redirect(@Req() request: RequestWithUser, @Res({ passthrough: true }) res: Response) {
         const { accessToken } = this.authService.login(request.user, false);
         res.cookie('jwt', accessToken);
-        console.log(request.user);
-        console.log("jwt = ", accessToken);
-        if (!request.user.isTwoFactorAuthenticationEnabled) {
-            this.usersService.updateIsOnline(request.user.id, "online");
-        }
+        // if (!request.user.isTwoFactorAuthenticationEnabled) {
+            // this.usersService.updateIsOnline(request.user.id, "online");
+        // }
         res.redirect('http://localhost:8080/2FA');
     }
 
@@ -43,11 +41,11 @@ export class AuthController {
       }
       const { accessToken } = this.authService.login(user, false);
       res.cookie('jwt', accessToken);
-      console.log(user);
-      console.log("jwt 1 = ", accessToken);
-      if (!user.isTwoFactorAuthenticationEnabled) {
-        this.usersService.updateIsOnline(user.id, "online");
-      }
+    //   console.log(user);
+    //   console.log("jwt 1 = ", accessToken);
+    //   if (!user.isTwoFactorAuthenticationEnabled) {
+        // this.usersService.updateIsOnline(user.id, "online");
+    //   }
       res.redirect('http://localhost:8080/2FA');
     }
 
@@ -107,7 +105,7 @@ export class AuthController {
         }
         const { accessToken } = this.authService.login(request.user, true);
         request.res.cookie('jwt', accessToken);
-        this.usersService.updateIsOnline(request.user.id, "online");
+        // this.usersService.updateIsOnline(request.user.id, "online");
         return request.user;
     }
 }
