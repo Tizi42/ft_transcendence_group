@@ -1,6 +1,5 @@
 <template>
   <div class="game-frame">
-    <button @click="initializeGame">Initialize</button>
     <button @click="searchGame">Search</button>
     <div class="score">{{ score_left }} : {{ score_right }}</div>
     <ion-phaser
@@ -13,6 +12,8 @@
 <script lang="ts" setup>
 import { defineExpose, defineComponent, ref } from "vue";
 import Phaser from "phaser";
+import socket from "@/socket";
+import GameStatus from "@/game/type"
 // import GameScene from "@/game/scenes/Game";
 
 let gameConfig: Phaser.Types.Core.GameConfig = {
@@ -40,12 +41,12 @@ let cursors: Phaser.Types.Input.Keyboard.CursorKeys;
 let score_left = ref(0);
 let score_right = ref(0);
 
-type GameStatus =
-  | "not_ready"
-  | "one_player_ready"
-  | "ready"
-  | "running"
-  | "ended"; //left_won, right_won
+// type GameStatus =
+//   | "not_ready"
+//   | "one_player_ready"
+//   | "ready"
+//   | "running"
+//   | "ended"; //left_won, right_won
 let game_status: GameStatus = "ready";
 let ball_velocity: number;
 
@@ -83,11 +84,6 @@ function create(this: Phaser.Scene) {
   ball_velocity = 350;
 
   // set up paddles
-  // paddle_left = create_paddle(
-  //   this,
-  //   this.cameras.main.width * 0.02,
-  //   this.cameras.main.height * 0.5
-  // );
   paddle_left = create_paddle(
     this,
     this.cameras.main.width * 0.02,
@@ -172,10 +168,6 @@ function launch_ball(scene: Phaser.Scene, direction: string) {
 }
 
 const initialize = ref(false);
-
-function initializeGame() {
-  console.log("test");
-}
 
 function searchGame() {
   initialize.value = true;
