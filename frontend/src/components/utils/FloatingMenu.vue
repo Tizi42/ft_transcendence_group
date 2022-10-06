@@ -15,8 +15,8 @@
 
 <script lang="ts" setup>
 import { useClickOutside } from "@/composables/useClickOutside";
-import { defineComponent, defineExpose, onMounted, Ref, ref } from "vue";
-import { defineProps, withDefaults, defineEmits } from "vue";
+import { defineComponent, defineExpose, Ref, ref } from "vue";
+import { defineProps, withDefaults } from "vue";
 
 interface Props {
   height?: string;
@@ -25,16 +25,18 @@ interface Props {
   right?: string;
   left?: string;
   bottom?: string;
-  grid: string;
+  background?: string;
+  direction: string;
 }
 
-withDefaults(defineProps<Props>(), {
-  height: "30vh",
-  width: "400px",
+const props: Readonly<Props> = withDefaults(defineProps<Props>(), {
+  height: "",
+  width: "",
   top: "",
-  right: "0px",
+  right: "",
   left: "",
-  bottom: "80px",
+  bottom: "65px",
+  background: "",
 });
 
 // variables
@@ -75,7 +77,7 @@ defineExpose(
 }
 .menuBox {
   display: flex;
-  flex-direction: row;
+  flex-direction: v-bind(direction);
   justify-content: left;
   align-items: left;
   flex-wrap: wrap;
@@ -91,7 +93,7 @@ defineExpose(
   overflow: scroll;
   scrollbar-width: none;
   box-shadow: var(--main-shadow);
-  background: #00000077;
+  background: v-bind(background);
 }
 
 .menuBox::-webkit-scrollbar {
