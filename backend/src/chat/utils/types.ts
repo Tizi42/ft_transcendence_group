@@ -5,3 +5,9 @@ export type messageInfos = {
     content: string;
     created_at: Date;
 }
+
+export type emojiInfo = {
+    author: string;
+    dest: string;
+    content: number;
+}
