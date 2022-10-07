@@ -85,7 +85,7 @@ defineExpose(
   font-weight: bold;
   font-size: 24px;
   line-height: 30px;
-  background: linear-gradient(180deg, #005f3e 0%, #ffda00 100%);
+  background: linear-gradient(180deg, #005f3e 0%, #ffcb00 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

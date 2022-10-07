@@ -28,9 +28,7 @@ export class AppController {
 
   @UseGuards(JwtAuthGuard)
   @Get('preAuth')
-  getPreAuth(@Req() req: Request) {
-    console.log("is Pre Authenticated ! ");
-  }
+  getPreAuth(@Req() req: Request) {}
 
   @Get('logout')
   @UseGuards(JwtAuthGuard)

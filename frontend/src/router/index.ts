@@ -8,6 +8,7 @@ import LeaderboardView from "../views/LeaderboardView.vue";
 import HistoryView from "../views/HistoryView.vue";
 import PlayView from "../views/PlayView.vue";
 import DevLogin from "../components/DevLogin.vue";
+import PlayGame from "../components/Game/PlayGame.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -18,8 +19,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/chat",
     name: "chat",
-    component: () =>
-      import("../views/ChatView.vue"),
+    component: () => import("../views/ChatView.vue"),
   },
   {
     path: "/user",
@@ -75,6 +75,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/play",
     name: "play",
     component: PlayView,
+  },
+  {
+    path: "/pong",
+    name: "pong",
+    component: PlayGame,
   },
 ];
 
