@@ -76,7 +76,7 @@ export class ChatService {
         const user = await this.authService.getUserFromAuthenticationToken(tokenJwt);
         
         if (!user) {
-            throw new WsException('Invalid Credentials !');
+			return null;
         }
         socket.data = user;
 
