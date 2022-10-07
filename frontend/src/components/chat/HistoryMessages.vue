@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="history.length === 0 && isActive === 'players'"
-    class="welcome-chat"
-  >
+  <div v-if="target === null && isActive === 'players'" class="welcome-chat">
     <img src="@/assets/icons/multiBubble.svg" />
     <h1>Let's chat</h1>
   </div>

@@ -59,7 +59,7 @@ const user: any = useUserStore();
 const isActive: Ref<string> = ref("players");
 const receiver: Ref<number> = ref(-1);
 const history: Ref<Array<any>> = ref([]);
-const receiverProfile: Ref<User | undefined> = ref();
+const receiverProfile: Ref<any> = ref(null);
 
 const handleSelectedNav = (event: string) => {
   isActive.value = event;
@@ -78,6 +78,8 @@ const handleSelectedReceiver = async (event: number) => {
       .catch((error) => {
         console.log("ERROR : ", error);
       });
+  } else {
+    receiverProfile.value = null;
   }
 };
 
