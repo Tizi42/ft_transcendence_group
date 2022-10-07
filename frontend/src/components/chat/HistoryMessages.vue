@@ -3,7 +3,16 @@
     <img src="@/assets/icons/multiBubble.svg" />
     <h1>Let's chat</h1>
   </div>
-  <div class="container-messages" v-else>
+  <div
+    class="messages-invite-game"
+    v-if="target != null && isActive === 'players'"
+  >
+    <img src="@/assets/icons/inviteInGame.png" alt="invite in game" />
+  </div>
+  <div
+    class="container-messages"
+    v-if="target != null && isActive === 'players'"
+  >
     <div v-for="message in history" :key="message">
       <div
         v-if="message.author.id != user.id"
