@@ -4,10 +4,13 @@ export class GameRoom {
     room_name: string;
     server: Server;
     lag: number = 30;
-    player1: string;
-    player2: string;
+
     playerL: number;
     playerR: number;
+    ready: number;
+    
+    player1: string;
+    player2: string;
     score_player1: number = 0;
     score_player2: number = 0;
     mode: string;
@@ -33,6 +36,7 @@ export class GameRoom {
         this.tick = Date.now();
         this.playerL = left;
         this.playerR = right;
+        this.ready = 0;
     }
     start() {
         this.server.sockets.to(this.player1).emit('game_found', {

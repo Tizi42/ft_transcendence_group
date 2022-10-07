@@ -79,6 +79,7 @@ const routes: Array<RouteRecordRaw> = [
     path: "/pong",
     name: "pong",
     component: PlayGame,
+    props: true,
   },
 ];
 

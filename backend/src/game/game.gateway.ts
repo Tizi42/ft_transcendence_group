@@ -5,7 +5,6 @@ import { AppGateway } from '../gateway';
 import { UsersService } from '../users/users.service';
 import { GameService } from './game.service';
 import { ChatService } from '../chat/chat.service';
-import { Module } from 'module';
 
 export class GameGateway extends AppGateway {
 
@@ -28,59 +27,26 @@ export class GameGateway extends AppGateway {
   private static rooms: Map<string, GameRoom> = new Map(); //roomName, GameRoom
   private static participants: Map<string, string> = new Map(); //socketId, roomName
 
-    // handleConnection(socket: Socket): void {
-    //     const socketId = socket.id;
-    //     console.log("bonjour ", socketId);
-    //     GameGateway.participants.set(socketId, '');
-    //     if (!GameGateway.clients.has(socketId)) {
-    //         GameGateway.clients.set(socketId, new Player(false));
-    //     }
-    // }
-
-    // handleDisconnect(socket: Socket): void {
-    //     const socketId = socket.id;
-    //     const roomId = GameGateway.participants.get(socketId);
-    //     const room = GameGateway.rooms.get(roomId);
-    //     console.log("aurevoir ", socketId);
-    //     GameGateway.participants.delete(socketId);
-    //     GameGateway.clients.delete(socketId);
-    //     GameGateway.queues.delete(socketId);
-    // }
-
-    // @SubscribeMessage('login')
-    // async loginAttempt(socket: Socket, data: string) {
-    //     const socketId = socket.id;
-    //     console.log(socketId, " loged");
-    //     if (!GameGateway.clients.has(socketId)) {
-    //         GameGateway.clients.set(socketId, new Player(false));
-    //     }
-    //     if (GameGateway.clients.get(socketId).loged === false) {
-    //         GameGateway.clients.get(socketId).loged = true;
-    //     }
-    //     this.server.sockets.emit('searching');
-    // }
-
   @SubscribeMessage('queue_register')
   queueRegister(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+    console.log("Queue register received: ", data);
     if (GameGateway.queues.normal === data.user_id
         || GameGateway.queues.magic === data.user_id) {
-      return ;
+      return "Already in a queue!";
     }
 
     let playerL = GameGateway.queues[data.mode];
     if (playerL === -1) {
       GameGateway.queues[data.mode] = data.user_id;
-      return ;
+      return "Waiting for another player...";
     } else {
       GameGateway.queues[data.mode] = -1;
       const room_name = playerL + " vs " + data.user_id;
+      GameGateway.rooms.set(room_name, new GameRoom(playerL, data.user_id));
       this.server.in(data.user_id).in(playerL).socketsJoin(room_name);
       this.server.to(data.user_id).to(playerL).emit("game_found", room_name);
-      GameGateway.rooms.set(room_name, new GameRoom(playerL, data.user_id));
     }
 
-      // const socketId = socket.id;
-      // console.log(socketId, " i ssearching a game");
       // if (!GameGateway.queues.has(socketId)) {
       //     GameGateway.queues.set(socketId, data.mode);
       // }
@@ -96,21 +62,43 @@ export class GameGateway extends AppGateway {
       //         game.player1 = socketId;
       //         game.player2 = user;
 
-      //         GameGateway.participants.set(user, room_name);
-      //         GameGateway.participants.set(socketId, room_name);
-      //         GameGateway.rooms.set(room_name, game);
-
       //         GameGateway.queues.delete(socketId);
       //         GameGateway.queues.delete(user);
-      //         game.start();
-      //         break;
       //     }
       // }
   }
 
+  @SubscribeMessage('quit_queue')
+  quitQueue(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+    console.log("Quit queue received: ", data);
+    if (GameGateway.queues.normal === data.user_id)
+      GameGateway.queues.normal = -1;
+    if (GameGateway.queues.magic === data.user_id)
+      GameGateway.queues.magic = -1;
+    return "You are no longer in queue";
+  }
+
   @SubscribeMessage('init_room')
   async sendRoomInfo(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
-    
+    const room = GameGateway.rooms.get(data.room_name);
+    if (!room)
+      return null;
+    if (data.user_id !== room.playerL && data.user_id !== room.playerR)
+      this.server.in(data.user_id).socketsJoin(data.room_name);
+    return room; 
+  }
+
+  @SubscribeMessage('ready')
+  async onPlayerReady(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+    const room = GameGateway.rooms.get(data.room_name);
+    if (!room || (data.user_id !== room.playerL && data.user_id !== room.playerR)
+        || room.ready === data.user.id)
+      return null;
+    if (room.ready === 0)
+      room.ready = data.user_id;
+    else {
+      this.server.to(data.room_name).emit("game_start");
+    }
   }
 
   @SubscribeMessage('update_pos')
