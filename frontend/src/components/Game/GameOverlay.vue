@@ -3,7 +3,8 @@
     <div class="overlayBox" v-if="dataReady">
       <OverlayTopBar
         :user="user"
-        :opponent="opponent"
+        :playerL="playerL"
+        :playerR="playerR"
         :time="timer"
         :scores="scores"
         :messageL="messageL"
@@ -17,7 +18,7 @@
       <GameBox />
       <OverlayBottomBar
         :user="user"
-        :opponent="opponentId"
+        :room_name="room_name"
         :emojisURL="emojisURL"
         @changeSound="changeSound"
         @quitGame="quitGame"
@@ -30,7 +31,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, onBeforeMount } from "vue";
+import { defineComponent, defineExpose, onBeforeMount, defineProps } from "vue";
 import { Ref, ref } from "vue";
 import OverlayTopBar from "./OverlayTopBar.vue";
 import OverlayBottomBar from "./OverlayBottomBar.vue";
@@ -42,9 +43,18 @@ import { User } from "@backend/users/users.entity";
 import { getUrlOf } from "@/router";
 import socket from "@/socket";
 
+interface Props {
+  room_name: string;
+  playerL_id: number;
+  playerR_id: number;
+}
+
+const props: Readonly<Props> = defineProps<Props>();
+
 const user = useUserStore();
-const opponent: Ref<User | null> = ref(null);
-const opponentId = user.id == 4 ? 11 : 4;
+const playerL: Ref<User | null> = ref(null);
+const playerR: Ref<User | null> = ref(null);
+
 const messageL: Ref<Chat | null> = ref(null);
 const messageR: Ref<Chat | null> = ref(null);
 const emojiL: Ref<number> = ref(3);
@@ -86,12 +96,26 @@ function updateEmoji(msg: emojiInfo) {
   }
 }
 
-async function getOpponent(index: number) {
+async function getPlayersInfo() {
+  console.log(props);
   dataReady.value = false;
-  let response: Response = await fetch(getUrlOf("api/users/info/" + index), {
-    credentials: "include",
-  });
-  opponent.value = await response.json();
+
+  let left: Response = await fetch(
+    getUrlOf("api/users/info/" + props.playerL_id),
+    {
+      credentials: "include",
+    }
+  );
+  playerL.value = await left.json();
+
+  let right: Response = await fetch(
+    getUrlOf("api/users/info/" + props.playerR_id),
+    {
+      credentials: "include",
+    }
+  );
+  playerR.value = await right.json();
+
   setTimeout(() => {
     dataReady.value = true;
   }, 500);
@@ -110,7 +134,7 @@ function changeBackground() {
 }
 
 onBeforeMount(async () => {
-  await getOpponent(opponentId);
+  await getPlayersInfo();
   loadEmojis();
   timer.value = new Date();
   socket.on("receive_message_ingame", async (data) => {

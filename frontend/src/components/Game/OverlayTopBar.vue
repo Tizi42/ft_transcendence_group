@@ -10,10 +10,10 @@
             :time="emojiDateL"
             side="left"
           />
-          <img :src="getPictureUrl(user.id)" class="profile" />
+          <img :src="getPictureUrl(playerL.id)" class="profile" />
         </div>
         <UserChat
-          :user="user"
+          :user="playerL"
           :message="messageL"
           :mine="true"
           transition="fadeGroup"
@@ -27,7 +27,7 @@
       </div>
       <div class="playerInfoRight">
         <UserChat
-          :user="opponent"
+          :user="playerR"
           :message="messageR"
           :mine="false"
           transition="fadeGroupR"
@@ -40,7 +40,7 @@
             :time="emojiDateR"
             side="right"
           />
-          <img :src="getPictureUrl(opponent.id)" class="profile" />
+          <img :src="getPictureUrl(playerR.id)" class="profile" />
         </div>
       </div>
     </div>
@@ -58,7 +58,8 @@ import EmoteBox from "./EmoteBox.vue";
 
 interface Props {
   user: User;
-  opponent: User;
+  playerL: User;
+  playerR: User;
   time: Date;
   scores: Array<number>;
   messageL: Chat | null;
