@@ -87,6 +87,10 @@ export class UsersService {
     await this.usersRepository.delete(id);
   }
 
+  async needRecreate(): Promise<boolean> {
+	return await this.usersRepository.count() < 10;
+  }
+
   async removeAll(): Promise<void> {
     await this.chatRepository.delete({});
     await this.usersRepository.delete({});
