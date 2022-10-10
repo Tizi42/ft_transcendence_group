@@ -15,10 +15,15 @@ import { UsersService } from './users.service';
   ],
 })
 export class UsersModule {
-  // constructor(private usersService: UsersService) {
-  //   this.usersService.removeAll();
-  //   setTimeout(() => {
-  //     this.usersService.createFakeUsers(10);
-  //   }, 1000);
-  // }
+  constructor(private usersService: UsersService) {
+	if (this.usersService.needRecreate()) {
+		console.log("creating 10 fake users");
+		this.usersService.removeAll();
+		setTimeout(() => {
+		this.usersService.createFakeUsers(10);
+		}, 1000);
+	} else {
+		console.log("don't create fake users");
+	}
+  }
 }
