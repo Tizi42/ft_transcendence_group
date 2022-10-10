@@ -1,36 +1,38 @@
 <template>
-  <div class="page2FA">
-    <div class="box boxMenu">
-      <div class="gameMode">
-        <div class="previousChoice" @click="changeMode(false)" />
-        <Transition name="bounce">
-          <div class="titleGame" v-if="show">
-            {{ modeTitle[choosenMode] }}
-          </div>
-        </Transition>
-        <div class="nextChoice" @click="changeMode(true)" />
-      </div>
-      <div class="description">
-        <Transition name="fade">
-          <div v-if="show">
-            {{ modeDescription[choosenMode] }}
-          </div>
-        </Transition>
-      </div>
-      <div class="startBtn" @click="startGame">Start game</div>
-    </div>
-  </div>
-  <teleport to="body" v-if="addWindow">
-    <SimpleModal @hide="hide">
-      <Transition name="bounce" appear>
-        <div class="popUpContent" v-if="addWindow">
-          <div class="popUpTxt">Finding your opponent...</div>
-          <LoadingRing color="#ffcb00" size="50px" height="50px" />
-          <div class="cancelBtn" @click="hide">Cancel</div>
+  <div>
+    <div class="page2FA">
+      <div class="box boxMenu">
+        <div class="gameMode">
+          <div class="previousChoice" @click="changeMode(false)" />
+          <Transition name="bounce">
+            <div class="titleGame" v-if="show">
+              {{ modeTitle[choosenMode] }}
+            </div>
+          </Transition>
+          <div class="nextChoice" @click="changeMode(true)" />
         </div>
-      </Transition>
-    </SimpleModal>
-  </teleport>
+        <div class="description">
+          <Transition name="fade">
+            <div v-if="show">
+              {{ modeDescription[choosenMode] }}
+            </div>
+          </Transition>
+        </div>
+        <div class="startBtn" @click="startGame">Start game</div>
+      </div>
+    </div>
+    <teleport to="body" v-if="addWindow">
+      <SimpleModal @hide="hide">
+        <Transition name="bounce" appear>
+          <div class="popUpContent" v-if="addWindow">
+            <div class="popUpTxt">Finding your opponent...</div>
+            <LoadingRing color="#ffcb00" size="50px" height="50px" />
+            <div class="cancelBtn" @click="hide">Cancel</div>
+          </div>
+        </Transition>
+      </SimpleModal>
+    </teleport>
+  </div>
 </template>
 
 <script lang="ts" setup>

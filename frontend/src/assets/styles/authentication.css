@@ -3,7 +3,6 @@
   align-items: center;
   flex-direction: column;
   height: 100vh;
-  background: var(--main-gradient-background);
 }
 
 .page2FA .GAlogo {
