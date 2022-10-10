@@ -224,6 +224,7 @@
 
 .messages-invite-game img {
     margin-right: 30px;
+    margin-bottom: 8px;
     width: 35px;
     height: 35px;
     cursor: pointer;
@@ -264,6 +265,7 @@
     flex-direction: row;
     align-items: center;
     padding: 1em;
+    text-align: left;
 }
 
 #from-user {
