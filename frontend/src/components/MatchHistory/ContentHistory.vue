@@ -2,7 +2,6 @@
   <TransitionGroup name="list" tag="ul" v-if="show && !noMatch">
     <li v-for="battle in items" :key="battle.id">
       <MatchResult
-        v-if="show"
         :match="battle"
         :pp1="getPictureUrl(battle.opponent1)"
         :pp2="getPictureUrl(battle.opponent2)"

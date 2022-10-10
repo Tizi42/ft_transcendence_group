@@ -39,6 +39,7 @@
 <script lang="ts" setup>
 import { ref, defineComponent, defineExpose } from "vue";
 import { useUserStore } from "@/stores/user";
+import socket from "@/socket";
 import axios from "axios";
 
 const user = useUserStore();
@@ -81,6 +82,11 @@ function onClickSearch() {
 }
 
 function onSend() {
+  const data = {
+    from: user.id,
+    to: targetUser.value.id,
+  };
+  socket.emit("request_friendship", data);
   axios
     .post("http://localhost:3000/api/users/friends/add", {
       id1: user.id,

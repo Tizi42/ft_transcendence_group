@@ -5,7 +5,10 @@
       <router-link to="/user/stats">
         <div class="user-navbar-item">STATS</div>
       </router-link>
-      <router-link to="/user/friends">
+      <router-link
+        to="/user/friends"
+        @click="socket.emit('remove_notification')"
+      >
         <div class="user-navbar-item">FRIENDS</div>
       </router-link>
       <router-link to="/user/settings">
