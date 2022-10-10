@@ -15,7 +15,7 @@
         :emojiDateL="emojiDateL"
         :emojiDateR="emojiDateR"
       />
-      <GameBox />
+      <GameBox :room_name="room_name" />
       <OverlayBottomBar
         :user="user"
         :room_name="room_name"

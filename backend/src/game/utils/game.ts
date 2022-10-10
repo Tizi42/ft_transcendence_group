@@ -32,11 +32,12 @@ export class GameRoom {
     ball_speed: number = 100;
 
 
-    constructor(left: number, right: number) {
+    constructor(left: number, right: number, name:string) {
         this.tick = Date.now();
         this.playerL = left;
         this.playerR = right;
         this.ready = 0;
+        this.room_name = name;
     }
     start() {
         this.server.sockets.to(this.player1).emit('game_found', {
