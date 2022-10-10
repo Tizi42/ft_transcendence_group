@@ -9,7 +9,8 @@
     ></div>
     <div class="info">
       <div class="name">
-        {{ friend.displayName }} <span class="id">(#{{ friend.id }})</span>
+        {{ smallDisplayName(friend.displayName) }}
+        <span class="id">(#{{ friend.id }})</span>
       </div>
       <div class="status">
         <div class="status-rond" ref="statusRound"></div>
@@ -45,6 +46,12 @@ const clickCoord = ref({
   y: 0,
 });
 
+function smallDisplayName(displayName: string): string {
+  let small = displayName.split(" ")[0].slice(0, 10);
+  if (small.length > 10) return small + ".";
+  return small;
+}
+
 function onClickFriend(event: Event) {
   clickCoord.value.x = event.pageX - 100;
   clickCoord.value.y = event.pageY + 10;
@@ -66,6 +73,7 @@ defineExpose(
 <style scoped>
 .friend-item {
   white-space: nowrap;
+  overflow: hidden;
   display: flex;
   width: 100%;
   min-width: 260px;
@@ -83,7 +91,6 @@ defineExpose(
   height: 70px;
   align-self: center;
   margin-left: 7%;
-  border: 1px solid #ffcb00;
 }
 
 .info {

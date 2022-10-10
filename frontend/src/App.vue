@@ -3,7 +3,6 @@
   <div class="wrapper">
     <RouterView v-slot="{ Component }">
       <Transition name="slide-right">
-        <!-- find a good one -->
         <component :is="Component" />
       </Transition>
     </RouterView>

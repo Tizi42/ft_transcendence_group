@@ -1,21 +1,29 @@
 <template>
   <div id="user-page">
-    <ProfileBanner />
-    <div class="user-navbar">
-      <router-link to="/user/stats">
-        <div class="user-navbar-item">STATS</div>
-      </router-link>
-      <router-link
-        to="/user/friends"
-        @click="socket.emit('remove_notification')"
-      >
-        <div class="user-navbar-item">FRIENDS</div>
-      </router-link>
-      <router-link to="/user/settings">
-        <div class="user-navbar-item">SETTINGS</div>
-      </router-link>
+    <div class="main-wrapper">
+      <ProfileBanner />
+      <div class="user-navbar">
+        <router-link to="/user/stats">
+          <div class="user-navbar-item">STATS</div>
+        </router-link>
+        <router-link
+          to="/user/friends"
+          @click="socket.emit('remove_notification')"
+        >
+          <div class="user-navbar-item">FRIENDS</div>
+        </router-link>
+        <router-link to="/user/settings">
+          <div class="user-navbar-item">SETTINGS</div>
+        </router-link>
+      </div>
+      <div class="wrapper">
+        <RouterView v-slot="{ Component }">
+          <Transition name="slide-top">
+            <component :is="Component" />
+          </Transition>
+        </RouterView>
+      </div>
     </div>
-    <router-view></router-view>
   </div>
 </template>
 
@@ -42,12 +50,12 @@ onBeforeMount(() => {
   width: 86%;
   margin-left: 7%;
   margin-right: 7%;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  padding: 0px 0px;
   display: flex;
   flex-direction: row;
   padding: 0;
-  border-bottom: 1px solid rgba(147, 150, 148, 0.5);
+  border-bottom: 1px solid #93969480;
+  margin-bottom: 30px;
 }
 
 .user-navbar a {
@@ -55,12 +63,12 @@ onBeforeMount(() => {
 }
 
 .user-navbar a:hover .user-navbar-item {
-  color: rgba(255, 203, 0, 1);
+  color: var(--main-color);
 }
 
 .user-navbar a.router-link-active .user-navbar-item {
-  color: rgba(255, 203, 0, 1);
-  border-bottom: 3px solid rgba(255, 203, 0, 1);
+  color: var(--main-color);
+  border-bottom: 3px solid var(--main-color);
 }
 
 .user-navbar-item {
@@ -70,12 +78,28 @@ onBeforeMount(() => {
   font-size: 26px;
   line-height: 1.6;
   margin: 0px 28px 6px;
-  color: rgba(255, 255, 255, 1);
+  color: #ffffff;
   text-align: center;
+}
+
+.main-wrapper {
+  position: fixed;
+  top: 0vh;
+  left: 10vw;
+  height: 95vh;
+  width: 80vw;
+  background: var(--dark-green-background-transparent);
+  border-bottom-left-radius: 22px;
+  border-bottom-right-radius: 22px;
+  box-shadow: var(--main-shadow);
 }
 
 #user-page {
   height: 100vh;
   width: 100vw;
+}
+
+.wrapper {
+  position: relative;
 }
 </style>

@@ -2,7 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import GameView from "../views/GameView.vue";
 import LoginView from "../views/LoginView.vue";
 import UserView from "../views/UserView.vue";
-import UserStats from "../components/users/UserStats.vue";
+import UserStats from "../components/users/UserStats/UserStats.vue";
 import TwoFactorView from "../views/TwoFactorView.vue";
 import LeaderboardView from "../views/LeaderboardView.vue";
 import HistoryView from "../views/HistoryView.vue";

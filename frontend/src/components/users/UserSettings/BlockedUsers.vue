@@ -1,11 +1,13 @@
 <template>
-  <div v-if="!blocked.length" class="empty">No blocked user</div>
-  <div v-if="blocked.length">
-    <ul id="list-users">
-      <li v-for="one in blocked" :key="one">
-        <BlockedUserItem :blocked="one" @renew="doFetchBlocked" />
-      </li>
-    </ul>
+  <div class="wrapper">
+    <div v-if="!blocked.length" class="empty">No blocked user</div>
+    <div v-if="blocked.length">
+      <ul id="list-users">
+        <li v-for="one in blocked" :key="one">
+          <BlockedUserItem :blocked="one" @renew="doFetchBlocked" />
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -46,6 +48,10 @@ defineExpose(
 </script>
 
 <style scoped>
+.wrapper {
+  position: absolute;
+}
+
 .empty {
   margin: 36px 15% 36px 5%;
   padding-right: 2%;
