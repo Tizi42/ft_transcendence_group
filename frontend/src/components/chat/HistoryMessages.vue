@@ -7,12 +7,10 @@
     class="messages-invite-game"
     v-if="target != null && isActive === 'players'"
   >
+    <img src="@/assets/icons/watchGame.svg" alt="watch his game" />
     <img src="@/assets/icons/inviteInGame.png" alt="invite in game" />
   </div>
-  <div
-    class="container-messages"
-    v-if="target != null && isActive === 'players'"
-  >
+  <div class="container-messages" v-if="isActive === 'players'">
     <div v-for="message in history" :key="message">
       <div
         v-if="message.author.id != user.id"
@@ -37,14 +35,21 @@
 
 <script lang="ts" setup>
 import { useUserStore } from "@/stores/user";
-import { defineComponent, defineProps, defineExpose, Ref, ref } from "vue";
+import {
+  defineComponent,
+  defineProps,
+  defineExpose,
+  Ref,
+  ref,
+  watch,
+} from "vue";
 import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
 import UserBox from "../users/UserBox/UserBox.vue";
 import { User } from "@backend/users/users.entity";
 
 interface Props {
   history: Array<any>;
-  target: Ref<User>;
+  target: User;
   isActive: string;
 }
 
@@ -59,6 +64,14 @@ function showInfoBox() {
 function hide() {
   addWindow.value = false;
 }
+
+watch(
+  () => props.target,
+  () => {
+    const element = document.getElementsByClassName("container-messages")[0];
+    element.scrollTop = element.scrollHeight;
+  }
+);
 
 defineExpose(
   defineComponent({
