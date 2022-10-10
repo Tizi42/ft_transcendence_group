@@ -259,7 +259,7 @@ export class UsersService {
     if (user == null)
     {
       console.log("no user matches this id");
-      return null;
+      return [];
     }
     return this.usersRepository.find({
         where: { id: Any(user.friendWith) }
@@ -271,7 +271,7 @@ export class UsersService {
     if (user == null)
     {
       console.log("no user matches this id");
-      return null;
+      return [];
     }
     return this.usersRepository.find({
         where: { id: Any(user.friendPendingReqTo) }
@@ -283,7 +283,7 @@ export class UsersService {
     if (user == null)
     {
       console.log("no user matches this id");
-      return null;
+      return [];
     }
     return this.usersRepository.find({
         where: { id: Any(user.friendPendingReqFrom) }
