@@ -7,3 +7,8 @@ export type UserDetails = {
     picture: string;
     messages?: Chat[];
 };
+
+export type FriendShip = {
+    from: string;
+    to: string;
+}
