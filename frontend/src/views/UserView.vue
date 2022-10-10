@@ -70,4 +70,9 @@ onBeforeMount(() => {
   color: rgba(255, 255, 255, 1);
   text-align: center;
 }
+
+#user-page {
+  height: 100vh;
+  width: 100vw;
+}
 </style>

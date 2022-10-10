@@ -10,12 +10,12 @@
   color: #eeeeee;
   font-size: 20px;
   width: 70%;
-  height: 50%;
+  height: 70%;
   padding-left: 10%;
   padding-right: 10%;
-  background-color: #1e2a02ff;
   border-radius: 22px;
   line-height: 1.5em;
+  background-color: #1e2a02;
 }
 
 .startBtn {
@@ -69,7 +69,7 @@
   justify-content: space-between;
   padding-top: 5vh;
   padding-bottom: 5vh;
-  height: 35%;
+  height: 40%;
   opacity: 1;
 }
 
