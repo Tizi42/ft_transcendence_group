@@ -11,6 +11,9 @@ export interface userInfoStore {
   enabled2FA: Ref<boolean>;
   friends: Ref<Array<number>>;
   pending: Ref<Array<number>>;
+  totalGames: Ref<number>;
+  totalVictories: Ref<number>;
+  winRate: Ref<number>;
   doFetch: voidFunction;
   doFetchFriends: voidFunction;
   doFetchPending: voidFunction;
@@ -24,6 +27,9 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
   const avatarUrl = ref("");
   const friends = ref([]);
   const pending = ref([]);
+  const totalGames = ref(0);
+  const totalVictories = ref(0);
+  const winRate = ref(-1);
 
   doFetch();
   doFetchFriends();
@@ -42,6 +48,9 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
         email.value = user.email;
         avatarUrl.value = user.picture;
         enabled2FA.value = user.isTwoFactorAuthenticationEnabled;
+        totalGames.value = user.totalGames;
+        totalVictories.value = user.totalVictories;
+        winRate.value = user.winRate;
       })
       .catch((error) => {
         console.log(error);
@@ -86,6 +95,9 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
     enabled2FA,
     friends,
     pending,
+    totalGames,
+    totalVictories,
+    winRate,
     doFetch,
     doFetchFriends,
     doFetchPending,

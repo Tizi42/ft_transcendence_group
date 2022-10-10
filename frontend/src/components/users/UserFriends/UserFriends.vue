@@ -69,6 +69,7 @@ defineExpose(
 
 <style scoped>
 .friends-section {
+  position: absolute;
   width: 86%;
   margin-left: 7%;
   margin-right: 7%;
@@ -106,5 +107,10 @@ defineExpose(
   width: 99%;
   grid-gap: 15px;
   margin-bottom: 50px;
+  scrollbar-width: 0px;
+}
+
+.friends-grid::-webkit-scrollbar {
+  display: none;
 }
 </style>

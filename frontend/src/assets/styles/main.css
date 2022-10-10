@@ -34,6 +34,12 @@
   );
   --main-red: #d4391d;
   --main-shadow: 0px 0px 8px rgba(0, 0, 0, 0.75);
+  --main-green-nav: #005f3e;
+  --main-green-nav-active: #01472f;
+  --dark-green-background: #141d01;
+  --dark-green-background-transparent: #141d01ee;
+  --green-background: #1e2b02;
+  --green-background-transparent: #1e2a02e0;
 }
 
 #app {
@@ -68,7 +74,7 @@
   row-gap: 5px;
   justify-content: center;
   border: none;
-  box-shadow: 4px 0px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 4px 0px 4px #00000040;
 }
 
 .nav-container:hover #navbar {
@@ -97,7 +103,7 @@
 }
   
 nav a.router-link-active {
-  background-color: rgba(1, 71, 47, 1);
+  background-color: #01472f;
 }
   
 body {
