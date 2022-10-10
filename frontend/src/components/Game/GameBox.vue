@@ -1,9 +1,17 @@
 <template>
-  <div class="gameBox">GameBox</div>
+  <div class="gameBox">
+    <Suspense>
+      <GamePlay />
+      <template #fallback>
+        <div class="placeholder">Downloading ...</div>
+      </template>
+    </Suspense>
+  </div>
 </template>
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose } from "vue";
+import GamePlay from "./GamePlay.vue";
 
 defineExpose(
   defineComponent({

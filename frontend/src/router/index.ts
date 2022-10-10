@@ -9,6 +9,7 @@ import HistoryView from "../views/HistoryView.vue";
 import PlayView from "../views/PlayView.vue";
 import DevLogin from "../components/DevLogin.vue";
 import PlayGame from "../components/game/PlayGame.vue";
+import GamePlay from "../components/game/GamePlay.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -80,6 +81,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "pong",
     component: PlayGame,
     props: true,
+  },
+  {
+    path: "/test",
+    name: "test",
+    component: GamePlay,
   },
 ];
 

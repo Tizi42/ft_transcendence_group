@@ -4,9 +4,13 @@ import { Chat } from 'src/chat/entities/chat.entity';
 import { UsersController } from './users.controller';
 import { User } from './users.entity';
 import { UsersService } from './users.service';
+// import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Chat])],
+  imports: [
+    TypeOrmModule.forFeature([User, Chat]),
+    // HttpModule,
+  ],
   providers: [UsersService],
   controllers: [UsersController],
   exports: [
