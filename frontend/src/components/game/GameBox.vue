@@ -1,7 +1,7 @@
 <template>
   <div class="gameBox">
     <Suspense>
-      <GamePlay />
+      <GamePlay :room_name="room_name" />
       <template #fallback>
         <div class="placeholder">Downloading ...</div>
       </template>
@@ -10,8 +10,14 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose } from "vue";
+import { defineComponent, defineExpose, defineProps } from "vue";
 import GamePlay from "./GamePlay.vue";
+
+interface Props {
+  room_name: string;
+}
+
+defineProps<Props>();
 
 defineExpose(
   defineComponent({

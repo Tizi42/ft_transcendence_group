@@ -138,7 +138,7 @@ export function getUrlOf(str: string, port = 3000): string {
   );
 }
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to: any, from: any, next: any) => {
   const isAuthenticated = await getStatus();
   const isPreAuth = await getPreAuth();
 

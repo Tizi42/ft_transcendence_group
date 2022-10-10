@@ -1,10 +1,10 @@
-import { Scene } from "phaser";
+import Phaser from "phaser";
 import socket from "@/socket";
 import { Ball } from "../sprites/ball";
 import { Racket } from "../sprites/racket";
 import GameStatus from "@/game/type";
 
-export default class GameScene extends Scene {
+export default class GameScene extends Phaser.Scene {
   // ball: Ball;
   // l_racket: Racket;
   // r_racket: Racket;
@@ -30,9 +30,9 @@ export default class GameScene extends Scene {
   }
 
   preload() {
-    this.load.image("background", "background.png");
-    this.load.image("ball", "ball.png");
-    this.load.image("paddle", "paddle.png");
+    // this.load.image("background", "background.png");
+    // this.load.image("ball", "ball.png");
+    // this.load.image("paddle", "paddle.png");
   }
 
   create() {

@@ -42,7 +42,9 @@ export class GameGateway extends AppGateway {
     } else {
       GameGateway.queues[data.mode] = -1;
       const room_name = playerL + " vs " + data.user_id;
-      GameGateway.rooms.set(room_name, new GameRoom(playerL, data.user_id));
+      GameGateway.rooms.set(room_name, new GameRoom(playerL, data.user_id, room_name));
+      const room = GameGateway.rooms.get(room_name);
+      console.log("room value in queue", room);
       this.server.in(data.user_id).in(playerL).socketsJoin(room_name);
       this.server.to(data.user_id).to(playerL).emit("game_found", room_name);
     }
@@ -89,16 +91,26 @@ export class GameGateway extends AppGateway {
   }
 
   @SubscribeMessage('ready')
-  async onPlayerReady(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+  async onPlayerReady(@MessageBody() data: any) {
     const room = GameGateway.rooms.get(data.room_name);
     if (!room || (data.user_id !== room.playerL && data.user_id !== room.playerR)
-        || room.ready === data.user.id)
+        || room.ready === data.user_id)
       return null;
     if (room.ready === 0)
       room.ready = data.user_id;
     else {
+      room.ready = 0;
       this.server.to(data.room_name).emit("game_start");
     }
+  }
+
+  @SubscribeMessage('cancel_ready')
+  async onCancelReady(@MessageBody() data: any) {
+    const room = GameGateway.rooms.get(data.room_name);
+    if (!room)
+      return null;
+    if (room.ready === data.user_id)
+      room.ready = 0;
   }
 
   @SubscribeMessage('update_pos')

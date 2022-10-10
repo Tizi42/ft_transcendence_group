@@ -19,10 +19,10 @@ import { UsersService } from './users.service';
   ],
 })
 export class UsersModule {
-  constructor(private usersService: UsersService) {
+  // constructor(private usersService: UsersService) {
   //   this.usersService.removeAll();
   //   setTimeout(() => {
   //     this.usersService.createFakeUsers(10);
   //   }, 1000);
-  }
+  // }
 }
