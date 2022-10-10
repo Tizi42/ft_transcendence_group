@@ -17,11 +17,11 @@
 <script lang="ts" setup>
 import { defineComponent, defineExpose, ref, Ref } from "vue";
 import { defineProps, defineEmits } from "vue";
-import { userInfoStore } from "@/stores/user";
 import socket from "@/socket";
+import { UserMinimal } from "@/components/utils/UserMinimal";
 
 interface Props {
-  user: userInfoStore;
+  user: UserMinimal;
   opponent: number;
 }
 

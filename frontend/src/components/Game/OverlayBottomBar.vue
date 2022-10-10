@@ -105,13 +105,13 @@
 <script lang="ts" setup>
 import { defineComponent, defineExpose, onMounted, ref, Ref } from "vue";
 import { defineProps, defineEmits } from "vue";
-import { userInfoStore } from "@/stores/user";
+import { UserMinimal } from "@/components/utils/UserMinimal";
 import FloatingMenu from "../utils/FloatingMenu.vue";
 import SmallChat from "./SmallChat.vue";
 import socket from "@/socket";
 
 interface Props {
-  user: userInfoStore;
+  user: UserMinimal;
   opponent: number;
   emojisURL: Array<URL>;
 }

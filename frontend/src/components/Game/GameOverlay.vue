@@ -2,7 +2,8 @@
   <div class="pageCenter">
     <div class="overlayBox" v-if="dataReady">
       <OverlayTopBar
-        :user="user"
+        v-if="opponent != null"
+        :user="createUserFromStore(user)"
         :opponent="opponent"
         :time="timer"
         :scores="scores"
@@ -16,7 +17,7 @@
       />
       <GameBox />
       <OverlayBottomBar
-        :user="user"
+        :user="createUserFromStore(user)"
         :opponent="opponentId"
         :emojisURL="emojisURL"
         @changeSound="changeSound"
@@ -38,12 +39,14 @@ import GameBox from "./GameBox.vue";
 import ReadyButton from "./ReadyButton.vue";
 import { useUserStore } from "@/stores/user";
 import { Chat } from "@backend/chat/entities/chat.entity";
+import { UserMinimal } from "@/components/utils/UserMinimal";
 import { User } from "@backend/users/users.entity";
 import { getUrlOf } from "@/router";
 import socket from "@/socket";
+import { StoreGeneric } from "pinia";
 
-const user = useUserStore();
-const opponent: Ref<User | null> = ref(null);
+const user: StoreGeneric = useUserStore();
+const opponent: UserMinimal = new UserMinimal();
 const opponentId = user.id == 4 ? 11 : 4;
 const messageL: Ref<Chat | null> = ref(null);
 const messageR: Ref<Chat | null> = ref(null);
@@ -62,6 +65,13 @@ type emojiInfo = {
   dest: string;
   content: number;
 };
+
+function createUserFromStore(user: StoreGeneric): UserMinimal {
+  let newUser = new UserMinimal();
+  newUser.id = user.id;
+  newUser.displayName = user.displayName;
+  return newUser;
+}
 
 function loadEmojis() {
   for (var i = 1; i < 38; i++) {
@@ -91,7 +101,9 @@ async function getOpponent(index: number) {
   let response: Response = await fetch(getUrlOf("api/users/info/" + index), {
     credentials: "include",
   });
-  opponent.value = await response.json();
+  let responseUser: User = await response.json();
+  opponent.id = responseUser.id;
+  opponent.displayName = responseUser.displayName;
   setTimeout(() => {
     dataReady.value = true;
   }, 500);
