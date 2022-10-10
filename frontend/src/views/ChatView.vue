@@ -38,7 +38,7 @@
         :target="receiverProfile"
         :isActive="isActive"
       />
-      <MessageInput :user="user" :receiver="receiver" />
+      <MessageInput v-if="receiver != -1" :user="user" :receiver="receiver" />
     </div>
   </div>
 </template>
