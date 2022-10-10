@@ -6,6 +6,8 @@ import { User } from "./users.entity";
 import { FriendshipDto } from "./utils/friendship.dto";
 import { UserDetails } from "./utils/types";
 import { UserDto } from "./utils/user.dto";
+import * as fs from "fs";
+// import { HttpService } from "@nestjs/axios";
 
 @Injectable()
 export class UsersService {
@@ -22,6 +24,8 @@ export class UsersService {
       private readonly chatRepository: Repository<Chat>,
 
       private readonly dataSource: DataSource,
+
+      // private readonly httpService: HttpService,
   ) {}
 
   readonly LVL_FRIENDS: number = 0;
@@ -256,7 +260,7 @@ export class UsersService {
     if (user == null)
     {
       console.log("no user matches this id");
-      return null;
+      return [];
     }
     return this.usersRepository.find({
         where: { id: Any(user.friendWith) }
@@ -268,7 +272,7 @@ export class UsersService {
     if (user == null)
     {
       console.log("no user matches this id");
-      return null;
+      return [];
     }
     return this.usersRepository.find({
         where: { id: Any(user.friendPendingReqTo) }
@@ -280,7 +284,7 @@ export class UsersService {
     if (user == null)
     {
       console.log("no user matches this id");
-      return null;
+      return [];
     }
     return this.usersRepository.find({
         where: { id: Any(user.friendPendingReqFrom) }
@@ -499,4 +503,26 @@ export class UsersService {
         return this.getLeadByGames(global, id);
     }
   }
+
+  /*
+  **    OTHER
+  */
+  
+  // async downloadImage(fromUrl: string, toLocation: string) {
+  //   const writer = fs.createWriteStream(toLocation);
+  
+  //   const response = await this.httpService.axiosRef({
+  //       url: fromUrl,
+  //       method: 'GET',
+  //       responseType: 'stream',
+  //   });
+  
+  //   response.data.pipe(writer);
+  
+  //   return new Promise((resolve, reject) => {
+  //       writer.on('finish', resolve);
+  //       writer.on('error', reject);
+  //   });
+  // }
+
 }
