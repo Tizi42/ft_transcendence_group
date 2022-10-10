@@ -56,7 +56,6 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
         return response.json();
       })
       .then((list) => {
-        console.log(list);
         friends.value = list;
       })
       .catch((error) => {
@@ -72,7 +71,6 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
         return response.json();
       })
       .then((list) => {
-        console.log("pending:", list);
         pending.value = list;
       })
       .catch((error) => {

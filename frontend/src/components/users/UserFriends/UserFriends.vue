@@ -36,7 +36,8 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, ref, onBeforeMount } from "vue";
+import { defineComponent, defineExpose, defineEmits, ref } from "vue";
+import { onBeforeMount } from "vue";
 import { useUserStore } from "@/stores/user";
 import FriendItem from "./FriendItem.vue";
 import FriendReqItem from "./FriendReqItem.vue";
@@ -48,7 +49,6 @@ const addWindow = ref(false);
 
 function onAdd() {
   addWindow.value = true;
-  console.log("set add window true");
 }
 
 function hide() {

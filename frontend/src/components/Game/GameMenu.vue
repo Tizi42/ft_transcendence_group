@@ -18,32 +18,32 @@
             </div>
           </Transition>
         </div>
-        <div class="startBtn" @click="startGame">Start game</div>
+        <div class="startBtn" @click="startGame" v-if="!waiting">
+          Start game
+        </div>
+        <div v-else>
+          <Transition name="bounce" appear>
+            <div class="popUpContent">
+              <div class="cancelBtn" @click="cancel">
+                <LoadingRing color="#ffcb00" size="30px" height="30px" />
+                Cancel
+              </div>
+            </div>
+          </Transition>
+        </div>
       </div>
     </div>
-    <teleport to="body" v-if="addWindow">
-      <SimpleModal @hide="hide">
-        <Transition name="bounce" appear>
-          <div class="popUpContent" v-if="addWindow">
-            <div class="popUpTxt">Finding your opponent...</div>
-            <LoadingRing color="#ffcb00" size="50px" height="50px" />
-            <div class="cancelBtn" @click="hide">Cancel</div>
-          </div>
-        </Transition>
-      </SimpleModal>
-    </teleport>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose, onMounted, Ref } from "vue";
 import { ref } from "vue";
-import SimpleModal from "./SimpleModal.vue";
 import "@/assets/styles/gameOverlay.css";
 import LoadingRing from "../utils/LoadingRing.vue";
 import router from "@/router";
 
-const addWindow: Ref<boolean> = ref(false);
+const waiting: Ref<boolean> = ref(false);
 const show: Ref<boolean> = ref(false);
 const choosenMode: Ref<number> = ref(0);
 const numberModes = 3;
@@ -71,34 +71,37 @@ async function changeMode(next: boolean) {
   }, 500);
 }
 
-//  pop-up functions
-function hide() {
-  addWindow.value = false;
+//  game init/cancel
+function cancel() {
+  waiting.value = false;
   console.log("cancel game");
 }
 
 async function startGame() {
-  addWindow.value = true;
+  waiting.value = true;
   console.log("start game");
   setTimeout(() => {
-    router.push("pong");
+    if (waiting.value) router.push("pong");
+    waiting.value = false;
   }, 4000);
 }
 
 onMounted(() => {
   show.value = true;
   window.addEventListener("keyup", (event) => {
-    if (event.key == "Enter") {
-      startGame();
-    }
-    if (event.key == "Escape") {
-      hide();
-    }
-    if (event.key == "ArrowLeft" && !addWindow.value) {
-      changeMode(false);
-    }
-    if (event.key == "ArrowRight" && !addWindow.value) {
-      changeMode(true);
+    if (router.currentRoute.value.fullPath == "/play") {
+      if (event.key == "Enter") {
+        startGame();
+      }
+      if (event.key == "Escape") {
+        cancel();
+      }
+      if (event.key == "ArrowLeft" && !waiting.value) {
+        changeMode(false);
+      }
+      if (event.key == "ArrowRight" && !waiting.value) {
+        changeMode(true);
+      }
     }
   });
 });
