@@ -16,8 +16,26 @@
     </form>
     <img src="@/assets/icons/icon-add.png" alt="Create new channel" />
   </div>
-  <ul class="list-channels">
-    <li>my channels</li>
+  <div id="list-all-channels">
+    <h3>All channels</h3>
+  </div>
+  <ul class="list-my-channels">
+    <li>
+      <img src="@/assets/icons/groupe.png" />
+      <h3>my first channel</h3>
+    </li>
+    <li>
+      <img src="@/assets/icons/groupe.png" />
+      <h3>random</h3>
+    </li>
+    <li>
+      <img src="@/assets/icons/groupe.png" />
+      <h3>apt 42</h3>
+    </li>
+    <li>
+      <img src="@/assets/icons/groupe.png" />
+      <h3>always win a pong</h3>
+    </li>
   </ul>
 </template>
 
