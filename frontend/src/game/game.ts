@@ -11,11 +11,13 @@ class GameInfo extends Phaser.Plugins.BasePlugin {
 
   user_id: number;
   room_name: string;
+  watch_mode: boolean;
 
   init(data: any) {
     console.log("plugin data: ", data);
     this.user_id = data.user_id;
     this.room_name = data.room_name;
+    this.watch_mode = data.watch_mode;
   }
   //Additional methods for getting managing player data
   isAlive() {

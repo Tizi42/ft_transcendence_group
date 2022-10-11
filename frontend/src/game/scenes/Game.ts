@@ -19,6 +19,10 @@ export default class GameScene extends Phaser.Scene {
   paddle_left: Phaser.Physics.Arcade.Sprite;
   paddle_right: Phaser.Physics.Arcade.Sprite;
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+  paddle_velocity_max = 20;
+  paddle_pos: number;
+  width: number;
+  height: number;
 
   score_left = 0;
   score_right = 0;
@@ -29,13 +33,10 @@ export default class GameScene extends Phaser.Scene {
     super("GameScene");
   }
 
-  preload() {
-    // this.load.image("background", "background.png");
-    // this.load.image("ball", "ball.png");
-    // this.load.image("paddle", "paddle.png");
-  }
-
   create() {
+    this.width = this.cameras.main.width;
+    this.height = this.cameras.main.height;
+
     // set up background
     this.add.image(
       this.cameras.main.centerX,
@@ -44,17 +45,12 @@ export default class GameScene extends Phaser.Scene {
     );
 
     // set up world bounds
-    this.physics.world.setBounds(
-      -100,
-      0,
-      this.cameras.main.width + 200,
-      this.cameras.main.height
-    );
+    this.physics.world.setBounds(-100, 0, this.width + 200, this.height);
 
     // set up ball
     this.ball = this.physics.add.sprite(
-      this.cameras.main.width * 0.5,
-      this.cameras.main.height * 0.5,
+      this.width * 0.5,
+      this.height * 0.5,
       "ball"
     );
     this.ball.setCollideWorldBounds(true);
@@ -63,15 +59,14 @@ export default class GameScene extends Phaser.Scene {
     this.ball_velocity = 350;
 
     // set up paddles
-    this.paddle_left = this.create_paddle(
-      this.cameras.main.width * 0.02,
-      this.cameras.main.height * 0.5
-    );
+    this.paddle_left = this.create_paddle(this.width * 0.02, this.height * 0.5);
 
     this.paddle_right = this.create_paddle(
-      this.cameras.main.width * 0.98,
-      this.cameras.main.height * 0.5
+      this.width * 0.98,
+      this.height * 0.5
     );
+
+    this.paddle_pos = this.height * 0.5;
 
     //  set up input event
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -79,47 +74,54 @@ export default class GameScene extends Phaser.Scene {
     // collide ball with paddle
     this.physics.add.collider(this.ball, this.paddle_left);
     this.physics.add.collider(this.ball, this.paddle_right);
+
+    // listen for update
+    socket.on("game_update", (data: any) => {
+      this.paddle_left.y = data.paddle_left_velocity;
+      this.paddle_right.y = data.paddle_right_velocity;
+    });
   }
 
   update() {
-    const keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-    const keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+    // const keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+    // const keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
 
-    if (this.game_status === "ready") {
-      this.launch_ball("toRight");
-      this.game_status = "running";
-    }
+    // if (this.game_status === "ready") {
+    //   this.launch_ball("toRight");
+    //   this.game_status = "running";
+    // }
 
     if (this.cursors.up.isDown) {
-      this.paddle_left.setVelocityY(-250);
+      this.update_paddle(-this.paddle_velocity_max);
     } else if (this.cursors.down.isDown) {
-      this.paddle_left.setVelocityY(250);
-    } else if (this.cursors.up.isUp) {
-      this.paddle_left.setVelocityY(0);
-    } else if (this.cursors.down.isUp) {
-      this.paddle_left.setVelocityY(0);
+      this.update_paddle(this.paddle_velocity_max);
     }
+    // else if (this.cursors.up.isUp) {
+    //   this.update_paddle(0);
+    // } else if (this.cursors.down.isUp) {
+    //   this.update_paddle(0);
+    // }
 
-    if (keyW.isDown) {
-      this.paddle_right.setVelocityY(-250);
-    } else if (keyS.isDown) {
-      this.paddle_right.setVelocityY(250);
-    } else if (keyW.isUp) {
-      this.paddle_right.setVelocityY(0);
-    } else if (keyS.isUp) {
-      this.paddle_right.setVelocityY(0);
-    }
+    // if (keyW.isDown) {
+    //   this.paddle_right.setVelocityY(-250);
+    // } else if (keyS.isDown) {
+    //   this.paddle_right.setVelocityY(250);
+    // } else if (keyW.isUp) {
+    //   this.paddle_right.setVelocityY(0);
+    // } else if (keyS.isUp) {
+    //   this.paddle_right.setVelocityY(0);
+    // }
 
-    const leftBounds = -30;
-    const rightBounds = this.cameras.main.width + 30;
+    // const leftBounds = -30;
+    // const rightBounds = this.cameras.main.width + 30;
 
-    if (this.ball.x < leftBounds) {
-      this.score_right += 1;
-      this.launch_ball("toLeft");
-    } else if (this.ball.x > rightBounds) {
-      this.score_left += 1;
-      this.launch_ball("toRight");
-    }
+    // if (this.ball.x < leftBounds) {
+    //   this.score_right += 1;
+    //   this.launch_ball("toLeft");
+    // } else if (this.ball.x > rightBounds) {
+    //   this.score_left += 1;
+    //   this.launch_ball("toRight");
+    // }
   }
 
   create_paddle(x: number, y: number) {
@@ -127,6 +129,20 @@ export default class GameScene extends Phaser.Scene {
     paddle.setCollideWorldBounds(true);
     paddle.setImmovable(true);
     return paddle;
+  }
+
+  update_paddle(velocity: number) {
+    this.paddle_pos += velocity;
+    if (this.paddle_pos <= 40) {
+      this.paddle_pos = 40;
+    } else if (this.paddle_pos >= this.height - 40) {
+      this.paddle_pos = this.height - 40;
+    }
+    socket.emit("update_paddle", {
+      user_id: this.gameInfo.user_id,
+      room_name: this.gameInfo.room_name,
+      paddle_velocity: this.paddle_pos,
+    });
   }
 
   launch_ball(direction: string) {
