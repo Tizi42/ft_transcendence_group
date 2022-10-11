@@ -10,15 +10,13 @@
     <div class="content">
       <TableHistory
         title="Global"
-        :ready="dataReady[0]"
-        :battles="history[0]"
-        :noMatch="noMatch[0]"
+        :ready="dataReady"
+        :battles="battlesGlobal"
       />
       <TableHistory
         title="Personal"
-        :ready="dataReady[1]"
-        :battles="history[1]"
-        :noMatch="noMatch[1]"
+        :ready="dataReady"
+        :battles="battlesPersonal"
       />
     </div>
   </div>
@@ -26,43 +24,24 @@
 
 <script lang="ts" setup>
 import "@/assets/styles/historyAndLeaderboard.css";
-import { defineComponent, defineExpose } from "vue";
+import { defineComponent, defineExpose, ref } from "vue";
 import { onBeforeMount } from "vue";
-import { Ref, ref } from "vue";
-import { getUrlOf } from "@/router";
 import TableHistory from "@/components/MatchHistory/TableHistory.vue";
-import { useUserStore } from "@/stores/user";
-import { Battle } from "@backend/battles/battle.entity";
 
-// variables
-const user = useUserStore();
-const dataReady: Ref<Array<boolean>> = ref([false, false]);
-const history: Ref<Array<Battle[]>> = ref([[], []]);
-const noMatch: Ref<Array<boolean>> = ref([true, true]);
+const dataReady = ref(false);
+const battlesGlobal = ref({});
+const battlesPersonal = ref({});
 
-// loading functions
-async function reloadOne(index: number) {
-  dataReady.value[index] = false;
-  console.log(user.id);
-  let response: Response = await fetch(
-    getUrlOf("api/battles/" + (index == 0 ? "" : user.id)),
-    {
-      credentials: "include",
-    }
-  );
-  history.value[index] = await response.json();
-  setTimeout(() => {
-    dataReady.value[index] = true;
-  }, 500);
-}
-
+// setTimeout to test loading -> to remove
 async function reloadData() {
-  await reloadOne(0);
-  await reloadOne(1);
-  if (history.value[0].length > 0) noMatch.value[0] = false;
-  else noMatch.value[0] = true;
-  if (history.value[1].length > 0) noMatch.value[1] = false;
-  else noMatch.value[1] = true;
+  await setTimeout(async () => {
+    let response = await fetch("http://localhost:3000/api/battles", {
+      credentials: "include",
+    });
+    battlesGlobal.value = await response.json();
+    battlesPersonal.value = battlesGlobal.value;
+    dataReady.value = true;
+  }, 1000);
 }
 
 onBeforeMount(async () => {

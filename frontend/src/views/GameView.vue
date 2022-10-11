@@ -41,7 +41,6 @@ defineExpose(
   border: 5px solid var(--main-color);
   border-radius: 53px;
   margin-top: 30px;
-  transition: all 0.3s ease-out;
 }
 
 .gameButtonPlay {
@@ -59,10 +58,5 @@ defineExpose(
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-
-.gameButton:hover,
-.gameButtonPlay:hover {
-  transform: scale(1.1);
 }
 </style>

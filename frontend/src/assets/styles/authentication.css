@@ -5,10 +5,7 @@ h4 {
   line-height: 1.4em;
 }
 
-.container-turn-on input[type="submit"],
-.container-auth input[type="submit"],
-#search-form input[type="submit"]
-{
+input[type="submit"] {
   display: block;
   font-family: "Outfit Bold";
   background: #1e2a02;
@@ -23,25 +20,16 @@ h4 {
   transition: transform 0.5s ease;
 }
 
-.container-turn-on input[type="submit"]:hover,
-.container-auth input[type="submit"]:hover,
-#search-form input[type="submit"]:hover
-{
+input[type="submit"]:hover {
   transform: scale(1.05, 1.05);
   cursor: pointer;
 }
 
-.container-turn-on input[type="submit"]:focus,
-.container-auth input[type="submit"]:focus,
-#search-form input[type="submit"]:focus
-{
+input[type="submit"]:focus {
   transform: scale(1.05, 1.05);
 }
 
-.container-turn-on input[type="text"],
-.container-auth input[type="text"],
-#search-form input[type="text"]
-{
+input[type="text"] {
   display: block;
   font-family: "Outfit";
   text-align: center;
@@ -56,27 +44,16 @@ h4 {
   transition: transform 0.5s ease;
 }
 
-.container-turn-on input[type="text"]:hover,
-.container-turn-on input[type="text"]:focus,
-.container-auth input[type="text"]:hover,
-.container-auth input[type="text"]:focus,
-#search-form input[type="text"]:hover,
-#search-form input[type="text"]:focus
-{
+input[type="text"]:hover,
+input[type="text"]:focus {
   transform: scale(1.05, 1.05);
 }
 
-.container-turn-on input[type="text"]:focus,
-.container-auth input[type="text"]:focus,
-#search-form input[type="text"]:focus
-{
+input[type="text"]:focus {
   outline: none;
 }
 
-.container-turn-on ::placeholder,
-.container-auth ::placeholder,
-#search-form ::placeholder
-{
+::placeholder {
   color: rgba(255, 255, 255, 0.3);
 }
 

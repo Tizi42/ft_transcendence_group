@@ -7,15 +7,11 @@ export const useUserStore = defineStore("user", () => {
   const email = ref("");
   const enabled2FA = ref(false);
   const avatarUrl = ref("");
-  const friends = ref([]);
-  const pending = ref([]);
 
   doFetch();
-  doFetchFriends();
-  doFetchPending();
 
-  function doFetch() {
-    fetch("http://localhost:3000/api/private", {
+  async function doFetch() {
+    await fetch("http://localhost:3000/api/private", {
       credentials: "include",
     })
       .then((response) => {
@@ -33,48 +29,12 @@ export const useUserStore = defineStore("user", () => {
       });
   }
 
-  function doFetchFriends() {
-    fetch("http://localhost:3000/api/users/friends/" + id.value, {
-      credentials: "include",
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((list) => {
-        console.log(list);
-        friends.value = list;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-
-  function doFetchPending() {
-    fetch("http://localhost:3000/api/users/friends/from/" + id.value, {
-      credentials: "include",
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((list) => {
-        console.log("pending:", list);
-        pending.value = list;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-
   return {
     id,
     displayName,
     email,
     avatarUrl,
     enabled2FA,
-    friends,
-    pending,
     doFetch,
-    doFetchFriends,
-    doFetchPending,
   };
 });
