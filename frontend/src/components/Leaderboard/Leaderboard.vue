@@ -12,7 +12,7 @@
           <div class="nameTab">Win Rate</div>
         </div>
         <div :class="getClassStyleOf(2)" @click="changeOrder(2)">
-          <div class="nameTab">Games Played</div>
+          <div class="nameTab">Games</div>
         </div>
       </div>
     </div>
