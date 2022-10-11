@@ -92,6 +92,7 @@ onBeforeMount(() => {
   border-bottom-left-radius: 22px;
   border-bottom-right-radius: 22px;
   box-shadow: var(--main-shadow);
+  overflow: auto;
 }
 
 #user-page {
