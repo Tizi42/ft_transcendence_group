@@ -10,7 +10,10 @@
     <img src="@/assets/icons/watchGame.svg" alt="watch his game" />
     <img src="@/assets/icons/inviteInGame.png" alt="invite in game" />
   </div>
-  <div class="container-messages" v-if="isActive === 'players'">
+  <div
+    class="container-messages"
+    v-if="isActive === 'players' || selectedChannel != -1"
+  >
     <div v-for="message in history" :key="message">
       <div
         v-if="message.author.id != user.id"
@@ -51,6 +54,7 @@ interface Props {
   history: Array<any>;
   target: User;
   isActive: string;
+  selectedChannel: number;
 }
 
 const props: Readonly<Props> = defineProps<Props>();

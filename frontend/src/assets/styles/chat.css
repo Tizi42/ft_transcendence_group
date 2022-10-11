@@ -319,13 +319,13 @@
 .options-channel img {
     height: 20px;
     width: 20px;
-    cursor: pointer;
     transition: transform 0.5s ease;
     margin-right: 10px;
 }
 
 .options-channel img:hover {
-    transform: scale(1.1, 1.1);
+    transform: scale(1.25, 1.25);
+    cursor: pointer;
 }
 
 .search-in-my-channels #div-search-my-channels {
