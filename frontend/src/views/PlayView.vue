@@ -1,24 +1,14 @@
 <template>
-  <div class="container">
-    <h1 class="p-3 text-center">Play</h1>
-  </div>
+  <GameMenu />
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script lang="ts" setup>
+import { defineComponent, defineExpose } from "vue";
+import GameMenu from "../components/Game/GameMenu.vue";
 
-export default defineComponent({
-  name: "PlayView",
-});
+defineExpose(
+  defineComponent({
+    name: "PlayView",
+  })
+);
 </script>
-
-<style>
-h1 {
-  color: white;
-}
-
-nav a.router-link-active {
-  background-color: rgba(1, 71, 47, 1);
-  height: 200px;
-}
-</style>

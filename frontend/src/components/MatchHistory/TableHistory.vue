@@ -6,24 +6,26 @@
       </div>
     </div>
     <div class="tableContainer">
-      <ContentHistory :battles="battles" v-if="ready" />
-      <div class="loading" v-else>
-        <fulfilling-bouncing-circle-spinner
-          :animation-duration="2000"
-          :size="40"
-          color="#ffcb00"
-        />
-      </div>
+      <ContentHistory :battles="battles" :noMatch="noMatch" v-if="ready" />
+      <LoadingRing color="#ffcb00" size="64px" height="30vh" v-else />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { FulfillingBouncingCircleSpinner } from "epic-spinners";
+import { Battle } from "@backend/battles/battle.entity";
 import { defineComponent, defineExpose, defineProps } from "vue";
 import ContentHistory from "./ContentHistory.vue";
+import LoadingRing from "../utils/LoadingRing.vue";
 
-defineProps(["title", "ready", "battles"]);
+interface Props {
+  title: string;
+  battles: Array<Battle>;
+  ready: boolean;
+  noMatch: boolean;
+}
+
+defineProps<Props>();
 
 defineExpose(
   defineComponent({

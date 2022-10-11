@@ -23,7 +23,7 @@ import axios from "axios";
 const user = useUserStore();
 const props = defineProps(["friend"]);
 const emit = defineEmits(["hide"]);
-const menu = ref(null);
+const menu = ref();
 
 function onRemoveFriend() {
   console.log("remove ", props.friend.id);
