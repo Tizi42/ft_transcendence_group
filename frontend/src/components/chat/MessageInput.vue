@@ -33,7 +33,7 @@ const onSubmit = () => {
   const data = {
     content: messageText.value,
     author: props.user.id,
-    dest: 1,
+    dest: props.receiver,
   };
 
   socket.emit("send_message", data, () => {

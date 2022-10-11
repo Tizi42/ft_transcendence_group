@@ -17,6 +17,7 @@ export class ChatService {
     ) {}
 
     async saveMessage(content: messageInfos): Promise<Chat> {
+        // console.log("SAVE");
         const newMessage = this.chatRepository.create(content);
         await this.chatRepository.save(newMessage);
 
@@ -24,18 +25,20 @@ export class ChatService {
     }
 
     async getMessages(): Promise<Chat[]> {
+        console.log("GET MESSAGES");
         return await this.chatRepository.find({ relations: ['author'] });
     }
 
     async getAllDest(): Promise<Chat[]> {
+        console.log("GET DESTS");
         return await this.chatRepository.find({ relations: ['dest'] });
     }
 
     async getMessagesById(destId: number, authorId: number): Promise<Chat[]>{
         const query = await this.chatRepository.find({
-            relations: ['channel', 'author'],
+            relations: ['dest', 'author'],
             where: [{
-                channel: {
+                dest: {
                     id: destId,
                 },
                 author: {
@@ -46,12 +49,12 @@ export class ChatService {
                 author: {
                     id: destId,
                 },
-                channel: {
+                dest: {
                     id: authorId,
                 }
             }],
         });
-        console.log("query = ", query);
+        // console.log("query = ", query);
         return query;
     }
 
