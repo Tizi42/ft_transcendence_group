@@ -8,6 +8,7 @@
 <script lang="ts">
 import { defineComponent, onBeforeMount } from "vue";
 import "@/assets/styles/authentication.css";
+import { getUrlOf } from "@/router";
 
 export default defineComponent({
   name: "GenerateTwoFactor",
@@ -16,7 +17,7 @@ export default defineComponent({
 
 <script lang="ts" setup>
 onBeforeMount(async () => {
-  await fetch("http://localhost:3000/api/auth/2fa/generate", {
+  await fetch(getUrlOf("api/auth/2fa/generate"), {
     method: "POST",
     credentials: "include",
   })

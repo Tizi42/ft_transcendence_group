@@ -7,6 +7,8 @@ import TwoFactorView from "../views/TwoFactorView.vue";
 import LeaderboardView from "../views/LeaderboardView.vue";
 import HistoryView from "../views/HistoryView.vue";
 import PlayView from "../views/PlayView.vue";
+import DevLogin from "../components/DevLogin.vue";
+import PlayGame from "../components/Game/PlayGame.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -17,8 +19,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/chat",
     name: "chat",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/ChatView.vue"),
+    component: () => import("../views/ChatView.vue"),
   },
   {
     path: "/user",
@@ -33,13 +34,15 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: "friends",
-        name: "firends",
-        component: () => import("../components/users/UserFriends.vue"),
+        name: "friends",
+        component: () =>
+          import("../components/users/UserFriends/UserFriends.vue"),
       },
       {
         path: "settings",
         name: "settings",
-        component: () => import("../components/users/UserSettings.vue"),
+        component: () =>
+          import("../components/users/UserSettings/UserSettings.vue"),
       },
     ],
   },
@@ -47,6 +50,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/login",
     name: "login",
     component: LoginView,
+  },
+  {
+    path: "/dev-login",
+    name: "dev-login",
+    component: DevLogin,
   },
   {
     path: "/2FA",
@@ -68,15 +76,20 @@ const routes: Array<RouteRecordRaw> = [
     name: "play",
     component: PlayView,
   },
+  {
+    path: "/pong",
+    name: "pong",
+    component: PlayGame,
+  },
 ];
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
 
 async function getStatus() {
-  return fetch("http://localhost:3000/api/private", {
+  return fetch(getUrlOf("api/private"), {
     credentials: "include",
   })
     .then((response) => {
@@ -95,7 +108,7 @@ async function getStatus() {
 }
 
 async function getPreAuth() {
-  return fetch("http://localhost:3000/api/preAuth", {
+  return fetch(getUrlOf("api/preAuth"), {
     credentials: "include",
   })
     .then((response) => {
@@ -111,6 +124,12 @@ async function getPreAuth() {
       console.log("ERROR : ", error);
       return false;
     });
+}
+
+export function getUrlOf(str: string, port = 3000): string {
+  return (
+    "http://" + window.location.hostname + ":" + port.toString() + "/" + str
+  );
 }
 
 router.beforeEach(async (to, from, next) => {
@@ -129,7 +148,10 @@ router.beforeEach(async (to, from, next) => {
         next({ name: "settings" });
       }
     }
-  } else if (to.name !== "login" && !isAuthenticated) {
+  } else if (
+    !(to.name === "login" || to.name === "dev-login") &&
+    !isAuthenticated
+  ) {
     next({ name: "login" });
   } else next();
 });

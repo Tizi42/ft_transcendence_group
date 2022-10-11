@@ -15,6 +15,7 @@
 <script lang="ts">
 import { defineComponent, ref, Ref } from "vue";
 import "@/assets/styles/authentication.css";
+import { getUrlOf } from "@/router";
 
 export default defineComponent({
   name: "AuthenticateTwoFactor",
@@ -27,7 +28,7 @@ import router from "@/router";
 const authenticationCode: Ref<string> = ref("");
 
 const authenticate = async () => {
-  await fetch("http://localhost:3000/api/auth/2fa/authenticate", {
+  await fetch(getUrlOf("api/auth/2fa/authenticate"), {
     method: "POST",
     credentials: "include",
     headers: {

@@ -1,76 +1,130 @@
 <template>
-  <div class="match">
-    <div class="matchResults" v-if="!battle.isFinished">
+  <div class="match" v-if="show">
+    <div class="matchResults" v-if="!match.isFinished">
       <div class="opponentLeft">
-        <div class="score"></div>
-        <div class="name">Conan Edogawa</div>
-        <img class="pp" src="@/assets/profile/conan.png" />
+        <div class="score">{{ match.score1 }}pts</div>
+        <div class="name">{{ name1 }}</div>
+        <img class="profile" :src="pp1" @click="showInfoBox(0)" />
       </div>
-      <fulfilling-bouncing-circle-spinner
-        :animation-duration="4000"
-        :size="20"
-        color="#ffcb00"
-      />
+      ...
       <div class="opponentRight">
-        <img class="pp" src="@/assets/profile/ran.png" />
-        <div class="name">Ran Mouri</div>
-        <div class="score"></div>
+        <img class="profile" :src="pp2" @click="showInfoBox(1)" />
+        <div class="name">{{ name2 }}</div>
+        <div class="score">{{ match.score2 }}pts</div>
       </div>
     </div>
     <div
       class="matchResults"
-      v-else-if="battle.isFinished && battle.winner == battle.opponent1"
+      v-else-if="match.isFinished && match.winner == match.opponent1"
     >
       <div class="opponentLeft winner">
-        <div class="score">10</div>
-        <div class="name">Conan Edogawa</div>
-        <img class="pp" src="@/assets/profile/conan.png" />
+        <div class="score">{{ match.score1 }}pts</div>
+        <div class="name">{{ name1 }}</div>
+        <img class="profile" :src="pp1" @click="showInfoBox(0)" />
       </div>
       vs
       <div class="opponentRight looser">
-        <img class="pp" src="@/assets/profile/ran.png" />
-        <div class="name">Ran Mouri</div>
-        <div class="score">3</div>
+        <img class="profile" :src="pp2" @click="showInfoBox(1)" />
+        <div class="name">{{ name2 }}</div>
+        <div class="score">{{ match.score2 }}pts</div>
       </div>
     </div>
     <div class="matchResults" v-else>
       <div class="opponentLeft looser">
-        <div class="score">10</div>
-        <div class="name">Conan Edogawa</div>
-        <img class="pp" src="@/assets/profile/conan.png" />
+        <div class="score">{{ match.score1 }}pts</div>
+        <div class="name">{{ name1 }}</div>
+        <img class="profile" :src="pp1" @click="showInfoBox(0)" />
       </div>
       vs
       <div class="opponentRight winner">
-        <img class="pp" src="@/assets/profile/ran.png" />
-        <div class="name">Ran Mouri</div>
-        <div class="score">3</div>
+        <img class="profile" :src="pp2" @click="showInfoBox(1)" />
+        <div class="name">{{ name2 }}</div>
+        <div class="score">{{ match.score2 }}pts</div>
       </div>
     </div>
     <div class="matchDate">
-      <div class="date">{{ getDate(battle.date_start) }}</div>
-      <div class="time">{{ getTime(battle.date_start) }}</div>
+      <div class="date">{{ getDate(match.date_start) }}</div>
+      <div class="time">{{ getTime(match.date_start) }}</div>
     </div>
   </div>
+  <teleport to="body">
+    <UserBoxModal v-if="addWindow[0]" @hide="hide(0)">
+      <UserBox :target="players[0]" />
+    </UserBoxModal>
+    <UserBoxModal v-if="addWindow[1]" @hide="hide(1)">
+      <UserBox :target="players[1]" />
+    </UserBoxModal>
+  </teleport>
 </template>
 
 <script lang="ts" setup>
 //  imports
-import { defineComponent, defineExpose, defineProps } from "vue";
-import { FulfillingBouncingCircleSpinner } from "epic-spinners";
+import { getUrlOf } from "@/router";
+import { Battle } from "@backend/battles/battle.entity";
+import { defineComponent, defineExpose, defineProps, ref, Ref } from "vue";
+import { onMounted } from "vue";
+import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
+import UserBox from "../users/UserBox/UserBox.vue";
+import { User } from "@backend/users/users.entity";
 
 //  variables
-defineProps(["battle"]);
+interface Props {
+  match: Battle;
+  pp1: string;
+  pp2: string;
+}
+
+const props: Readonly<Props> = defineProps<Props>();
+const show: Ref<boolean> = ref(false);
+const name1: Ref<string> = ref("");
+const name2: Ref<string> = ref("");
+const players: Ref<Array<User>> = ref([]);
+const addWindow: Ref<Array<boolean>> = ref([false, false]);
+
+//  pop-up functions
+function showInfoBox(nb: number) {
+  addWindow.value[nb] = true;
+}
+
+function hide(nb: number) {
+  addWindow.value[nb] = false;
+}
 
 //  usefull functions
-function getTime(fullDate): string {
-  let splitted = fullDate.split("T")[1].split(":");
-  return splitted[0] + ":" + splitted[1];
+function getTime(fullDate: Date): string {
+  let splitted = fullDate.toString().split("T")[1].split(":");
+  return splitted[0] + "h" + splitted[1];
 }
 
-function getDate(fullDate): string {
-  let splitted = fullDate.split("T")[0].split("-");
-  return splitted[1] + "." + splitted[2];
+function getDate(fullDate: Date): string {
+  let splitted = fullDate.toString().split("T")[0].split("-");
+  return splitted[1] + "/" + splitted[2] + "/" + splitted[0];
 }
+
+async function getName(id: number): Promise<string> {
+  let response: Response;
+  response = await fetch(getUrlOf("api/users/name/" + id), {
+    credentials: "include",
+  });
+  return await response.text();
+}
+
+async function getPlayer(id: number): Promise<User> {
+  let response: Response;
+  response = await fetch(getUrlOf("api/users/info/" + id), {
+    credentials: "include",
+  });
+  return await response.json();
+}
+
+//  lifecycle hook
+onMounted(async () => {
+  name1.value = await getName(props.match.opponent1);
+  name2.value = await getName(props.match.opponent2);
+  players.value.push(await getPlayer(props.match.opponent1));
+  players.value.push(await getPlayer(props.match.opponent2));
+  show.value = true;
+});
 
 //  expose component
 defineExpose(

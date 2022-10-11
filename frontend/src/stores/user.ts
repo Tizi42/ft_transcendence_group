@@ -1,17 +1,36 @@
-import { ref } from "vue";
+import { ref, Ref } from "vue";
 import { defineStore } from "pinia";
 
-export const useUserStore = defineStore("user", () => {
+type voidFunction = () => void;
+
+export interface userInfoStore {
+  id: Ref<number>;
+  displayName: Ref<string>;
+  email: Ref<string>;
+  avatarUrl: Ref<string>;
+  enabled2FA: Ref<boolean>;
+  friends: Ref<Array<number>>;
+  pending: Ref<Array<number>>;
+  doFetch: voidFunction;
+  doFetchFriends: voidFunction;
+  doFetchPending: voidFunction;
+}
+
+export const useUserStore = defineStore("user", (): userInfoStore => {
   const id = ref(0);
   const displayName = ref("");
   const email = ref("");
   const enabled2FA = ref(false);
   const avatarUrl = ref("");
+  const friends = ref([]);
+  const pending = ref([]);
 
   doFetch();
+  doFetchFriends();
+  doFetchPending();
 
-  async function doFetch() {
-    await fetch("http://localhost:3000/api/private", {
+  function doFetch() {
+    fetch("http://localhost:3000/api/private", {
       credentials: "include",
     })
       .then((response) => {
@@ -29,12 +48,48 @@ export const useUserStore = defineStore("user", () => {
       });
   }
 
+  function doFetchFriends() {
+    fetch("http://localhost:3000/api/users/friends/" + id.value, {
+      credentials: "include",
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((list) => {
+        console.log(list);
+        friends.value = list;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  function doFetchPending() {
+    fetch("http://localhost:3000/api/users/friends/from/" + id.value, {
+      credentials: "include",
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((list) => {
+        console.log("pending:", list);
+        pending.value = list;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   return {
     id,
     displayName,
     email,
     avatarUrl,
     enabled2FA,
+    friends,
+    pending,
     doFetch,
+    doFetchFriends,
+    doFetchPending,
   };
 });
