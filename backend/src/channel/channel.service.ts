@@ -25,4 +25,7 @@ export class ChannelService {
   remove(id: number) {
     return `This action removes a #${id} channel`;
   }
+  // enlever un user + les droits si proprio / admin et les donner au premier 
+  // si proprio : ajouter admin
+  // admin = bannir ou mute d'autre utilisateur
 }
