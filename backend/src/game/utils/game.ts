@@ -5,9 +5,6 @@ export class GameRoom {
     server: Server;
     lag: number = 30;
 
-    playerL: number;
-    playerR: number;
-    ready: number;
     
     player1: string;
     player2: string;
@@ -30,7 +27,12 @@ export class GameRoom {
     ball_dir_y: number = 0.0;
     ball_size: number = 25.6;
     ball_speed: number = 100;
-
+    
+    playerL: number;
+    playerR: number;
+    ready: number;
+    paddle_left_velocity: number = this.height * 0.5;
+    paddle_right_velocity: number = this.height * 0.5;
 
     constructor(left: number, right: number, name:string) {
         this.tick = Date.now();

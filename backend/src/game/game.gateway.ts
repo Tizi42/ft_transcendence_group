@@ -113,6 +113,23 @@ export class GameGateway extends AppGateway {
       room.ready = 0;
   }
 
+  @SubscribeMessage('update_paddle')
+  async onUpdatePaddle(@MessageBody() data: any) {
+    const room = GameGateway.rooms.get(data.room_name);
+    if (!room)
+      return null;
+    if (room.playerL === data.user_id) {
+      room.paddle_left_velocity = data.paddle_velocity;
+    } else if (room.playerR === data.user_id) {
+      room.paddle_right_velocity = data.paddle_velocity;
+    }
+    console.log("update_paddle: ", data);
+    this.server.to(data.room_name).emit("game_update", {
+      paddle_left_velocity: room.paddle_left_velocity,
+      paddle_right_velocity: room.paddle_right_velocity,
+    });
+  }
+
   @SubscribeMessage('update_pos')
   async updatePaddle(socket: Socket, data: any) {
       const socketId = socket.id;

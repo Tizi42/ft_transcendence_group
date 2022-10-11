@@ -7,11 +7,11 @@
 <script lang="ts" setup>
 import { defineExpose, defineComponent, onMounted, defineProps } from "vue";
 import type { Game } from "phaser";
-import socket from "@/socket";
 import { useUserStore } from "@/stores/user";
 
 interface Props {
   room_name: string;
+  watch_mode: boolean;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
@@ -24,6 +24,7 @@ onMounted(() => {
   gameInstance = game.launch(containerId, {
     user_id: user.id,
     room_name: props.room_name,
+    watch_mode: props.watch_mode,
   });
 });
 

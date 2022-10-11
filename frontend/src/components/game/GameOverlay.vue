@@ -15,7 +15,7 @@
         :emojiDateL="emojiDateL"
         :emojiDateR="emojiDateR"
       />
-      <GameBox :room_name="room_name" />
+      <GameBox :room_name="room_name" :watch_mode="watch_mode" />
       <OverlayBottomBar
         :user="user"
         :room_name="room_name"
@@ -66,6 +66,7 @@ const readyStatus: Ref<Array<boolean>> = ref([false, false]);
 const timer: Ref<Date> = ref(new Date());
 const scores: Array<number> = [0, 0];
 const emojisURL: Array<URL> = [];
+const watch_mode = ref(false);
 
 type emojiInfo = {
   author: string;
@@ -137,12 +138,15 @@ onBeforeMount(async () => {
   await getPlayersInfo();
   loadEmojis();
   timer.value = new Date();
-  socket.on("receive_message_ingame", async (data) => {
+  socket.on("receive_message_ingame", async (data: any) => {
     updateMessage(data);
   });
-  socket.on("receive_emoji_ingame", async (data) => {
+  socket.on("receive_emoji_ingame", async (data: any) => {
     updateEmoji(data);
   });
+
+  if (user.id != props.playerL_id && user.id != props.playerR_id)
+    watch_mode.value = true;
 });
 
 defineExpose(
