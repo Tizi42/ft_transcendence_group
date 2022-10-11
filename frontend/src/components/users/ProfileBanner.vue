@@ -51,10 +51,7 @@ function onSubmit() {
   editingMode.value = false;
   if (newname.value !== user.displayName) {
     axios.post(
-      "http://localhost:3000/api/users/info/" +
-        user.id +
-        "?displayname=" +
-        newname.value
+      "http://localhost:3000/api/users/info/3?displayname=" + newname.value
     );
   }
   user.doFetch();
@@ -115,15 +112,11 @@ defineExpose(
 
 .input-textarea {
   all: unset;
-  width: 6em;
-  font-size: 42px;
+  width: 8em;
   font-family: "Outfit";
-  background: rgba(30, 42, 2, 0.7);
-  box-shadow: inset 0px 0px 4px 3px rgb(0 0 0 / 25%);
-  color: white;
-  border-radius: 18px;
-  border: none;
-  line-height: 1.5em;
+  font-size: 42px;
+  color: rgba(30, 42, 2, 0.8);
+  background-color: white;
 }
 
 .edit-button {

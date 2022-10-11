@@ -7,7 +7,6 @@ import TwoFactorView from "../views/TwoFactorView.vue";
 import LeaderboardView from "../views/LeaderboardView.vue";
 import HistoryView from "../views/HistoryView.vue";
 import PlayView from "../views/PlayView.vue";
-import DevLogin from "../components/DevLogin.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -19,7 +18,7 @@ const routes: Array<RouteRecordRaw> = [
     path: "/chat",
     name: "chat",
     component: () =>
-      import("../views/ChatView.vue"),
+      import(/* webpackChunkName: "about" */ "../views/ChatView.vue"),
   },
   {
     path: "/user",
@@ -34,15 +33,13 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: "friends",
-        name: "friends",
-        component: () =>
-          import("../components/users/UserFriends/UserFriends.vue"),
+        name: "firends",
+        component: () => import("../components/users/UserFriends.vue"),
       },
       {
         path: "settings",
         name: "settings",
-        component: () =>
-          import("../components/users/UserSettings/UserSettings.vue"),
+        component: () => import("../components/users/UserSettings.vue"),
       },
     ],
   },
@@ -50,11 +47,6 @@ const routes: Array<RouteRecordRaw> = [
     path: "/login",
     name: "login",
     component: LoginView,
-  },
-  {
-    path: "/dev-login",
-    name: "dev-login",
-    component: DevLogin,
   },
   {
     path: "/2FA",
@@ -79,12 +71,12 @@ const routes: Array<RouteRecordRaw> = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(process.env.BASE_URL),
   routes,
 });
 
 async function getStatus() {
-  return fetch(getUrlOf("api/private"), {
+  return fetch("http://localhost:3000/api/private", {
     credentials: "include",
   })
     .then((response) => {
@@ -103,7 +95,7 @@ async function getStatus() {
 }
 
 async function getPreAuth() {
-  return fetch(getUrlOf("api/preAuth"), {
+  return fetch("http://localhost:3000/api/preAuth", {
     credentials: "include",
   })
     .then((response) => {
@@ -119,12 +111,6 @@ async function getPreAuth() {
       console.log("ERROR : ", error);
       return false;
     });
-}
-
-export function getUrlOf(str: string, port = 3000): string {
-  return (
-    "http://" + window.location.hostname + ":" + port.toString() + "/" + str
-  );
 }
 
 router.beforeEach(async (to, from, next) => {
@@ -143,10 +129,7 @@ router.beforeEach(async (to, from, next) => {
         next({ name: "settings" });
       }
     }
-  } else if (
-    !(to.name === "login" || to.name === "dev-login") &&
-    !isAuthenticated
-  ) {
+  } else if (to.name !== "login" && !isAuthenticated) {
     next({ name: "login" });
   } else next();
 });
