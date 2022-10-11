@@ -10,6 +10,7 @@ import { UsersModule } from 'src/users/users.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Chat, Channel]),
+    UsersModule
   ],
   providers: [ChannelService],
   exports: [

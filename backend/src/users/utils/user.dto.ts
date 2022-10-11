@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, IsString } from "class-validator";
-import { User } from "../users.entity";
+import { Channel } from "diagnostics_channel";
 
 export class UserDto {
   @IsNotEmpty()
@@ -17,8 +17,6 @@ export class UserDto {
   @IsNotEmpty()
   @IsString()
   picture: string;
-
-  dest: User;
 
   @IsString()
   pictureLocalFilename: string;

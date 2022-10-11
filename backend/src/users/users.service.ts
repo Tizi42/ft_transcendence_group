@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { Channel } from "src/channel/entities/channel.entity";
 import { Chat } from "src/chat/entities/chat.entity";
 import { Any, DataSource, In, Not, QueryRunner, Repository } from "typeorm";
 import { User } from "./users.entity";
@@ -103,7 +104,16 @@ export class UsersService {
   /*
   **    GET USER INFORMATIONS
   */
+//enlever channel de la liste 
+  // async getChannels() : Promise<Channel> {
+  //   const channels = await this.usersRepository.find( {
+  //     relations: ['channels'],
+  //     where: [{
 
+  //     }],
+  //   });
+  //   return channels;
+  // }
   async getDisplayname(id: number) : Promise<string> {
     let user = await this.usersRepository.findOneBy({id});
     if (user == null)

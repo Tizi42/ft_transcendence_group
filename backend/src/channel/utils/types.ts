@@ -3,7 +3,7 @@ import { TypeOfChan } from "../entities/channel.entity";
 
 export type channelInfos = {
     type: TypeOfChan;
-    receiver: User[];
+    members: User[];
     owner?: User;
     admin?: User[];
     password?: string;

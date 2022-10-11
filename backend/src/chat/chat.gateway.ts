@@ -1,5 +1,6 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { ChannelService } from 'src/channel/channel.service';
 import { AppGateway } from 'src/gateway';
 import { UsersService } from 'src/users/users.service';
 import { ChatService } from './chat.service';
@@ -9,6 +10,7 @@ export class ChatGateway extends AppGateway {
   constructor(
     readonly chatService: ChatService,
     readonly usersService: UsersService,
+    readonly channelService: ChannelService,
   ) {
     super(chatService, usersService);
   }
@@ -16,6 +18,16 @@ export class ChatGateway extends AppGateway {
   async handleConnection(socket: Socket) {}
 
   handleDisconnect(client: any) {}
+
+  @SubscribeMessage('create_channel')
+  async createChannel(
+    @MessageBody() data: any,
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const channel = await this.channelService.createChannel(data);
+
+    return channel;
+  }
 
   @SubscribeMessage('send_message')
   async handleMessage(
