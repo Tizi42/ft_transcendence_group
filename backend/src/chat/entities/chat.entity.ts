@@ -1,6 +1,5 @@
-import { Channel } from "src/channel/entities/channel.entity";
 import { User } from "src/users/users.entity";
-import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn, OneToOne } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn } from "typeorm";
 
 @Entity({ name: 'chat' })
 export class Chat {
@@ -14,9 +13,8 @@ export class Chat {
     @CreateDateColumn()
     createdAt: Date;
 
-    @OneToOne( () => Channel, (channel) => channel.id ) 
-    @JoinColumn()
-    channel: Channel;
+    @ManyToOne( () => User, (author) => author.messages )
+    dest: User;
 
     @ManyToOne( () => User, (author) => author.messages )
     author: User;
