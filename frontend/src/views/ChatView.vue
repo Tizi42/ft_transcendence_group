@@ -16,14 +16,18 @@
     </div>
     <div class="container-chat">
       <AllChannelsSelected
-        v-if="isActive === 'channels' && selectedChannel == 'all'"
+        v-if="isActive === 'channels' && selectedChannel == -1"
       />
       <HistoryMessages
         :history="history"
         :target="receiverProfile"
         :isActive="isActive"
       />
-      <MessageInput v-if="receiver != -1" :user="user" :receiver="receiver" />
+      <MessageInput
+        v-if="receiver != -1 || selectedChannel != -1"
+        :user="user"
+        :receiver="receiver"
+      />
     </div>
   </div>
 </template>
@@ -46,12 +50,12 @@ const isActive: Ref<string> = ref("players");
 const receiver: Ref<number> = ref(-1);
 const history: Ref<Array<any>> = ref([]);
 const receiverProfile: Ref<any> = ref(null);
-const selectedChannel: Ref<string> = ref("all");
+const selectedChannel: Ref<number> = ref(-1);
 
 const handleSelectedNav = (event: string) => {
   isActive.value = event;
   if (event === "players") {
-    selectedChannel.value = "all";
+    selectedChannel.value = -1;
   }
 };
 
@@ -77,7 +81,7 @@ const handleHistory = (event: Array<any>) => {
   history.value = event;
 };
 
-const handleChannelSelected = (event: string) => {
+const handleChannelSelected = (event: number) => {
   selectedChannel.value = event;
 };
 

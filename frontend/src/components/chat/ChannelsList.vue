@@ -20,48 +20,48 @@
     id="list-all-channels"
     @click="getAllChannels"
     :class="{
-      channelSelected: selectedChannel == 'all',
-      channelNotSelected: selectedChannel != 'all',
+      channelSelected: selectedChannel == -1,
+      channelNotSelected: selectedChannel != -1,
     }"
   >
     <h3>All channels</h3>
   </div>
   <ul class="list-my-channels">
     <li
-      @click="getChannelMessages('channel-1')"
+      @click="getChannelMessages(0)"
       :class="{
-        channelSelected: selectedChannel == 'channel-1',
-        channelNotSelected: selectedChannel != 'channel-1',
+        channelSelected: selectedChannel == 0,
+        channelNotSelected: selectedChannel != 0,
       }"
     >
       <img src="@/assets/icons/groupe.png" />
       <h3>my first channel</h3>
     </li>
     <li
-      @click="getChannelMessages('channel-2')"
+      @click="getChannelMessages(1)"
       :class="{
-        channelSelected: selectedChannel == 'channel-2',
-        channelNotSelected: selectedChannel != 'channel-2',
+        channelSelected: selectedChannel == 1,
+        channelNotSelected: selectedChannel != 1,
       }"
     >
       <img src="@/assets/icons/groupe.png" />
       <h3>random</h3>
     </li>
     <li
-      @click="getChannelMessages('channel-3')"
+      @click="getChannelMessages(2)"
       :class="{
-        channelSelected: selectedChannel == 'channel-3',
-        channelNotSelected: selectedChannel != 'channel-3',
+        channelSelected: selectedChannel == 2,
+        channelNotSelected: selectedChannel != 2,
       }"
     >
       <img src="@/assets/icons/groupe.png" />
       <h3>apt 42</h3>
     </li>
     <li
-      @click="getChannelMessages('channel-4')"
+      @click="getChannelMessages(3)"
       :class="{
-        channelSelected: selectedChannel == 'channel-4',
-        channelNotSelected: selectedChannel != 'channel-4',
+        channelSelected: selectedChannel == 3,
+        channelNotSelected: selectedChannel != 3,
       }"
     >
       <img src="@/assets/icons/groupe.png" />
@@ -74,15 +74,15 @@
 import { defineComponent, defineExpose, ref, Ref, defineEmits } from "vue";
 
 const inputSearch: Ref<string> = ref("");
-const selectedChannel: Ref<string> = ref("all");
+const selectedChannel: Ref<number> = ref(-1);
 
 const getAllChannels = () => {
-  selectedChannel.value = "all";
+  selectedChannel.value = -1;
   emit("getChannelSelected", selectedChannel.value);
 };
 
-const getChannelMessages = (channel: string) => {
-  selectedChannel.value = channel;
+const getChannelMessages = (channelId: number) => {
+  selectedChannel.value = channelId;
   emit("getChannelSelected", selectedChannel.value);
 };
 
