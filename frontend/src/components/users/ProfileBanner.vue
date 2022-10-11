@@ -78,6 +78,7 @@ defineExpose(
   margin-bottom: 20px;
   background-color: #141d01;
   display: flex;
+  box-shadow: var(--main-shadow);
 }
 
 .personal-info-frame {

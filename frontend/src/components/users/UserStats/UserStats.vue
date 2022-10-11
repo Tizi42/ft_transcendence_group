@@ -1,7 +1,10 @@
 <template>
   <div class="stats-section">
     <div class="stats-item">
-      <WinGraph />
+      <WinGraph
+        :totalGames="user.totalGames"
+        :totalVictories="user.totalVictories"
+      />
     </div>
     <div class="stats-item">
       <div class="statValue">{{ getWinRate() }}</div>
@@ -79,21 +82,22 @@ defineExpose(
   background-color: var(--dark-green-background);
   display: flex;
   align-items: center;
-  justify-content: left;
+  justify-content: space-evenly;
   text-align: left;
   border-radius: 22px;
   color: #dedede;
+  padding: 42px 0px;
 }
 
 .stats-item {
   display: flex;
   flex-direction: column;
   justify-content: left;
-  margin: 42px;
   font-family: "Outfit";
   font-style: normal;
   font-weight: light;
-  font-size: 20px;
+  font-size: 24px;
+  width: 15%;
 }
 
 .statValue {
