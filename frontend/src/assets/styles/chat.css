@@ -399,7 +399,6 @@
 }
 
 .list-my-channels li img {
-    /* width: 30px; */
     max-width: 50px;
     border-radius: 100%;
     flex: 1;
@@ -439,7 +438,11 @@
     align-items: center;
     margin: 0;
     padding: 1.3em;
+    cursor: pointer;
 }
+
+.channel-attributes:nth-child(even) {background-color: #1E2B02;}
+.channel-attributes:nth-child(odd) {background-color: #85802f;}
 
 .channel-attributes > h3 {
     flex: auto;
@@ -490,8 +493,10 @@
     border: none;
     background-size: 25px 25px;
     background-repeat: no-repeat;
-    background-color: #1E2B02;
 }
+
+.channel-attributes:nth-child(even) .icon-image {background-color: #1E2B02;}
+.channel-attributes:nth-child(odd) .icon-image {background-color: #85802f;}
 
 .message-channel {
     background-image: url("@/assets/icons/messageText.svg");
