@@ -22,6 +22,7 @@
         :history="history"
         :target="receiverProfile"
         :isActive="isActive"
+        :selectedChannel="selectedChannel"
       />
       <MessageInput
         v-if="receiver != -1 || selectedChannel != -1"

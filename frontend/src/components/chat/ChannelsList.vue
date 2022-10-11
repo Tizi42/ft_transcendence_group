@@ -14,7 +14,11 @@
         </button>
       </div>
     </form>
-    <img src="@/assets/icons/icon-add.png" alt="Create new channel" />
+    <img
+      src="@/assets/icons/icon-add.png"
+      alt="Create new channel"
+      @click="addNewChannel"
+    />
   </div>
   <div
     id="list-all-channels"
@@ -68,13 +72,21 @@
       <h3>always win a pong</h3>
     </li>
   </ul>
+  <Teleport to="body">
+    <ChannelBoxModal v-if="addWindow" @hide="hide">
+      <AddChannelBox />
+    </ChannelBoxModal>
+  </Teleport>
 </template>
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose, ref, Ref, defineEmits } from "vue";
+import ChannelBoxModal from "./ChannelBox/ChannelBoxModal.vue";
+import AddChannelBox from "./ChannelBox/AddChannelBox.vue";
 
 const inputSearch: Ref<string> = ref("");
 const selectedChannel: Ref<number> = ref(-1);
+const addWindow: Ref<boolean> = ref(false);
 
 const getAllChannels = () => {
   selectedChannel.value = -1;
@@ -86,9 +98,18 @@ const getChannelMessages = (channelId: number) => {
   emit("getChannelSelected", selectedChannel.value);
 };
 
+const addNewChannel = () => {
+  console.log("add new channel");
+  addWindow.value = true;
+};
+
 const onSubmit = () => {
   console.log("inputSearch = ", inputSearch);
 };
+
+function hide() {
+  addWindow.value = false;
+}
 
 const emit = defineEmits(["getChannelSelected"]);
 
