@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="wrapper-settings">
     <div class="settings">
       <div class="setting-navbar">
         <div
@@ -73,7 +73,7 @@ defineExpose(
 </script>
 
 <style scoped>
-.wrapper {
+.wrapper-settings {
   position: absolute;
   width: 100%;
 }
@@ -81,14 +81,14 @@ defineExpose(
 .settings {
   display: flex;
   position: relative;
-  width: 80%;
+  width: 100%;
+  gap: 50px;
 }
 
 .setting-navbar {
-  margin-left: 10%;
-  margin-right: 1%;
+  margin-left: 8%;
   align-items: left;
-  width: 14em;
+  width: 14%;
   text-align: left;
   display: flex;
   flex-direction: column;
@@ -142,13 +142,16 @@ defineExpose(
 }
 
 .setting-field {
-  width: fit-content;
-  max-width: 70%;
-  height: fit-content;
-  overflow: scroll;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  scrollbar-width: 0px;
   background-color: var(--dark-green-background);
   text-align: left;
   display: flex;
   flex-direction: column;
+}
+
+.setting-field::-webkit-scrollbar {
+  display: none;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="wrapper-blocked">
     <div v-if="!blocked.length" class="empty">No blocked user</div>
     <div v-if="blocked.length">
       <ul id="list-users">
@@ -48,7 +48,7 @@ defineExpose(
 </script>
 
 <style scoped>
-.wrapper {
+.wrapper-blocked {
   position: absolute;
 }
 

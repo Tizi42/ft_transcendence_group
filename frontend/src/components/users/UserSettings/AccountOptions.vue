@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="wrapper-account">
     <div class="option-group">
       <div class="on-off-option" @click="toggle2FA">
         <div class="option">
@@ -71,14 +71,15 @@ defineExpose(
 </script>
 
 <style scoped>
-.wrapper {
+.wrapper-account {
   position: absolute;
+  width: 60%;
 }
 
 .option-group {
   border-top: 1px solid rgba(147, 150, 148, 1);
-  margin: 36px 15% 48px 5%;
-  padding-right: 2%;
+  padding-top: 25px;
+  margin: 48px 0px;
 }
 
 .on-off-option {
