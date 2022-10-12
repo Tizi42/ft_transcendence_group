@@ -50,6 +50,7 @@ defineExpose(
 <style scoped>
 .wrapper-blocked {
   position: absolute;
+  width: 70%;
 }
 
 .empty {
