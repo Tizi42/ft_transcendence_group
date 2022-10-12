@@ -9,6 +9,13 @@ export default class GameOverScene extends Scene {
     super({ key: "GameOverScene" });
   }
 
+  winner: string;
+
+  init(data: any) {
+    console.log("init", data);
+    this.winner = data.winner;
+  }
+
   preload() {
     // this.load.image('sky', sky)
     // this.load.image('bomb', bomb)
