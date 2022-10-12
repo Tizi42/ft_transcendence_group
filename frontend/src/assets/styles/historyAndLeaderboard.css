@@ -93,6 +93,7 @@
   background-size: 100% 100%;
   background-repeat: no-repeat;
   width: 15%;
+  max-width: 200px;
   height: 100%;
   align-items: center;
   justify-content: center;
@@ -187,6 +188,7 @@
   background-image: url("@/assets/icons/tables/selectedTab.svg");
   background-size: 100% 100%;
   width: 100%;
+  max-width: 200px;
   height: 100%;
   align-items: center;
   justify-content: center;
@@ -346,7 +348,8 @@ li {
 .points,
 .winRate,
 .gamesNb {
-  width: 137px;
+  width: 100%;
+  max-width: 200px;
 }
 
 .profile {

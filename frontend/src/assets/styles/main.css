@@ -23,6 +23,11 @@
 :root {
   --main-color: #ffcb00;
   --main-gradient-background: linear-gradient(
+    115deg,
+    #01472f -20%,
+    #ffcb00 120%
+  );
+  --main-gradient2-background: linear-gradient(
     116.6deg,
     #005f3e -20.9%,
     #ffcb00 100%
