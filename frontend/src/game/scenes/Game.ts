@@ -5,16 +5,6 @@ import { Racket } from "../sprites/racket";
 import GameStatus from "@/game/type";
 
 export default class GameScene extends Phaser.Scene {
-  // ball: Ball;
-  // l_racket: Racket;
-  // r_racket: Racket;
-  // player: Racket;
-  // versus: Racket;
-  // pos = 0;
-  // gameState = -1;
-  // cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-  // room_name = "";
-
   ball: Phaser.Physics.Arcade.Sprite;
   paddle_left: Phaser.Physics.Arcade.Sprite;
   paddle_right: Phaser.Physics.Arcade.Sprite;
@@ -77,51 +67,41 @@ export default class GameScene extends Phaser.Scene {
 
     // listen for update
     socket.on("game_update", (data: any) => {
-      this.paddle_left.y = data.paddle_left_velocity;
-      this.paddle_right.y = data.paddle_right_velocity;
+      this.paddle_left.y = data.paddle_left_posY;
+      this.paddle_right.y = data.paddle_right_posY;
     });
+
+    socket.on("ball_update", (data: any) => {
+      this.ball.x = data.ball_x;
+      this.ball.y = data.ball_y;
+      // this.ball.setVelocity(data.vx, data.vy);
+    });
+
+    // socket.on("score_update", (data: any) => {
+    //   console.log("in game: score:", data);
+    //   // scores.value[0] = data.left;
+    //   // scores.value[1] = data.right;
+    // });
   }
 
+  // timer = 0;
   update() {
-    // const keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-    // const keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+    // this.timer += delta;
+    if (this.gameInfo.user_role === "left") {
+      if (this.game_status === "ready") {
+        this.launch_ball("toRight");
+        this.game_status = "running";
+      }
 
-    // if (this.game_status === "ready") {
-    //   this.launch_ball("toRight");
-    //   this.game_status = "running";
-    // }
+      this.check_score();
+      this.update_ball();
+    }
 
     if (this.cursors.up.isDown) {
       this.update_paddle(-this.paddle_velocity_max);
     } else if (this.cursors.down.isDown) {
       this.update_paddle(this.paddle_velocity_max);
     }
-    // else if (this.cursors.up.isUp) {
-    //   this.update_paddle(0);
-    // } else if (this.cursors.down.isUp) {
-    //   this.update_paddle(0);
-    // }
-
-    // if (keyW.isDown) {
-    //   this.paddle_right.setVelocityY(-250);
-    // } else if (keyS.isDown) {
-    //   this.paddle_right.setVelocityY(250);
-    // } else if (keyW.isUp) {
-    //   this.paddle_right.setVelocityY(0);
-    // } else if (keyS.isUp) {
-    //   this.paddle_right.setVelocityY(0);
-    // }
-
-    // const leftBounds = -30;
-    // const rightBounds = this.cameras.main.width + 30;
-
-    // if (this.ball.x < leftBounds) {
-    //   this.score_right += 1;
-    //   this.launch_ball("toLeft");
-    // } else if (this.ball.x > rightBounds) {
-    //   this.score_left += 1;
-    //   this.launch_ball("toRight");
-    // }
   }
 
   create_paddle(x: number, y: number) {
@@ -141,20 +121,54 @@ export default class GameScene extends Phaser.Scene {
     socket.emit("update_paddle", {
       user_id: this.gameInfo.user_id,
       room_name: this.gameInfo.room_name,
-      paddle_velocity: this.paddle_pos,
+      paddle_pos: this.paddle_pos,
     });
   }
 
   launch_ball(direction: string) {
+    const randomHeight = Phaser.Math.Between(80, this.cameras.main.height - 80);
     this.ball.disableBody(true, true);
     this.ball.enableBody(
       true,
       this.cameras.main.centerX,
-      Phaser.Math.Between(0, this.cameras.main.height),
+      randomHeight,
       true,
       true
     );
     if (direction === "toLeft") this.ball.setVelocity(-300, 300);
     else this.ball.setVelocity(300, 300);
+  }
+
+  check_score() {
+    const leftBounds = -30;
+    const rightBounds = this.cameras.main.width + 30;
+
+    if (this.ball.x < leftBounds) {
+      this.score_right += 1;
+      this.update_score();
+      this.launch_ball("toLeft");
+    } else if (this.ball.x > rightBounds) {
+      this.score_left += 1;
+      this.update_score();
+      this.launch_ball("toRight");
+    }
+  }
+
+  update_ball() {
+    socket.emit("ball_pos", {
+      room_name: this.gameInfo.room_name,
+      ball_x: this.ball.x,
+      ball_y: this.ball.y,
+      vx: this.ball.body.velocity.x,
+      vy: this.ball.body.velocity.y,
+    });
+  }
+
+  update_score() {
+    socket.emit("update_score", {
+      room_name: this.gameInfo.room_name,
+      left: this.score_left,
+      right: this.score_right,
+    });
   }
 }
