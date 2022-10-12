@@ -17,7 +17,6 @@ export class ChatService {
     ) {}
 
     async saveMessage(content: messageInfos): Promise<Chat> {
-        // console.log("SAVE");
         const newMessage = this.chatRepository.create(content);
         await this.chatRepository.save(newMessage);
 

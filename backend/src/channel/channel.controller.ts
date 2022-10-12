@@ -15,9 +15,4 @@ export class ChannelController {
   async channel(@Param('id') id: number) {
     return this.channelService.findOne(id);
   }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.channelService.remove(+id);
-  }
 }

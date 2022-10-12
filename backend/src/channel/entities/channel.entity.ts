@@ -5,6 +5,7 @@ export type TypeOfChan = "private" | "public" | "protected"
 
 @Entity({ name: 'channel' })
 export class Channel {
+
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -18,12 +19,18 @@ export class Channel {
     @ManyToOne(() => User, (user) => user.channels)
     members: User[];
 
-    // @Column({ nullable: true })
-    // owner: User;
+    @Column({ nullable: true })
+    owner: User;
 
-    // @Column({ nullable: true })
-    // admin: User[];
+    @Column({ nullable: true })
+    admins: User[];
 
-    // @Column({ nullable: true })
-    // password: string;
+    @Column({ nullable: true })
+    banned: User[];
+
+    @Column({ nullable: true })
+    muted: User[];
+
+    @Column({ nullable: true })
+    password: string;
 }
