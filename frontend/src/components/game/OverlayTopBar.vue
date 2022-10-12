@@ -55,6 +55,7 @@ import { Chat } from "@backend/chat/entities/chat.entity";
 import TimerStart from "../utils/TimerStart.vue";
 import UserChat from "./UserChat.vue";
 import EmoteBox from "./EmoteBox.vue";
+import socket from "@/socket";
 
 interface Props {
   user: User;
@@ -73,6 +74,13 @@ interface Props {
 
 defineProps<Props>();
 const show: Ref<boolean> = ref(false);
+// const score_left = ref(0);
+// const score_right = ref(0);
+
+// socket.on("score_update", (data: any) => {
+//   score_left.value = data.left;
+//   score_right.value = data.right;
+// })
 
 function getPictureUrl(id: number): string {
   return "http://localhost:3000/api/users/avatar/" + id.toString();

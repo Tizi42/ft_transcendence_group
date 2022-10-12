@@ -11,13 +11,13 @@ class GameInfo extends Phaser.Plugins.BasePlugin {
 
   user_id: number;
   room_name: string;
-  watch_mode: boolean;
+  user_role: string;
 
   init(data: any) {
     console.log("plugin data: ", data);
     this.user_id = data.user_id;
     this.room_name = data.room_name;
-    this.watch_mode = data.watch_mode;
+    this.user_role = data.user_role;
   }
   //Additional methods for getting managing player data
   isAlive() {
@@ -37,7 +37,6 @@ function launch(containerId: string, data: any) {
     backgroundColor: "#1E2B02",
     plugins: {
       global: [
-        //make the Player global to all scenes (and other plugins)
         // key is plugin key, plugin is class, start true/false if there
         // is a start method to run, mapping is the name tagged of this
         // to access the plugin class

@@ -15,7 +15,7 @@
         :emojiDateL="emojiDateL"
         :emojiDateR="emojiDateR"
       />
-      <GameBox :room_name="room_name" :watch_mode="watch_mode" />
+      <GameBox :room_name="room_name" :user_role="user_role" />
       <OverlayBottomBar
         :user="user"
         :room_name="room_name"
@@ -64,9 +64,9 @@ const emojiDateR: Ref<Date> = ref(new Date());
 const dataReady: Ref<boolean> = ref(false);
 const readyStatus: Ref<Array<boolean>> = ref([false, false]);
 const timer: Ref<Date> = ref(new Date());
-const scores: Array<number> = [0, 0];
+const scores: Ref<Array<number>> = ref([0, 0]);
 const emojisURL: Array<URL> = [];
-const watch_mode = ref(false);
+const user_role = ref(false);
 
 type emojiInfo = {
   author: string;
@@ -145,8 +145,15 @@ onBeforeMount(async () => {
     updateEmoji(data);
   });
 
-  if (user.id != props.playerL_id && user.id != props.playerR_id)
-    watch_mode.value = true;
+  if (user.id === props.playerL_id) user_role.value = "left";
+  else if (user.id === props.playerR_id) user_role.value = "right";
+  else user_role.value = "watch";
+
+  socket.on("score_update", (data: any) => {
+    console.log("score:", data);
+    scores.value[0] = data.left;
+    scores.value[1] = data.right;
+  });
 });
 
 defineExpose(

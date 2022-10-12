@@ -26,7 +26,7 @@ export default class GetReadyScene extends Phaser.Scene {
     this.readyButton.setInteractive();
 
     // listen on click ready button
-    if (!this.gameInfo.watch_mode) {
+    if (this.gameInfo.user_role !== "watch") {
       this.readyButton.on("pointerdown", () => {
         if (this.ready === false) {
           this.readyButton.setTexture("cancel-ready");

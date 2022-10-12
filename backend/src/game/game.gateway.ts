@@ -48,26 +48,6 @@ export class GameGateway extends AppGateway {
       this.server.in(data.user_id).in(playerL).socketsJoin(room_name);
       this.server.to(data.user_id).to(playerL).emit("game_found", room_name);
     }
-
-      // if (!GameGateway.queues.has(socketId)) {
-      //     GameGateway.queues.set(socketId, data.mode);
-      // }
-      // this.server.sockets.emit('searching');
-      // for (let user of GameGateway.queues.keys()) {
-      //     let m = GameGateway.queues.get(user)
-      //     if (user != socketId && data.mode == m) {
-      //         const room_name = socketId + " vs " + user;
-      //         var game = new GameRoom();
-      //         game.room_name = room_name;
-      //         game.server = this.server;
-      //         game.mode = m;
-      //         game.player1 = socketId;
-      //         game.player2 = user;
-
-      //         GameGateway.queues.delete(socketId);
-      //         GameGateway.queues.delete(user);
-      //     }
-      // }
   }
 
   @SubscribeMessage('quit_queue')
@@ -119,24 +99,47 @@ export class GameGateway extends AppGateway {
     if (!room)
       return null;
     if (room.playerL === data.user_id) {
-      room.paddle_left_velocity = data.paddle_velocity;
+      room.paddle_left_pos_y = data.paddle_pos;
     } else if (room.playerR === data.user_id) {
-      room.paddle_right_velocity = data.paddle_velocity;
+      room.paddle_right_pos_y = data.paddle_pos;
     }
-    console.log("update_paddle: ", data);
     this.server.to(data.room_name).emit("game_update", {
-      paddle_left_velocity: room.paddle_left_velocity,
-      paddle_right_velocity: room.paddle_right_velocity,
+      paddle_left_posY: room.paddle_left_pos_y,
+      paddle_right_posY: room.paddle_right_pos_y,
     });
   }
 
-  @SubscribeMessage('update_pos')
-  async updatePaddle(socket: Socket, data: any) {
-      const socketId = socket.id;
-      console.log(socketId);
-      console.log(data[0]);
-      console.log(data[1]);
-      console.log(data);
-      GameGateway.rooms.get(data[0]).update_gamestate(socketId, data[1]);
+  @SubscribeMessage('ball_pos')
+  async updateBallPos(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+    // const room = GameGateway.rooms.get(data.room_name);
+    // if (!room)
+    //   return null;
+    // room.ball_pos_x = data.ball_x;
+    // room.ball_pos_y = data.ball_y;
+    socket.to(data.room_name).emit("ball_update", {
+      ball_x: data.ball_x,
+      ball_y: data.ball_y,
+      vx: data.vx,
+      vy: data.vy,
+    });
   }
+
+  @SubscribeMessage('update_score')
+  async onUpdateScore(@MessageBody() data: any) {
+    console.log("score:", data);
+    this.server.to(data.room_name).emit("score_update", {
+      left: data.left,
+      right: data.right,
+    });
+  }
+
+  // @SubscribeMessage('update_pos')
+  // async updatePaddle(socket: Socket, data: any) {
+  //     const socketId = socket.id;
+  //     console.log(socketId);
+  //     console.log(data[0]);
+  //     console.log(data[1]);
+  //     console.log(data);
+  //     GameGateway.rooms.get(data[0]).update_gamestate(socketId, data[1]);
+  // }
 }
