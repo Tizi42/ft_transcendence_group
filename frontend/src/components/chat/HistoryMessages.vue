@@ -11,6 +11,9 @@
     <img src="@/assets/icons/inviteInGame.png" alt="invite in game" />
   </div>
   <div class="manage-channel" v-if="selectedChannel != -1">
+    <div>
+      <p>ok</p>
+    </div>
     <img
       src="@/assets/icons/leave.png"
       alt="leave channel"
