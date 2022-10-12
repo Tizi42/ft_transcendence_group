@@ -39,7 +39,7 @@
 import { getUrlOf } from "@/router";
 import { useUserStore } from "@/stores/user";
 import { User } from "@backend/users/users.entity";
-import { defineExpose, defineComponent, onBeforeUnmount } from "vue";
+import { defineExpose, defineComponent } from "vue";
 import { onBeforeMount, ref, Ref } from "vue";
 import WinGraph from "./WinGraph.vue";
 import TableHistory from "@/components/MatchHistory/TableHistory.vue";
@@ -94,20 +94,6 @@ onBeforeMount(async () => {
   await reloadHistory();
   if (history.value.length > 0) noMatch.value = false;
   else noMatch.value = true;
-});
-
-async function scrollTop() {
-  setTimeout(() => {
-    window.scrollTo(0, 0);
-
-    78
-    +
-  }, 500);
-}
-
-onBeforeUnmount(async () => {
-  window.scrollTo(0, 0);
-  await scrollTop();
 });
 
 defineExpose(
