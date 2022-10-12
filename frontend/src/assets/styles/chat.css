@@ -216,6 +216,13 @@
     cursor: pointer;
 }
 
+.manage-channel div {
+    flex: 2;
+    display: flex;
+    flex-direction: row;
+    margin-left: 30px;
+}
+
 .messages-invite-game,
 .manage-channel {
     display: flex;
