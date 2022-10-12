@@ -142,26 +142,24 @@ router.beforeEach(async (to: any, from: any, next: any) => {
   const isAuthenticated = await getStatus();
   const isPreAuth = await getPreAuth();
 
-  console.log("isPreAuth: ", isPreAuth);
-  console.log("isAuth: ", isAuthenticated);
-
-  if (!isPreAuth && !(to.name === "login" || to.name === "dev-login")) {
-    next({ name: "login" });
-  }
-
   if (to.name === "2FA") {
-    if (!isAuthenticated) {
+    if (!isPreAuth && !isAuthenticated) {
+      next({ name: "login" });
+    } else if (isPreAuth && !isAuthenticated) {
       next();
     } else if (isAuthenticated) {
       if (from.fullPath === "/user/settings") {
         next();
       } else {
-        next({ name: "game" });
+        next({ name: "settings" });
       }
     }
-  }
-
-  next();
+  } else if (
+    !(to.name === "login" || to.name === "dev-login") &&
+    !isAuthenticated
+  ) {
+    next({ name: "login" });
+  } else next();
 });
 
 export default router;
