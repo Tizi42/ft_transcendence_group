@@ -14,15 +14,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, Ref } from "vue";
-
-export default defineComponent({
-  name: "TurnOnTwoFactor",
-});
-</script>
-
 <script lang="ts" setup>
+import { defineComponent, defineExpose, ref, Ref } from "vue";
 import router from "@/router";
 import "@/assets/styles/authentication.css";
 import { getUrlOf } from "@/router";
@@ -63,4 +56,10 @@ const verifyCode = async () => {
       console.log("error : ", error);
     });
 };
+
+defineExpose(
+  defineComponent({
+    name: "TurnOnTwoFactor",
+  })
+);
 </script>
