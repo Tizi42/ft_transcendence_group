@@ -24,7 +24,7 @@
     </FloatingMenu>
     <SmallChat
       :user="user"
-      :opponent="opponent"
+      :room_name="room_name"
       @getChatting="changeChattingStatus"
       ref="chatRef"
     />
@@ -112,7 +112,7 @@ import socket from "@/socket";
 
 interface Props {
   user: userInfoStore;
-  opponent: number;
+  room_name: string;
   emojisURL: Array<URL>;
 }
 
@@ -130,7 +130,7 @@ function sendEmoji(id: number) {
   const data = {
     content: id,
     author: props.user.id,
-    dest: props.opponent,
+    dest: props.room_name,
   };
   socket.emit("send_emoji_ingame", data);
 }

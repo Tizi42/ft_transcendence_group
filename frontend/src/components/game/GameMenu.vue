@@ -39,8 +39,11 @@ import { ref } from "vue";
 import SimpleModal from "./SimpleModal.vue";
 import "@/assets/styles/gameOverlay.css";
 import LoadingRing from "../utils/LoadingRing.vue";
-import router from "@/router";
+import router from "@/router/index";
+import socket from "@/socket";
+import { useUserStore } from "@/stores/user";
 
+const user = useUserStore();
 const addWindow: Ref<boolean> = ref(false);
 const show: Ref<boolean> = ref(false);
 const choosenMode: Ref<number> = ref(0);
@@ -71,17 +74,37 @@ async function changeMode(next: boolean) {
 
 //  pop-up functions
 function hide() {
+  socket.emit(
+    "quit_queue",
+    {
+      mode: "normal", //later: change to choosen mode
+      user_id: user.id,
+    },
+    (data: any) => {
+      console.log(data);
+    }
+  );
   addWindow.value = false;
-  console.log("cancel game");
 }
 
 async function startGame() {
   addWindow.value = true;
-  console.log("start game");
-  setTimeout(() => {
-    router.push("pong");
-  }, 4000);
+  socket.emit(
+    "queue_register",
+    {
+      mode: "normal", //later: change to choosen mode
+      user_id: user.id,
+    },
+    (data: any) => {
+      console.log(data);
+    }
+  );
 }
+
+socket.on("game_found", (data: any) => {
+  console.log("Entering game room! ", data);
+  router.push({ name: "pong", params: { room_name: data } });
+});
 
 onMounted(() => {
   show.value = true;
