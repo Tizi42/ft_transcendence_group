@@ -4,9 +4,9 @@ import { TypeOfChan } from "../entities/channel.entity";
 export type channelInfos = {
     type: TypeOfChan;
     members: User[];
-    owner?: User;
-    admin?: User[];
-    banned?: User[];
-    muted?: User[];
+    owner?: number;
+    admin?: number[];
+    banned?: number[];
+    muted?: number[];
     password?: string;
 }

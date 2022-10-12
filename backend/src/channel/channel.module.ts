@@ -6,13 +6,22 @@ import { Chat } from 'src/chat/entities/chat.entity';
 import { Channel } from './entities/channel.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from 'src/users/users.module';
+import { ChannelGateway } from './channel.gateway';
+import { ChatService } from 'src/chat/chat.service';
+import { ChatModule } from './chat.module';
+import { AuthService } from 'src/auth/auth.service';
+import { JwtModule } from '@nestjs/jwt/dist/jwt.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Chat, Channel]),
-    UsersModule
+    UsersModule,
+    ChatModule,
   ],
-  providers: [ChannelService],
+  providers: [
+    ChannelService, 
+    ChannelGateway,
+  ],
   exports: [
     ChannelService,
     TypeOrmModule.forFeature([Channel]),

@@ -1,5 +1,5 @@
 import { User } from "src/users/users.entity";
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, Any } from "typeorm";
 
 export type TypeOfChan = "private" | "public" | "protected"
 
@@ -20,16 +20,16 @@ export class Channel {
     members: User[];
 
     @Column({ nullable: true })
-    owner: User;
+    owner: number;
 
-    @Column({ nullable: true })
-    admins: User[];
+    @Column("int", { array: true, nullable: true })
+    admins: number[];
 
-    @Column({ nullable: true })
-    banned: User[];
+    @Column("int", { array: true, nullable: true })
+    banned: number[];
 
-    @Column({ nullable: true })
-    muted: User[];
+    @Column("int", { array: true, nullable: true })
+    muted: number[];
 
     @Column({ nullable: true })
     password: string;

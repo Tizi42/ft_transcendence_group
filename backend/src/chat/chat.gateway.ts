@@ -10,9 +10,8 @@ export class ChatGateway extends AppGateway {
   constructor(
     readonly chatService: ChatService,
     readonly usersService: UsersService,
-    readonly channelService: ChannelService,
   ) {
-    super(chatService, usersService,channelService);
+    super(chatService, usersService);
   }
 
   async handleConnection(socket: Socket) {}

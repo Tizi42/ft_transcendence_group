@@ -18,7 +18,6 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     readonly chatService: ChatService,
     readonly usersService: UsersService,
-    readonly channelService: ChannelService,
   ) {}
 
   async handleConnection(socket: Socket) {
