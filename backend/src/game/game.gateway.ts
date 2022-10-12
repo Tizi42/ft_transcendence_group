@@ -42,7 +42,7 @@ export class GameGateway extends AppGateway {
     } else {
       GameGateway.queues[data.mode] = -1;
       const room_name = playerL + " vs " + data.user_id;
-      GameGateway.rooms.set(room_name, new GameRoom(playerL, data.user_id, room_name));
+      GameGateway.rooms.set(room_name, new GameRoom(playerL, data.user_id, data.mode));
       const room = GameGateway.rooms.get(room_name);
       console.log("room value in queue", room);
       this.server.in(data.user_id).in(playerL).socketsJoin(room_name);
@@ -130,6 +130,34 @@ export class GameGateway extends AppGateway {
     this.server.to(data.room_name).emit("score_update", {
       left: data.left,
       right: data.right,
+    });
+  }
+
+  @SubscribeMessage('game_end')
+  async onGameEnd(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() data: any
+  ){
+    console.log("game end, winner is player ", data.winner);
+
+    const room = GameGateway.rooms.get(data.room_name);
+
+    if (!room)
+      return null;
+
+    // save game data
+    room.score_left = data.left;
+    room.score_right = data.right;
+    if (data.winner === "left")
+      room.winner = room.playerL;
+    else if (data.winner === "right")
+      room.winner = room.playerR;
+
+    //update battle history database
+
+    // inform other users in game room
+    socket.to(data.room_name).emit("end", {
+      winner: data.winner,
     });
   }
 

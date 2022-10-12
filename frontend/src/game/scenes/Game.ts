@@ -13,6 +13,7 @@ export default class GameScene extends Phaser.Scene {
   paddle_pos: number;
   width: number;
   height: number;
+  winner: string;
 
   score_left = 0;
   score_right = 0;
@@ -77,11 +78,10 @@ export default class GameScene extends Phaser.Scene {
       // this.ball.setVelocity(data.vx, data.vy);
     });
 
-    // socket.on("score_update", (data: any) => {
-    //   console.log("in game: score:", data);
-    //   // scores.value[0] = data.left;
-    //   // scores.value[1] = data.right;
-    // });
+    socket.on("end", (data: any) => {
+      this.winner = data.winner;
+      this.scene.start("GameOverScene", { winner: this.winner });
+    });
   }
 
   // timer = 0;
@@ -169,6 +169,23 @@ export default class GameScene extends Phaser.Scene {
       room_name: this.gameInfo.room_name,
       left: this.score_left,
       right: this.score_right,
+    });
+
+    if (
+      (this.score_left >= 2 || this.score_right >= 2) && // change 2 to 11
+      Math.abs(this.score_left - this.score_right) >= 0 // change 0 to 2
+    ) {
+      this.game_end();
+    }
+  }
+
+  game_end() {
+    if (this.score_left > this.score_right) this.winner = "left";
+    else this.winner = "right";
+    this.scene.start("GameOverScene", { winner: this.winner });
+    socket.emit("game_end", {
+      room_name: this.gameInfo.room_name,
+      winner: this.winner,
     });
   }
 }
