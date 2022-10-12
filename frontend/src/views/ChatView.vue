@@ -12,21 +12,28 @@
         @getHistory="handleHistory"
         :user="user"
       />
-      <ChannelsList v-else @getChannelSelected="handleChannelSelected" />
+      <ChannelsList
+        v-else
+        @getChannelSelected="handleChannelSelected"
+        :selectedChannel="selectedChannel"
+      />
     </div>
     <div class="container-chat">
       <AllChannelsSelected
         v-if="isActive === 'channels' && selectedChannel == -1"
+        @getChannelSelected="handleChannelSelected"
       />
       <HistoryMessages
         :history="history"
         :target="receiverProfile"
         :isActive="isActive"
+        :selectedChannel="selectedChannel"
       />
       <MessageInput
         v-if="receiver != -1 || selectedChannel != -1"
         :user="user"
         :receiver="receiver"
+        :selectedChannel="selectedChannel"
       />
     </div>
   </div>
@@ -42,7 +49,7 @@ import ChannelsList from "@/components/chat/ChannelsList.vue";
 import HistoryMessages from "@/components/chat/HistoryMessages.vue";
 import MessageInput from "@/components/chat/MessageInput.vue";
 import { getUrlOf } from "@/router";
-// import { User } from "@backend/users/users.entity";
+import { User } from "@backend/users/users.entity";
 import AllChannelsSelected from "@/components/chat/AllChannelsSelected.vue";
 
 const user: any = useUserStore();

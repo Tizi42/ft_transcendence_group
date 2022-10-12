@@ -216,13 +216,34 @@
     cursor: pointer;
 }
 
+<<<<<<< HEAD
 .messages-invite-game {
+=======
+.messages-invite-game,
+.manage-channel {
+>>>>>>> master
     display: flex;
     flex-direction: row;
     justify-content: end;
 }
 
+<<<<<<< HEAD
 .messages-invite-game img {
+=======
+.manage-channel #leave-img {
+    cursor: pointer;
+    transition: transform 0.5s ease;
+    margin-right: 10px;
+}
+
+.manage-channel #leave-img:hover {
+    transform: scale(1.1, 1.1);
+}
+
+.messages-invite-game img,
+.manage-channel #settings-img {
+    margin-top: 8px;
+>>>>>>> master
     margin-right: 30px;
     margin-bottom: 8px;
     width: 35px;
@@ -231,7 +252,12 @@
     transition: transform 0.5s ease;
 }
 
+<<<<<<< HEAD
 .messages-invite-game img:hover {
+=======
+.messages-invite-game img:hover,
+.manage-channel #settings-img:hover {
+>>>>>>> master
     transform: scale(1.1, 1.1);
 }
 
@@ -319,13 +345,21 @@
 .options-channel img {
     height: 20px;
     width: 20px;
+<<<<<<< HEAD
     cursor: pointer;
+=======
+>>>>>>> master
     transition: transform 0.5s ease;
     margin-right: 10px;
 }
 
 .options-channel img:hover {
+<<<<<<< HEAD
     transform: scale(1.1, 1.1);
+=======
+    transform: scale(1.25, 1.25);
+    cursor: pointer;
+>>>>>>> master
 }
 
 .search-in-my-channels #div-search-my-channels {
@@ -439,10 +473,19 @@
     margin: 0;
     padding: 1.3em;
     cursor: pointer;
+<<<<<<< HEAD
 }
 
 .channel-attributes:nth-child(even) {background-color: #1E2B02;}
 .channel-attributes:nth-child(odd) {background-color: #85802f;}
+=======
+    border-bottom: 1px solid #9396943f;
+}
+
+.channel-attributes:first-child {
+    border-top: 1px solid #9396943f;
+}
+>>>>>>> master
 
 .channel-attributes > h3 {
     flex: auto;
@@ -493,11 +536,17 @@
     border: none;
     background-size: 25px 25px;
     background-repeat: no-repeat;
+<<<<<<< HEAD
 }
 
 .channel-attributes:nth-child(even) .icon-image {background-color: #1E2B02;}
 .channel-attributes:nth-child(odd) .icon-image {background-color: #85802f;}
 
+=======
+    background-color: #1e2b02;
+}
+
+>>>>>>> master
 .message-channel {
     background-image: url("@/assets/icons/messageText.svg");
 }

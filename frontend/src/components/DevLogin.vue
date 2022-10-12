@@ -14,11 +14,14 @@
 
 <script lang="ts" setup defer>
 import { ref, defineComponent, defineExpose } from "vue";
+
 let email = ref("");
+
 function onSubmit() {
   window.location.href =
     "http://localhost:3000/api/auth/dev-only" + "?email=" + email.value;
 }
+
 defineExpose(
   defineComponent({
     name: "DevLogin",
@@ -53,6 +56,7 @@ defineExpose(
   line-height: 1.5em;
   margin: 10px 10px 10px 10px;
 }
+
 ::placeholder {
   color: rgba(30, 42, 2, 1);
   opacity: 1;

@@ -14,7 +14,15 @@
         </button>
       </div>
     </form>
+<<<<<<< HEAD
     <img src="@/assets/icons/icon-add.png" alt="Create new channel" />
+=======
+    <img
+      src="@/assets/icons/icon-add.png"
+      alt="Create new channel"
+      @click="addNewChannel"
+    />
+>>>>>>> master
   </div>
   <div
     id="list-all-channels"
@@ -68,6 +76,7 @@
       <h3>always win a pong</h3>
     </li>
   </ul>
+<<<<<<< HEAD
 </template>
 
 <script lang="ts" setup>
@@ -75,6 +84,43 @@ import { defineComponent, defineExpose, ref, Ref, defineEmits } from "vue";
 
 const inputSearch: Ref<string> = ref("");
 const selectedChannel: Ref<number> = ref(-1);
+=======
+  <Teleport to="body">
+    <ChannelBoxModal v-if="addWindow" @hide="hide">
+      <AddChannelBox />
+    </ChannelBoxModal>
+  </Teleport>
+</template>
+
+<script lang="ts" setup>
+import {
+  defineComponent,
+  defineExpose,
+  ref,
+  Ref,
+  defineEmits,
+  defineProps,
+  watch,
+} from "vue";
+import ChannelBoxModal from "./ChannelBox/ChannelBoxModal.vue";
+import AddChannelBox from "./ChannelBox/AddChannelBox.vue";
+
+interface Props {
+  selectedChannel: number;
+}
+
+const props: Readonly<Props> = defineProps<Props>();
+const inputSearch: Ref<string> = ref("");
+const selectedChannel: Ref<number> = ref(props.selectedChannel);
+const addWindow: Ref<boolean> = ref(false);
+
+watch(
+  () => props.selectedChannel,
+  (newSelectedChannel) => {
+    selectedChannel.value = newSelectedChannel;
+  }
+);
+>>>>>>> master
 
 const getAllChannels = () => {
   selectedChannel.value = -1;
@@ -86,10 +132,25 @@ const getChannelMessages = (channelId: number) => {
   emit("getChannelSelected", selectedChannel.value);
 };
 
+<<<<<<< HEAD
+=======
+const addNewChannel = () => {
+  console.log("add new channel");
+  addWindow.value = true;
+};
+
+>>>>>>> master
 const onSubmit = () => {
   console.log("inputSearch = ", inputSearch);
 };
 
+<<<<<<< HEAD
+=======
+function hide() {
+  addWindow.value = false;
+}
+
+>>>>>>> master
 const emit = defineEmits(["getChannelSelected"]);
 
 defineExpose(

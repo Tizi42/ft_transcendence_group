@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, IsString } from "class-validator";
-import { Channel } from "diagnostics_channel";
+import { User } from "../users.entity";
 
 export class UserDto {
   @IsNotEmpty()
