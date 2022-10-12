@@ -12,22 +12,12 @@ export class ChatGateway extends AppGateway {
     readonly usersService: UsersService,
     readonly channelService: ChannelService,
   ) {
-    super(chatService, usersService);
+    super(chatService, usersService,channelService);
   }
 
   async handleConnection(socket: Socket) {}
 
   handleDisconnect(client: any) {}
-
-  @SubscribeMessage('create_channel')
-  async createChannel(
-    @MessageBody() data: any,
-    @ConnectedSocket() socket: Socket,
-  ) {
-    const channel = await this.channelService.createChannel(data);
-
-    return channel;
-  }
 
   @SubscribeMessage('send_message')
   async handleMessage(

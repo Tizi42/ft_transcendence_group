@@ -104,16 +104,6 @@ export class UsersService {
   /*
   **    GET USER INFORMATIONS
   */
-//enlever channel de la liste 
-  // async getChannels() : Promise<Channel> {
-  //   const channels = await this.usersRepository.find( {
-  //     relations: ['channels'],
-  //     where: [{
-
-  //     }],
-  //   });
-  //   return channels;
-  // }
   async getDisplayname(id: number) : Promise<string> {
     let user = await this.usersRepository.findOneBy({id});
     if (user == null)
@@ -134,7 +124,6 @@ export class UsersService {
       return ("");
     return (user.pictureLocalFilename);
   }
-
 
   /*
   **    FIND USER

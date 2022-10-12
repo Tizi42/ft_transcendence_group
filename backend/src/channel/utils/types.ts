@@ -6,5 +6,7 @@ export type channelInfos = {
     members: User[];
     owner?: User;
     admin?: User[];
+    banned?: User[];
+    muted?: User[];
     password?: string;
 }
