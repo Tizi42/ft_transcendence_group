@@ -4,7 +4,7 @@
       <h2>Create a new channel</h2>
       <form id="create-channel" @submit.prevent="createNewChannel">
         <div class="fields">
-          <label for="channel-name">Channel name</label>
+          <label for="channel-name">Channel name :</label>
           <input
             id="channel-name"
             v-model="channelName"
@@ -13,7 +13,7 @@
           />
         </div>
         <div class="fields">
-          <label for="channel-type">Choose your channel privacy</label>
+          <label for="channel-type">Choose your channel privacy :</label>
           <select id="channel-type" name="privacy" v-model="channelType">
             <option v-bind:value="'public'">public</option>
             <option v-bind:value="'private'">private</option>
@@ -21,7 +21,7 @@
           </select>
         </div>
         <div class="fields" v-if="channelType === 'protected'">
-          <label for="channel-password">Set a password</label>
+          <label for="channel-password">Set a password :</label>
           <input
             id="channel-password"
             v-model="channelPassword"
@@ -62,7 +62,7 @@ defineExpose(
 h2 {
   color: #ffcb00;
   margin: 0;
-  margin-bottom: 30px;
+  margin-top: 20px;
 }
 
 #create-channel {
@@ -70,7 +70,7 @@ h2 {
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
-  height: 35vh;
+  height: 30vh;
 }
 
 .fields {
@@ -78,6 +78,36 @@ h2 {
   flex-direction: row;
   justify-content: space-evenly;
   align-items: center;
+}
+
+.fields input,
+#channel-type {
+  margin-left: 5px;
+  font-size: 0.8em;
+  border: none;
+  border-radius: 10px;
+  padding: 0.7em;
+  background-color: #141817;
+  transition: transform 0.5s ease;
+}
+
+#channel-type {
+  color: #ffcb00;
+  cursor: pointer;
+}
+
+.fields input {
+  color: white;
+}
+
+.fields input:hover,
+#channel-type:hover {
+  transform: scale(1.03, 1.03);
+}
+
+.fields input:focus,
+#channel-type:focus {
+  outline: none;
 }
 
 #add-channel-button {
