@@ -26,8 +26,10 @@ export class AuthController {
     handle42Redirect(@Req() request: RequestWithUser, @Res({ passthrough: true }) res: Response) {
         const { accessToken } = this.authService.login(request.user, false);
         res.cookie('jwt', accessToken);
+        ////console.log(request.user);
+        //console.log("jwt 1 = ", accessToken);
         // if (!request.user.isTwoFactorAuthenticationEnabled) {
-            // this.usersService.updateIsOnline(request.user.id, "online");
+        //   this.usersService.updateIsOnline(request.user.id, true);
         // }
         res.redirect('http://localhost:8080/2FA');
     }

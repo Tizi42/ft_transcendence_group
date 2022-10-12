@@ -6,3 +6,9 @@ export type messageInfos = {
     content: string;
     channelId?: number;
 }
+
+export type emojiInfo = {
+    author: string;
+    dest: string;
+    content: number;
+}

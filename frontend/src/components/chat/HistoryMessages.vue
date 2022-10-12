@@ -10,7 +10,28 @@
     <img src="@/assets/icons/watchGame.svg" alt="watch his game" />
     <img src="@/assets/icons/inviteInGame.png" alt="invite in game" />
   </div>
+<<<<<<< HEAD
   <div class="container-messages" v-if="isActive === 'players'">
+=======
+  <div class="manage-channel" v-if="selectedChannel != -1">
+    <img
+      src="@/assets/icons/leave.png"
+      alt="leave channel"
+      @click="leaveChannel"
+      id="leave-img"
+    />
+    <img
+      id="settings-img"
+      src="@/assets/icons/settings.svg"
+      alt="see settings"
+      @click="showSettings"
+    />
+  </div>
+  <div
+    class="container-messages"
+    v-if="isActive === 'players' || selectedChannel != -1"
+  >
+>>>>>>> master
     <div v-for="message in history" :key="message">
       <div
         v-if="message.author.id != user.id"
@@ -27,9 +48,18 @@
     </div>
   </div>
   <teleport to="body">
+<<<<<<< HEAD
     <UserBoxModal v-if="addWindow" @hide="hide">
       <UserBox :target="target" />
     </UserBoxModal>
+=======
+    <UserBoxModal v-if="userProfileWindow" @hide="hide">
+      <UserBox :target="target" />
+    </UserBoxModal>
+    <ChannelBoxModal v-if="settingsWindow" @hide="hide">
+      <SettingsChannelBox :user="user" :selectedChannel="selectedChannel" />
+    </ChannelBoxModal>
+>>>>>>> master
   </teleport>
 </template>
 
@@ -46,15 +76,25 @@ import {
 import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
 import UserBox from "../users/UserBox/UserBox.vue";
 import { User } from "@backend/users/users.entity";
+<<<<<<< HEAD
+=======
+import SettingsChannelBox from "./ChannelBox/SettingsChannelBox.vue";
+import ChannelBoxModal from "./ChannelBox/ChannelBoxModal.vue";
+>>>>>>> master
 
 interface Props {
   history: Array<any>;
   target: User;
   isActive: string;
+<<<<<<< HEAD
+=======
+  selectedChannel: number;
+>>>>>>> master
 }
 
 const props: Readonly<Props> = defineProps<Props>();
 const user: any = useUserStore();
+<<<<<<< HEAD
 const addWindow: Ref<boolean> = ref(false);
 
 function showInfoBox() {
@@ -63,6 +103,30 @@ function showInfoBox() {
 
 function hide() {
   addWindow.value = false;
+=======
+const userProfileWindow: Ref<boolean> = ref(false);
+const settingsWindow: Ref<boolean> = ref(false);
+
+function showInfoBox() {
+  userProfileWindow.value = true;
+}
+
+function showSettings() {
+  settingsWindow.value = true;
+}
+
+function hide() {
+  userProfileWindow.value = false;
+  settingsWindow.value = false;
+}
+
+function leaveChannel() {
+  if (confirm("Are you sure you want to leave this channel ?")) {
+    console.log("leaving the channel");
+  } else {
+    console.log("not leaving the channel");
+  }
+>>>>>>> master
 }
 
 watch(
