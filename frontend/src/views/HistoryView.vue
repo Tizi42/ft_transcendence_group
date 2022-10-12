@@ -1,13 +1,13 @@
 <template>
   <div class="page">
-    <div class="title">
-      <div class="titleName">
-        <img src="@/assets/icons/clock.svg" />
-        <h1>Match history</h1>
-      </div>
-      <button class="reload" @click="reloadData()"></button>
-    </div>
     <div class="content">
+      <div class="title">
+        <div class="titleName">
+          <img src="@/assets/icons/clock.svg" />
+          <h1>Match history</h1>
+        </div>
+        <button class="reload" @click="reloadData()"></button>
+      </div>
       <TableHistory
         title="Global"
         :ready="dataReady[0]"
