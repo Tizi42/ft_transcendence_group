@@ -13,7 +13,7 @@
         <img :src="friend.picture" />
       </div>
       <div class="friend-frame">
-        <div v-if="friend.status === 'offline'" class="red-point"></div>
+        <div v-if="friend.status === 'offline'" class="grey-point"></div>
         <div v-if="friend.status === 'online'" class="green-point"></div>
         <h3>{{ friend.username }}</h3>
         <!-- <p>{{ lastMessage[profile] }}</p> -->
@@ -86,6 +86,9 @@ onBeforeMount(() => {
   //   .catch((err) => {
   //     console.error(err);
   //   });
+  // socket.on("new_status", () => {
+
+  // });
 
   socket.on("receive_message", () => {
     getMessages(receiver.value);

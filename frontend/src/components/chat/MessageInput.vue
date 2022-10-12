@@ -1,15 +1,17 @@
 <template>
   <div class="message-input">
     <form @submit.prevent="onSubmit">
-      <input
-        v-model="messageText"
-        type="text"
-        placeholder="Your message.."
-        class="message-text"
-      />
-      <button type="submit">
-        <img src="@/assets/icons/send-icon.png" alt="send-message" />
-      </button>
+      <div class="div-message-input">
+        <input
+          v-model="messageText"
+          type="text"
+          placeholder="Your message.."
+          class="message-text"
+        />
+        <button type="submit">
+          <img src="@/assets/icons/send-icon.png" alt="send-message" />
+        </button>
+      </div>
     </form>
   </div>
 </template>
