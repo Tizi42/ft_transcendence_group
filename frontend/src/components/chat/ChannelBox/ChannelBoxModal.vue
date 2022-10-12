@@ -45,15 +45,15 @@ defineExpose(
 }
 
 .modalContainer {
-  /* display: flex;
+  display: flex;
   align-items: center;
   text-align: center;
   justify-content: space-evenly;
-  flex-direction: column; */
+  flex-direction: column;
   gap: 15px;
   padding-top: 2em;
   padding-bottom: 2em;
-  width: 60vw;
+  width: 50vw;
   background: rgba(30, 42, 2, 1);
   box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.75);
   border-radius: 58px;
@@ -61,6 +61,6 @@ defineExpose(
   top: 50%;
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
-  height: 40vh;
+  height: 30vh;
 }
 </style>
