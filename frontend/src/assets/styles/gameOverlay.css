@@ -76,7 +76,10 @@
   padding-top: 5vh;
   padding-bottom: 5vh;
   gap: 30px;
-  width: 600px;
+  width: 60vw;
+  max-width: 800px;
+  height: 50vh;
+  max-height: 600px;
   background: #1e2a02cc;
   box-shadow: 0px 0px 8px #000000bf;
   border-radius: 58px;

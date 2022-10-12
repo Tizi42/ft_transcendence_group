@@ -3,9 +3,8 @@
   justify-content: space-between;
   flex-direction: row;
   width: 70vw;
-  margin-top: 3em;
-  margin-bottom: 3em;
   cursor: default;
+  height: fit-content;
 }
 
 .title img {
@@ -23,13 +22,10 @@
 .page {
   background: var(--main-gradient-background);
   height: 100vh;
-  width: 80vw;
-  padding-left: 15vw;
-  padding-right: 5vw;
-  padding-top: 2em;
+  width: 100vw;
   display: flex;
-  justify-content: left;
-  align-items: left;
+  justify-content: space-around;
+  align-items: center;
   text-align: left;
   flex-direction: column;
   font-family: "Outfit";
@@ -39,6 +35,7 @@
 
 .content {
   width: 70vw;
+  gap: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -56,6 +53,7 @@
   width: 100%;
   margin: 0 auto;
   margin-top: 5%;
+  font-size: 22px;
 }
 
 .v-center {
@@ -119,7 +117,6 @@
   width: 100%;
   text-align: left;
   margin: 0;
-  margin-bottom: 3em;
 }
 
 .topBar {
