@@ -67,12 +67,27 @@ export class GameGateway extends AppGateway {
       return null;
     if (data.user_id !== room.playerL && data.user_id !== room.playerR)
       this.server.in(data.user_id).socketsJoin(data.room_name);
-    return room; 
+    return room;
+  }
+
+  @SubscribeMessage('leave_game')
+  async onLeavingRoom(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+    const room = GameGateway.rooms.get(data.room_name);
+    if (!room)
+      return null;
+    if (data.user_id !== room.playerL && data.user_id !== room.playerR) {
+      this.server.in(data.user_id).socketsLeave(data.room_name);
+    } else {
+      socket.to(data.room_name).emit("quit_game");
+      this.server.in(data.user_id).socketsLeave(data.room_name);
+      GameGateway.rooms.delete(data.room_name);
+    }
   }
 
   @SubscribeMessage('ready')
   async onPlayerReady(@MessageBody() data: any) {
     const room = GameGateway.rooms.get(data.room_name);
+    console.log(data.user_id, " is ready");
     if (!room || (data.user_id !== room.playerL && data.user_id !== room.playerR)
         || room.ready === data.user_id)
       return null;

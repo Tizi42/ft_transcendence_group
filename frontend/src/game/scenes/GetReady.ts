@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import socket from "@/socket";
+import gameInfo from "../gameInfo";
 
 export default class GetReadyScene extends Phaser.Scene {
   readyButton: Phaser.Physics.Arcade.Sprite;
@@ -12,7 +13,7 @@ export default class GetReadyScene extends Phaser.Scene {
   init() {
     this.ready = false;
     socket.emit("reset_score", {
-      user_id: this.gameInfo.user_id,
+      user_id: gameInfo.user_id,
     });
   }
 
@@ -26,7 +27,7 @@ export default class GetReadyScene extends Phaser.Scene {
   }
 
   create() {
-    if (this.gameInfo.user_role === "watch") {
+    if (gameInfo.user_role === "watch") {
       this.readyButton = this.add.sprite(
         this.cameras.main.centerX,
         this.cameras.main.centerY,
@@ -45,14 +46,14 @@ export default class GetReadyScene extends Phaser.Scene {
         if (this.ready === false) {
           this.readyButton.setTexture("cancel-ready");
           socket.emit("ready", {
-            user_id: this.gameInfo.user_id,
-            room_name: this.gameInfo.room_name,
+            user_id: gameInfo.user_id,
+            room_name: gameInfo.room_name,
           });
         } else {
           this.readyButton.setTexture("get-ready");
           socket.emit("cancel_ready", {
-            user_id: this.gameInfo.user_id,
-            room_name: this.gameInfo.room_name,
+            user_id: gameInfo.user_id,
+            room_name: gameInfo.room_name,
           });
         }
         this.ready = !this.ready;

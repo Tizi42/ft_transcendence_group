@@ -42,6 +42,8 @@ import { Chat } from "@backend/chat/entities/chat.entity";
 import { User } from "@backend/users/users.entity";
 import { getUrlOf } from "@/router";
 import socket from "@/socket";
+import { onBeforeRouteLeave } from "vue-router";
+import router from "@/router/index";
 
 interface Props {
   room_name: string;
@@ -67,6 +69,7 @@ const timer: Ref<Date> = ref(new Date());
 const scores: Ref<Array<number>> = ref([0, 0]);
 const emojisURL: Array<URL> = [];
 const user_role = ref(false);
+const force_quit = ref(false);
 
 type emojiInfo = {
   author: string;
@@ -134,6 +137,18 @@ function changeBackground() {
   console.log("user wants to change background");
 }
 
+onBeforeRouteLeave((to: any, from: any) => {
+  if (force_quit.value) return true;
+  const answer = window.confirm(
+    "Do you really want to leave? You will quit the game room"
+  );
+  if (!answer) return false;
+  socket.emit("leave_game", {
+    room_name: props.room_name,
+    user_id: user.id,
+  });
+});
+
 onBeforeMount(async () => {
   await getPlayersInfo();
   loadEmojis();
@@ -153,6 +168,12 @@ onBeforeMount(async () => {
     console.log("score:", data);
     scores.value[0] = data.left;
     scores.value[1] = data.right;
+  });
+
+  socket.on("quit_game", () => {
+    window.alert("Player has left game, return to game menu...");
+    force_quit.value = true;
+    router.push({ name: "play" });
   });
 });
 

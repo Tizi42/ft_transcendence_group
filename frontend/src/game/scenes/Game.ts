@@ -3,6 +3,7 @@ import socket from "@/socket";
 import { Ball } from "../sprites/ball";
 import { Racket } from "../sprites/racket";
 import GameStatus from "@/game/type";
+import gameInfo from "../gameInfo";
 
 export default class GameScene extends Phaser.Scene {
   width: number;
@@ -93,7 +94,7 @@ export default class GameScene extends Phaser.Scene {
   // timer = 0;
   update() {
     // this.timer += delta;
-    if (this.gameInfo.user_role === "left") {
+    if (gameInfo.user_role === "left") {
       if (this.game_status === "ready") {
         this.launch_ball("toRight");
         this.game_status = "running";
@@ -125,8 +126,8 @@ export default class GameScene extends Phaser.Scene {
       this.paddle_pos = this.height - 40;
     }
     socket.emit("update_paddle", {
-      user_id: this.gameInfo.user_id,
-      room_name: this.gameInfo.room_name,
+      user_id: gameInfo.user_id,
+      room_name: gameInfo.room_name,
       paddle_pos: this.paddle_pos,
     });
   }
@@ -162,7 +163,7 @@ export default class GameScene extends Phaser.Scene {
 
   update_ball() {
     socket.emit("ball_pos", {
-      room_name: this.gameInfo.room_name,
+      room_name: gameInfo.room_name,
       ball_x: this.ball.x,
       ball_y: this.ball.y,
       vx: this.ball.body.velocity.x,
@@ -172,7 +173,7 @@ export default class GameScene extends Phaser.Scene {
 
   update_score() {
     socket.emit("update_score", {
-      room_name: this.gameInfo.room_name,
+      room_name: gameInfo.room_name,
       left: this.score_left,
       right: this.score_right,
     });
@@ -188,10 +189,10 @@ export default class GameScene extends Phaser.Scene {
   game_end() {
     if (this.score_left > this.score_right) this.winner = "left";
     else this.winner = "right";
-    this.scene.start("GameOverScene", { winner: this.winner });
     socket.emit("game_end", {
-      room_name: this.gameInfo.room_name,
+      room_name: gameInfo.room_name,
       winner: this.winner,
     });
+    this.scene.start("GameOverScene", { winner: this.winner });
   }
 }
