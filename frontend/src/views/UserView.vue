@@ -42,7 +42,6 @@ defineExpose(
 function scrollTop() {
   console.log(toScrollTop);
   if (toScrollTop.value != undefined) toScrollTop.value.scrollTop = 0;
-  console.log("scrolling");
 }
 
 function removeNotification() {
