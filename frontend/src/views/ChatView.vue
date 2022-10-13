@@ -12,11 +12,16 @@
         @getHistory="handleHistory"
         :user="user"
       />
-      <ChannelsList v-else @getChannelSelected="handleChannelSelected" />
+      <ChannelsList
+        v-else
+        @getChannelSelected="handleChannelSelected"
+        :selectedChannel="selectedChannel"
+      />
     </div>
     <div class="container-chat">
       <AllChannelsSelected
         v-if="isActive === 'channels' && selectedChannel == -1"
+        @getChannelSelected="handleChannelSelected"
       />
       <HistoryMessages
         :history="history"
@@ -28,6 +33,7 @@
         v-if="receiver != -1 || selectedChannel != -1"
         :user="user"
         :receiver="receiver"
+        :selectedChannel="selectedChannel"
       />
     </div>
   </div>

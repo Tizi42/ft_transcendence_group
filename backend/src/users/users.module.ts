@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Channel } from 'src/channel/entities/channel.entity';
 import { Chat } from 'src/chat/entities/chat.entity';
 import { UsersController } from './users.controller';
 import { User } from './users.entity';
@@ -7,9 +8,7 @@ import { UsersService } from './users.service';
 // import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User, Chat]),
-    // HttpModule,
+  imports: [TypeOrmModule.forFeature([User, Chat, Channel]),
   ],
   providers: [UsersService],
   controllers: [UsersController],
