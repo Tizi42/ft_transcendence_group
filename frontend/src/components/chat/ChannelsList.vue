@@ -80,13 +80,33 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, ref, Ref, defineEmits } from "vue";
+import {
+  defineComponent,
+  defineExpose,
+  ref,
+  Ref,
+  defineEmits,
+  defineProps,
+  watch,
+} from "vue";
 import ChannelBoxModal from "./ChannelBox/ChannelBoxModal.vue";
 import AddChannelBox from "./ChannelBox/AddChannelBox.vue";
 
+interface Props {
+  selectedChannel: number;
+}
+
+const props: Readonly<Props> = defineProps<Props>();
 const inputSearch: Ref<string> = ref("");
-const selectedChannel: Ref<number> = ref(-1);
+const selectedChannel: Ref<number> = ref(props.selectedChannel);
 const addWindow: Ref<boolean> = ref(false);
+
+watch(
+  () => props.selectedChannel,
+  (newSelectedChannel) => {
+    selectedChannel.value = newSelectedChannel;
+  }
+);
 
 const getAllChannels = () => {
   selectedChannel.value = -1;
