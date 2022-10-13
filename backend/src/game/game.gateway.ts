@@ -133,6 +133,14 @@ export class GameGateway extends AppGateway {
     });
   }
 
+  @SubscribeMessage('reset_score')
+  async onResetScore(@MessageBody() data: any) {
+    this.server.to(data.user_id).emit("score_update", {
+      left: 0,
+      right: 0,
+    });
+  }
+
   @SubscribeMessage('game_end')
   async onGameEnd(
     @ConnectedSocket() socket: Socket,

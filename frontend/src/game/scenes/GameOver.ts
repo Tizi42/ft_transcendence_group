@@ -1,15 +1,14 @@
-import { Scene } from "phaser";
-// import readyButton from '@/assets/game/getready.png'
-// import bomb from '@/assets/game/assets/ready.png'
-// import thudMp3 from '@/assets/game/assets/thud.mp3'
-// import thudOgg from '@/assets/game/assets/thud.ogg'
+import Phaser from "phaser";
+import socket from "@/socket";
 
-export default class GameOverScene extends Scene {
+export default class GameOverScene extends Phaser.Scene {
   constructor() {
     super({ key: "GameOverScene" });
   }
 
   winner: string;
+  button: Phaser.Physics.Arcade.Sprite;
+  text: string;
 
   init(data: any) {
     console.log("init", data);
@@ -17,12 +16,49 @@ export default class GameOverScene extends Scene {
   }
 
   preload() {
-    // this.load.image('sky', sky)
-    // this.load.image('bomb', bomb)
-    // this.load.audio('thud', [thudMp3, thudOgg])
+    this.load.image("restart", "restart.png");
+    this.load.image("restart_grey", "restart_grey.png");
   }
 
   create() {
-    // this.scene.start('PlayScene')
+    if (this.gameInfo.user_role === "watch") {
+      this.button = this.add.sprite(
+        this.cameras.main.centerX,
+        this.cameras.main.centerY,
+        "restart_grey"
+      );
+      // listen for server instruction to restart watching a game
+      socket.on("game_start", () => {
+        console.log("Game start !!!");
+        socket.emit("reset_score", {
+          user_id: this.gameInfo.user_id,
+        });
+        this.scene.start("GameScene");
+      });
+
+      return;
+    }
+
+    this.text = this.add.text(
+      this.cameras.main.centerX - 90,
+      this.cameras.main.centerY - 40,
+      "You won!!!",
+      { fontSize: "32px", fill: "#fff" }
+    );
+    if (this.gameInfo.user_role !== this.winner) {
+      this.text.setText("You lost...");
+    }
+
+    this.button = this.add.sprite(
+      this.cameras.main.centerX,
+      this.cameras.main.centerY + 80,
+      "restart"
+    );
+    this.button.setInteractive();
+
+    // listen on click button
+    this.button.on("pointerdown", () => {
+      this.scene.start("GetReadyScene");
+    });
   }
 }
