@@ -10,10 +10,17 @@ import PlayView from "../views/PlayView.vue";
 import DevLogin from "../components/DevLogin.vue";
 import PlayGame from "../components/game/PlayGame.vue";
 import GamePlay from "../components/game/GamePlay.vue";
+import UserFriends from "../components/users/friends/UserFriends.vue";
+import UserSettings from "../components/users/settings/UserSettings.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
+    name: "home",
+    redirect: "/user",
+  },
+  {
+    path: "/game",
     name: "game",
     component: GameView,
   },
@@ -36,13 +43,12 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "friends",
         name: "friends",
-        component: () => import("../components/users/friends/UserFriends.vue"),
+        component: UserFriends,
       },
       {
         path: "settings",
         name: "settings",
-        component: () =>
-          import("../components/users/settings/UserSettings.vue"),
+        component: UserSettings,
       },
     ],
   },
@@ -138,6 +144,13 @@ export function getUrlOf(str: string, port = 3000): string {
   );
 }
 
+function isKnownRoute(to: string): boolean {
+  for (let i = 0; i < router.getRoutes().length; i++) {
+    if (to == router.getRoutes()[i].path) return true;
+  }
+  return false;
+}
+
 router.beforeEach(async (to: any, from: any, next: any) => {
   const isAuthenticated = await getStatus();
   const isPreAuth = await getPreAuth();
@@ -159,7 +172,11 @@ router.beforeEach(async (to: any, from: any, next: any) => {
     !isAuthenticated
   ) {
     next({ name: "login" });
-  } else next();
+  } else if (isKnownRoute(to.path)) {
+    next();
+  } else {
+    next({ name: "user" });
+  }
 });
 
 export default router;
