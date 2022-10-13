@@ -5,23 +5,30 @@ import { Racket } from "../sprites/racket";
 import GameStatus from "@/game/type";
 
 export default class GameScene extends Phaser.Scene {
+  width: number;
+  height: number;
+
   ball: Phaser.Physics.Arcade.Sprite;
   paddle_left: Phaser.Physics.Arcade.Sprite;
   paddle_right: Phaser.Physics.Arcade.Sprite;
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-  paddle_velocity_max = 20;
   paddle_pos: number;
-  width: number;
-  height: number;
-  winner: string;
+  paddle_velocity_max = 20;
 
-  score_left = 0;
-  score_right = 0;
-  game_status: GameStatus = "ready";
-  ball_velocity: number;
+  winner: string;
+  score_left: number;
+  score_right: number;
+  game_status: GameStatus;
 
   constructor() {
     super("GameScene");
+  }
+
+  init() {
+    this.game_status = "ready";
+    this.score_left = 0;
+    this.score_right = 0;
+    this.winner = "";
   }
 
   create() {
@@ -47,7 +54,6 @@ export default class GameScene extends Phaser.Scene {
     this.ball.setCollideWorldBounds(true);
     this.ball.setScale(0.8);
     this.ball.setBounce(1, 1);
-    this.ball_velocity = 350;
 
     // set up paddles
     this.paddle_left = this.create_paddle(this.width * 0.02, this.height * 0.5);
