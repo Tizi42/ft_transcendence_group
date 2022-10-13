@@ -26,7 +26,7 @@ export class ChannelGateway extends AppGateway {
     console.log("my channel = ", data);
     const channel = await this.channelService.createChannel(data);
   
-    this.server.sockets.emit('channel_created');
+    this.server.sockets.emit('channel_created', channel);
     return channel;
   }
 

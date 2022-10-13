@@ -9,6 +9,9 @@ export class Channel {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Column()
+    name: string;
+
     @Column({
         type: "enum",
         enum: ["private", "public", "protected"],
