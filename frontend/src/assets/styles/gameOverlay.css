@@ -18,18 +18,26 @@
   background-color: #1e2a02;
 }
 
-.startBtn {
-  display: block;
+.startBtn,
+.cancelBtn {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
   font-family: "Outfit Bold";
-  background: #1e2a02;
   box-shadow: 0px 0px 4px 3px rgba(0, 0, 0, 0.25);
   border-radius: 22px;
   line-height: 2.3em;
-  border: none;
+  width: 200px;
   font-size: 28px;
   color: var(--main-color);
-  width: 200px;
   transition: transform 0.5s ease;
+}
+
+.startBtn {
+  font-family: "Outfit Bold";
+  background: #1e2a02;
+  border: 3px solid #1e2a02;
 }
 
 .startBtn:hover,
@@ -39,20 +47,8 @@
 }
 
 .cancelBtn {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
   gap: 15px;
-  font-family: "Outfit Bold";
-  box-shadow: 0px 0px 4px 3px rgba(0, 0, 0, 0.25);
-  border-radius: 22px;
   border: 3px solid #FFCB00;
-  font-size: 24px;
-  color: var(--main-color);
-  line-height: 2.3em;
-  width: 200px;
-  transition: transform 0.5s ease;
 }
 
 .popUpTxt {
@@ -77,7 +73,7 @@
   padding-bottom: 5vh;
   gap: 30px;
   width: 60vw;
-  max-width: 800px;
+  max-width: 600px;
   height: 50vh;
   max-height: 600px;
   background: #1e2a02cc;
