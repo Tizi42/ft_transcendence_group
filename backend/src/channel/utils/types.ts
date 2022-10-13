@@ -5,7 +5,7 @@ export type channelInfos = {
     type: TypeOfChan;
     members: User[];
     owner: number;
-    admin: number[];
+    admins: number[];
     banned?: number[];
     muted?: number[];
     password?: string;

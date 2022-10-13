@@ -1,5 +1,5 @@
 import { User } from "src/users/users.entity";
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, Any } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, Any, ManyToMany, JoinTable, OneToMany, RelationId } from "typeorm";
 
 export type TypeOfChan = "private" | "public" | "protected"
 
@@ -16,13 +16,16 @@ export class Channel {
     })
     type: TypeOfChan;
 
-    @ManyToOne(() => User, (user) => user.channels)
+    @ManyToMany(() => User, (user) => user.channels)
+    @JoinTable()
     members: User[];
+    // @RelationId((user: User) => user.channels)
+    // memberIds: number[];
 
-    @Column({ nullable: true })
+    @Column()
     owner: number;
 
-    @Column("int", { array: true, default: {} })
+    @Column("int", { array: true })
     admins: number[];
 
     @Column("int", { array: true, default: {} })
@@ -31,6 +34,6 @@ export class Channel {
     @Column("int", { array: true, default: {} })
     muted: number[];
 
-    @Column({ nullable: true })
+    @Column({ default: {} })
     password: string;
 }

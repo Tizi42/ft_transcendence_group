@@ -16,15 +16,33 @@ export class ChannelService {
     private readonly userService: UsersService,
   ) {}
 
-  async createChannel(channel: channelInfos): Promise<Channel>{
-    const newChannel = this.channelRepository.create(channel);
-    await this.channelRepository.save(newChannel);
-
-    return newChannel;
+  async createChannel(channel: channelInfos) {
+    console.log("members = ", channel.members[0].id);
+    const user = await this.userService.findOneById(channel.members[0].id);
+    console.log("user = ", user);
+    let newChan = new Channel();
+    newChan.type = channel.type;
+    newChan.members = [user];
+    newChan.owner = channel.owner;
+    newChan.admins = channel.admins;
+    newChan.password = channel.password;
+	  this.channelRepository.save(newChan);
   }
 
   async findOne(id: number): Promise<Channel> {
     return await this.channelRepository.findOneBy({ id });
+  }
+
+  async getAllChannel(id: number): Promise<Channel[]> {
+    const channels = await this.channelRepository.find({
+      relations: ['members'],
+      where: [{
+        members: {
+              id: id,
+          },
+      }]
+    });
+    return channels;
   }
 
   async leavingChannel(userId: number, channelId: number) {
