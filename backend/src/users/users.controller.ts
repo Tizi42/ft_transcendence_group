@@ -34,13 +34,23 @@ export class UsersController {
   @UseInterceptors(FileInterceptor('file', storage))
   async uploadAvatar(@Req() req: RequestWithUser, @UploadedFile() file: Express.Multer.File) : Promise<any> {
     console.log("File received, saved as " + file.filename);
-    return await this.usersService.updateUserAvatar(req.user.id, file.filename, "http://localhost:3000/api/users/avatar/" + req.user.id); //`${this.SERVER_URL}${file.path}`
+    return await this.usersService.updateUserAvatar(req.user.id, file.filename, "http://localhost:3000/api/users/avatar/"); //`${this.SERVER_URL}${file.path}`
   }
 
   @Get('avatar/:id')
   async getAvatar(@Param('id') id: number, @Res() res: Response): Promise<any> {
-    console.log("send id");
     let user = await this.usersService.findOne(id);
+    if (user.pictureLocalFilename === "")
+    {
+      console.log("Using default avatar...");
+      return res.sendFile("default.png", { root: 'src/uploads/avatar'});
+    }
+    return res.sendFile(user.pictureLocalFilename, { root: 'src/uploads/avatar'});
+  }
+
+  @Get('avatar')
+  async getMyAvatar(@Req() req: RequestWithUser, @Res() res: Response): Promise<any> {
+    let user = await this.usersService.findOne(req.user.id);
     if (user.pictureLocalFilename === "")
     {
       console.log("Using default avatar...");

@@ -8,7 +8,8 @@ import LeaderboardView from "../views/LeaderboardView.vue";
 import HistoryView from "../views/HistoryView.vue";
 import PlayView from "../views/PlayView.vue";
 import DevLogin from "../components/DevLogin.vue";
-import PlayGame from "../components/Game/PlayGame.vue";
+import PlayGame from "../components/game/PlayGame.vue";
+import GamePlay from "../components/game/GamePlay.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -35,14 +36,13 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "friends",
         name: "friends",
-        component: () =>
-          import("../components/users/UserFriends/UserFriends.vue"),
+        component: () => import("../components/users/friends/UserFriends.vue"),
       },
       {
         path: "settings",
         name: "settings",
         component: () =>
-          import("../components/users/UserSettings/UserSettings.vue"),
+          import("../components/users/settings/UserSettings.vue"),
       },
     ],
   },
@@ -80,6 +80,12 @@ const routes: Array<RouteRecordRaw> = [
     path: "/pong",
     name: "pong",
     component: PlayGame,
+    props: true,
+  },
+  {
+    path: "/test",
+    name: "test",
+    component: GamePlay,
   },
 ];
 
@@ -132,7 +138,7 @@ export function getUrlOf(str: string, port = 3000): string {
   );
 }
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to: any, from: any, next: any) => {
   const isAuthenticated = await getStatus();
   const isPreAuth = await getPreAuth();
 

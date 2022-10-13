@@ -5,6 +5,8 @@
         v-if="opponent != null"
         :user="createUserFromStore(user)"
         :opponent="opponent"
+        :playerL="createUserMinimal(playerL)"
+        :playerR="createUserMinimal(playerR)"
         :time="timer"
         :scores="scores"
         :messageL="messageL"
@@ -15,10 +17,11 @@
         :emojiDateL="emojiDateL"
         :emojiDateR="emojiDateR"
       />
-      <GameBox />
+      <GameBox :room_name="room_name" :user_role="user_role" />
       <OverlayBottomBar
         :user="createUserFromStore(user)"
         :opponent="opponentId"
+        :room_name="room_name"
         :emojisURL="emojisURL"
         @changeSound="changeSound"
         @quitGame="quitGame"
@@ -31,7 +34,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, onBeforeMount } from "vue";
+import { defineComponent, defineExpose, onBeforeMount, defineProps } from "vue";
 import { Ref, ref } from "vue";
 import OverlayTopBar from "./OverlayTopBar.vue";
 import OverlayBottomBar from "./OverlayBottomBar.vue";
@@ -45,9 +48,18 @@ import { getUrlOf } from "@/router";
 import socket from "@/socket";
 import { StoreGeneric } from "pinia";
 
+interface Props {
+  room_name: string;
+  playerL_id: number;
+  playerR_id: number;
+}
+
 const user: StoreGeneric = useUserStore();
 const opponent: UserMinimal = new UserMinimal();
 const opponentId = user.id == 4 ? 11 : 4;
+const props: Readonly<Props> = defineProps<Props>();
+const playerL: Ref<User | null> = ref(null);
+const playerR: Ref<User | null> = ref(null);
 const messageL: Ref<Chat | null> = ref(null);
 const messageR: Ref<Chat | null> = ref(null);
 const emojiL: Ref<number> = ref(3);
@@ -57,8 +69,9 @@ const emojiDateR: Ref<Date> = ref(new Date());
 const dataReady: Ref<boolean> = ref(false);
 const readyStatus: Ref<Array<boolean>> = ref([false, false]);
 const timer: Ref<Date> = ref(new Date());
-const scores: Array<number> = [0, 0];
+const scores: Ref<Array<number>> = ref([0, 0]);
 const emojisURL: Array<URL> = [];
+const user_role = ref("");
 
 type emojiInfo = {
   author: string;
@@ -68,6 +81,14 @@ type emojiInfo = {
 
 function createUserFromStore(user: StoreGeneric): UserMinimal {
   let newUser = new UserMinimal();
+  newUser.id = user.id;
+  newUser.displayName = user.displayName;
+  return newUser;
+}
+
+function createUserMinimal(user: User | null): UserMinimal {
+  let newUser = new UserMinimal();
+  if (user == null) return newUser;
   newUser.id = user.id;
   newUser.displayName = user.displayName;
   return newUser;
@@ -96,14 +117,26 @@ function updateEmoji(msg: emojiInfo) {
   }
 }
 
-async function getOpponent(index: number) {
+async function getPlayersInfo() {
+  console.log(props);
   dataReady.value = false;
-  let response: Response = await fetch(getUrlOf("api/users/info/" + index), {
-    credentials: "include",
-  });
-  let responseUser: User = await response.json();
-  opponent.id = responseUser.id;
-  opponent.displayName = responseUser.displayName;
+
+  let left: Response = await fetch(
+    getUrlOf("api/users/info/" + props.playerL_id),
+    {
+      credentials: "include",
+    }
+  );
+  playerL.value = await left.json();
+
+  let right: Response = await fetch(
+    getUrlOf("api/users/info/" + props.playerR_id),
+    {
+      credentials: "include",
+    }
+  );
+  playerR.value = await right.json();
+
   setTimeout(() => {
     dataReady.value = true;
   }, 500);
@@ -122,14 +155,24 @@ function changeBackground() {
 }
 
 onBeforeMount(async () => {
-  await getOpponent(opponentId);
+  await getPlayersInfo();
   loadEmojis();
   timer.value = new Date();
-  socket.on("receive_message_ingame", async (data) => {
+  socket.on("receive_message_ingame", async (data: any) => {
     updateMessage(data);
   });
-  socket.on("receive_emoji_ingame", async (data) => {
+  socket.on("receive_emoji_ingame", async (data: any) => {
     updateEmoji(data);
+  });
+
+  if (user.id === props.playerL_id) user_role.value = "left";
+  else if (user.id === props.playerR_id) user_role.value = "right";
+  else user_role.value = "watch";
+
+  socket.on("score_update", (data: any) => {
+    console.log("score:", data);
+    scores.value[0] = data.left;
+    scores.value[1] = data.right;
   });
 });
 

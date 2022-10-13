@@ -22,7 +22,7 @@ import { UserMinimal } from "@/components/utils/UserMinimal";
 
 interface Props {
   user: UserMinimal;
-  opponent: number;
+  room_name: string;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
@@ -34,7 +34,7 @@ function sendMsg() {
     const data = {
       content: message.value,
       author: props.user.id,
-      dest: props.opponent,
+      dest: props.room_name,
     };
     socket.emit("send_message_ingame", data);
     document.getElementById("inputChat")?.blur();
