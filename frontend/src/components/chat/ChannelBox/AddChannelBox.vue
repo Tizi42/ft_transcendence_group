@@ -36,15 +36,33 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineComponent, defineExpose, Ref } from "vue";
+import { ref, defineComponent, defineExpose, Ref, defineProps } from "vue";
+import socket from "@/socket";
+import { userInfoStore } from "@/stores/user";
+
+interface Props {
+  user: userInfoStore;
+}
 
 const channelName: Ref<string> = ref("");
 const channelType: Ref<string> = ref("public");
 const channelPassword: Ref<string> = ref("");
+const props: Readonly<Props> = defineProps<Props>();
+
+// watch(
+// );
 
 const createNewChannel = () => {
   console.log("channel name = ", channelName.value);
   console.log("channel type = ", channelType.value);
+  const data = {
+    type: channelType.value,
+    members: [props.user],
+    owner: props.user.id,
+    admins: [props.user.id],
+    password: channelPassword.value,
+  };
+  socket.emit("create_channel", data);
 };
 
 defineExpose(

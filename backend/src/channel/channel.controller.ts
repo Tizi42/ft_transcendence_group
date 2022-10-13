@@ -8,7 +8,7 @@ export class ChannelController {
 
   @Post()
   createChannel(@Body() createChannel: channelInfos) {
-    return this.channelService.createChannel(createChannel);
+    // return this.channelService.createChannel(createChannel);
   }
 
   @Get(':id')

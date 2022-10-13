@@ -1,5 +1,6 @@
 import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
+import { ChannelService } from "./channel/channel.service";
 import { ChatService } from "./chat/chat.service";
 import { UsersService } from "./users/users.service";
 
@@ -17,6 +18,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     readonly chatService: ChatService,
     readonly usersService: UsersService,
+    readonly channelService: ChannelService,
   ) {}
 
   async handleConnection(socket: Socket) {

@@ -12,7 +12,7 @@ export class ChannelGateway extends AppGateway {
     readonly usersService: UsersService,
     readonly channelService: ChannelService,
   ) {
-    super(chatService, usersService);
+    super(chatService, usersService, channelService);
   }
 
   async handleConnection(socket: Socket) {}
@@ -21,12 +21,23 @@ export class ChannelGateway extends AppGateway {
 
   @SubscribeMessage('create_channel')
   async createChannel(
-    @MessageBody() data: any,
+    @MessageBody() data: any
   ) {
+    console.log("my channel = ", data);
     const channel = await this.channelService.createChannel(data);
   
     this.server.sockets.emit('channel_created');
     return channel;
+  }
+
+  @SubscribeMessage('get_allChannels')
+  async getMyChannel(
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const channel = await this.channelService.getAllChannel(socket.data.id);
+    console.log("all my channel = ", channel);
+    console.log("my id = ", socket.data.id);
+    this.server.sockets.to(socket.data.id).emit('get_myChannels', channel);
   }
 
   @SubscribeMessage('join_channel')
@@ -65,6 +76,4 @@ export class ChannelGateway extends AppGateway {
       await this.channelService.banUser(data.user, data.channel);
     }
   }
-
-
 }
