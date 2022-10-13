@@ -162,9 +162,11 @@ defineExpose(
 
 .pageCenter {
   display: flex;
+  position: absolute;
   align-items: center;
   flex-direction: column;
   height: 100vh;
+  width: 100vw;
   background: var(--main-gradient-background);
 }
 </style>

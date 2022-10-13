@@ -1,18 +1,15 @@
 <template>
   <div id="user-page">
-    <div class="main-wrapper">
+    <div class="main-wrapper" ref="toScrollTop">
       <ProfileBanner />
       <div class="user-navbar">
-        <router-link to="/user/stats">
+        <router-link to="/user/stats" @click="scrollTop()">
           <div class="user-navbar-item">STATS</div>
         </router-link>
-        <router-link
-          to="/user/friends"
-          @click="socket.emit('remove_notification')"
-        >
+        <router-link to="/user/friends" @click="removeNotification()">
           <div class="user-navbar-item">FRIENDS</div>
         </router-link>
-        <router-link to="/user/settings">
+        <router-link to="/user/settings" @click="scrollTop()">
           <div class="user-navbar-item">SETTINGS</div>
         </router-link>
       </div>
@@ -28,15 +25,29 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, onBeforeMount } from "vue";
+import { defineComponent, defineExpose, ref, Ref } from "vue";
+import { onBeforeMount } from "vue";
 import ProfileBanner from "@/components/users/ProfileBanner.vue";
 import socket from "@/socket";
+
+const toScrollTop: Ref<HTMLElement | undefined> = ref();
 
 defineExpose(
   defineComponent({
     name: "UserView",
   })
 );
+
+function scrollTop() {
+  console.log(toScrollTop);
+  if (toScrollTop.value != undefined) toScrollTop.value.scrollTop = 0;
+  console.log("scrolling");
+}
+
+function removeNotification() {
+  scrollTop();
+  socket.emit("remove_notification");
+}
 
 onBeforeMount(() => {
   socket.on("new_connection", () => {
@@ -93,6 +104,7 @@ onBeforeMount(() => {
   border-bottom-right-radius: 22px;
   box-shadow: var(--main-shadow);
   overflow: auto;
+  scroll-behavior: smooth;
 }
 
 #user-page {

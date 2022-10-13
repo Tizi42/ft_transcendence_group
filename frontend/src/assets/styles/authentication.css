@@ -1,7 +1,9 @@
 .page2FA {
   display: flex;
+  position: absolute;
   align-items: center;
   flex-direction: column;
+  width: 100vw;
   height: 100vh;
 }
 
