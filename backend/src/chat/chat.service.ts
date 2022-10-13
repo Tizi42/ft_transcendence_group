@@ -24,12 +24,10 @@ export class ChatService {
     }
 
     async getMessages(): Promise<Chat[]> {
-        console.log("GET MESSAGES");
         return await this.chatRepository.find({ relations: ['author'] });
     }
 
     async getAllDest(): Promise<Chat[]> {
-        console.log("GET DESTS");
         return await this.chatRepository.find({ relations: ['dest'] });
     }
 
