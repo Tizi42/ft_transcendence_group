@@ -5,9 +5,16 @@
 </template>
 
 <script lang="ts" setup>
-import { defineExpose, defineComponent, onMounted, defineProps } from "vue";
+import {
+  defineExpose,
+  defineComponent,
+  onMounted,
+  defineProps,
+  onBeforeUnmount,
+} from "vue";
 import type { Game } from "phaser";
 import { useUserStore } from "@/stores/user";
+import gameInfo from "@/game/gameInfo";
 
 interface Props {
   room_name: string;
@@ -20,7 +27,12 @@ let gameInstance: Game | null = null;
 const containerId = "game-container";
 const game = await import("@/game/gameConfig");
 
+onBeforeUnmount(() => {
+  gameInstance.destroy(true, false);
+});
+
 onMounted(() => {
+  gameInfo.setInfo(user.id, props.room_name, props.user_role);
   gameInstance = game.launch(containerId, {
     user_id: user.id,
     room_name: props.room_name,

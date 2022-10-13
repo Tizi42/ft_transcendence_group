@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import socket from "@/socket";
+import gameInfo from "../gameInfo";
 
 export default class GameOverScene extends Phaser.Scene {
   constructor() {
@@ -21,7 +22,7 @@ export default class GameOverScene extends Phaser.Scene {
   }
 
   create() {
-    if (this.gameInfo.user_role === "watch") {
+    if (gameInfo.user_role === "watch") {
       this.button = this.add.sprite(
         this.cameras.main.centerX,
         this.cameras.main.centerY,
@@ -31,7 +32,7 @@ export default class GameOverScene extends Phaser.Scene {
       socket.on("game_start", () => {
         console.log("Game start !!!");
         socket.emit("reset_score", {
-          user_id: this.gameInfo.user_id,
+          user_id: gameInfo.user_id,
         });
         this.scene.start("GameScene");
       });
@@ -45,7 +46,7 @@ export default class GameOverScene extends Phaser.Scene {
       "You won!!!",
       { fontSize: "32px", fill: "#fff" }
     );
-    if (this.gameInfo.user_role !== this.winner) {
+    if (gameInfo.user_role !== this.winner) {
       this.text.setText("You lost...");
     }
 
