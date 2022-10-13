@@ -221,6 +221,11 @@
     display: flex;
     flex-direction: row;
     margin-left: 30px;
+    cursor: pointer;
+}
+
+.manage-channel #see-members {
+    transition: transform 0.5s ease;
 }
 
 .messages-invite-game,
@@ -236,10 +241,6 @@
     margin-right: 10px;
 }
 
-.manage-channel #leave-img:hover {
-    transform: scale(1.1, 1.1);
-}
-
 .messages-invite-game img,
 .manage-channel #settings-img {
     margin-top: 8px;
@@ -251,6 +252,8 @@
     transition: transform 0.5s ease;
 }
 
+.manage-channel #leave-img:hover,
+.manage-channel #see-members:hover,
 .messages-invite-game img:hover,
 .manage-channel #settings-img:hover {
     transform: scale(1.1, 1.1);

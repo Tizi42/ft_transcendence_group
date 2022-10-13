@@ -36,15 +36,37 @@
 </template>
 
 <script lang="ts" setup>
+import { getUrlOf } from "@/router";
 import { ref, defineComponent, defineExpose, Ref } from "vue";
 
 const channelName: Ref<string> = ref("");
 const channelType: Ref<string> = ref("public");
 const channelPassword: Ref<string> = ref("");
 
-const createNewChannel = () => {
+const createNewChannel = async () => {
   console.log("channel name = ", channelName.value);
   console.log("channel type = ", channelType.value);
+  await fetch(getUrlOf("api/channel"), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      type: channelType.value,
+      members: [11],
+      owner: 11,
+      admin: [11],
+    }),
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      console.log("data = ", data);
+    })
+    .catch((err) => {
+      console.log("error", err);
+    });
 };
 
 defineExpose(

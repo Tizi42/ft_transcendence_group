@@ -1,14 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, Req } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import RequestWithUser from 'src/users/utils/requestWithUser.interface';
 import { ChannelService } from './channel.service';
-import { channelInfos } from './utils/types';
+import { CreatChannelDto } from './utils/createChannel.dto';
 
 @Controller('channel')
 export class ChannelController {
-  constructor(private readonly channelService: ChannelService) {}
+  constructor(
+    private readonly channelService: ChannelService,
+  ) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  createChannel(@Body() createChannel: channelInfos) {
-    return this.channelService.createChannel(createChannel);
+  async createChannel(
+    @Req() req: RequestWithUser,
+    @Body() createChannelDto: CreatChannelDto
+  ) {
+    return await this.channelService.createChannel(createChannelDto);
   }
 
   @Get(':id')
