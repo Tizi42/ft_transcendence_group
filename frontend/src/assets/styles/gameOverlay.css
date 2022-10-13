@@ -68,7 +68,7 @@
 
 .boxMenu {
   display: flex;
-  position: absolute;
+  position: relative;
   flex-direction: column;
   align-items: center;
   text-align: center;
