@@ -7,10 +7,7 @@ import { Channel } from './entities/channel.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from 'src/users/users.module';
 import { ChannelGateway } from './channel.gateway';
-import { ChatService } from 'src/chat/chat.service';
-import { ChatModule } from './chat.module';
-import { AuthService } from 'src/auth/auth.service';
-import { JwtModule } from '@nestjs/jwt/dist/jwt.module';
+import { ChatModule } from 'src/chat/chat.module';
 
 @Module({
   imports: [

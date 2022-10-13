@@ -22,13 +22,13 @@ export class Channel {
     @Column({ nullable: true })
     owner: number;
 
-    @Column("int", { array: true, nullable: true })
+    @Column("int", { array: true, default: {} })
     admins: number[];
 
-    @Column("int", { array: true, nullable: true })
+    @Column("int", { array: true, default: {} })
     banned: number[];
 
-    @Column("int", { array: true, nullable: true })
+    @Column("int", { array: true, default: {} })
     muted: number[];
 
     @Column({ nullable: true })
