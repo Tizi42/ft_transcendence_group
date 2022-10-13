@@ -141,20 +141,19 @@ export class GameGateway extends AppGateway {
     GameGateway.rooms.forEach((value: GameRoom) => {
       data.push(new GameRoomNS(value));
     });
+    console.log(data);
     return data;
   }
 
   @SubscribeMessage('get_updated_rooms')
   updateRooms(@ConnectedSocket() socket: Socket) {
     if (GameGateway.rooms.size == 0) {
-      console.log(GameGateway.rooms.size);
       let room_name = 2 + " vs " + 3;
       GameGateway.rooms.set(room_name, new GameRoom(2, 3, room_name));
       room_name = 4 + " vs " + 5;
       GameGateway.rooms.set(room_name, new GameRoom(4, 5, room_name));
       room_name = 6 + " vs " + 7;
       GameGateway.rooms.set(room_name, new GameRoom(6, 7, room_name));
-      console.log(GameGateway.rooms.size);
     }
     this.server.to(socket.id).emit("updated_rooms", this.transformRooms());
   }

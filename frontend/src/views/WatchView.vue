@@ -10,7 +10,7 @@
 
 <script lang="ts" setup>
 import socket from "@/socket";
-import { defineComponent, defineExpose, onBeforeMount } from "vue";
+import { defineComponent, defineExpose, onBeforeMount, onUpdated } from "vue";
 import { GameRoomNS } from "@backend/game/utils/gameNS";
 
 const rooms: Array<GameRoomNS> = [];
@@ -18,7 +18,7 @@ const rooms: Array<GameRoomNS> = [];
 function fillRooms(data: GameRoomNS[]) {
   rooms.splice(0);
   data.forEach((value: GameRoomNS) => {
-    console.log(value.mode);
+    console.log(value.room_name);
     rooms.push(value);
   });
 }
