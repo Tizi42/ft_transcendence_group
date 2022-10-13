@@ -1,3 +1,4 @@
+import { Channel } from "src/channel/entities/channel.entity";
 import { Chat } from "src/chat/entities/chat.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
@@ -57,7 +58,10 @@ export class User {
   @Column({ default: "offline" })
   status: string;
 
-  @OneToMany( () => Chat, (messages) => messages.author )
+  @OneToMany(() => Chat, (messages) => messages.author)
   messages?: Chat[];
+
+  @OneToMany(() => Channel, (channels) => channels.members)
+  channels: Channel[];
 }
 
