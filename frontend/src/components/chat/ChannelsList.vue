@@ -41,7 +41,7 @@
       }"
     >
       <img src="@/assets/icons/groupe.png" />
-      <h3>channl</h3>
+      <h3>{{ channel.members[0].username }}</h3>
     </li>
     <!-- <li
       @click="getChannelMessages(1)"

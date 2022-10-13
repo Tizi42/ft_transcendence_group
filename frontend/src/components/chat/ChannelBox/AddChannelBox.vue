@@ -57,6 +57,7 @@ const createNewChannel = () => {
   console.log("channel type = ", channelType.value);
   const data = {
     type: channelType.value,
+    name: channelName.value,
     members: [props.user],
     owner: props.user.id,
     admins: [props.user.id],
