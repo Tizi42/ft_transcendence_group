@@ -12,13 +12,18 @@
   </div>
   <div class="manage-channel" v-if="selectedChannel != -1">
     <div>
-      <p>ok</p>
+      <img
+        id="see-members"
+        src="@/assets/icons/groupUser.svg"
+        alt="See members"
+        @click="seeMembers"
+      />
     </div>
     <img
+      id="leave-img"
       src="@/assets/icons/leave.png"
       alt="leave channel"
       @click="leaveChannel"
-      id="leave-img"
     />
     <img
       id="settings-img"
@@ -103,6 +108,10 @@ function leaveChannel() {
   } else {
     console.log("not leaving the channel");
   }
+}
+
+function seeMembers() {
+  console.log("members channel list");
 }
 
 watch(
