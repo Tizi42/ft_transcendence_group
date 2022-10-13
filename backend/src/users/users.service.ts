@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { Channel } from "src/channel/entities/channel.entity";
 import { Chat } from "src/chat/entities/chat.entity";
 import { Any, DataSource, In, Not, QueryRunner, Repository } from "typeorm";
 import { User } from "./users.entity";
@@ -111,7 +112,6 @@ export class UsersService {
   /*
   **    GET USER INFORMATIONS
   */
-
   async getDisplayname(id: number) : Promise<string> {
     let user = await this.usersRepository.findOneBy({id});
     if (user == null)
@@ -132,7 +132,6 @@ export class UsersService {
       return ("");
     return (user.pictureLocalFilename);
   }
-
 
   /*
   **    FIND USER
