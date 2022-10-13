@@ -103,7 +103,7 @@ defineExpose(
   max-height: 500px;
   overflow-y: scroll;
   display: grid;
-  grid-template-columns: repeat(4, minmax(280px, 1fr));
+  grid-template-columns: repeat(4, minmax(350px, 1fr));
   width: 99%;
   grid-gap: 15px;
   margin-bottom: 50px;

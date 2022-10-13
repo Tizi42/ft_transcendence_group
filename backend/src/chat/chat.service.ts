@@ -17,7 +17,6 @@ export class ChatService {
     ) {}
 
     async saveMessage(content: messageInfos): Promise<Chat> {
-        // console.log("SAVE");
         const newMessage = this.chatRepository.create(content);
         await this.chatRepository.save(newMessage);
 
@@ -76,7 +75,9 @@ export class ChatService {
         const user = await this.authService.getUserFromAuthenticationToken(tokenJwt);
         
         if (!user) {
-			return null;
+            // throw new WsException('Invalid Credentials !');
+            console.log("Invalid Credentials !");
+            return null;
         }
         socket.data = user;
 

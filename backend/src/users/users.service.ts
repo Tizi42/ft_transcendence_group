@@ -1,11 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { Channel } from "src/channel/entities/channel.entity";
 import { Chat } from "src/chat/entities/chat.entity";
 import { Any, DataSource, In, Not, QueryRunner, Repository } from "typeorm";
 import { User } from "./users.entity";
 import { FriendshipDto } from "./utils/friendship.dto";
 import { UserDetails } from "./utils/types";
 import { UserDto } from "./utils/user.dto";
+import * as fs from "fs";
+// import { HttpService } from "@nestjs/axios";
 
 @Injectable()
 export class UsersService {
@@ -22,6 +25,8 @@ export class UsersService {
       private readonly chatRepository: Repository<Chat>,
 
       private readonly dataSource: DataSource,
+
+      // private readonly httpService: HttpService,
   ) {}
 
   readonly LVL_FRIENDS: number = 0;
@@ -107,7 +112,6 @@ export class UsersService {
   /*
   **    GET USER INFORMATIONS
   */
-
   async getDisplayname(id: number) : Promise<string> {
     let user = await this.usersRepository.findOneBy({id});
     if (user == null)
@@ -129,7 +133,6 @@ export class UsersService {
     return (user.pictureLocalFilename);
   }
 
-
   /*
   **    FIND USER
   */
@@ -147,11 +150,12 @@ export class UsersService {
   }
 
   async findOneById(id: number): Promise<User | undefined> {
-      return this.usersRepository.findOneBy({ id: id });
+    return this.usersRepository.findOneBy({ id: id });
   }
 
   async findOneByEmail(email: string): Promise<User | undefined> {
-      return this.usersRepository.findOneBy({ email: email });
+    console.log("Finding user by email...");
+    return this.usersRepository.findOneBy({ email: email });
   }
 
 
@@ -502,4 +506,26 @@ export class UsersService {
         return this.getLeadByGames(global, id);
     }
   }
+
+  /*
+  **    OTHER
+  */
+  
+  // async downloadImage(fromUrl: string, toLocation: string) {
+  //   const writer = fs.createWriteStream(toLocation);
+  
+  //   const response = await this.httpService.axiosRef({
+  //       url: fromUrl,
+  //       method: 'GET',
+  //       responseType: 'stream',
+  //   });
+  
+  //   response.data.pipe(writer);
+  
+  //   return new Promise((resolve, reject) => {
+  //       writer.on('finish', resolve);
+  //       writer.on('error', reject);
+  //   });
+  // }
+
 }

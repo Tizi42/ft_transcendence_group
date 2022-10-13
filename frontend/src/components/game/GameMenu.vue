@@ -41,9 +41,12 @@ import { defineComponent, defineExpose, onMounted, Ref } from "vue";
 import { ref } from "vue";
 import "@/assets/styles/gameOverlay.css";
 import LoadingRing from "../utils/LoadingRing.vue";
-import router from "@/router";
+import router from "@/router/index";
+import socket from "@/socket";
+import { useUserStore } from "@/stores/user";
 
 const waiting: Ref<boolean> = ref(false);
+const user = useUserStore();
 const show: Ref<boolean> = ref(false);
 const choosenMode: Ref<number> = ref(0);
 const numberModes = 3;
@@ -75,16 +78,36 @@ async function changeMode(next: boolean) {
 function cancel() {
   waiting.value = false;
   console.log("cancel game");
+  socket.emit(
+    "quit_queue",
+    {
+      mode: "normal", //later: change to choosen mode
+      user_id: user.id,
+    },
+    (data: any) => {
+      console.log(data);
+    }
+  );
 }
 
 async function startGame() {
   waiting.value = true;
-  console.log("start game");
-  setTimeout(() => {
-    if (waiting.value) router.push("pong");
-    waiting.value = false;
-  }, 4000);
+  socket.emit(
+    "queue_register",
+    {
+      mode: "normal", //later: change to choosen mode
+      user_id: user.id,
+    },
+    (data: any) => {
+      console.log(data);
+    }
+  );
 }
+
+socket.on("game_found", (data: any) => {
+  console.log("Entering game room! ", data);
+  router.push({ name: "pong", params: { room_name: data } });
+});
 
 onMounted(() => {
   show.value = true;

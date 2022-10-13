@@ -1,12 +1,36 @@
 <template>
-  <div
-    v-if="history.length === 0 && isActive === 'players'"
-    class="welcome-chat"
-  >
+  <div v-if="target === null && isActive === 'players'" class="welcome-chat">
     <img src="@/assets/icons/multiBubble.svg" />
     <h1>Let's chat</h1>
   </div>
-  <div class="container-messages" v-else>
+  <div
+    class="messages-invite-game"
+    v-if="target != null && isActive === 'players'"
+  >
+    <img src="@/assets/icons/watchGame.svg" alt="watch his game" />
+    <img src="@/assets/icons/inviteInGame.png" alt="invite in game" />
+  </div>
+  <div class="manage-channel" v-if="selectedChannel != -1">
+    <div>
+      <p>ok</p>
+    </div>
+    <img
+      src="@/assets/icons/leave.png"
+      alt="leave channel"
+      @click="leaveChannel"
+      id="leave-img"
+    />
+    <img
+      id="settings-img"
+      src="@/assets/icons/settings.svg"
+      alt="see settings"
+      @click="showSettings"
+    />
+  </div>
+  <div
+    class="container-messages"
+    v-if="isActive === 'players' || selectedChannel != -1"
+  >
     <div v-for="message in history" :key="message">
       <div
         v-if="message.author.id != user.id"
@@ -23,36 +47,71 @@
     </div>
   </div>
   <teleport to="body">
-    <UserBoxModal v-if="addWindow" @hide="hide">
+    <UserBoxModal v-if="userProfileWindow" @hide="hide">
       <UserBox :target="target" />
     </UserBoxModal>
+    <ChannelBoxModal v-if="settingsWindow" @hide="hide">
+      <SettingsChannelBox :user="user" :selectedChannel="selectedChannel" />
+    </ChannelBoxModal>
   </teleport>
 </template>
 
 <script lang="ts" setup>
 import { useUserStore } from "@/stores/user";
-import { defineComponent, defineProps, defineExpose, Ref, ref } from "vue";
+import {
+  defineComponent,
+  defineProps,
+  defineExpose,
+  Ref,
+  ref,
+  watch,
+} from "vue";
 import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
 import UserBox from "../users/UserBox/UserBox.vue";
 import { User } from "@backend/users/users.entity";
+import SettingsChannelBox from "./ChannelBox/SettingsChannelBox.vue";
+import ChannelBoxModal from "./ChannelBox/ChannelBoxModal.vue";
 
 interface Props {
   history: Array<any>;
-  target: Ref<User>;
+  target: User;
   isActive: string;
+  selectedChannel: number;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
 const user: any = useUserStore();
-const addWindow: Ref<boolean> = ref(false);
+const userProfileWindow: Ref<boolean> = ref(false);
+const settingsWindow: Ref<boolean> = ref(false);
 
 function showInfoBox() {
-  addWindow.value = true;
+  userProfileWindow.value = true;
+}
+
+function showSettings() {
+  settingsWindow.value = true;
 }
 
 function hide() {
-  addWindow.value = false;
+  userProfileWindow.value = false;
+  settingsWindow.value = false;
 }
+
+function leaveChannel() {
+  if (confirm("Are you sure you want to leave this channel ?")) {
+    console.log("leaving the channel");
+  } else {
+    console.log("not leaving the channel");
+  }
+}
+
+watch(
+  () => props.target,
+  () => {
+    const element = document.getElementsByClassName("container-messages")[0];
+    element.scrollTop = element.scrollHeight;
+  }
+);
 
 defineExpose(
   defineComponent({

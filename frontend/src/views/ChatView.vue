@@ -12,33 +12,29 @@
         @getHistory="handleHistory"
         :user="user"
       />
-      <ChannelsList v-else />
+      <ChannelsList
+        v-else
+        @getChannelSelected="handleChannelSelected"
+        :selectedChannel="selectedChannel"
+      />
     </div>
     <div class="container-chat">
-      <form
-        class="search-in-my-channels"
-        @submit.prevent="onSubmit"
-        v-if="isActive === 'channels'"
-      >
-        <div id="div-search-all-channels">
-          <input
-            class="input-search-channels"
-            id="input-search-all-channels"
-            type="text"
-            placeholder="Search all channels..."
-            v-model="inputSearch"
-          />
-          <button type="submit">
-            <img src="@/assets/icons/search.svg" />
-          </button>
-        </div>
-      </form>
+      <AllChannelsSelected
+        v-if="isActive === 'channels' && selectedChannel == -1"
+        @getChannelSelected="handleChannelSelected"
+      />
       <HistoryMessages
         :history="history"
         :target="receiverProfile"
         :isActive="isActive"
+        :selectedChannel="selectedChannel"
       />
-      <MessageInput v-if="receiver != -1" :user="user" :receiver="receiver" />
+      <MessageInput
+        v-if="receiver != -1 || selectedChannel != -1"
+        :user="user"
+        :receiver="receiver"
+        :selectedChannel="selectedChannel"
+      />
     </div>
   </div>
 </template>
@@ -54,15 +50,20 @@ import HistoryMessages from "@/components/chat/HistoryMessages.vue";
 import MessageInput from "@/components/chat/MessageInput.vue";
 import { getUrlOf } from "@/router";
 import { User } from "@backend/users/users.entity";
+import AllChannelsSelected from "@/components/chat/AllChannelsSelected.vue";
 
 const user: any = useUserStore();
 const isActive: Ref<string> = ref("players");
 const receiver: Ref<number> = ref(-1);
 const history: Ref<Array<any>> = ref([]);
-const receiverProfile: Ref<User | undefined> = ref();
+const receiverProfile: Ref<any> = ref(null);
+const selectedChannel: Ref<number> = ref(-1);
 
 const handleSelectedNav = (event: string) => {
   isActive.value = event;
+  if (event === "players") {
+    selectedChannel.value = -1;
+  }
 };
 
 const handleSelectedReceiver = async (event: number) => {
@@ -78,11 +79,17 @@ const handleSelectedReceiver = async (event: number) => {
       .catch((error) => {
         console.log("ERROR : ", error);
       });
+  } else {
+    receiverProfile.value = null;
   }
 };
 
 const handleHistory = (event: Array<any>) => {
   history.value = event;
+};
+
+const handleChannelSelected = (event: number) => {
+  selectedChannel.value = event;
 };
 
 onBeforeMount(async () => {
