@@ -46,8 +46,6 @@ export class ChatController {
   async lastMessages(@Req() req: RequestWithUser, @Param('id') id: number) {
     const messages = await this.chatService.getMessagesById(id, req.user.id);
     const last = messages[messages.length - 1];
-    console.log("LAST = ", id);
-    console.log(last);
     return last;
   }
 }
