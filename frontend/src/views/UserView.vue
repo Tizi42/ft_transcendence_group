@@ -3,13 +3,13 @@
     <div class="main-wrapper" ref="toScrollTop">
       <ProfileBanner />
       <div class="user-navbar">
-        <router-link to="/user/stats" @click="scrollTop()">
+        <router-link to="/user/stats">
           <div class="user-navbar-item">STATS</div>
         </router-link>
         <router-link to="/user/friends" @click="removeNotification()">
           <div class="user-navbar-item">FRIENDS</div>
         </router-link>
-        <router-link to="/user/settings" @click="scrollTop()">
+        <router-link to="/user/settings">
           <div class="user-navbar-item">SETTINGS</div>
         </router-link>
       </div>
@@ -29,6 +29,7 @@ import { defineComponent, defineExpose, ref, Ref } from "vue";
 import { onBeforeMount } from "vue";
 import ProfileBanner from "@/components/users/ProfileBanner.vue";
 import socket from "@/socket";
+import { onBeforeRouteLeave, onBeforeRouteUpdate } from "vue-router";
 
 const toScrollTop: Ref<HTMLElement | undefined> = ref();
 
@@ -45,9 +46,16 @@ function scrollTop() {
 }
 
 function removeNotification() {
-  scrollTop();
   socket.emit("remove_notification");
 }
+
+onBeforeRouteUpdate(() => {
+  scrollTop();
+});
+
+onBeforeRouteLeave(() => {
+  scrollTop();
+});
 
 onBeforeMount(() => {
   socket.on("new_connection", () => {
