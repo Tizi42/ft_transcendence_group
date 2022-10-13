@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { DataSource } from "typeorm";
 import { Channel } from 'src/channel/entities/channel.entity';
 import { Chat } from 'src/chat/entities/chat.entity';
 import { UsersController } from './users.controller';
@@ -19,7 +20,7 @@ import { UsersService } from './users.service';
 })
 export class UsersModule {
   constructor(private usersService: UsersService) {
-    if (this.usersService.needRecreate()) {
+    if (false) {
       console.log("creating 10 fake users");
       this.usersService.removeAll();
       setTimeout(() => {

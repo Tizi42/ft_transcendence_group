@@ -1,6 +1,7 @@
 import { MessageBody, SubscribeMessage, ConnectedSocket } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { GameRoom } from "./utils/game";
+import { GameRoomNS } from "./utils/gameNS";
 import { AppGateway } from '../gateway';
 import { UsersService } from '../users/users.service';
 import { GameService } from './game.service';
@@ -43,6 +44,7 @@ export class GameGateway extends AppGateway {
       GameGateway.queues[data.mode] = -1;
       const room_name = playerL + " vs " + data.user_id;
       GameGateway.rooms.set(room_name, new GameRoom(playerL, data.user_id, room_name));
+      console.log(GameGateway.rooms);
       const room = GameGateway.rooms.get(room_name);
       console.log("room value in queue", room);
       this.server.in(data.user_id).in(playerL).socketsJoin(room_name);
@@ -126,11 +128,35 @@ export class GameGateway extends AppGateway {
 
   @SubscribeMessage('update_score')
   async onUpdateScore(@MessageBody() data: any) {
+    console.log(GameGateway.rooms);
     console.log("score:", data);
     this.server.to(data.room_name).emit("score_update", {
       left: data.left,
       right: data.right,
     });
+  }
+
+  transformRooms(): Array<GameRoomNS> {
+    let data: Array<GameRoomNS> = [];
+    GameGateway.rooms.forEach((value: GameRoom) => {
+      data.push(new GameRoomNS(value));
+    });
+    return data;
+  }
+
+  @SubscribeMessage('get_updated_rooms')
+  updateRooms(@ConnectedSocket() socket: Socket) {
+    if (GameGateway.rooms.size == 0) {
+      console.log(GameGateway.rooms.size);
+      let room_name = 2 + " vs " + 3;
+      GameGateway.rooms.set(room_name, new GameRoom(2, 3, room_name));
+      room_name = 4 + " vs " + 5;
+      GameGateway.rooms.set(room_name, new GameRoom(4, 5, room_name));
+      room_name = 6 + " vs " + 7;
+      GameGateway.rooms.set(room_name, new GameRoom(6, 7, room_name));
+      console.log(GameGateway.rooms.size);
+    }
+    this.server.to(socket.id).emit("updated_rooms", this.transformRooms());
   }
 
   // @SubscribeMessage('update_pos')
