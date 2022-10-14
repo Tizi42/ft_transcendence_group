@@ -43,36 +43,6 @@
       <img src="@/assets/icons/groupe.png" />
       <h3>{{ channel.members[0].username }}</h3>
     </li>
-    <!-- <li
-      @click="getChannelMessages(1)"
-      :class="{
-        channelSelected: selectedChannel == 1,
-        channelNotSelected: selectedChannel != 1,
-      }"
-    >
-      <img src="@/assets/icons/groupe.png" />
-      <h3>random</h3>
-    </li>
-    <li
-      @click="getChannelMessages(2)"
-      :class="{
-        channelSelected: selectedChannel == 2,
-        channelNotSelected: selectedChannel != 2,
-      }"
-    >
-      <img src="@/assets/icons/groupe.png" />
-      <h3>apt 42</h3>
-    </li>
-    <li
-      @click="getChannelMessages(3)"
-      :class="{
-        channelSelected: selectedChannel == 3,
-        channelNotSelected: selectedChannel != 3,
-      }"
-    >
-      <img src="@/assets/icons/groupe.png" />
-      <h3>always win a pong</h3>
-    </li> -->
   </ul>
   <Teleport to="body">
     <ChannelBoxModal v-if="addWindow" @hide="hide">
