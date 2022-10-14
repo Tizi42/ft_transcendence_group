@@ -2,9 +2,11 @@
   <div class="pageCenter">
     <div class="overlayBox" v-if="dataReady">
       <OverlayTopBar
-        :user="user"
-        :playerL="playerL"
-        :playerR="playerR"
+        v-if="opponent != null"
+        :user="createUserFromStore(user)"
+        :opponent="opponent"
+        :playerL="createUserMinimal(playerL)"
+        :playerR="createUserMinimal(playerR)"
         :time="timer"
         :scores="scores"
         :messageL="messageL"
@@ -17,7 +19,8 @@
       />
       <GameBox :room_name="room_name" :user_role="user_role" />
       <OverlayBottomBar
-        :user="user"
+        :user="createUserFromStore(user)"
+        :opponent="opponentId"
         :room_name="room_name"
         :emojisURL="emojisURL"
         @changeSound="changeSound"
@@ -39,9 +42,13 @@ import GameBox from "./GameBox.vue";
 import ReadyButton from "./ReadyButton.vue";
 import { useUserStore } from "@/stores/user";
 import { Chat } from "@backend/chat/entities/chat.entity";
+import { UserMinimal } from "@/components/utils/UserMinimal";
 import { User } from "@backend/users/users.entity";
 import { getUrlOf } from "@/router";
 import socket from "@/socket";
+import { onBeforeRouteLeave } from "vue-router";
+import router from "@/router/index";
+import { StoreGeneric } from "pinia";
 
 interface Props {
   room_name: string;
@@ -49,12 +56,12 @@ interface Props {
   playerR_id: number;
 }
 
+const user: StoreGeneric = useUserStore();
+const opponent: UserMinimal = new UserMinimal();
+const opponentId = user.id == 4 ? 11 : 4;
 const props: Readonly<Props> = defineProps<Props>();
-
-const user = useUserStore();
 const playerL: Ref<User | null> = ref(null);
 const playerR: Ref<User | null> = ref(null);
-
 const messageL: Ref<Chat | null> = ref(null);
 const messageR: Ref<Chat | null> = ref(null);
 const emojiL: Ref<number> = ref(3);
@@ -66,13 +73,29 @@ const readyStatus: Ref<Array<boolean>> = ref([false, false]);
 const timer: Ref<Date> = ref(new Date());
 const scores: Ref<Array<number>> = ref([0, 0]);
 const emojisURL: Array<URL> = [];
-const user_role = ref(false);
+const force_quit = ref(false);
+const user_role = ref("");
 
 type emojiInfo = {
   author: string;
   dest: string;
   content: number;
 };
+
+function createUserFromStore(user: StoreGeneric): UserMinimal {
+  let newUser = new UserMinimal();
+  newUser.id = user.id;
+  newUser.displayName = user.displayName;
+  return newUser;
+}
+
+function createUserMinimal(user: User | null): UserMinimal {
+  let newUser = new UserMinimal();
+  if (user == null) return newUser;
+  newUser.id = user.id;
+  newUser.displayName = user.displayName;
+  return newUser;
+}
 
 function loadEmojis() {
   for (var i = 1; i < 38; i++) {
@@ -127,14 +150,27 @@ function changeSound(value: number) {
 }
 
 function quitGame() {
-  console.log("user wants to leave game");
+  const answer = window.confirm(
+    "Do you really want to leave? You will quit the game room"
+  );
+  if (!answer) return false;
+  socket.emit("leave_game", {
+    room_name: props.room_name,
+    user_id: user.id,
+  });
 }
 
 function changeBackground() {
   console.log("user wants to change background");
 }
 
+onBeforeRouteLeave((to: any, from: any) => {
+  if (force_quit.value) return true;
+  return quitGame();
+});
+
 onBeforeMount(async () => {
+  console.log("on before mount in game overlay...");
   await getPlayersInfo();
   loadEmojis();
   timer.value = new Date();
@@ -153,6 +189,12 @@ onBeforeMount(async () => {
     console.log("score:", data);
     scores.value[0] = data.left;
     scores.value[1] = data.right;
+  });
+
+  socket.on("quit_game", () => {
+    window.alert("Player has left game, return to game menu...");
+    force_quit.value = true;
+    router.push({ name: "play" });
   });
 });
 
@@ -185,9 +227,11 @@ defineExpose(
 
 .pageCenter {
   display: flex;
+  position: absolute;
   align-items: center;
   flex-direction: column;
   height: 100vh;
+  width: 100vw;
   background: var(--main-gradient-background);
 }
 </style>

@@ -16,18 +16,18 @@
       </form>
       <p id="info-id">&nbsp;user_id: {{ user.id }}</p>
       <p id="info-email">&nbsp;{{ user.email }}</p>
+      <button v-if="!editingMode" class="edit-button" @click="onClickEdit">
+        edit
+      </button>
+      <button
+        v-if="editingMode"
+        class="edit-button"
+        form="info-form"
+        @click="onSubmit"
+      >
+        save
+      </button>
     </div>
-    <button v-if="!editingMode" class="edit-button" @click="onClickEdit">
-      edit
-    </button>
-    <button
-      v-if="editingMode"
-      class="edit-button"
-      form="info-form"
-      @click="onSubmit"
-    >
-      save
-    </button>
   </div>
 </template>
 
@@ -75,11 +75,14 @@ defineExpose(
   margin-left: 7%;
   margin-right: 7%;
   margin-top: 25px;
-  background-color: rgba(20, 29, 1, 1);
+  margin-bottom: 20px;
+  background-color: #141d01;
   display: flex;
+  box-shadow: var(--main-shadow);
 }
 
 .personal-info-frame {
+  position: relative;
   text-align: left;
   align-self: flex-end;
   padding-bottom: 37px;
@@ -115,7 +118,7 @@ defineExpose(
 
 .input-textarea {
   all: unset;
-  width: 6em;
+  width: 10em;
   font-size: 42px;
   font-family: "Outfit";
   background: rgba(30, 42, 2, 0.7);
@@ -128,8 +131,8 @@ defineExpose(
 
 .edit-button {
   align-self: flex-end;
-  position: relative;
-  top: 38px;
+  position: absolute;
+  bottom: -40px;
   right: 10px;
   padding: 5px;
   padding-left: 16px;
@@ -141,6 +144,8 @@ defineExpose(
   font-size: 20px;
   color: rgba(255, 255, 255, 0.7);
   background-color: rgba(30, 42, 2, 0.7);
+  width: 4em;
+  border-radius: 7px;
 }
 
 .edit-button:hover {

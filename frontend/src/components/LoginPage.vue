@@ -1,7 +1,7 @@
 <template>
   <button class="btn" data="Sign in with 42" @click="handleLogin()"></button>
-  <router-link :to="{ name: 'dev-login' }" class="btn" id="link">
-    Log in with email
+  <router-link :to="{ name: 'dev-login' }" id="link">
+    <button class="btn" data="Log in with email"></button>
   </router-link>
 </template>
 
@@ -42,18 +42,14 @@ defineExpose(
 
 <style>
 .btn {
-  padding: 19px 43px;
+  padding: 19px 0px;
+  width: 300px;
   border: none;
   outline: none;
   position: relative;
   border-radius: 22px;
-  background: linear-gradient(
-    254.5deg,
-    rgba(0, 95, 62, 1) -18.41%,
-    rgba(255, 218, 0, 1) 66.67%
-  );
+  background: var(--main-revgradient-background);
   cursor: pointer;
-  margin-top: 20px;
   z-index: 1;
 }
 
@@ -61,8 +57,8 @@ defineExpose(
   text-decoration: none;
   font-style: normal;
   font-weight: bold;
-  font-size: 18px;
-  color: rgba(255, 218, 0, 1);
+  color: #005f3e;
+  font-size: 24px;
 }
 
 .btn::before {
@@ -80,7 +76,6 @@ defineExpose(
 
 .btn::after {
   content: attr(data);
-  /* font-family: "Outfit"; */
   font-style: normal;
   font-weight: bold;
   font-size: 24px;

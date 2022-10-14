@@ -1,5 +1,6 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
+import { FriendShip } from 'src/users/utils/types';
 import { ChannelService } from 'src/channel/channel.service';
 import { AppGateway } from '../gateway';
 import { UsersService } from '../users/users.service';
@@ -58,5 +59,19 @@ export class ChatGateway extends AppGateway {
     @MessageBody() data: emojiInfo,
   ) {
     this.server.sockets.to(data.dest).to(data.author).emit('receive_emoji_ingame', data);
+  }
+
+  @SubscribeMessage('request_friendship')
+  async handleFriendship(
+    @MessageBody() data: FriendShip,
+  ) {
+    this.server.sockets.to(data.to).emit('receive_friendship', data);
+  }
+
+  @SubscribeMessage('remove_notification')
+  async ignoreNotifcation(
+    @ConnectedSocket() socket: Socket
+  ) {
+    this.server.sockets.to(socket.id).emit('ignore_notification');
   }
 }

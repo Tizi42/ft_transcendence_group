@@ -1,9 +1,10 @@
 .page2FA {
   display: flex;
+  position: absolute;
   align-items: center;
   flex-direction: column;
+  width: 100vw;
   height: 100vh;
-  background: var(--main-gradient-background);
 }
 
 .page2FA .GAlogo {
@@ -16,7 +17,7 @@
   transform: scale(1.2, 1.2) rotate(-90deg);
 }
 
-.titleGA, .titleGame {
+.titleGA {
   color: #cccccc;
   font-family: "Outfit Bold";
   font-size: 2em;
@@ -35,8 +36,8 @@
   padding-top: 2em;
   padding-bottom: 2em;
   width: 35vw;
-  background: rgba(30, 42, 2, 0.8);
-  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.75);
+  background: #1e2a02dd;
+  box-shadow: 0px 0px 8px #000000bf;
   border-radius: 58px;
   position: absolute;
   top: 50%;

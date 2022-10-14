@@ -1,24 +1,28 @@
 <template>
-  <div class="settings">
-    <div class="setting-navbar">
-      <div
-        class="setting-navbar-item"
-        :class="{ active: selected === 'AccountOptions' }"
-        @click="select('AccountOptions')"
-      >
-        Account
+  <div class="wrapper-settings">
+    <div class="settings">
+      <div class="setting-navbar">
+        <div
+          class="setting-navbar-item"
+          :class="{ active: selected === 'AccountOptions' }"
+          @click="select('AccountOptions')"
+        >
+          Account
+        </div>
+        <div
+          class="setting-navbar-item"
+          :class="{ active: selected === 'BlockedUsers' }"
+          @click="select('BlockedUsers')"
+        >
+          Blocked Users
+        </div>
+        <button id="logout-button" @click="toLogout">LOG OUT</button>
       </div>
-      <div
-        class="setting-navbar-item"
-        :class="{ active: selected === 'BlockedUsers' }"
-        @click="select('BlockedUsers')"
-      >
-        Blocked Users
+      <div class="setting-field">
+        <Transition name="slide-top">
+          <component :is="menu[selected]"></component>
+        </Transition>
       </div>
-      <button id="logout-button" @click="toLogout">LOG OUT</button>
-    </div>
-    <div class="setting-field">
-      <component :is="menu[selected]"></component>
     </div>
   </div>
 </template>
@@ -69,15 +73,22 @@ defineExpose(
 </script>
 
 <style scoped>
+.wrapper-settings {
+  position: absolute;
+  width: 100%;
+}
+
 .settings {
   display: flex;
-  margin-bottom: 25px;
+  position: relative;
+  width: 100%;
+  gap: 50px;
 }
+
 .setting-navbar {
-  margin-left: 7%;
-  margin-right: 1%;
+  margin-left: 8%;
   align-items: left;
-  width: 14em;
+  width: 14%;
   text-align: left;
   display: flex;
   flex-direction: column;
@@ -90,23 +101,28 @@ defineExpose(
   font-weight: 600;
   font-size: 24px;
   line-height: 1.2;
-  color: rgba(255, 255, 255, 1);
-  background-color: rgba(20, 29, 1, 1);
+  color: #ffffff;
+  background-color: var(--dark-green-background);
+  border-radius: 12px;
   padding: 18px;
+  margin-bottom: 10px;
+  transition: all 0.5s ease;
 }
 
 .setting-navbar-item:hover {
   cursor: pointer;
+  transform: scale(1.1);
 }
 
 .setting-navbar-item.active {
-  background: linear-gradient(90deg, #141d01 0%, #ffcb00 145.91%);
+  background: linear-gradient(135deg, #1e2b02 0%, #ffcb00 150%);
+  color: var(--main-color);
 }
 
 #logout-button {
-  border: 5px solid rgba(212, 57, 29, 1);
+  border: 3px solid var(--main-red);
   border-radius: 22px;
-  color: rgba(212, 57, 29, 1);
+  color: var(--main-red);
   font-family: "Outfit";
   font-style: normal;
   font-weight: 700;
@@ -116,7 +132,8 @@ defineExpose(
   background-color: transparent;
   width: fit-content;
   margin: auto;
-  margin-top: 2em;
+  margin-top: 1em;
+  transition: all 0.5s ease;
 }
 
 #logout-button:hover {
@@ -125,14 +142,16 @@ defineExpose(
 }
 
 .setting-field {
-  flex: 1;
-  margin-right: 7%;
-  height: fit-content;
-  max-height: 535px;
-  overflow: scroll;
-  background-color: rgba(20, 29, 1, 1);
+  overflow-y: scroll;
+  overflow-x: hidden;
+  scrollbar-width: 0px;
+  background-color: var(--dark-green-background);
   text-align: left;
   display: flex;
   flex-direction: column;
+}
+
+.setting-field::-webkit-scrollbar {
+  display: none;
 }
 </style>
