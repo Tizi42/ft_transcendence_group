@@ -46,16 +46,23 @@ export class ChannelGateway extends AppGateway {
     @ConnectedSocket() socket: Socket,
   ) {
     const allChannels = await this.channelService.findAll();
-    this.server.sockets.emit('receive_all_channels', allChannels);
+    const findMember = await this.channelService.findChannelMembers(socket.data.id);
+    console.log("member ? :", findMember);
+    let member: boolean;
+    if (findMember !== null)
+      member = true;
+    else
+      member = false;
+    this.server.sockets.emit('receive_all_channels', allChannels, member);
     return allChannels;
   }
 
   @SubscribeMessage('join_channel')
   async handleJoinChannel(
-    @MessageBody() data: any,
+    @MessageBody() channel: number,
     @ConnectedSocket() socket: Socket,
   ){
-    await this.channelService.joinChannel(data.user, data.channel);
+    await this.channelService.joinChannel(socket.data.id, channel);
     this.server.sockets.to(socket.data.id).emit('joined_channel');
   }
 

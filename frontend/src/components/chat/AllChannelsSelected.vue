@@ -22,10 +22,10 @@
       <h3>{{ channel.name }}</h3>
       <div class="buttons-channel">
         <button
-          v-if="channel.members[channel] !== user"
+          v-if="isntMember"
           type="submit"
           class="join-channel"
-          @submit.prevent="toJoin"
+          @click="toJoin(channel)"
         >
           <h3>Join</h3>
         </button>
@@ -49,6 +49,7 @@ import {
   ref,
   defineEmits,
   onBeforeMount,
+  defineProps,
 } from "vue";
 
 interface Props {
@@ -58,12 +59,17 @@ interface Props {
 const selectedChannel: Ref<number> = ref(-1);
 const allChannels: Ref<any> = ref([]);
 const props: Readonly<Props> = defineProps<Props>();
+const isntMember: Ref<boolean> = ref(true);
+
+socket.emit("get_all_channels");
+socket.on("receive_all_channels", (channels: any, member: boolean) => {
+  allChannels.value = channels;
+  isntMember.value = member;
+});
 
 onBeforeMount(async () => {
-  socket.emit("get_all_channels");
-  socket.on("receive_all_channels", (channel: any) => {
-    allChannels.value = channel;
-  });
+  console.log("user = ", props.user.id);
+  console.log("members = ", isntMember.value);
 });
 
 const setSelectedChannel = (channelId: number) => {
@@ -71,10 +77,11 @@ const setSelectedChannel = (channelId: number) => {
   emit("getChannelSelected", selectedChannel.value);
 };
 
-const toJoin = () => {
-  socket.emit("get_all_channels");
-  socket.on("receive_all_channels", (channel: any) => {
-    allChannels.value = channel;
+const toJoin = (channel: any) => {
+  socket.emit("join_channel", channel.id);
+  socket.on("joined_channel", (channel: any) => {
+    isntMember.value = false;
+    console.log("joined :", channel);
   });
 };
 
