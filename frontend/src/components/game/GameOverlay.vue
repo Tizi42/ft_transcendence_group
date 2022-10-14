@@ -150,14 +150,8 @@ function changeSound(value: number) {
 }
 
 function quitGame() {
-  const answer = window.confirm(
-    "Do you really want to leave? You will quit the game room"
-  );
-  if (!answer) return false;
-  socket.emit("leave_game", {
-    room_name: props.room_name,
-    user_id: user.id,
-  });
+  force_quit.value = false;
+  router.push({ name: "play" });
 }
 
 function changeBackground() {
@@ -166,7 +160,14 @@ function changeBackground() {
 
 onBeforeRouteLeave((to: any, from: any) => {
   if (force_quit.value) return true;
-  return quitGame();
+  const answer = window.confirm(
+    "Do you really want to leave? You will quit the game room"
+  );
+  if (!answer) return false;
+  socket.emit("leave_game", {
+    room_name: props.room_name,
+    user_id: user.id,
+  });
 });
 
 onBeforeMount(async () => {
