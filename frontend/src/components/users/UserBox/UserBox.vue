@@ -67,6 +67,7 @@ import { useUserStore } from "@/stores/user";
 import axios from "axios";
 import { User } from "@backend/users/users.entity";
 import { getUrlOf } from "@/router";
+import socket from "@/socket";
 
 interface Props {
   target: User;
@@ -80,6 +81,11 @@ let nbFriends: Ref<number> = ref(0);
 let show: Ref<boolean> = ref(false);
 
 function onSend() {
+  const data = {
+    from: user.id,
+    to: props.target.id,
+  };
+  socket.emit("request_friendship", data);
   axios
     .post("http://localhost:3000/api/users/friends/add", {
       id1: user.id,

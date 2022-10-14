@@ -25,6 +25,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const users = [];
 
     socket.data = await this.chatService.getUserFromSocket(socket);
+    console.log("socket user id: ", socket.data);
     if (socket.data) {
       socket.join(socket.data.id);
       this.usersService.updateIsOnline(socket.data.id, "online");

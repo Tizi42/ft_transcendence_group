@@ -44,7 +44,7 @@ export class GameGateway extends AppGateway {
     } else {
       GameGateway.queues[data.mode] = -1;
       const room_name = playerL + " vs " + data.user_id;
-      GameGateway.rooms.set(room_name, new GameRoom(playerL, data.user_id, room_name));
+      GameGateway.rooms.set(room_name, new GameRoom(playerL, data.user_id, data.mode));
       const room = GameGateway.rooms.get(room_name);
       console.log("room value in queue", room);
       this.server.in(data.user_id).in(playerL).socketsJoin(room_name);
@@ -69,12 +69,28 @@ export class GameGateway extends AppGateway {
       return null;
     if (data.user_id !== room.playerL && data.user_id !== room.playerR)
       this.server.in(data.user_id).socketsJoin(data.room_name);
-    return room; 
+    return room;
+  }
+
+  @SubscribeMessage('leave_game')
+  async onLeavingRoom(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+    const room = GameGateway.rooms.get(data.room_name);
+    if (!room)
+      return null;
+    if (data.user_id !== room.playerL && data.user_id !== room.playerR) {
+      this.server.in(data.user_id).socketsLeave(data.room_name);
+    } else {
+      console.log("emit quit game");
+      socket.to(data.room_name).emit("quit_game");
+      this.server.in(data.user_id).socketsLeave(data.room_name);
+      GameGateway.rooms.delete(data.room_name);
+    }
   }
 
   @SubscribeMessage('ready')
   async onPlayerReady(@MessageBody() data: any) {
     const room = GameGateway.rooms.get(data.room_name);
+    console.log(data.user_id, " is ready");
     if (!room || (data.user_id !== room.playerL && data.user_id !== room.playerR)
         || room.ready === data.user_id)
       return null;
@@ -132,6 +148,42 @@ export class GameGateway extends AppGateway {
     this.server.to(data.room_name).emit("score_update", {
       left: data.left,
       right: data.right,
+    });
+  }
+
+  @SubscribeMessage('reset_score')
+  async onResetScore(@MessageBody() data: any) {
+    this.server.to(data.user_id).emit("score_update", {
+      left: 0,
+      right: 0,
+    });
+  }
+
+  @SubscribeMessage('game_end')
+  async onGameEnd(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() data: any
+  ){
+    console.log("game end, winner is player ", data.winner);
+
+    const room = GameGateway.rooms.get(data.room_name);
+
+    if (!room)
+      return null;
+
+    // save game data
+    room.score_left = data.left;
+    room.score_right = data.right;
+    if (data.winner === "left")
+      room.winner = room.playerL;
+    else if (data.winner === "right")
+      room.winner = room.playerR;
+
+    //update battle history database
+
+    // inform other users in game room
+    socket.to(data.room_name).emit("end", {
+      winner: data.winner,
     });
   }
 
