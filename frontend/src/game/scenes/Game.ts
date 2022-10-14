@@ -22,12 +22,10 @@ export default class GameScene extends Phaser.Scene {
   game_status: GameStatus;
 
   constructor() {
-    console.log("construct game scene");
     super("GameScene");
   }
 
   init() {
-    console.log("init game scene");
     this.game_status = "ready";
     this.score_left = 0;
     this.score_right = 0;
@@ -35,7 +33,6 @@ export default class GameScene extends Phaser.Scene {
   }
 
   create() {
-    console.log("create game scene");
     this.width = this.cameras.main.width;
     this.height = this.cameras.main.height;
 
@@ -137,6 +134,8 @@ export default class GameScene extends Phaser.Scene {
 
   launch_ball(direction: string) {
     const randomHeight = Phaser.Math.Between(80, this.cameras.main.height - 80);
+    const randVx = Phaser.Math.Between(200, 300);
+    const randVy = Phaser.Math.Between(200, 300);
     this.ball.disableBody(true, true);
     this.ball.enableBody(
       true,
@@ -145,8 +144,8 @@ export default class GameScene extends Phaser.Scene {
       true,
       true
     );
-    if (direction === "toLeft") this.ball.setVelocity(-300, 300);
-    else this.ball.setVelocity(300, 300);
+    if (direction === "toLeft") this.ball.setVelocity(-randVx, randVy);
+    else this.ball.setVelocity(randVx, randVy);
   }
 
   check_score() {
