@@ -3,8 +3,6 @@
     <div class="overlayBox" v-if="dataReady">
       <OverlayTopBar
         v-if="opponent != null"
-        :user="createUserFromStore(user)"
-        :opponent="opponent"
         :playerL="createUserMinimal(playerL)"
         :playerR="createUserMinimal(playerR)"
         :time="timer"
@@ -20,7 +18,7 @@
       <GameBox :room_name="room_name" :user_role="user_role" />
       <OverlayBottomBar
         :user="createUserFromStore(user)"
-        :opponent="opponentId"
+        :role="user_role"
         :room_name="room_name"
         :emojisURL="emojisURL"
         @changeSound="changeSound"
@@ -58,7 +56,6 @@ interface Props {
 
 const user: StoreGeneric = useUserStore();
 const opponent: UserMinimal = new UserMinimal();
-const opponentId = user.id == 4 ? 11 : 4;
 const props: Readonly<Props> = defineProps<Props>();
 const playerL: Ref<User | null> = ref(null);
 const playerR: Ref<User | null> = ref(null);
