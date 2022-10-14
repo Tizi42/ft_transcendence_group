@@ -121,7 +121,9 @@ defineExpose(
 
 <style scoped>
 .statistics {
-  position: relative;
+  position: absolute;
+  top: 0;
+  width: 86%;
   display: flex;
   flex-direction: column;
   margin-left: 7%;
