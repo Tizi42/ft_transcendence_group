@@ -22,10 +22,12 @@ export default class GameScene extends Phaser.Scene {
   game_status: GameStatus;
 
   constructor() {
+    console.log("construct game scene");
     super("GameScene");
   }
 
   init() {
+    console.log("init game scene");
     this.game_status = "ready";
     this.score_left = 0;
     this.score_right = 0;
@@ -33,6 +35,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   create() {
+    console.log("create game scene");
     this.width = this.cameras.main.width;
     this.height = this.cameras.main.height;
 

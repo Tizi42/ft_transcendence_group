@@ -7,10 +7,12 @@ export default class GetReadyScene extends Phaser.Scene {
   ready = false;
 
   constructor() {
+    console.log("construct get ready scene");
     super({ key: "GetReadyScene" });
   }
 
   init() {
+    console.log("init get ready scene");
     this.ready = false;
     socket.emit("reset_score", {
       user_id: gameInfo.user_id,
@@ -18,6 +20,7 @@ export default class GetReadyScene extends Phaser.Scene {
   }
 
   preload() {
+    console.log("preload get ready scene");
     this.load.image("background", "background.png");
     this.load.image("ball", "ball.png");
     this.load.image("paddle", "paddle.png");
@@ -27,6 +30,7 @@ export default class GetReadyScene extends Phaser.Scene {
   }
 
   create() {
+    console.log("create get ready scene");
     if (gameInfo.user_role === "watch") {
       this.readyButton = this.add.sprite(
         this.cameras.main.centerX,
@@ -62,7 +66,7 @@ export default class GetReadyScene extends Phaser.Scene {
 
     // listen for server instruction to start game
     socket.on("game_start", () => {
-      console.log("Game start !!!");
+      console.log("Game start !!!", this.scene);
       this.scene.start("GameScene");
     });
   }
