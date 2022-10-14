@@ -1,5 +1,5 @@
 import { User } from "src/users/users.entity";
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn } from "typeorm";
 
 @Entity({ name: 'chat' })
 export class Chat {

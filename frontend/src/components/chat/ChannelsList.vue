@@ -41,7 +41,7 @@
       }"
     >
       <img src="@/assets/icons/groupe.png" />
-      <h3>{{ channel.members[0].username }}</h3>
+      <h3>{{ channel.name }}</h3>
     </li>
   </ul>
   <Teleport to="body">
@@ -64,8 +64,8 @@ import {
 } from "vue";
 import ChannelBoxModal from "./ChannelBox/ChannelBoxModal.vue";
 import AddChannelBox from "./ChannelBox/AddChannelBox.vue";
-import { userInfoStore } from "@/stores/user";
 import socket from "@/socket";
+import { userInfoStore } from "@/stores/user";
 
 interface Props {
   selectedChannel: number;
@@ -78,12 +78,18 @@ const selectedChannel: Ref<number> = ref(props.selectedChannel);
 const addWindow: Ref<boolean> = ref(false);
 const myChannels: Ref<any> = ref([]);
 
+socket.on("receive_channel_created", (newChannel: any) => {
+  console.log("new = ", newChannel);
+  myChannels.value.push(newChannel);
+  console.log("my channelssss = ", myChannels.value);
+});
+
 onBeforeMount(async () => {
-  socket.emit("get_allChannels");
-  socket.on("get_myChannels", async (channel: any) => {
+  socket.emit("get_all_my_channels");
+  socket.on("receive_all_my_channels", (channel: any) => {
     myChannels.value = channel;
+    console.log("my channels :", myChannels.value);
   });
-  console.log("my channel", myChannels.value);
 });
 
 watch(

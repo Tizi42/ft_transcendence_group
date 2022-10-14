@@ -5,7 +5,7 @@
 FROM    node:lts-alpine As dev
 WORKDIR /usr/src/app
 COPY    package*.json ./
-RUN     npm install 
+RUN     npm install
 COPY    . /usr/src/app/
 ENV     NODE_ENV development
 CMD     [ "npm", "run", "start:dev" ]

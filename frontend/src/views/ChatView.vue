@@ -50,6 +50,7 @@ import ChannelsList from "@/components/chat/ChannelsList.vue";
 import HistoryMessages from "@/components/chat/HistoryMessages.vue";
 import MessageInput from "@/components/chat/MessageInput.vue";
 import { getUrlOf } from "@/router";
+import { User } from "@backend/users/users.entity";
 import AllChannelsSelected from "@/components/chat/AllChannelsSelected.vue";
 
 const user: any = useUserStore();
