@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, defineEmits, ref } from "vue";
+import { defineComponent, defineExpose, ref } from "vue";
 import { onBeforeMount } from "vue";
 import { useUserStore } from "@/stores/user";
 import FriendItem from "./FriendItem.vue";
