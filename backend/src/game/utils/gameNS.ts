@@ -1,10 +1,8 @@
-import { GameRoom } from "./game";
+import { GameRoom } from "./gameRoom";
 
 export class GameRoomNS {
-    constructor(value: GameRoom, mode: string = "normal") {
-        this.room_name = value.room_name;
-        if (value.mode === undefined)
-            this.mode = mode;
+    constructor(value: GameRoom, roomName: string) {
+        this.room_name = roomName;
         this.playerL = value.playerL;
         this.playerR = value.playerR;
     }

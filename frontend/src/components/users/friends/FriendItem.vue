@@ -13,8 +13,10 @@
         <span class="id">(#{{ friend.id }})</span>
       </div>
       <div class="status">
-        <div class="status-rond" ref="statusRound"></div>
-        <div class="status-text" ref="statusText">In Game</div>
+        <div v-if="friend.status === 'offline'" class="grey-point"></div>
+        <div v-if="friend.status === 'online'" class="green-point"></div>
+        <div v-if="friend.status === 'in game'" class="red-point"></div>
+        <div class="status-text" ref="statusText">{{ friend.status }}</div>
       </div>
     </div>
     <button
@@ -117,19 +119,32 @@ defineExpose(
   align-items: center;
 }
 
+.status div {
+  width: 10px;
+  height: 10px;
+  margin: 0;
+  border-radius: 100%;
+  margin-right: 10px;
+  padding: 0;
+}
+
+.grey-point {
+  background-color: #939694;
+}
+
+.green-point {
+  background-color: #12d654;
+}
+
+.red-point {
+  background-color: red;
+}
+
 .status-text {
   font-weight: 300;
   font-size: 14px;
-  margin-left: 5%;
   width: 6em;
-}
-
-.status-rond {
-  border-radius: 100%;
-  background-color: rgba(212, 57, 29, 1);
-  min-width: 10px;
-  height: 10px;
-  margin-left: 2%;
+  line-height: 14px;
 }
 
 .friend-menu-button {

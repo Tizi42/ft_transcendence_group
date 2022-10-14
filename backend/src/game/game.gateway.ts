@@ -1,11 +1,12 @@
 import { MessageBody, SubscribeMessage, ConnectedSocket } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
-import { GameRoom } from "./utils/game";
 import { GameRoomNS } from "./utils/gameNS";
+import { GameRoom } from "./utils/gameRoom";
 import { AppGateway } from '../gateway';
 import { UsersService } from '../users/users.service';
 import { GameService } from './game.service';
 import { ChatService } from '../chat/chat.service';
+import { ChannelService } from 'src/channel/channel.service';
 
 export class GameGateway extends AppGateway {
 
@@ -13,8 +14,9 @@ export class GameGateway extends AppGateway {
     readonly gameService: GameService,
     readonly chatService: ChatService,
     readonly usersService: UsersService,
+    readonly channelService: ChannelService,
   ) {
-    super(chatService, usersService);
+    super(chatService, usersService, channelService);
   }
 
   async handleConnection(socket: Socket) {}
@@ -23,7 +25,7 @@ export class GameGateway extends AppGateway {
 
   private static queues = {
     normal: -1,
-    magic: -1
+    magic: -1,
   };
   private static rooms: Map<string, GameRoom> = new Map(); //roomName, GameRoom
   private static participants: Map<string, string> = new Map(); //socketId, roomName
@@ -41,12 +43,18 @@ export class GameGateway extends AppGateway {
       GameGateway.queues[data.mode] = data.user_id;
       return "Waiting for another player...";
     } else {
+      //clean queue
       GameGateway.queues[data.mode] = -1;
+
+      // create game room
       const room_name = playerL + " vs " + data.user_id;
-      GameGateway.rooms.set(room_name, new GameRoom(playerL, data.user_id, room_name));
-      console.log(GameGateway.rooms);
-      const room = GameGateway.rooms.get(room_name);
-      console.log("room value in queue", room);
+      GameGateway.rooms.set(room_name, new GameRoom(playerL, data.user_id, data.mode));
+
+      // update user status
+      this.usersService.updateUserStatus(playerL, "in game");
+      this.usersService.updateUserStatus(data.user_id, "in game");
+
+      // annonce to players' sockets
       this.server.in(data.user_id).in(playerL).socketsJoin(room_name);
       this.server.to(data.user_id).to(playerL).emit("game_found", room_name);
     }
@@ -69,12 +77,30 @@ export class GameGateway extends AppGateway {
       return null;
     if (data.user_id !== room.playerL && data.user_id !== room.playerR)
       this.server.in(data.user_id).socketsJoin(data.room_name);
-    return room; 
+    return room;
+  }
+
+  @SubscribeMessage('leave_game')
+  async onLeavingRoom(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+    const room = GameGateway.rooms.get(data.room_name);
+    if (!room)
+      return null;
+    if (data.user_id !== room.playerL && data.user_id !== room.playerR) {
+      this.server.in(data.user_id).socketsLeave(data.room_name);
+    } else {
+      socket.to(data.room_name).emit("quit_game");
+      this.server.in(data.room_name).socketsLeave(data.room_name);
+      this.usersService.updateUserStatus(room.playerL, "online");
+      this.usersService.updateUserStatus(room.playerR, "online");
+      GameGateway.rooms.delete(data.room_name);
+
+    }
   }
 
   @SubscribeMessage('ready')
   async onPlayerReady(@MessageBody() data: any) {
     const room = GameGateway.rooms.get(data.room_name);
+    console.log(data.user_id, " is ready");
     if (!room || (data.user_id !== room.playerL && data.user_id !== room.playerR)
         || room.ready === data.user_id)
       return null;
@@ -143,8 +169,8 @@ export class GameGateway extends AppGateway {
   transformRooms(): Array<GameRoomNS> {
     let data: Array<GameRoomNS> = [];
     const modes: string[] = ["normal", "speed", "magic"]; // to change when mode will be set up
-    GameGateway.rooms.forEach((value: GameRoom) => {
-      data.push(new GameRoomNS(value, modes[this.getRandomInt(3)]));
+    GameGateway.rooms.forEach((value: GameRoom, key: string) => {
+      data.push(new GameRoomNS(value, key));
     });
     console.log(data);
     return data;
@@ -152,15 +178,51 @@ export class GameGateway extends AppGateway {
 
   @SubscribeMessage('get_updated_rooms')
   updateRooms(@ConnectedSocket() socket: Socket) {
-    if (GameGateway.rooms.size == 0) {
+    if (GameGateway.rooms.size == 0) { // to delete when everything is good
       let room_name = 2 + " vs " + 3;
-      GameGateway.rooms.set(room_name, new GameRoom(2, 3, room_name,));
+      GameGateway.rooms.set(room_name, new GameRoom(2, 3, "normal",));
       room_name = 4 + " vs " + 5;
-      GameGateway.rooms.set(room_name, new GameRoom(4, 5, room_name));
+      GameGateway.rooms.set(room_name, new GameRoom(4, 5, "magic"));
       room_name = 6 + " vs " + 7;
-      GameGateway.rooms.set(room_name, new GameRoom(6, 7, room_name));
+      GameGateway.rooms.set(room_name, new GameRoom(6, 7, "speed"));
     }
     this.server.to(socket.id).emit("updated_rooms", this.transformRooms());
+  }
+
+  @SubscribeMessage('reset_score')
+  async onResetScore(@MessageBody() data: any) {
+    this.server.to(data.user_id).emit("score_update", {
+      left: 0,
+      right: 0,
+    });
+  }
+
+  @SubscribeMessage('game_end')
+  async onGameEnd(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() data: any
+  ){
+    console.log("game end, winner is player ", data.winner);
+
+    const room = GameGateway.rooms.get(data.room_name);
+
+    if (!room)
+      return null;
+
+    // save game data
+    room.score_left = data.left;
+    room.score_right = data.right;
+    if (data.winner === "left")
+      room.winner = room.playerL;
+    else if (data.winner === "right")
+      room.winner = room.playerR;
+
+    //update battle history database
+
+    // inform other users in game room
+    socket.to(data.room_name).emit("end", {
+      winner: data.winner,
+    });
   }
 
   // @SubscribeMessage('update_pos')

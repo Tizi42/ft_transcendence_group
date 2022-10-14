@@ -17,11 +17,6 @@ import UserSettings from "../components/users/settings/UserSettings.vue";
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    name: "home",
-    redirect: "/user",
-  },
-  {
-    path: "/game",
     name: "game",
     component: GameView,
   },

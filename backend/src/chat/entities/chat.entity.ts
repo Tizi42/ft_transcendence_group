@@ -9,13 +9,12 @@ export class Chat {
     @Column()
     content: string;
 
-    @CreateDateColumn()
-    createdAt: Date;
-
     @ManyToOne( () => User, (author) => author.messages )
     dest: User;
 
     @ManyToOne( () => User, (author) => author.messages )
     author: User;
 
+    @Column( { default: -1 })
+    channelId: number;
 }
