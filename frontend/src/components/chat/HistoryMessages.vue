@@ -136,7 +136,7 @@ watch(
       .then((data) => {
         console.log("data :", data);
         channel.value = data;
-        console.log("channel data :", data);
+        console.log("channel data :", channel.value[0]);
       })
       .catch((error) => {
         console.log("Error :", error);
