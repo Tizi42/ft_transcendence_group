@@ -150,7 +150,6 @@ export class UsersService {
   }
 
   async findOneByEmail(email: string): Promise<User | undefined> {
-    console.log("Finding user by email...");
     return this.usersRepository.findOneBy({ email: email });
   }
 
@@ -416,7 +415,7 @@ export class UsersService {
       });
   }
   
-  async updateIsOnline(userId: number, value: string) {
+  async updateUserStatus(userId: number, value: string) {
     return this.usersRepository.update(userId, {
         status: value,
     });

@@ -46,6 +46,8 @@ import { UserMinimal } from "@/components/utils/UserMinimal";
 import { User } from "@backend/users/users.entity";
 import { getUrlOf } from "@/router";
 import socket from "@/socket";
+import { onBeforeRouteLeave } from "vue-router";
+import router from "@/router/index";
 import { StoreGeneric } from "pinia";
 
 interface Props {
@@ -71,6 +73,7 @@ const readyStatus: Ref<Array<boolean>> = ref([false, false]);
 const timer: Ref<Date> = ref(new Date());
 const scores: Ref<Array<number>> = ref([0, 0]);
 const emojisURL: Array<URL> = [];
+const force_quit = ref(false);
 const user_role = ref("");
 
 type emojiInfo = {
@@ -147,14 +150,28 @@ function changeSound(value: number) {
 }
 
 function quitGame() {
-  console.log("user wants to leave game");
+  force_quit.value = false;
+  router.push({ name: "play" });
 }
 
 function changeBackground() {
   console.log("user wants to change background");
 }
 
+onBeforeRouteLeave((to: any, from: any) => {
+  if (force_quit.value) return true;
+  const answer = window.confirm(
+    "Do you really want to leave? You will quit the game room"
+  );
+  if (!answer) return false;
+  socket.emit("leave_game", {
+    room_name: props.room_name,
+    user_id: user.id,
+  });
+});
+
 onBeforeMount(async () => {
+  console.log("on before mount in game overlay...");
   await getPlayersInfo();
   loadEmojis();
   timer.value = new Date();
@@ -173,6 +190,12 @@ onBeforeMount(async () => {
     console.log("score:", data);
     scores.value[0] = data.left;
     scores.value[1] = data.right;
+  });
+
+  socket.on("quit_game", () => {
+    window.alert("Player has left game, return to game menu...");
+    force_quit.value = true;
+    router.push({ name: "play" });
   });
 });
 

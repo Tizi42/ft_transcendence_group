@@ -32,49 +32,21 @@
   </div>
   <ul class="list-my-channels">
     <li
-      @click="getChannelMessages(0)"
+      v-for="channel in myChannels"
+      :key="channel"
+      @click="getChannelMessages(channel.id)"
       :class="{
-        channelSelected: selectedChannel == 0,
-        channelNotSelected: selectedChannel != 0,
+        channelSelected: selectedChannel == channel.id,
+        channelNotSelected: selectedChannel != channel.id,
       }"
     >
       <img src="@/assets/icons/groupe.png" />
-      <h3>my first channel</h3>
-    </li>
-    <li
-      @click="getChannelMessages(1)"
-      :class="{
-        channelSelected: selectedChannel == 1,
-        channelNotSelected: selectedChannel != 1,
-      }"
-    >
-      <img src="@/assets/icons/groupe.png" />
-      <h3>random</h3>
-    </li>
-    <li
-      @click="getChannelMessages(2)"
-      :class="{
-        channelSelected: selectedChannel == 2,
-        channelNotSelected: selectedChannel != 2,
-      }"
-    >
-      <img src="@/assets/icons/groupe.png" />
-      <h3>apt 42</h3>
-    </li>
-    <li
-      @click="getChannelMessages(3)"
-      :class="{
-        channelSelected: selectedChannel == 3,
-        channelNotSelected: selectedChannel != 3,
-      }"
-    >
-      <img src="@/assets/icons/groupe.png" />
-      <h3>always win a pong</h3>
+      <h3>{{ channel.name }}</h3>
     </li>
   </ul>
   <Teleport to="body">
     <ChannelBoxModal v-if="addWindow" @hide="hide">
-      <AddChannelBox />
+      <AddChannelBox :user="user" />
     </ChannelBoxModal>
   </Teleport>
 </template>
@@ -88,18 +60,36 @@ import {
   defineEmits,
   defineProps,
   watch,
+  onBeforeMount,
 } from "vue";
 import ChannelBoxModal from "./ChannelBox/ChannelBoxModal.vue";
 import AddChannelBox from "./ChannelBox/AddChannelBox.vue";
+import socket from "@/socket";
+import { userInfoStore } from "@/stores/user";
 
 interface Props {
   selectedChannel: number;
+  user: userInfoStore;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
 const inputSearch: Ref<string> = ref("");
 const selectedChannel: Ref<number> = ref(props.selectedChannel);
 const addWindow: Ref<boolean> = ref(false);
+const myChannels: Ref<any> = ref([]);
+
+socket.on("receive_channel_created", (newChannel: any) => {
+  console.log("new = ", newChannel);
+  console.log("my channelssss = ", myChannels.value);
+});
+
+onBeforeMount(async () => {
+  socket.emit("get_all_my_channels");
+  socket.on("receive_all_my_channels", (channel: any) => {
+    myChannels.value = channel;
+    console.log("my channels :", myChannels.value);
+  });
+});
 
 watch(
   () => props.selectedChannel,
