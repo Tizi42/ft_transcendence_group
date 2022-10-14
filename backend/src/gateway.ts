@@ -21,7 +21,6 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleConnection(socket: Socket) {
     const users = [];
-
     socket.data = await this.chatService.getUserFromSocket(socket);
     console.log("socket user id: ", socket.data);
     if (socket.data) {
