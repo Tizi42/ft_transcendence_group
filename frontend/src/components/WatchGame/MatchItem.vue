@@ -34,7 +34,6 @@
 import router, { getUrlOf } from "@/router";
 import socket from "@/socket";
 import { useUserStore } from "@/stores/user";
-import { GameRoom } from "@backend/game/utils/game";
 import { GameRoomNS } from "@backend/game/utils/gameNS";
 import { defineComponent, defineExpose, defineProps, onMounted } from "vue";
 import { Ref, ref } from "vue";
@@ -61,8 +60,8 @@ function joinGame() {
     room_name: props.room.room_name,
     user_id: user.id,
   };
-  socket.emit("init_room", data, (ret: GameRoom) => {
-    router.push({ name: "pong", params: { room_name: ret.room_name } });
+  socket.emit("init_room", data, () => {
+    router.push({ name: "pong", params: { room_name: props.room.room_name } });
   });
 }
 
