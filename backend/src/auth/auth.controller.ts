@@ -29,7 +29,7 @@ export class AuthController {
         ////console.log(request.user);
         //console.log("jwt 1 = ", accessToken);
         // if (!request.user.isTwoFactorAuthenticationEnabled) {
-        //   this.usersService.updateIsOnline(request.user.id, true);
+        //   this.usersService.updateUserStatus(request.user.id, true);
         // }
         res.redirect('http://localhost:8080/2FA');
     }
@@ -46,7 +46,7 @@ export class AuthController {
     //   console.log(user);
     //   console.log("jwt 1 = ", accessToken);
     //   if (!user.isTwoFactorAuthenticationEnabled) {
-        // this.usersService.updateIsOnline(user.id, "online");
+        // this.usersService.updateUserStatus(user.id, "online");
     //   }
       res.redirect('http://localhost:8080/2FA');
     }
@@ -107,7 +107,7 @@ export class AuthController {
         }
         const { accessToken } = this.authService.login(request.user, true);
         request.res.cookie('jwt', accessToken);
-        // this.usersService.updateIsOnline(request.user.id, "online");
+        // this.usersService.updateUserStatus(request.user.id, "online");
         return request.user;
     }
 }

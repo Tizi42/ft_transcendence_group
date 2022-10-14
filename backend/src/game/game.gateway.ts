@@ -40,11 +40,18 @@ export class GameGateway extends AppGateway {
       GameGateway.queues[data.mode] = data.user_id;
       return "Waiting for another player...";
     } else {
+      //clean queue
       GameGateway.queues[data.mode] = -1;
+
+      // create game room
       const room_name = playerL + " vs " + data.user_id;
       GameGateway.rooms.set(room_name, new GameRoom(playerL, data.user_id, data.mode));
-      const room = GameGateway.rooms.get(room_name);
-      console.log("room value in queue", room);
+
+      // update user status
+      this.usersService.updateUserStatus(playerL, "in game");
+      this.usersService.updateUserStatus(data.user_id, "in game");
+
+      // annonce to players' sockets
       this.server.in(data.user_id).in(playerL).socketsJoin(room_name);
       this.server.to(data.user_id).to(playerL).emit("game_found", room_name);
     }
@@ -79,8 +86,11 @@ export class GameGateway extends AppGateway {
       this.server.in(data.user_id).socketsLeave(data.room_name);
     } else {
       socket.to(data.room_name).emit("quit_game");
-      this.server.in(data.user_id).socketsLeave(data.room_name);
+      this.server.in(data.room_name).socketsLeave(data.room_name);
+      this.usersService.updateUserStatus(room.playerL, "online");
+      this.usersService.updateUserStatus(room.playerR, "online");
       GameGateway.rooms.delete(data.room_name);
+
     }
   }
 
