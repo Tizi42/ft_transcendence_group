@@ -13,15 +13,11 @@
         <img :src="getPictureUrl(props.room.playerL)" />
         <div class="name">
           {{ nameL }}
-          <br />
-          {{ nameR }}
         </div>
       </div>
       <div class="vsTxt">vs</div>
       <div class="rightPlayer">
         <div class="name">
-          {{ nameR }}
-          <br />
           {{ nameR }}
         </div>
         <img :src="getPictureUrl(props.room.playerR)" />
@@ -100,6 +96,7 @@ defineExpose(
   border-radius: 15px;
   transition: transform 0.5s ease;
   margin-right: 20px;
+  width: fit-content;
 }
 
 .watchGame > img {
@@ -132,7 +129,8 @@ defineExpose(
   justify-content: center;
   align-items: center;
   margin-left: 70px;
-  width: 35vw;
+  max-width: 700px;
+  width: 100%;
   gap: 20px;
 }
 
@@ -161,6 +159,7 @@ defineExpose(
   align-items: center;
   gap: 20px;
   width: 100%;
+  word-break: break-word;
   font-size: 20px;
 }
 
