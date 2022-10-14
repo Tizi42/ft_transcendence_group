@@ -36,37 +36,34 @@
 </template>
 
 <script lang="ts" setup>
-import { getUrlOf } from "@/router";
-import { ref, defineComponent, defineExpose, Ref } from "vue";
+import { ref, defineComponent, defineExpose, Ref, defineProps } from "vue";
+import socket from "@/socket";
+import { userInfoStore } from "@/stores/user";
+
+interface Props {
+  user: userInfoStore;
+}
 
 const channelName: Ref<string> = ref("");
 const channelType: Ref<string> = ref("public");
 const channelPassword: Ref<string> = ref("");
+const props: Readonly<Props> = defineProps<Props>();
+
+// watch(
+// );
 
 const createNewChannel = async () => {
   console.log("channel name = ", channelName.value);
   console.log("channel type = ", channelType.value);
-  await fetch(getUrlOf("api/channel"), {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      type: channelType.value,
-      members: [11],
-      owner: 11,
-      admin: [11],
-    }),
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .then((data) => {
-      console.log("data = ", data);
-    })
-    .catch((err) => {
-      console.log("error", err);
-    });
+  const data = {
+    type: channelType.value,
+    name: channelName.value,
+    members: [props.user],
+    owner: props.user.id,
+    admins: [props.user.id],
+    password: channelPassword.value,
+  };
+  socket.emit("create_channel", data);
 };
 
 defineExpose(

@@ -46,7 +46,7 @@
   </ul>
   <Teleport to="body">
     <ChannelBoxModal v-if="addWindow" @hide="hide">
-      <AddChannelBox />
+      <AddChannelBox :user="user" />
     </ChannelBoxModal>
   </Teleport>
 </template>
@@ -65,9 +65,11 @@ import {
 import ChannelBoxModal from "./ChannelBox/ChannelBoxModal.vue";
 import AddChannelBox from "./ChannelBox/AddChannelBox.vue";
 import socket from "@/socket";
+import { userInfoStore } from "@/stores/user";
 
 interface Props {
   selectedChannel: number;
+  user: userInfoStore;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
@@ -76,9 +78,14 @@ const selectedChannel: Ref<number> = ref(props.selectedChannel);
 const addWindow: Ref<boolean> = ref(false);
 const myChannels: Ref<any> = ref([]);
 
+socket.on("receive_channel_created", (newChannel: any) => {
+  console.log("new = ", newChannel);
+  console.log("my channelssss = ", myChannels.value);
+});
+
 onBeforeMount(async () => {
-  socket.emit("getAllMyChannels");
-  socket.on("receiveAllMyChannels", (channel: any) => {
+  socket.emit("get_all_my_channels");
+  socket.on("receive_all_my_channels", (channel: any) => {
     myChannels.value = channel;
     console.log("my channels :", myChannels.value);
   });
