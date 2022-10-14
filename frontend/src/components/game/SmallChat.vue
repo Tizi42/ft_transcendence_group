@@ -23,6 +23,7 @@ import { UserMinimal } from "@/components/utils/UserMinimal";
 interface Props {
   user: UserMinimal;
   room_name: string;
+  role: string;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
