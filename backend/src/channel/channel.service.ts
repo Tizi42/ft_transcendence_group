@@ -42,7 +42,7 @@ export class ChannelService {
     return await this.channelRepository.findOneBy({ id });
   }
 
-  async findChannelMembers(id: number) {
+  async findChannelMembers(id: number): Promise<Channel[]> {
     return await this.channelRepository.find({
       relations: ['members'],
       where: {
