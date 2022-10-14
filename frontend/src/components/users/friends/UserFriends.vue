@@ -70,6 +70,7 @@ defineExpose(
 <style scoped>
 .friends-section {
   position: absolute;
+  top: 0;
   width: 86%;
   margin-left: 7%;
   margin-right: 7%;
