@@ -5,6 +5,7 @@ import { AppGateway } from '../gateway';
 import { UsersService } from '../users/users.service';
 import { GameService } from './game.service';
 import { ChatService } from '../chat/chat.service';
+import { ChannelService } from 'src/channel/channel.service';
 
 export class GameGateway extends AppGateway {
 
@@ -12,8 +13,9 @@ export class GameGateway extends AppGateway {
     readonly gameService: GameService,
     readonly chatService: ChatService,
     readonly usersService: UsersService,
+    readonly channelService: ChannelService,
   ) {
-    super(chatService, usersService);
+    super(chatService, usersService, channelService);
   }
 
   async handleConnection(socket: Socket) {}

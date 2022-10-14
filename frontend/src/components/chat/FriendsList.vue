@@ -16,7 +16,7 @@
         <div v-if="friend.status === 'offline'" class="grey-point"></div>
         <div v-if="friend.status === 'online'" class="green-point"></div>
         <div v-if="friend.status === 'in game'" class="red-point"></div>
-        <h3>{{ friend.username }}</h3>
+        <h3>{{ friend.displayName }}</h3>
         <!-- <p>{{ lastMessage[profile] }}</p> -->
       </div>
     </li>
@@ -36,6 +36,11 @@ import {
   defineExpose,
 } from "vue";
 
+interface Props {
+  user: any;
+}
+
+const props: Readonly<Props> = defineProps<Props>();
 const receiver: Ref<number> = ref(-1);
 const history: Ref<any> = ref([]);
 const selectedFriend: Ref<number> = ref(-1);
@@ -97,12 +102,6 @@ onBeforeMount(() => {
 });
 
 const emit = defineEmits(["selectReceiver", "getHistory"]);
-
-interface Props {
-  user: any;
-}
-
-defineProps<Props>();
 
 defineExpose(
   defineComponent({
