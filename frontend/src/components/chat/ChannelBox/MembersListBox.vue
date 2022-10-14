@@ -16,6 +16,24 @@
             <div v-if="member.status === 'online'" class="green-point"></div>
             <h3>{{ member.displayName }}</h3>
           </div>
+          <div>
+            <button
+              type="submit"
+              id="ban-button"
+              @click="banUser(member.id)"
+              v-if="channel.admins.includes(user.id, 0)"
+            >
+              ban
+            </button>
+            <button
+              type="submit"
+              id="mute-button"
+              @click="muteUser(member.id)"
+              v-if="channel.admins.includes(user.id, 0)"
+            >
+              mute
+            </button>
+          </div>
         </li>
       </ul>
     </div>
@@ -23,16 +41,28 @@
 </template>
 
 <script lang="ts" setup>
+import { useUserStore } from "@/stores/user";
 import { ref, defineComponent, defineExpose, Ref, defineProps } from "vue";
 
 interface Props {
   channel: any;
 }
 
+const user = useUserStore();
 const props: Readonly<Props> = defineProps<Props>();
 
-const showChannel = () => {
-  console.log("props channel = ", props.channel.name);
+const banUser = (id: number) => {
+  console.log("ban user id", id, "from channel", props.channel.name);
+};
+
+const muteUser = (id: number) => {
+  console.log(
+    "mute user id",
+    id,
+    "from channel",
+    props.channel.name,
+    "for ? time"
+  );
 };
 
 defineExpose(
@@ -59,11 +89,12 @@ h2 {
 }
 
 .members-list {
-  width: 30vw;
+  width: 35vw;
   margin: 0;
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
+  align-items: center;
   padding: 0.5em;
 }
 
@@ -74,12 +105,31 @@ h2 {
   justify-content: center;
 }
 
-.members-list .avatar-frame img {
+.members-list .avatar-frame img,
+#ban-button,
+#mute-button {
   cursor: pointer;
   transition: transform 0.5s ease;
 }
 
-.members-list .avatar-frame img:hover {
+.members-list .avatar-frame img:hover,
+#ban-button:hover,
+#mute-button:hover {
   transform: scale(1.1, 1.1);
+}
+
+#ban-button,
+#mute-button {
+  background-color: #ffcb00;
+  border: none;
+  color: #1e2b02;
+  border-radius: 14px;
+  padding: 0.5em;
+  font-weight: bold;
+  font-size: 0.8em;
+}
+
+#mute-button {
+  margin-left: 10px;
 }
 </style>

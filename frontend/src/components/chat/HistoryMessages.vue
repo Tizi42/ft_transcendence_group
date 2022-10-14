@@ -30,6 +30,7 @@
       src="@/assets/icons/settings.svg"
       alt="see settings"
       @click="showSettings()"
+      v-if="channel[0].admins.includes(user.id, 0)"
     />
   </div>
   <div
