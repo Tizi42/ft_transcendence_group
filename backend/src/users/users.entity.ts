@@ -1,6 +1,7 @@
+import { channel } from "diagnostics_channel";
 import { Channel } from "src/channel/entities/channel.entity";
 import { Chat } from "src/chat/entities/chat.entity";
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, RelationId } from "typeorm";
+import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'users' })
 export class User {
@@ -61,9 +62,7 @@ export class User {
   @OneToMany(() => Chat, (messages) => messages.author)
   messages?: Chat[];
 
-  @ManyToMany(() => Channel, (channels) => channels.members)
+  @ManyToMany(() => Channel, (channel) => channel.members)
   channels: Channel[];
-  // @RelationId((channel: Channel) => channel.members)
-  // channelIds: number[];
 }
 

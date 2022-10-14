@@ -20,24 +20,24 @@ export class ChannelGateway extends AppGateway {
   handleDisconnect(client: any) {}
 
   @SubscribeMessage('create_channel')
-  async createChannel(
-    @MessageBody() data: any
+  async handleCreateChannel(
+    @MessageBody() data: any,
   ) {
-    console.log("my channel = ", data);
-    const channel = await this.channelService.createChannel(data);
+    const newChannel = await this.channelService.createChannel(data);
   
-    this.server.sockets.emit('channel_created', channel);
-    return channel;
+    this.server.sockets.emit('receive_channel_created', newChannel);
+    return newChannel;
   }
 
-  @SubscribeMessage('get_allChannels')
-  async getMyChannel(
+  @SubscribeMessage('get_all_my_channels')
+  async handleAllMyChannels(
     @ConnectedSocket() socket: Socket,
   ) {
-    const channel = await this.channelService.getAllChannel(socket.data.id);
-    console.log("all my channel = ", channel);
-    console.log("my id = ", socket.data.id);
-    this.server.sockets.to(socket.data.id).emit('get_myChannels', channel);
+    const channel = await this.channelService.getAllMyChannels(socket.data.id);
+    // console.log("all my channel = ", channel);
+    // console.log("my id = ", socket.data.id);
+    this.server.sockets.to(socket.data.id).emit('receive_all_my_channels', channel);
+    return channel;
   }
 
   @SubscribeMessage('join_channel')
@@ -51,15 +51,12 @@ export class ChannelGateway extends AppGateway {
   }
 
   @SubscribeMessage('leave_channel')
-  async leaveChannel(
-    @MessageBody() data: any,
+  async handleLeaveChannel(
+    @MessageBody() channel: any,
     @ConnectedSocket() socket: Socket,
   ){
-    if (await this.usersService.findOneById(data.user.id) === null)
-      return console.log("user don't exist");
-
-    if (socket.data.id === data.user.id)
-      await this.channelService.leavingChannel(data.user, data.channel);
+      await this.channelService.leavingChannel(socket.data.id, channel);
+      this.server.sockets.to(socket.data.id).emit('channel_leaved', channel);
   }
 
   @SubscribeMessage('ban_member')
@@ -76,4 +73,6 @@ export class ChannelGateway extends AppGateway {
       await this.channelService.banUser(data.user, data.channel);
     }
   }
+
+
 }

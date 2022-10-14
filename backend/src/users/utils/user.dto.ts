@@ -18,6 +18,8 @@ export class UserDto {
   @IsString()
   picture: string;
 
+  dest: User;
+
   @IsString()
   pictureLocalFilename: string;
 }
