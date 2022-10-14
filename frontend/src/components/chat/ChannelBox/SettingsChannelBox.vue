@@ -65,8 +65,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineComponent, defineExpose, Ref } from "vue";
+import { ref, defineComponent, defineExpose, Ref, defineProps } from "vue";
 
+interface Props {
+  user: any;
+  selectedChannel: number;
+}
+
+const props: Readonly<Props> = defineProps<Props>();
 const channelType: Ref<string> = ref("");
 const newPassword: Ref<string> = ref("");
 const newAdmin: Ref<string> = ref("");
@@ -87,11 +93,6 @@ const AddNewAdmin = () => {
   console.log("New admin name = ", newAdmin.value);
   newAdmin.value = "";
 };
-
-interface Props {
-  user: any;
-  selectedChannel: number;
-}
 
 defineExpose(
   defineComponent({

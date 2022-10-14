@@ -16,6 +16,7 @@
         v-else
         @getChannelSelected="handleChannelSelected"
         :selectedChannel="selectedChannel"
+        :user="user"
       />
     </div>
     <div class="container-chat">
