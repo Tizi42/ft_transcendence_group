@@ -26,6 +26,7 @@
     <SmallChat
       :user="user"
       :room_name="room_name"
+      :role="props.role"
       @getChatting="changeChattingStatus"
       ref="chatRef"
     />
@@ -126,6 +127,9 @@ const isChatting: Ref<boolean> = ref(false);
 const chatRef = ref();
 const menuRef = ref();
 const emit = defineEmits(["quitGame", "changeSound", "changeBackground"]);
+const opacity = props.role == "watch" ? 0.2 : 1;
+const scale = props.role == "watch" ? 1 : 1.15;
+const cursor = props.role == "watch" ? "default" : "pointer";
 
 function changeChattingStatus(event: boolean) {
   isChatting.value = event;
@@ -194,11 +198,12 @@ defineExpose(
   background-position: center;
   background-size: 37px 37px;
   background-repeat: no-repeat;
+  opacity: v-bind(opacity);
 }
 
 .settingsBtn:hover {
-  transform: scale(1.15, 1.15);
-  cursor: pointer;
+  transform: scale(v-bind(scale));
+  cursor: v-bind(cursor);
 }
 
 .emoji {
