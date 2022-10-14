@@ -31,7 +31,10 @@
 </template>
 
 <script lang="ts" setup>
-import { getUrlOf } from "@/router";
+import router, { getUrlOf } from "@/router";
+import socket from "@/socket";
+import { useUserStore } from "@/stores/user";
+import { GameRoom } from "@backend/game/utils/game";
 import { GameRoomNS } from "@backend/game/utils/gameNS";
 import { defineComponent, defineExpose, defineProps, onMounted } from "vue";
 import { Ref, ref } from "vue";
@@ -40,6 +43,8 @@ interface Props {
   room: GameRoomNS;
   modeIcon: URL;
 }
+
+const user = useUserStore();
 
 const props: Readonly<Props> = defineProps<Props>();
 const show: Ref<boolean> = ref(false);
@@ -52,6 +57,13 @@ function onLoad() {
 
 function joinGame() {
   console.log("joining", props.room.room_name);
+  const data = {
+    room_name: props.room.room_name,
+    user_id: user.id,
+  };
+  socket.emit("init_room", data, (ret: GameRoom) => {
+    router.push({ name: "pong", params: { room_name: ret.room_name } });
+  });
 }
 
 function getPictureUrl(id: number): string {

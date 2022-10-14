@@ -94,6 +94,7 @@ defineExpose(
   align-items: center;
   color: var(--main-color);
   font-size: 30px;
+  font-family: "Outfit Bold";
 }
 
 .listMatches {
