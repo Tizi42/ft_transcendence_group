@@ -136,10 +136,15 @@ export class GameGateway extends AppGateway {
     });
   }
 
+  getRandomInt(max: number = 100) : number {
+    return Math.floor(Math.random() * max);
+  }
+
   transformRooms(): Array<GameRoomNS> {
     let data: Array<GameRoomNS> = [];
+    const modes: string[] = ["normal", "speed", "magic"]; // to change when mode will be set up
     GameGateway.rooms.forEach((value: GameRoom) => {
-      data.push(new GameRoomNS(value));
+      data.push(new GameRoomNS(value, modes[this.getRandomInt(3)]));
     });
     console.log(data);
     return data;
@@ -149,7 +154,7 @@ export class GameGateway extends AppGateway {
   updateRooms(@ConnectedSocket() socket: Socket) {
     if (GameGateway.rooms.size == 0) {
       let room_name = 2 + " vs " + 3;
-      GameGateway.rooms.set(room_name, new GameRoom(2, 3, room_name));
+      GameGateway.rooms.set(room_name, new GameRoom(2, 3, room_name,));
       room_name = 4 + " vs " + 5;
       GameGateway.rooms.set(room_name, new GameRoom(4, 5, room_name));
       room_name = 6 + " vs " + 7;
