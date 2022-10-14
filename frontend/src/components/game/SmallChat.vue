@@ -19,6 +19,7 @@ import { defineComponent, defineExpose, ref, Ref } from "vue";
 import { defineProps, defineEmits } from "vue";
 import socket from "@/socket";
 import { UserMinimal } from "@/components/utils/UserMinimal";
+import { messageInGame } from "@backend/chat/utils/types";
 
 interface Props {
   user: UserMinimal;
@@ -32,9 +33,9 @@ const message: Ref<string> = ref("");
 
 function sendMsg() {
   if (message.value != "") {
-    const data = {
+    const data: messageInGame = {
       content: message.value,
-      author: props.user.id,
+      author: props.user.id.toString(),
       dest: props.room_name,
     };
     socket.emit("send_message_ingame", data);

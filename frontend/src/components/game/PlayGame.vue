@@ -1,5 +1,6 @@
 <template>
   <GameOverlay
+    v-if="room_info != undefined"
     :room_name="room_name"
     :playerL_id="room_info.playerL"
     :playerR_id="room_info.playerR"

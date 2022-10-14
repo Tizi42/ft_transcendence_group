@@ -5,7 +5,7 @@ import { ChannelService } from 'src/channel/channel.service';
 import { AppGateway } from '../gateway';
 import { UsersService } from '../users/users.service';
 import { ChatService } from './chat.service';
-import { emojiInfo } from './utils/types';
+import { emojiInfo, messageInGame } from './utils/types';
 
 export class ChatGateway extends AppGateway {
 
@@ -49,7 +49,7 @@ export class ChatGateway extends AppGateway {
 
   @SubscribeMessage('send_message_ingame')
   async handleMessageNotSave(
-    @MessageBody() data: any,
+    @MessageBody() data: messageInGame,
   ) {
     this.server.sockets.to(data.dest).to(data.author).emit('receive_message_ingame', data);
   }
