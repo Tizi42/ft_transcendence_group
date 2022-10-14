@@ -150,15 +150,6 @@ function changeSound(value: number) {
 }
 
 function quitGame() {
-  console.log("user wants to leave game");
-}
-
-function changeBackground() {
-  console.log("user wants to change background");
-}
-
-onBeforeRouteLeave((to: any, from: any) => {
-  if (force_quit.value) return true;
   const answer = window.confirm(
     "Do you really want to leave? You will quit the game room"
   );
@@ -167,9 +158,19 @@ onBeforeRouteLeave((to: any, from: any) => {
     room_name: props.room_name,
     user_id: user.id,
   });
+}
+
+function changeBackground() {
+  console.log("user wants to change background");
+}
+
+onBeforeRouteLeave((to: any, from: any) => {
+  if (force_quit.value) return true;
+  return quitGame();
 });
 
 onBeforeMount(async () => {
+  console.log("on before mount in game overlay...");
   await getPlayersInfo();
   loadEmojis();
   timer.value = new Date();

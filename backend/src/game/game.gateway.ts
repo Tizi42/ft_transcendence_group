@@ -78,6 +78,7 @@ export class GameGateway extends AppGateway {
     if (data.user_id !== room.playerL && data.user_id !== room.playerR) {
       this.server.in(data.user_id).socketsLeave(data.room_name);
     } else {
+      console.log("emit quit game");
       socket.to(data.room_name).emit("quit_game");
       this.server.in(data.user_id).socketsLeave(data.room_name);
       GameGateway.rooms.delete(data.room_name);

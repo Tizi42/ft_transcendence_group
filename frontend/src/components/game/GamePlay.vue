@@ -28,7 +28,7 @@ const containerId = "game-container";
 const game = await import("@/game/gameConfig");
 
 onBeforeUnmount(() => {
-  gameInstance.destroy(true, false);
+  // gameInstance.destroy(true, false);
 });
 
 onMounted(() => {
