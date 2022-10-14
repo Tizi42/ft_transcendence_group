@@ -26,6 +26,8 @@ export class GameRoom {
     
     playerL: number;
     playerR: number;
+    socketL: string;
+    socketR: string;
     ready: number;
 
     constructor(left: number, right: number, mode:string) {

@@ -1,6 +1,6 @@
 import { MessageBody, SubscribeMessage, ConnectedSocket } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
-import { GameRoom } from "./utils/game";
+import { GameRoom } from "./utils/gameRoom";
 import { AppGateway } from '../gateway';
 import { UsersService } from '../users/users.service';
 import { GameService } from './game.service';
@@ -22,7 +22,7 @@ export class GameGateway extends AppGateway {
 
   private static queues = {
     normal: -1,
-    magic: -1
+    magic: -1,
   };
   private static rooms: Map<string, GameRoom> = new Map(); //roomName, GameRoom
   private static participants: Map<string, string> = new Map(); //socketId, roomName
@@ -78,7 +78,6 @@ export class GameGateway extends AppGateway {
     if (data.user_id !== room.playerL && data.user_id !== room.playerR) {
       this.server.in(data.user_id).socketsLeave(data.room_name);
     } else {
-      console.log("emit quit game");
       socket.to(data.room_name).emit("quit_game");
       this.server.in(data.user_id).socketsLeave(data.room_name);
       GameGateway.rooms.delete(data.room_name);
