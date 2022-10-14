@@ -420,7 +420,7 @@ export class UsersService {
       });
   }
   
-  async updateIsOnline(userId: number, value: string) {
+  async updateUserStatus(userId: number, value: string) {
     return this.usersRepository.update(userId, {
         status: value,
     });
