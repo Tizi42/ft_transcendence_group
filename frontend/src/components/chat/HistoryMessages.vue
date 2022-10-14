@@ -16,20 +16,20 @@
         id="see-members"
         src="@/assets/icons/groupUser.svg"
         alt="See members"
-        @click="seeMembers"
+        @click="showMembers()"
       />
     </div>
     <img
       id="leave-img"
       src="@/assets/icons/leave.png"
       alt="leave channel"
-      @click="leaveChannel"
+      @click="leaveChannel(selectedChannel)"
     />
     <img
       id="settings-img"
       src="@/assets/icons/settings.svg"
       alt="see settings"
-      @click="showSettings"
+      @click="showSettings()"
     />
   </div>
   <div
@@ -55,8 +55,13 @@
     <UserBoxModal v-if="userProfileWindow" @hide="hide">
       <UserBox :target="target" />
     </UserBoxModal>
-    <ChannelBoxModal v-if="settingsWindow" @hide="hide">
-      <SettingsChannelBox :user="user" :selectedChannel="selectedChannel" />
+    <ChannelBoxModal v-if="settingsWindow || membersWindow" @hide="hide">
+      <SettingsChannelBox
+        :user="user"
+        :selectedChannel="selectedChannel"
+        v-if="settingsWindow"
+      />
+      <MembersListBox v-if="membersWindow" :channel="channel" />
     </ChannelBoxModal>
   </teleport>
 </template>
@@ -76,6 +81,8 @@ import UserBox from "../users/UserBox/UserBox.vue";
 import { User } from "@backend/users/users.entity";
 import SettingsChannelBox from "./ChannelBox/SettingsChannelBox.vue";
 import ChannelBoxModal from "./ChannelBox/ChannelBoxModal.vue";
+import MembersListBox from "./ChannelBox/MembersListBox.vue";
+import { getUrlOf } from "@/router";
 
 interface Props {
   history: Array<any>;
@@ -88,6 +95,8 @@ const props: Readonly<Props> = defineProps<Props>();
 const user: any = useUserStore();
 const userProfileWindow: Ref<boolean> = ref(false);
 const settingsWindow: Ref<boolean> = ref(false);
+const membersWindow: Ref<boolean> = ref(false);
+const channel: Ref<Array<any>> = ref([]);
 
 function showInfoBox() {
   userProfileWindow.value = true;
@@ -97,12 +106,17 @@ function showSettings() {
   settingsWindow.value = true;
 }
 
+function showMembers() {
+  membersWindow.value = true;
+}
+
 function hide() {
   userProfileWindow.value = false;
   settingsWindow.value = false;
+  membersWindow.value = false;
 }
 
-function leaveChannel() {
+function leaveChannel(selectedChannel: number) {
   if (confirm("Are you sure you want to leave this channel ?")) {
     console.log("leaving the channel");
   } else {
@@ -110,9 +124,25 @@ function leaveChannel() {
   }
 }
 
-function seeMembers() {
-  console.log("members channel list");
-}
+watch(
+  () => props.selectedChannel,
+  async (newSelectedChannel) => {
+    await fetch(getUrlOf("api/channel/members/" + newSelectedChannel), {
+      credentials: "include",
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        console.log("data :", data);
+        channel.value = data;
+        console.log("channel data :", data);
+      })
+      .catch((error) => {
+        console.log("Error :", error);
+      });
+  }
+);
 
 watch(
   () => props.target,

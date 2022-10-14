@@ -19,8 +19,19 @@ export class ChannelController {
     return await this.channelService.createChannel(createChannelDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async channel(@Param('id') id: number) {
+  getChannel(
+    @Param('id') id: number
+  ) {
     return this.channelService.findOne(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('members/:id')
+  async getChannelMembers(
+    @Param('id') id: number
+  ) {
+    return await this.channelService.findChannelMembers(id);
   }
 }

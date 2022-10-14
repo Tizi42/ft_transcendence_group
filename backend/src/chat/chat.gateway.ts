@@ -1,5 +1,6 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
+import { ChannelService } from 'src/channel/channel.service';
 import { AppGateway } from '../gateway';
 import { UsersService } from '../users/users.service';
 import { ChatService } from './chat.service';
@@ -10,8 +11,9 @@ export class ChatGateway extends AppGateway {
   constructor(
     readonly chatService: ChatService,
     readonly usersService: UsersService,
+    readonly channelService: ChannelService,
   ) {
-    super(chatService, usersService);
+    super(chatService, usersService, channelService);
   }
 
   async handleConnection(socket: Socket) {}
