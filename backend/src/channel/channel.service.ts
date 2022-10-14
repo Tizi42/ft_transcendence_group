@@ -4,7 +4,7 @@ import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { Channel } from './entities/channel.entity';
 import { CreatChannelDto } from './utils/createChannel.dto';
-import * as bcrypt from 'bcrypt';
+// import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ChannelService {
@@ -29,8 +29,9 @@ export class ChannelService {
           HttpStatus.BAD_REQUEST
         );
       }
-      const salt = await bcrypt.genSalt();
-      newChannel.password = await bcrypt.hash(channelDto.password, salt);
+      // const salt = await bcrypt.genSalt();
+      // newChannel.password = await bcrypt.hash(channelDto.password, salt);
+      newChannel.password = channelDto.password;
     } else {
       newChannel.password = null;
     }
@@ -48,6 +49,12 @@ export class ChannelService {
       where: {
         id: id,
       }
+    });
+  }
+
+  async findAll(): Promise<Channel[]> {
+    return await this.channelRepository.find({
+      relations: ['members'],
     });
   }
 

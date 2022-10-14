@@ -23,6 +23,7 @@ export class ChannelGateway extends AppGateway {
   async handleCreateChannel(
     @MessageBody() data: any,
   ) {
+    console.log("hola ?");
     const newChannel = await this.channelService.createChannel(data);
   
     this.server.sockets.emit('receive_channel_created', newChannel);
@@ -40,13 +41,21 @@ export class ChannelGateway extends AppGateway {
     return channel;
   }
 
+  @SubscribeMessage('get_all_channels')
+  async handleAllChannels(
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const allChannels = await this.channelService.findAll();
+    this.server.sockets.emit('receive_all_channels', allChannels);
+    return allChannels;
+  }
+
   @SubscribeMessage('join_channel')
-  async joinChannel(
+  async handleJoinChannel(
     @MessageBody() data: any,
     @ConnectedSocket() socket: Socket,
   ){
     await this.channelService.joinChannel(data.user, data.channel);
-
     this.server.sockets.to(socket.data.id).emit('joined_channel');
   }
 

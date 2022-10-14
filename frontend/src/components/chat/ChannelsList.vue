@@ -46,7 +46,7 @@
   </ul>
   <Teleport to="body">
     <ChannelBoxModal v-if="addWindow" @hide="hide">
-      <AddChannelBox :user="user" />
+      <AddChannelBox :user="user" @hideAddChannel="hide" />
     </ChannelBoxModal>
   </Teleport>
 </template>
