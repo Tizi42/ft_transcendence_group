@@ -53,9 +53,10 @@ export class ChannelService {
   }
 
   async findAll(): Promise<Channel[]> {
-    return await this.channelRepository.find({
+    const channels = await this.channelRepository.find({
       relations: ['members'],
     });
+    return channels;
   }
 
   async getAllMyChannels(id: number): Promise<Channel[]> {
@@ -102,6 +103,8 @@ export class ChannelService {
       if (channel.banned[i] === userId)
         return console.log("unauthorized")
     }
+    console.log("JOIN");
+    console.log("JOIN members", channel.members[0]);
     channel.members.push(user);
   }
 
