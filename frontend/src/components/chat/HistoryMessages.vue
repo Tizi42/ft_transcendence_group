@@ -61,7 +61,7 @@
         :selectedChannel="selectedChannel"
         v-if="settingsWindow"
       />
-      <MembersListBox v-if="membersWindow" :channel="channel" />
+      <MembersListBox v-if="membersWindow" :channel="channel[0]" />
     </ChannelBoxModal>
   </teleport>
 </template>

@@ -1,27 +1,25 @@
 <template>
-  <h1 @click="showChannel">test</h1>
+  <div class="manage-members-list">
+    <h1>{{ channel.name }}</h1>
+    <div>
+      <ul>
+        <li></li>
+      </ul>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { getUrlOf } from "@/router";
-import {
-  ref,
-  defineComponent,
-  defineExpose,
-  Ref,
-  defineProps,
-  watch,
-} from "vue";
+import { ref, defineComponent, defineExpose, Ref, defineProps } from "vue";
 
 interface Props {
-  channel: Array<any>;
+  channel: any;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
-const channelInfo: Ref<any> = ref("");
 
 const showChannel = () => {
-  console.log("props channel = ", props.channel[0].name);
+  console.log("props channel = ", props.channel.name);
 };
 
 defineExpose(
