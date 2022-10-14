@@ -1,36 +1,43 @@
 @import url("authentication.css");
 @import url("transitions.css");
 
-.page2FA .box .description {
+.box > .description {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  margin-top: 1em;
   font-family: "Outfit";
   color: #eeeeee;
   font-size: 20px;
   width: 70%;
-  height: 50%;
+  height: 20vh;
+  min-height: 20vh;
   padding-left: 10%;
   padding-right: 10%;
-  background-color: #1e2a02ff;
   border-radius: 22px;
   line-height: 1.5em;
+  background-color: #1e2a02;
 }
 
-.startBtn {
-  display: block;
+.startBtn,
+.cancelBtn {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
   font-family: "Outfit Bold";
-  background: #1e2a02;
   box-shadow: 0px 0px 4px 3px rgba(0, 0, 0, 0.25);
   border-radius: 22px;
   line-height: 2.3em;
-  border: none;
+  width: 200px;
   font-size: 28px;
   color: var(--main-color);
-  width: 40%;
-  margin-top: 1.5em;
   transition: transform 0.5s ease;
+}
+
+.startBtn {
+  font-family: "Outfit Bold";
+  background: #1e2a02;
+  border: 3px solid #1e2a02;
 }
 
 .startBtn:hover,
@@ -40,37 +47,42 @@
 }
 
 .cancelBtn {
-  display: block;
-  font-family: "Outfit Bold";
-  box-shadow: 0px 0px 4px 3px rgba(0, 0, 0, 0.25);
-  border-radius: 22px;
-  line-height: 2.3em;
+  gap: 15px;
   border: 3px solid #FFCB00;
-  font-size: 24px;
-  color: var(--main-color);
-  width: 20%;
-  margin-top: 1.5em;
-  transition: transform 0.5s ease;
 }
 
 .popUpTxt {
-  margin-top: 1em;
-  margin-bottom: 1em;
-  font-size: 34px;
+  font-size: 24px;
   color: var(--main-color);
 }
 
 .titleGame {
   color: var(--main-color);
-  font-size: 40px;
+  font-size: 50px;
+  font-family: "Outfit Bold";
 }
 
 .boxMenu {
-  justify-content: space-between;
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  justify-content: space-evenly;
   padding-top: 5vh;
   padding-bottom: 5vh;
-  height: 35%;
-  opacity: 1;
+  gap: 30px;
+  width: 60vw;
+  max-width: 600px;
+  height: 50vh;
+  max-height: 600px;
+  background: #1e2a02cc;
+  box-shadow: 0px 0px 8px #000000bf;
+  border-radius: 58px;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  cursor: default;
 }
 
 .gameMode {
@@ -78,6 +90,7 @@
   flex-direction: row;
   justify-content: space-between;
   width: 90%;
+  align-items: center;
 }
 
 .previousChoice,
@@ -104,9 +117,9 @@
 
 .popUpContent {
   width: 100%;
+  gap: 15px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
   justify-content: space-between;
   align-items: center;
 }

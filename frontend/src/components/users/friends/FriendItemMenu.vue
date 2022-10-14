@@ -72,10 +72,11 @@ defineExpose(
 
 <style scoped>
 .friend-menu {
+  position: fixed;
   width: 227px;
   height: 246px;
   background-color: rgba(20, 29, 1, 1);
-  position: absolute;
+  left: 400px;
   color: rgba(255, 203, 0, 1);
   text-align: left;
 }

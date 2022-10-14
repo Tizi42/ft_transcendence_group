@@ -36,7 +36,8 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, ref, onBeforeMount } from "vue";
+import { defineComponent, defineExpose, defineEmits, ref } from "vue";
+import { onBeforeMount } from "vue";
 import { useUserStore } from "@/stores/user";
 import FriendItem from "./FriendItem.vue";
 import FriendReqItem from "./FriendReqItem.vue";
@@ -48,7 +49,6 @@ const addWindow = ref(false);
 
 function onAdd() {
   addWindow.value = true;
-  console.log("set add window true");
 }
 
 function hide() {
@@ -69,6 +69,7 @@ defineExpose(
 
 <style scoped>
 .friends-section {
+  position: absolute;
   width: 86%;
   margin-left: 7%;
   margin-right: 7%;
@@ -106,5 +107,10 @@ defineExpose(
   width: 99%;
   grid-gap: 15px;
   margin-bottom: 50px;
+  scrollbar-width: 0px;
+}
+
+.friends-grid::-webkit-scrollbar {
+  display: none;
 }
 </style>
