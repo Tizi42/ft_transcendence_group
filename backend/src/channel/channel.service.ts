@@ -1,12 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/users/users.entity';
 import { UsersService } from 'src/users/users.service';
-import { UserDetails } from 'src/users/utils/types';
-import { UserDto } from 'src/users/utils/user.dto';
 import { Repository } from 'typeorm';
 import { Channel } from './entities/channel.entity';
-import { channelInfos } from './utils/types';
+import { CreatChannelDto } from './utils/createChannel.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ChannelService {
@@ -16,15 +14,53 @@ export class ChannelService {
     private readonly userService: UsersService,
   ) {}
 
-  async createChannel(channel: channelInfos): Promise<Channel>{
-    const newChannel = this.channelRepository.create(channel);
-    await this.channelRepository.save(newChannel);
+  async createChannel(channelDto: CreatChannelDto) {
+    const newChannel = new Channel();
 
-    return newChannel;
+    newChannel.type = channelDto.type;
+    newChannel.name = channelDto.name;
+    newChannel.members = channelDto.members;
+    newChannel.owner = channelDto.owner;
+    newChannel.admins = channelDto.admins;
+    if (channelDto.type === "protected") {
+      if (!channelDto.password) {
+        throw new HttpException(
+          'Bad Request, password is required', 
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      const salt = await bcrypt.genSalt();
+      newChannel.password = await bcrypt.hash(channelDto.password, salt);
+    } else {
+      newChannel.password = null;
+    }
+
+    return await this.channelRepository.save(newChannel);
   }
 
   async findOne(id: number): Promise<Channel> {
     return await this.channelRepository.findOneBy({ id });
+  }
+
+  async findChannelMembers(id: number): Promise<Channel[]> {
+    return await this.channelRepository.find({
+      relations: ['members'],
+      where: {
+        id: id,
+      }
+    });
+  }
+
+  async getAllMyChannels(id: number): Promise<Channel[]> {
+    const channels = await this.channelRepository.find({
+      relations: ['members'],
+      where: [{
+        members: {
+              id: id,
+          },
+      }]
+    });
+    return channels;
   }
 
   async leavingChannel(userId: number, channelId: number) {

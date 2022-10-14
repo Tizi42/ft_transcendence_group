@@ -24,7 +24,8 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     UsersModule,
     GameModule,
     BattlesModule,
-    ChatModule
+    ChatModule,
+    ChannelModule
   ],
   controllers: [AppController],
   providers: [
