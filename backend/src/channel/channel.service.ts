@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { Channel } from './entities/channel.entity';
 import { CreatChannelDto } from './utils/createChannel.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ChannelService {
@@ -22,7 +23,14 @@ export class ChannelService {
     newChannel.owner = channelDto.owner;
     newChannel.admins = channelDto.admins;
     if (channelDto.type === "protected") {
-      newChannel.password = channelDto.password;
+      if (!channelDto.password) {
+        throw new HttpException(
+          'Bad Request, password is required', 
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      const salt = await bcrypt.genSalt();
+      newChannel.password = await bcrypt.hash(channelDto.password, salt);
     } else {
       newChannel.password = null;
     }
@@ -32,6 +40,27 @@ export class ChannelService {
 
   async findOne(id: number): Promise<Channel> {
     return await this.channelRepository.findOneBy({ id });
+  }
+
+  async findChannelMembers(id: number) {
+    return await this.channelRepository.find({
+      relations: ['members'],
+      where: {
+        id: id,
+      }
+    });
+  }
+
+  async getAllMyChannels(id: number): Promise<Channel[]> {
+    const channels = await this.channelRepository.find({
+      relations: ['members'],
+      where: [{
+        members: {
+              id: id,
+          },
+      }]
+    });
+    return channels;
   }
 
   async leavingChannel(userId: number, channelId: number) {
