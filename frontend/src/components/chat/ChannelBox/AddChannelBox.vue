@@ -1,50 +1,67 @@
 <template>
-  <TransitionGroup name="list">
-    <div class="box-create-channel">
-      <h2>Create a new channel</h2>
-      <form id="create-channel" @submit.prevent="createNewChannel">
-        <div class="fields">
-          <label for="channel-name">Channel name :</label>
-          <input
-            id="channel-name"
-            v-model="channelName"
-            type="text"
-            placeholder="Channel name.."
-          />
-        </div>
-        <div class="fields">
-          <label for="channel-type">Choose your channel privacy :</label>
-          <select id="channel-type" name="privacy" v-model="channelType">
-            <option v-bind:value="'public'">public</option>
-            <option v-bind:value="'private'">private</option>
-            <option v-bind:value="'protected'">protected</option>
-          </select>
-        </div>
-        <div class="fields" v-if="channelType === 'protected'">
-          <label for="channel-password">Set a password :</label>
-          <input
-            id="channel-password"
-            v-model="channelPassword"
-            type="text"
-            placeholder="Your channel password.."
-          />
-        </div>
-        <button type="submit" id="add-channel-button"></button>
-      </form>
-    </div>
-  </TransitionGroup>
+  <div class="box-create-channel">
+    <h2>Create a new channel</h2>
+    <form id="create-channel" @submit.prevent="createNewChannel">
+      <div class="fields">
+        <label for="channel-name">Channel name :</label>
+        <input
+          id="channel-name"
+          v-model="channelName"
+          type="text"
+          placeholder="Channel name.."
+        />
+      </div>
+      <div class="fields">
+        <label for="channel-type">Choose your channel privacy :</label>
+        <select id="channel-type" name="privacy" v-model="channelType">
+          <option v-bind:value="'public'">public</option>
+          <option v-bind:value="'private'">private</option>
+          <option v-bind:value="'protected'">protected</option>
+        </select>
+      </div>
+      <div class="fields" v-if="channelType === 'protected'">
+        <label for="channel-password">Set a password :</label>
+        <input
+          id="channel-password"
+          v-model="channelPassword"
+          type="text"
+          placeholder="Your channel password.."
+        />
+      </div>
+      <button type="submit" id="add-channel-button"></button>
+    </form>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, defineComponent, defineExpose, Ref } from "vue";
+import { ref, defineComponent, defineExpose, Ref, defineProps } from "vue";
+import socket from "@/socket";
+import { userInfoStore } from "@/stores/user";
+
+interface Props {
+  user: userInfoStore;
+}
 
 const channelName: Ref<string> = ref("");
 const channelType: Ref<string> = ref("public");
 const channelPassword: Ref<string> = ref("");
+const props: Readonly<Props> = defineProps<Props>();
 
-const createNewChannel = () => {
+// watch(
+// );
+
+const createNewChannel = async () => {
   console.log("channel name = ", channelName.value);
   console.log("channel type = ", channelType.value);
+  const data = {
+    type: channelType.value,
+    name: channelName.value,
+    members: [props.user],
+    owner: props.user.id,
+    admins: [props.user.id],
+    password: channelPassword.value,
+  };
+  socket.emit("create_channel", data);
 };
 
 defineExpose(
