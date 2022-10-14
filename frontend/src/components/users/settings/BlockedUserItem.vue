@@ -1,5 +1,5 @@
 <template>
-  <div class="blocked-user-item">
+  <div class="blocked-user-item" v-if="notRemoved">
     <div
       class="avatar-frame"
       :style="{
@@ -17,13 +17,16 @@
 <script lang="ts" setup>
 import { defineComponent, defineExpose, defineProps, defineEmits } from "vue";
 import { useUserStore } from "@/stores/user";
+import { Ref, ref } from "vue";
 import axios from "axios";
 
 const user = useUserStore();
 const props = defineProps(["blocked"]);
 const emit = defineEmits(["renew"]);
+const notRemoved: Ref<boolean> = ref(true);
 
 function onRemoveBlock() {
+  notRemoved.value = false;
   axios
     .post("http://localhost:3000/api/users/block/rm/", {
       id1: user.id,

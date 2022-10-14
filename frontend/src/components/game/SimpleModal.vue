@@ -42,6 +42,7 @@ defineExpose(
   gap: 15px;
   color: #ffffff;
 }
+
 .modalContainer {
   display: flex;
   align-items: center;
