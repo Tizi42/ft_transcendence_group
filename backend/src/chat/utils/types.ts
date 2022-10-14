@@ -11,3 +11,9 @@ export type emojiInfo = {
     dest: string;
     content: number;
 }
+
+export type messageInGame = {
+    author: string;
+    dest: string;
+    content: string;
+}

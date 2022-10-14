@@ -21,6 +21,7 @@
         :role="user_role"
         :room_name="room_name"
         :emojisURL="emojisURL"
+        :message="messageW"
         @changeSound="changeSound"
         @quitGame="quitGame"
         @changeBackground="changeBackground"
@@ -47,6 +48,7 @@ import socket from "@/socket";
 import { onBeforeRouteLeave } from "vue-router";
 import router from "@/router/index";
 import { StoreGeneric } from "pinia";
+import { messageInGame } from "@backend/chat/utils/types";
 
 interface Props {
   room_name: string;
@@ -59,8 +61,9 @@ const opponent: UserMinimal = new UserMinimal();
 const props: Readonly<Props> = defineProps<Props>();
 const playerL: Ref<User | null> = ref(null);
 const playerR: Ref<User | null> = ref(null);
-const messageL: Ref<Chat | null> = ref(null);
-const messageR: Ref<Chat | null> = ref(null);
+const messageL: Ref<messageInGame | null> = ref(null);
+const messageR: Ref<messageInGame | null> = ref(null);
+const messageW: Ref<messageInGame | null> = ref(null);
 const emojiL: Ref<number> = ref(3);
 const emojiR: Ref<number> = ref(0);
 const emojiDateL: Ref<Date> = ref(new Date());
@@ -102,9 +105,10 @@ function loadEmojis() {
   }
 }
 
-function updateMessage(msg: Chat) {
-  if (msg.author == user.id) messageL.value = msg;
-  else messageR.value = msg;
+function updateMessage(msg: messageInGame) {
+  if (msg.author == props.playerL_id.toString()) messageL.value = msg;
+  else if (msg.author == props.playerR_id.toString()) messageR.value = msg;
+  else messageW.value = msg;
 }
 
 function updateEmoji(msg: emojiInfo) {

@@ -3,6 +3,7 @@ import { GameRoom } from "./gameRoom";
 export class GameRoomNS {
     constructor(value: GameRoom, roomName: string) {
         this.room_name = roomName;
+        this.mode = value.mode;
         this.playerL = value.playerL;
         this.playerR = value.playerR;
     }

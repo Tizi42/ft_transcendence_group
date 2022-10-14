@@ -104,6 +104,7 @@
         </div>
       </template>
     </FloatingMenu>
+    <WatchersChat :message="message" />
   </div>
 </template>
 
@@ -114,11 +115,14 @@ import { UserMinimal } from "@/components/utils/UserMinimal";
 import FloatingMenu from "../utils/FloatingMenu.vue";
 import SmallChat from "./SmallChat.vue";
 import socket from "@/socket";
+import { Chat } from "@backend/chat/entities/chat.entity";
+import WatchersChat from "./WatchersChat.vue";
 
 interface Props {
   user: UserMinimal;
   role: string;
   room_name: string;
+  message: Chat | null;
   emojisURL: Array<URL>;
 }
 
@@ -148,7 +152,7 @@ onMounted(() => {
   window.addEventListener("keyup", (event) => {
     if (event.key == "Enter") {
       if (isChatting.value) {
-        chatRef.value.methods.sendMsg();
+        if (chatRef.value) chatRef.value.methods.sendMsg();
       } else {
         document.getElementById("inputChat")?.focus();
         isChatting.value = true;
