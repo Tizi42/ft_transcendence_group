@@ -23,6 +23,7 @@
       <AllChannelsSelected
         v-if="isActive === 'channels' && selectedChannel == -1"
         @getChannelSelected="handleChannelSelected"
+        :user="user"
       />
       <HistoryMessages
         :history="history"

@@ -14,68 +14,25 @@
     </div>
   </form>
   <ul class="all-channels">
-    <li class="channel-attributes">
-      <h3>my first channel</h3>
+    <li
+      class="channel-attributes"
+      v-for="channel in allChannels"
+      :key="channel"
+    >
+      <h3>{{ channel.name }}</h3>
       <div class="buttons-channel">
-        <!-- <button type="submit" class="join-channel">
-          <h3>Join</h3>
-        </button> -->
         <button
+          v-if="channel.members[channel] !== user"
           type="submit"
-          class="message-channel icon-image"
-          @click="setSelectedChannel(0)"
-        ></button>
-      </div>
-    </li>
-    <li class="channel-attributes">
-      <h3>cats & dogs</h3>
-      <div class="buttons-channel">
-        <button type="submit" class="join-channel">
+          class="join-channel"
+          @submit.prevent="toJoin"
+        >
           <h3>Join</h3>
         </button>
-        <!-- <button
-          type="submit"
-          class="message-channel icon-image"
-          @click="setSelectedChannel(0)"
-        ></button> -->
-      </div>
-    </li>
-    <li class="channel-attributes">
-      <h3>random</h3>
-      <div class="buttons-channel">
-        <!-- <button type="submit" class="join-channel">
-          <h3>Join</h3>
-        </button> -->
         <button
           type="submit"
           class="message-channel icon-image"
-          @click="setSelectedChannel(1)"
-        ></button>
-      </div>
-    </li>
-    <li class="channel-attributes">
-      <h3>apt 42</h3>
-      <div class="buttons-channel">
-        <!-- <button type="submit" class="join-channel">
-          <h3>Join</h3>
-        </button> -->
-        <button
-          type="submit"
-          class="message-channel icon-image"
-          @click="setSelectedChannel(2)"
-        ></button>
-      </div>
-    </li>
-    <li class="channel-attributes">
-      <h3>always win a pong</h3>
-      <div class="buttons-channel">
-        <!-- <button type="submit" class="join-channel">
-          <h3>Join</h3>
-        </button> -->
-        <button
-          type="submit"
-          class="message-channel icon-image"
-          @click="setSelectedChannel(3)"
+          @click="setSelectedChannel(channel.id)"
         ></button>
       </div>
     </li>
@@ -83,13 +40,42 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, Ref, ref, defineEmits } from "vue";
+import socket from "@/socket";
+import { userInfoStore } from "@/stores/user";
+import {
+  defineComponent,
+  defineExpose,
+  Ref,
+  ref,
+  defineEmits,
+  onBeforeMount,
+} from "vue";
+
+interface Props {
+  user: userInfoStore;
+}
 
 const selectedChannel: Ref<number> = ref(-1);
+const allChannels: Ref<any> = ref([]);
+const props: Readonly<Props> = defineProps<Props>();
+
+onBeforeMount(async () => {
+  socket.emit("get_all_channels");
+  socket.on("receive_all_channels", (channel: any) => {
+    allChannels.value = channel;
+  });
+});
 
 const setSelectedChannel = (channelId: number) => {
   selectedChannel.value = channelId;
   emit("getChannelSelected", selectedChannel.value);
+};
+
+const toJoin = () => {
+  socket.emit("get_all_channels");
+  socket.on("receive_all_channels", (channel: any) => {
+    allChannels.value = channel;
+  });
 };
 
 const emit = defineEmits(["getChannelSelected"]);
