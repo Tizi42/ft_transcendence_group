@@ -20,7 +20,7 @@
         <div>Matches</div>
       </div>
       <div class="stats-item">
-        <div class="statValue">Ping-Pong Master</div>
+        <div class="statValue">{{ getLeague() }}</div>
         <div>League</div>
       </div>
     </div>
@@ -51,6 +51,15 @@ const historyReady: Ref<boolean> = ref(false);
 const leaderboard: Ref<User[]> = ref([]);
 const history: Ref<Battle[]> = ref([]);
 const noMatch: Ref<boolean> = ref(true);
+const leagues: string[] = [
+  "Challenger",
+  "Grand Master",
+  "Master",
+  "Diamond",
+  "Gold",
+  "Silver",
+];
+const tiers: number[] = [1, 2, 5, 10, 20, 50];
 
 async function reload() {
   dataReady.value = false;
@@ -68,7 +77,6 @@ async function reload() {
 
 async function reloadHistory() {
   historyReady.value = false;
-  console.log(user.id);
   let response: Response = await fetch(getUrlOf("api/battles/" + user.id), {
     credentials: "include",
   });
@@ -87,6 +95,14 @@ function getRank(): number {
   for (var i = 0; i < leaderboard.value.length; i++)
     if (leaderboard.value[i].id == user.id) return i;
   return leaderboard.value.length + 1;
+}
+
+function getLeague(): string {
+  let tier: number = Math.floor((getRank() / leaderboard.value.length) * 100);
+  for (let i = 0; i < tiers.length; i++) {
+    if (tier <= tiers[i]) return leagues[i];
+  }
+  return "Bronze";
 }
 
 onBeforeMount(async () => {

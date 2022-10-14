@@ -1,11 +1,10 @@
 import { GameRoom } from "./game";
 
 export class GameRoomNS {
-    constructor(value: GameRoom) {
+    constructor(value: GameRoom, mode: string = "normal") {
         this.room_name = value.room_name;
-        this.mode = value.mode;
-        this.player1 = value.player1;
-        this.player2 = value.player2;
+        if (value.mode === undefined)
+            this.mode = mode;
         this.playerL = value.playerL;
         this.playerR = value.playerR;
     }
@@ -13,6 +12,4 @@ export class GameRoomNS {
     mode: string;
     playerL: number;
     playerR: number;
-    player1: string;
-    player2: string;
 }
