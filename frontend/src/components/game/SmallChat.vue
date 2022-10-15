@@ -9,6 +9,7 @@
       @focusin="chatting(true)"
       @focusout="chatting(false)"
       @submit="sendMsg"
+      :disabled="!isAllowed()"
     />
     <button class="sendMsg" @click="sendMsg" />
   </div>
@@ -25,6 +26,7 @@ interface Props {
   user: UserMinimal;
   room_name: string;
   role: string;
+  canTalk: boolean;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
@@ -32,13 +34,20 @@ const emit = defineEmits(["getChatting"]);
 const message: Ref<string> = ref("");
 
 function placeHolder(): string {
-  if (props.role == "watch") return "Chat in viewers chat...";
+  if (props.role == "watch") {
+    if (!isAllowed()) return "Turn on viewers chat in settings to chat";
+    return "Chat in viewers chat...";
+  }
   return "Chat here...";
 }
 
 function maxLen(): number {
   if (props.role == "watch") return 500;
   return 80;
+}
+
+function isAllowed() {
+  return props.role != "watch" || props.canTalk;
 }
 
 function sendMsg() {

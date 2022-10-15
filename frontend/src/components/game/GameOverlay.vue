@@ -219,7 +219,7 @@ defineExpose(
   align-items: center;
   position: absolute;
   width: 90%;
-  max-width: 1600px;
+  max-width: 1400px;
   max-height: 1000px;
   height: 90%;
   top: 50%;
