@@ -23,7 +23,6 @@ interface Props {
   user: UserMinimal;
   message: messageInGame | null;
   transition: string;
-  mine: boolean;
   align: string;
 }
 
