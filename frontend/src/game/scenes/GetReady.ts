@@ -69,5 +69,7 @@ export default class GetReadyScene extends Phaser.Scene {
       console.log("Game start !!!", this.scene);
       this.scene.start("GameScene");
     });
+
+    console.log("this: ", this);
   }
 }
