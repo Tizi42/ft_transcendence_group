@@ -3,8 +3,8 @@
     <div class="overlayBox" v-if="dataReady">
       <OverlayTopBar
         v-if="opponent != null"
-        :playerL="createUserMinimal(playerL)"
-        :playerR="createUserMinimal(playerR)"
+        :playerL="playerLMin"
+        :playerR="playerRMin"
         :time="timer"
         :scores="scores"
         :messageL="messageL"
@@ -17,7 +17,7 @@
       />
       <GameBox :room_name="room_name" :user_role="user_role" />
       <OverlayBottomBar
-        :user="createUserFromStore(user)"
+        :user="userMin"
         :role="user_role"
         :room_name="room_name"
         :emojisURL="emojisURL"
@@ -57,6 +57,7 @@ interface Props {
 }
 
 const user: StoreGeneric = useUserStore();
+const userMin: UserMinimal = createUserFromStore(user);
 const opponent: UserMinimal = new UserMinimal();
 const props: Readonly<Props> = defineProps<Props>();
 const playerL: Ref<User | null> = ref(null);
@@ -75,6 +76,8 @@ const scores: Ref<Array<number>> = ref([0, 0]);
 const emojisURL: Array<URL> = [];
 const force_quit = ref(false);
 const user_role = ref("");
+const playerLMin: Ref<UserMinimal> = ref(createUserMinimal(null));
+const playerRMin: Ref<UserMinimal> = ref(createUserMinimal(null));
 
 type emojiInfo = {
   author: string;
@@ -112,10 +115,10 @@ function updateMessage(msg: messageInGame) {
 }
 
 function updateEmoji(msg: emojiInfo) {
-  if (msg.author == user.id.toString()) {
+  if (msg.author == props.playerL_id.toString()) {
     emojiL.value = msg.content;
     emojiDateL.value = new Date();
-  } else {
+  } else if (msg.author == props.playerR_id.toString()) {
     emojiR.value = msg.content;
     emojiDateR.value = new Date();
   }
@@ -132,6 +135,7 @@ async function getPlayersInfo() {
     }
   );
   playerL.value = await left.json();
+  playerLMin.value = createUserMinimal(playerL.value);
 
   let right: Response = await fetch(
     getUrlOf("api/users/info/" + props.playerR_id),
@@ -140,6 +144,7 @@ async function getPlayersInfo() {
     }
   );
   playerR.value = await right.json();
+  playerRMin.value = createUserMinimal(playerR.value);
 
   setTimeout(() => {
     dataReady.value = true;

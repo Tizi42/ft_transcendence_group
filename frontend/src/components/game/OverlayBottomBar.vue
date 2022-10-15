@@ -133,6 +133,9 @@ const showWatchersChat: Ref<boolean> = ref(true);
 const chatRef = ref();
 const menuRef = ref();
 const emit = defineEmits(["quitGame", "changeSound", "changeBackground"]);
+const opacity = props.role == "watch" ? 0.2 : 1;
+const scale = props.role == "watch" ? "" : "scale(1.15)";
+const pointer = props.role == "default" ? "" : "pointer";
 
 function changeChattingStatus(event: boolean) {
   isChatting.value = event;
@@ -214,12 +217,12 @@ defineExpose(
 }
 
 .emoji {
-  opacity: 0.2;
+  opacity: v-bind(opacity);
 }
 
 .emoji:hover {
-  transform: none;
-  cursor: default;
+  transform: v-bind(scale);
+  cursor: v-bind(pointer);
 }
 
 .emoji {

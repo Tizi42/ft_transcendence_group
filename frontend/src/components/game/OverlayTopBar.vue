@@ -15,7 +15,6 @@
         <UserChat
           :user="playerL"
           :message="messageL"
-          :mine="true"
           transition="fadeGroup"
           align="flex-start"
         />
@@ -29,7 +28,6 @@
         <UserChat
           :user="playerR"
           :message="messageR"
-          :mine="false"
           transition="fadeGroupR"
           align="flex-end"
         />
