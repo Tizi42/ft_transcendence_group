@@ -111,6 +111,11 @@ onBeforeMount(() => {
   box-shadow: var(--main-shadow);
   overflow: auto;
   scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.main-wrapper::-webkit-scrollbar {
+  display: none;
 }
 
 #user-page {
