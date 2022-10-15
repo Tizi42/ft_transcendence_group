@@ -24,6 +24,9 @@ import GetReadyScene from "@/game/scenes/GetReady";
 //     return true;
 //   }
 // }
+// const canvas = document.createElement("canvas");
+// const context =
+//   canvas.getContext("2d", { willReadFrequently: true }) || undefined;
 
 function launch(containerId: string, data: any) {
   return new Phaser.Game({
@@ -49,6 +52,7 @@ function launch(containerId: string, data: any) {
     //     },
     //   ],
     // },
+    // context: context, //	type: CanvasRenderingContext2D
     scene: [GetReadyScene, GameScene, GameOverScene],
   });
 }
