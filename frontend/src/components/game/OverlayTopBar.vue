@@ -50,19 +50,19 @@
 <script lang="ts" setup>
 import { defineComponent, defineExpose, defineProps } from "vue";
 import { Ref, ref, onMounted } from "vue";
-import { Chat } from "@backend/chat/entities/chat.entity";
 import TimerStart from "../utils/TimerStart.vue";
 import UserChat from "./UserChat.vue";
 import EmoteBox from "./EmoteBox.vue";
 import { UserMinimal } from "@/components/utils/UserMinimal";
+import { messageInGame } from "@backend/chat/utils/types";
 
 interface Props {
   playerL: UserMinimal;
   playerR: UserMinimal;
   time: Date;
   scores: Array<number>;
-  messageL: Chat | null;
-  messageR: Chat | null;
+  messageL: messageInGame | null;
+  messageR: messageInGame | null;
   emojisURL: Array<URL>;
   emojiL: number;
   emojiR: number;

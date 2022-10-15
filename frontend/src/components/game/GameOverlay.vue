@@ -214,7 +214,9 @@ defineExpose(
   justify-content: space-evenly;
   align-items: center;
   position: absolute;
-  width: 80%;
+  width: 90%;
+  max-width: 1600px;
+  max-height: 1000px;
   height: 90%;
   top: 50%;
   -ms-transform: translateY(-50%);

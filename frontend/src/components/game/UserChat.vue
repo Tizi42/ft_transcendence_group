@@ -16,12 +16,12 @@
 import { defineComponent, defineExpose, defineProps } from "vue";
 import { onBeforeMount, onUpdated } from "vue";
 import { Ref, ref } from "vue";
-import { Chat } from "@backend/chat/entities/chat.entity";
 import { UserMinimal } from "@/components/utils/UserMinimal";
+import { messageInGame } from "@backend/chat/utils/types";
 
 interface Props {
   user: UserMinimal;
-  message: Chat | null;
+  message: messageInGame | null;
   transition: string;
   mine: boolean;
   align: string;
