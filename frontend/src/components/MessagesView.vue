@@ -2,7 +2,7 @@
   <div class="box chat">
     <div id="echange">
       <div v-for="(message, index) in history" :key="index">
-        <div v-if="message.authorId === 11" class="messageBlockOut">
+        <div v-if="message.author.id === 11" class="messageBlockOut">
           <p class="message message-out">
             {{ message.content }}
           </p>
@@ -34,14 +34,14 @@ export default defineComponent({
 </script>
 
 <script setup lang="ts">
-import { Ref, ref, defineProps, onMounted, onBeforeMount } from "vue";
+import { Ref, ref, defineProps, onBeforeMount } from "vue";
 import socket from "../socket";
 import { getUrlOf } from "@/router";
 import { useUserStore } from "@/stores/user";
+import { Chat } from "@backend/chat/entities/chat.entity";
 
-const input: Ref<any> = ref("");
-const history: Ref<any> = ref([]);
-const profile: Ref<any> = ref([]);
+const input: Ref<string> = ref("");
+const history: Ref<Chat[]> = ref([]);
 const prop = defineProps(["chosenProfile"]);
 console.log("how : ", prop.chosenProfile.id);
 const user = useUserStore();
@@ -59,7 +59,7 @@ function onSubmit() {
   };
   console.log("dest =", data.dest);
   socket.emit("send_message", data);
-  input.value = null;
+  input.value = "";
   window.location.reload();
 }
 
@@ -68,7 +68,7 @@ function getMessages() {
   fetch(getUrlOf("api/chat/messages/" + 7))
     .then((response) => response.json())
     .then((data) => {
-      data.forEach((el: any) => {
+      data.forEach((el: Chat) => {
         console.log("history = ", el);
         history.value.push(el);
       });
