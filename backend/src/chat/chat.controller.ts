@@ -31,8 +31,8 @@ export class ChatController {
     @Req() req: RequestWithUser,
     @Res() res: Response,
     @Param('id') id: number
-  ) : Promise<Chat[]> {
-    return await this.chatService.getMessagesById(id, req.user.id);
+  ) {
+    return res.json(await this.chatService.getMessagesById(id, req.user.id));
   }
 
   @Get('dest')
