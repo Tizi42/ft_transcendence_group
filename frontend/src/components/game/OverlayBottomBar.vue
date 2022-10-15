@@ -37,7 +37,6 @@
       height="60px"
       background="#0c1200fa"
       right="0px"
-      :canClick="props.role != 'watch'"
     >
       <template #button>
         <button class="settingsBtn sound" />
@@ -66,7 +65,6 @@
       height="350px"
       background="#0c1200fa"
       left="0px"
-      :canClick="props.role != 'watch'"
     >
       <template #button>
         <button class="settingsBtn help" />
@@ -135,9 +133,6 @@ const showWatchersChat: Ref<boolean> = ref(true);
 const chatRef = ref();
 const menuRef = ref();
 const emit = defineEmits(["quitGame", "changeSound", "changeBackground"]);
-const opacity = props.role == "watch" ? 0.2 : 1;
-const scale = props.role == "watch" ? "" : "scale(1.15)";
-const cursor = props.role == "watch" ? "default" : "pointer";
 
 function changeChattingStatus(event: boolean) {
   isChatting.value = event;
@@ -210,21 +205,21 @@ defineExpose(
   background-position: center;
   background-size: 37px 37px;
   background-repeat: no-repeat;
-  opacity: v-bind(opacity);
-}
-
-.settingsBtn:hover {
-  transform: v-bind(scale);
-  cursor: v-bind(cursor);
-}
-
-.settings {
   opacity: 1;
 }
 
-.settings:hover {
+.settingsBtn:hover {
   transform: scale(1.15);
   cursor: pointer;
+}
+
+.emoji {
+  opacity: 0.2;
+}
+
+.emoji:hover {
+  transform: none;
+  cursor: default;
 }
 
 .emoji {
