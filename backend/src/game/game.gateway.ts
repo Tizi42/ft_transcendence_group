@@ -11,10 +11,10 @@ import { ChannelService } from 'src/channel/channel.service';
 export class GameGateway extends AppGateway {
 
   constructor(
-    readonly gameService: GameService,
     readonly chatService: ChatService,
     readonly usersService: UsersService,
     readonly channelService: ChannelService,
+    readonly gameService: GameService,
   ) {
     super(chatService, usersService, channelService);
   }
@@ -24,49 +24,64 @@ export class GameGateway extends AppGateway {
   handleDisconnect(client: any) {}
 
   private static queues = {
-    normal: -1,
-    magic: -1,
+    normal: {
+      id: -1,
+      sid: "",
+    },
+    magic: {
+      id: -1,
+      sid: "",
+    }
   };
   private static rooms: Map<string, GameRoom> = new Map(); //roomName, GameRoom
   private static participants: Map<string, string> = new Map(); //socketId, roomName
 
+  createGameRoom(
+    l_id: number,
+    l_sid: string,
+    r_id: number,
+    r_sid:string,
+    mode: string
+  ) {
+    const room_name = l_id + " vs " + r_id;
+    GameGateway.rooms.set(room_name, new GameRoom(l_id, l_sid, r_id, r_sid, mode));
+    // update user status
+    this.usersService.updateUserStatus(l_id, "in game");
+    this.usersService.updateUserStatus(r_id, "in game");
+    // annonce to given socket
+    this.server.in(l_sid).in(r_sid).socketsJoin(room_name);
+    this.server.to(l_sid).to(r_sid).emit("game_found", room_name);
+  }
+
+  cleanQueue(mode: string) {
+    GameGateway.queues[mode].id = -1;
+    GameGateway.queues[mode].sid = "";
+  }
+
   @SubscribeMessage('queue_register')
   queueRegister(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
     console.log("Queue register received: ", data);
-    if (GameGateway.queues.normal === data.user_id
-        || GameGateway.queues.magic === data.user_id) {
+    if (GameGateway.queues.normal.id === data.user_id
+        || GameGateway.queues.magic.id === data.user_id) {
       return "Already in a queue!";
     }
 
     let playerL = GameGateway.queues[data.mode];
-    if (playerL === -1) {
-      GameGateway.queues[data.mode] = data.user_id;
+    if (playerL.id === -1) {
+      GameGateway.queues[data.mode].id = data.user_id;
+      GameGateway.queues[data.mode].sid = socket.id;
       return "Waiting for another player...";
     } else {
-      //clean queue
-      GameGateway.queues[data.mode] = -1;
-
-      // create game room
-      const room_name = playerL + " vs " + data.user_id;
-      GameGateway.rooms.set(room_name, new GameRoom(playerL, data.user_id, data.mode));
-
-      // update user status
-      this.usersService.updateUserStatus(playerL, "in game");
-      this.usersService.updateUserStatus(data.user_id, "in game");
-
-      // annonce to players' sockets
-      this.server.in(data.user_id).in(playerL).socketsJoin(room_name);
-      this.server.to(data.user_id).to(playerL).emit("game_found", room_name);
+      this.createGameRoom(playerL.id, playerL.sid, data.user_id, socket.id, data.mode);
+      this.cleanQueue(data.mode);
     }
   }
 
   @SubscribeMessage('quit_queue')
   quitQueue(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
     console.log("Quit queue received: ", data);
-    if (GameGateway.queues.normal === data.user_id)
-      GameGateway.queues.normal = -1;
-    if (GameGateway.queues.magic === data.user_id)
-      GameGateway.queues.magic = -1;
+    if (GameGateway.queues[data.mode].id === data.user_id)
+      this.cleanQueue(data.mode);
     return "You are no longer in queue";
   }
 
@@ -76,7 +91,7 @@ export class GameGateway extends AppGateway {
     if (!room)
       return null;
     if (data.user_id !== room.playerL && data.user_id !== room.playerR)
-      this.server.in(data.user_id).socketsJoin(data.room_name);
+      this.server.in(socket.id).socketsJoin(data.room_name);
     return room;
   }
 
@@ -86,7 +101,7 @@ export class GameGateway extends AppGateway {
     if (!room)
       return null;
     if (data.user_id !== room.playerL && data.user_id !== room.playerR) {
-      this.server.in(data.user_id).socketsLeave(data.room_name);
+      this.server.in(socket.id).socketsLeave(data.room_name);
     } else {
       socket.to(data.room_name).emit("quit_game");
       this.server.in(data.room_name).socketsLeave(data.room_name);
@@ -180,18 +195,18 @@ export class GameGateway extends AppGateway {
   updateRooms(@ConnectedSocket() socket: Socket) {
     if (GameGateway.rooms.size == 0) { // to delete when everything is good
       let room_name = 2 + " vs " + 3;
-      GameGateway.rooms.set(room_name, new GameRoom(2, 3, "normal",));
+      GameGateway.rooms.set(room_name, new GameRoom(2, "", 3, "", "normal",));
       room_name = 4 + " vs " + 5;
-      GameGateway.rooms.set(room_name, new GameRoom(4, 5, "magic"));
+      GameGateway.rooms.set(room_name, new GameRoom(4, "", 5, "", "magic"));
       room_name = 6 + " vs " + 7;
-      GameGateway.rooms.set(room_name, new GameRoom(6, 7, "speed"));
+      GameGateway.rooms.set(room_name, new GameRoom(6, "", 7, "", "speed"));
     }
     this.server.to(socket.id).emit("updated_rooms", this.transformRooms());
   }
 
   @SubscribeMessage('reset_score')
-  async onResetScore(@MessageBody() data: any) {
-    this.server.to(data.user_id).emit("score_update", {
+  async onResetScore(@ConnectedSocket() socket: Socket) {
+    this.server.to(socket.id).emit("score_update", {
       left: 0,
       right: 0,
     });
