@@ -115,14 +115,14 @@ import { UserMinimal } from "@/components/utils/UserMinimal";
 import FloatingMenu from "../utils/FloatingMenu.vue";
 import SmallChat from "./SmallChat.vue";
 import socket from "@/socket";
-import { Chat } from "@backend/chat/entities/chat.entity";
 import WatchersChat from "./WatchersChat.vue";
+import { messageInGame } from "@backend/chat/utils/types";
 
 interface Props {
   user: UserMinimal;
   role: string;
   room_name: string;
-  message: Chat | null;
+  message: messageInGame | null;
   emojisURL: Array<URL>;
 }
 

@@ -4,8 +4,8 @@
       id="inputChat"
       class="chatBar"
       v-model="message"
-      placeholder="Chat here..."
-      maxlength="80"
+      :placeholder="placeHolder()"
+      :maxlength="maxLen()"
       @focusin="chatting(true)"
       @focusout="chatting(false)"
       @submit="sendMsg"
@@ -30,6 +30,16 @@ interface Props {
 const props: Readonly<Props> = defineProps<Props>();
 const emit = defineEmits(["getChatting"]);
 const message: Ref<string> = ref("");
+
+function placeHolder(): string {
+  if (props.role == "watch") return "Chat in viewers chat...";
+  return "Chat here...";
+}
+
+function maxLen(): number {
+  if (props.role == "watch") return 500;
+  return 80;
+}
 
 function sendMsg() {
   if (message.value != "") {
