@@ -26,14 +26,16 @@ export class GameRoom {
     
     playerL: number;
     playerR: number;
-    socketL: string;
-    socketR: string;
+    sidL: string;
+    sidR: string;
     ready: number;
 
-    constructor(left: number, right: number, mode:string) {
+    constructor(l: number, l_sid: string, r: number, r_sid: string, mode:string) {
         // this.tick = Date.now();
-        this.playerL = left;
-        this.playerR = right;
+        this.playerL = l;
+        this.playerR = r;
+        this.sidL =  l_sid;
+        this.sidR = r_sid;
         this.ready = 0;
         this.mode = mode;
     }
