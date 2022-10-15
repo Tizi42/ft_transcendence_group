@@ -26,6 +26,7 @@
 <script lang="ts" setup>
 import { getUrlOf } from "@/router";
 import socket from "@/socket";
+import { Chat } from "@backend/chat/entities/chat.entity";
 import {
   defineComponent,
   onBeforeMount,
@@ -40,9 +41,9 @@ interface Props {
   user: any;
 }
 
-const props: Readonly<Props> = defineProps<Props>();
+defineProps<Props>();
 const receiver: Ref<number> = ref(-1);
-const history: Ref<any> = ref([]);
+const history: Ref<Chat[]> = ref([]);
 const selectedFriend: Ref<number> = ref(-1);
 
 const getMessages = async (id: number) => {
