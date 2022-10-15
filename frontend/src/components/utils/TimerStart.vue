@@ -1,5 +1,8 @@
 <template>
-  <div class="timer">{{ timer[0] }}:{{ timer[1] }}</div>
+  <div class="timer">
+    <img src="../../assets/icons/clock_grey.svg" class="clock" />
+    {{ timer[0] }}:{{ timer[1] }}
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -38,8 +41,17 @@ defineExpose(
 
 <style scoped>
 .timer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   font-family: Arial, Helvetica, sans-serif;
   color: #bebebe;
   font-size: 18px;
+}
+
+.clock {
+  width: 20px;
+  height: 20px;
 }
 </style>

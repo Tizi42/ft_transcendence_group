@@ -96,6 +96,9 @@
         <button class="settingsBtn settings" />
       </template>
       <template #choices>
+        <div class="setting-choice" @click="emit('hideChat')">
+          Hide viewers chat
+        </div>
         <div class="setting-choice" @click="emit('changeBackground')">
           Change background
         </div>
@@ -130,9 +133,14 @@ const props: Readonly<Props> = defineProps<Props>();
 const isChatting: Ref<boolean> = ref(false);
 const chatRef = ref();
 const menuRef = ref();
-const emit = defineEmits(["quitGame", "changeSound", "changeBackground"]);
+const emit = defineEmits([
+  "quitGame",
+  "changeSound",
+  "changeBackground",
+  "hideChat",
+]);
 const opacity = props.role == "watch" ? 0.2 : 1;
-const scale = props.role == "watch" ? 1 : 1.15;
+const scale = props.role == "watch" ? "" : "scale(1.15)";
 const cursor = props.role == "watch" ? "default" : "pointer";
 
 function changeChattingStatus(event: boolean) {
@@ -206,7 +214,7 @@ defineExpose(
 }
 
 .settingsBtn:hover {
-  transform: scale(v-bind(scale));
+  transform: v-bind(scale);
   cursor: v-bind(cursor);
 }
 

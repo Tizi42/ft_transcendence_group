@@ -25,6 +25,7 @@
         @changeSound="changeSound"
         @quitGame="quitGame"
         @changeBackground="changeBackground"
+        @hideChat="hideChat"
       />
       <ReadyButton v-if="readyStatus[0]" />
       <ReadyButton v-if="readyStatus[1]" />
@@ -40,7 +41,6 @@ import OverlayBottomBar from "./OverlayBottomBar.vue";
 import GameBox from "./GameBox.vue";
 import ReadyButton from "./ReadyButton.vue";
 import { useUserStore } from "@/stores/user";
-import { Chat } from "@backend/chat/entities/chat.entity";
 import { UserMinimal } from "@/components/utils/UserMinimal";
 import { User } from "@backend/users/users.entity";
 import { getUrlOf } from "@/router";
@@ -159,7 +159,11 @@ function changeBackground() {
   console.log("user wants to change background");
 }
 
-onBeforeRouteLeave((to: any, from: any) => {
+function hideChat() {
+  console.log("hide chat");
+}
+
+onBeforeRouteLeave(() => {
   if (force_quit.value) return true;
   const answer = window.confirm(
     "Do you really want to leave? You will quit the game room"
