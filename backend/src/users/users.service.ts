@@ -416,6 +416,7 @@ export class UsersService {
   }
   
   async updateUserStatus(userId: number, value: string) {
+    console.log("update user status: ", userId, value);
     return this.usersRepository.update(userId, {
         status: value,
     });

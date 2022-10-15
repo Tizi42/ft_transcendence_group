@@ -11,10 +11,10 @@ import { ChannelService } from 'src/channel/channel.service';
 export class GameGateway extends AppGateway {
 
   constructor(
-    readonly gameService: GameService,
     readonly chatService: ChatService,
     readonly usersService: UsersService,
     readonly channelService: ChannelService,
+    readonly gameService: GameService,
   ) {
     super(chatService, usersService, channelService);
   }
@@ -72,8 +72,8 @@ export class GameGateway extends AppGateway {
       GameGateway.queues[data.mode].sid = socket.id;
       return "Waiting for another player...";
     } else {
-      this.cleanQueue(data.mode);
       this.createGameRoom(playerL.id, playerL.sid, data.user_id, socket.id, data.mode);
+      this.cleanQueue(data.mode);
     }
   }
 
