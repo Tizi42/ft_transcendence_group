@@ -92,15 +92,16 @@ export default class GameScene extends Phaser.Scene {
   }
 
   // timer = 0;
-  update() {
+  update(time: number, delta: number) {
     // this.timer += delta;
+    console.log("delta: ", delta);
     if (gameInfo.user_role === "left") {
       if (this.game_status === "ready") {
         this.launch_ball("toRight");
         this.game_status = "running";
       }
 
-      this.check_score();
+      this.check_score(); // move logic to backend
       this.update_ball();
     }
 
@@ -136,7 +137,9 @@ export default class GameScene extends Phaser.Scene {
     const randomHeight = Phaser.Math.Between(80, this.cameras.main.height - 80);
     const randVx = Phaser.Math.Between(200, 300);
     const randVy = Phaser.Math.Between(200, 300);
+
     this.ball.disableBody(true, true);
+    // add: emit to back and get three random numbers
     this.ball.enableBody(
       true,
       this.cameras.main.centerX,
