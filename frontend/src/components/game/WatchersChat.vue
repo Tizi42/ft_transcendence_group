@@ -16,7 +16,7 @@
 <script lang="ts" setup>
 import { getUrlOf } from "@/router";
 import { messageInGame } from "@backend/chat/utils/types";
-import { defineComponent, defineExpose, defineProps, onBeforeMount } from "vue";
+import { defineComponent, defineExpose, defineProps } from "vue";
 import { Ref, ref, onUpdated } from "vue";
 
 interface Props {
@@ -54,12 +54,12 @@ async function getUsername(id: string): Promise<string> {
   return "@" + (await response.text());
 }
 
-onUpdated(async () => {
-  await addMessage(props.message);
-  scrollBot();
-});
+function getDisplay() {
+  if (messages.value.length == 0) return "none";
+  return "block";
+}
 
-onBeforeMount(async () => {
+onUpdated(async () => {
   await addMessage(props.message);
   scrollBot();
 });
@@ -73,19 +73,23 @@ defineExpose(
 
 <style scoped>
 .botChat {
-  display: block;
+  display: v-bind(getDisplay());
   position: fixed;
-  bottom: 160px;
+  bottom: 14%;
   left: 20px;
   height: fit-content;
   max-height: 300px;
-  width: 14%;
-  max-width: 240px;
+  width: 25%;
+  max-width: 250px;
   overflow: scroll;
   scroll-behavior: smooth;
   word-wrap: break-word;
   text-align: left;
   scrollbar-width: none;
+  background: #0c1200cc;
+  padding: 1em;
+  border-radius: 12px;
+  box-shadow: var(--main-shadow);
 }
 
 .botChat::-webkit-scrollbar {

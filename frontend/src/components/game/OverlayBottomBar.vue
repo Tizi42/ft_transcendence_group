@@ -27,6 +27,7 @@
       :user="user"
       :room_name="room_name"
       :role="props.role"
+      :canTalk="showWatchersChat"
       @getChatting="changeChattingStatus"
       ref="chatRef"
     />
@@ -87,17 +88,16 @@
     <FloatingMenu
       direction="column"
       width="250px"
-      height="100px"
+      height="150px"
       background="#0c1200fa"
       left="0px"
-      :canClick="props.role != 'watch'"
     >
       <template #button>
         <button class="settingsBtn settings" />
       </template>
       <template #choices>
-        <div class="setting-choice" @click="emit('hideChat')">
-          Hide viewers chat
+        <div class="setting-choice" @click="toogleChatW()">
+          {{ showWatchersChat ? "Hide" : "Show" }} viewers chat
         </div>
         <div class="setting-choice" @click="emit('changeBackground')">
           Change background
@@ -107,7 +107,7 @@
         </div>
       </template>
     </FloatingMenu>
-    <WatchersChat :message="message" />
+    <WatchersChat :message="message" v-if="showWatchersChat" />
   </div>
 </template>
 
@@ -131,14 +131,10 @@ interface Props {
 
 const props: Readonly<Props> = defineProps<Props>();
 const isChatting: Ref<boolean> = ref(false);
+const showWatchersChat: Ref<boolean> = ref(true);
 const chatRef = ref();
 const menuRef = ref();
-const emit = defineEmits([
-  "quitGame",
-  "changeSound",
-  "changeBackground",
-  "hideChat",
-]);
+const emit = defineEmits(["quitGame", "changeSound", "changeBackground"]);
 const opacity = props.role == "watch" ? 0.2 : 1;
 const scale = props.role == "watch" ? "" : "scale(1.15)";
 const cursor = props.role == "watch" ? "default" : "pointer";
@@ -179,6 +175,10 @@ onMounted(() => {
   });
 });
 
+function toogleChatW() {
+  showWatchersChat.value = !showWatchersChat.value;
+}
+
 defineExpose(
   defineComponent({
     name: "OverlayBottomBar",
@@ -202,7 +202,7 @@ defineExpose(
   min-width: 50px;
   height: 50px;
   min-height: 50px;
-  background: rgba(30, 43, 2, 0.8);
+  background: #1e2b02cc;
   border: 2px solid var(--main-color);
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 12px;
@@ -216,6 +216,15 @@ defineExpose(
 .settingsBtn:hover {
   transform: v-bind(scale);
   cursor: v-bind(cursor);
+}
+
+.settings {
+  opacity: 1;
+}
+
+.settings:hover {
+  transform: scale(1.15);
+  cursor: pointer;
 }
 
 .emoji {
