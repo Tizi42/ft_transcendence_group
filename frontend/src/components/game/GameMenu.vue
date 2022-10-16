@@ -106,7 +106,10 @@ async function startGame() {
 
 socket.on("game_found", (data: any) => {
   console.log("Entering game room! ", data);
-  router.push({ name: "pong", params: { room_name: data } });
+  router.push({
+    name: "pong",
+    params: { room_name: data.room_name, mode: data.mode },
+  });
 });
 
 onMounted(() => {

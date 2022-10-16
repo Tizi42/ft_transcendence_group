@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import GameScene from "@/game/scenes/Game";
+import MagicScene from "@/game/scenes/Magic";
 import GameOverScene from "@/game/scenes/GameOver";
 import GetReadyScene from "@/game/scenes/GetReady";
 
@@ -49,7 +50,7 @@ function launch(containerId: string, data: any) {
     //     },
     //   ],
     // },
-    scene: [GetReadyScene, GameScene, GameOverScene],
+    scene: [GetReadyScene, GameScene, MagicScene, GameOverScene],
   });
 }
 

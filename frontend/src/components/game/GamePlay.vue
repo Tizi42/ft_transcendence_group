@@ -19,6 +19,7 @@ import gameInfo from "@/game/gameInfo";
 interface Props {
   room_name: string;
   user_role: string;
+  mode: string;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
@@ -32,11 +33,12 @@ onBeforeUnmount(() => {
 });
 
 onMounted(() => {
-  gameInfo.setInfo(user.id, props.room_name, props.user_role);
+  gameInfo.setInfo(user.id, props.room_name, props.user_role, props.mode);
   gameInstance = game.launch(containerId, {
     user_id: user.id,
     room_name: props.room_name,
     user_role: props.user_role,
+    mode: props.mode,
   });
 });
 

@@ -46,7 +46,11 @@ export class GameGateway extends AppGateway {
       const room = GameGateway.rooms.get(room_name);
       console.log("room value in queue", room);
       this.server.in(data.user_id).in(playerL).socketsJoin(room_name);
-      this.server.to(data.user_id).to(playerL).emit("game_found", room_name);
+      this.server.to(data.user_id).to(playerL).emit("game_found",
+      {
+        'room_name': room_name,
+        'mode': data.mode
+      });
     }
   }
 
@@ -95,7 +99,7 @@ export class GameGateway extends AppGateway {
       room.ready = data.user_id;
     else {
       room.ready = 0;
-      this.server.to(data.room_name).emit("game_start");
+      this.server.to(data.room_name).emit("game_start", data.mode);
     }
   }
 

@@ -34,7 +34,7 @@ export default class GameOverScene extends Phaser.Scene {
         socket.emit("reset_score", {
           user_id: gameInfo.user_id,
         });
-        this.scene.start("GameScene");
+        this.scene.start(gameInfo.mode);
       });
 
       return;

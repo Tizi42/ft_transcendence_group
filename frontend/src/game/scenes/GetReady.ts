@@ -23,6 +23,16 @@ export default class GetReadyScene extends Phaser.Scene {
     console.log("preload get ready scene");
     this.load.image("background", "background.png");
     this.load.image("ball", "ball.png");
+    this.load.spritesheet({
+      key: "spell",
+      url: "spell.png",
+      frameConfig: {
+        frameWidth: 64,
+        frameHeight: 64,
+        startFrame: 0,
+        endFrame: 6,
+      },
+    });
     this.load.image("paddle", "paddle.png");
     this.load.image("cancel-ready", "cancel-ready.png");
     this.load.image("get-ready", "get-ready.png");
@@ -47,6 +57,7 @@ export default class GetReadyScene extends Phaser.Scene {
 
       // listen on click ready button
       this.readyButton.on("pointerdown", () => {
+        console.log("test ", gameInfo.mode);
         if (this.ready === false) {
           this.readyButton.setTexture("cancel-ready");
           socket.emit("ready", {
@@ -66,8 +77,11 @@ export default class GetReadyScene extends Phaser.Scene {
 
     // listen for server instruction to start game
     socket.on("game_start", () => {
+      console.log("user_id = ", gameInfo.user_id);
+      console.log("mode = ", gameInfo.mode);
       console.log("Game start !!!", this.scene);
-      this.scene.start("GameScene");
+      if (gameInfo.mode == "normal") this.scene.start("GameScene");
+      else this.scene.start("MagicScene");
     });
   }
 }
