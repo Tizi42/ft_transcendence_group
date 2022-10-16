@@ -1,7 +1,7 @@
 <template>
   <div class="gameBox">
     <Suspense>
-      <GamePlay :room_name="room_name" :user_role="user_role" />
+      <GamePlay :room_name="room_name" :user_role="user_role" :mode="mode" />
       <template #fallback>
         <div class="placeholder">Downloading ...</div>
       </template>
@@ -16,6 +16,7 @@ import GamePlay from "./GamePlay.vue";
 interface Props {
   room_name: string;
   user_role: string;
+  mode: string;
 }
 
 defineProps<Props>();
