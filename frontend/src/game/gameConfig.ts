@@ -3,6 +3,7 @@ import GameScene from "@/game/scenes/Game";
 import GameOverScene from "@/game/scenes/GameOver";
 import GetReadyScene from "@/game/scenes/GetReady";
 import MagicScene from "@/game/scenes/Magic";
+import SpeedScene from "./scenes/Speed";
 
 // class GameInfo extends Phaser.Plugins.BasePlugin {
 //   user_id: number;
@@ -54,7 +55,7 @@ function launch(containerId: string, data: any) {
     //   ],
     // },
     // context: context, //	type: CanvasRenderingContext2D
-    scene: [GetReadyScene, GameScene, MagicScene, GameOverScene],
+    scene: [GetReadyScene, GameScene, MagicScene, SpeedScene, GameOverScene],
   });
 }
 
