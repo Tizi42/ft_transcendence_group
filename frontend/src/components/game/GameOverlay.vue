@@ -90,6 +90,7 @@ function createUserMinimal(user: User | null): UserMinimal {
   if (user == null) return newUser;
   newUser.id = user.id;
   newUser.displayName = user.displayName;
+  newUser.picture = user.picture;
   return newUser;
 }
 
