@@ -45,7 +45,7 @@ export default class GameOverScene extends Phaser.Scene {
       this.cameras.main.centerX - 90,
       this.cameras.main.centerY - 40,
       "You won!!!",
-      { fontSize: "32px", fill: "#fff" }
+      { fontSize: "32px", color: "#fff" }
     );
     if (gameInfo.user_role !== this.winner) {
       this.text.setText("You lost...");
