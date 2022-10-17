@@ -89,6 +89,10 @@ const handleHistory = (event: Array<any>) => {
   history.value = event;
 };
 
+// const handleJoinedChannel = (event: any) => {
+//   joinedChannel.value = event;
+// };
+
 const handleChannelSelected = (event: number) => {
   selectedChannel.value = event;
 };

@@ -97,26 +97,48 @@ export class ChannelService {
       else
         channel[0].owner = channel[0].members[channel[0].members.length - 1].id;
     }
+    this.channelRepository.save(channel);
   }
 
-  async joinChannel(userId: number, channelId: number) {
+  async joinChannel(userId: number, channelId: number, password?: string) {
     const user = await this.userService.findOneById(userId);
     const channel = await this.findOne(channelId);
 
+    if (channel[0].type === "protected")
+    {
+      if (channel[0].password !== password)
+      {
+        console.log("unauthorized");
+        return false;
+      }
+    }
     for (let i = 0; i < channel[0].banned.length; i++)
     {
       if (channel[0].banned[i] === userId)
-        return console.log("unauthorized")
+      {
+        console.log("unauthorized");
+        return false;
+      }
     }
     for (let i = 0; i < channel[0].members.length; i++)
     {
       if (channel[0].members[i].id === user.id)
-        return console.log("unauthorized")
+      {
+        console.log("unauthorized");
+        return false;
+      }
+    }
+    for (let i = 0; i < channel[0].pendingReqFrom.length; i++)
+    {
+      if (channel[0].pendingReqFrom[i] === user.id)
+        channel[0].pendingReqFrom.splice(i, 1);
     }
     console.log("channel =", channel[0]);
-    console.log("channel mem =", channel[0].members[0]);
-    console.log("JOIN members", channel[0].members);
+    console.log("channel mem =", channel[0].members);
     channel[0].members.push(user);
+    console.log("channel mem 2=", channel[0].members);
+    this.channelRepository.save(channel);
+    return true;
   }
 
   async isAdmin(userId: number, channelId: number) {
@@ -134,19 +156,21 @@ export class ChannelService {
     const channel = await this.findOne(channelId);
     const user = await this.userService.findOneById(userId);
     channel[0].banned.push(userId);
+    this.channelRepository.save(channel);
   }
 
   async addAdmin(userId: number, channelId: number) {
     const channel = await this.findOne(channelId);
     const user = await this.userService.findOneById(userId);
-
     channel[0].admins.push(userId);
+    this.channelRepository.save(channel);
   }
 
   async muteUser(userId: number, channelId: number) {
     const channel = await this.findOne(channelId);
     const user = await this.userService.findOneById(userId);
     channel[0].muted.push(userId);
+    this.channelRepository.save(channel);
   }
 
   async unMute(userId: number, channelId: number) {
@@ -157,6 +181,7 @@ export class ChannelService {
       if (channel[0].muted[i] === userId)
         channel[0].muted.splice(i, 1);
     }
+    this.channelRepository.save(channel);
   }
 
   async unBan(userId: number, channelId: number) {
@@ -167,6 +192,23 @@ export class ChannelService {
       if (channel[0].banned[i] === userId)
         channel[0].banned.splice(i, 1);
     }
+    this.channelRepository.save(channel);
   }
 
+  async joinRequest(userId: number, channelId: number) {
+    const channel = await this.findOne(channelId);
+
+    for (let i = 0; i < channel[0].banned.length; i++)
+    {
+      if (channel[0].banned[i] === userId)
+      {
+        console.log("unauthorized");
+        return false;
+      }
+    }
+    channel[0].pendingReqFrom.push(userId);
+    console.log("chann ?", channel[0]);
+    this.channelRepository.save(channel);
+    return true;
+  } 
 }

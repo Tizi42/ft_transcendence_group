@@ -6,7 +6,6 @@
         id="input-search-all-channels"
         type="text"
         placeholder="Search all channels..."
-        v-model="inputSearch"
       />
       <button type="submit">
         <img src="@/assets/icons/search.svg" />
@@ -22,7 +21,7 @@
       <h3>{{ channel.name }}</h3>
       <div class="buttons-channel">
         <button
-          v-if="isntMember"
+          v-if="!isntMember"
           type="submit"
           class="join-channel"
           @click="toJoin(channel)"
@@ -37,9 +36,20 @@
       </div>
     </li>
   </ul>
+  <Teleport to="body">
+    <ChannelBoxModal v-if="addWindow" @hide="hide">
+      <JoinChannelBox
+        :user="user"
+        :channelJoined="channelJoined"
+        @hideAddChannel="hide"
+      />
+    </ChannelBoxModal>
+  </Teleport>
 </template>
 
 <script lang="ts" setup>
+import ChannelBoxModal from "./ChannelBox/ChannelBoxModal.vue";
+import JoinChannelBox from "./ChannelBox/JoinChannelBox.vue";
 import socket from "@/socket";
 import { userInfoStore } from "@/stores/user";
 import {
@@ -56,15 +66,17 @@ interface Props {
   user: userInfoStore;
 }
 
+const addWindow: Ref<boolean> = ref(false);
 const selectedChannel: Ref<number> = ref(-1);
 const allChannels: Ref<any> = ref([]);
 const props: Readonly<Props> = defineProps<Props>();
 const isntMember: Ref<boolean> = ref(true);
+const channelJoined: Ref<any> = ref();
 
 socket.emit("get_all_channels");
-socket.on("receive_all_channels", (channels: any, member: boolean) => {
+socket.on("receive_all_channels", (channels: any, notfound: boolean) => {
   allChannels.value = channels;
-  isntMember.value = member;
+  isntMember.value = notfound;
 });
 
 onBeforeMount(async () => {
@@ -78,14 +90,21 @@ const setSelectedChannel = (channelId: number) => {
 };
 
 const toJoin = (channel: any) => {
-  socket.emit("join_channel", channel.id);
-  socket.on("joined_channel", (channel: any) => {
-    isntMember.value = false;
-    console.log("joined :", channel);
-  });
+  channelJoined.value = channel;
+  addWindow.value = true;
+  isntMember.value = false;
+  // socket.emit("join_channel", channel.id);
+  // socket.on("joined_channel", (channel: any) => {
+  // emit("addChannelToList", channel);
+  // console.log("joined :", channel);
+  // });
 };
 
-const emit = defineEmits(["getChannelSelected"]);
+function hide() {
+  addWindow.value = false;
+}
+
+const emit = defineEmits(["getChannelSelected", "addChannelToList"]);
 
 defineExpose(
   defineComponent({
