@@ -5,6 +5,8 @@ import { Repository } from 'typeorm';
 import { Channel } from './entities/channel.entity';
 import { CreatChannelDto } from './utils/createChannel.dto';
 import * as bcrypt from 'bcrypt';
+import { User } from 'src/users/users.entity';
+import { Socket } from 'socket.io';
 
 @Injectable()
 export class ChannelService {
@@ -12,6 +14,8 @@ export class ChannelService {
     @InjectRepository(Channel)
     private readonly channelRepository: Repository<Channel>,
     private readonly userService: UsersService,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async createChannel(channelDto: CreatChannelDto) {
@@ -42,7 +46,7 @@ export class ChannelService {
     return await this.channelRepository.findOneBy({ id });
   }
 
-  async findChannelMembers(id: number): Promise<Channel[]> {
+  async findChannelAndMembers(id: number): Promise<Channel[]> {
     return await this.channelRepository.find({
       relations: ['members'],
       where: {
@@ -63,27 +67,71 @@ export class ChannelService {
     return channels;
   }
 
-  async leavingChannel(userId: number, channelId: number) {
-    const user = await this.userService.findOneById(userId);
-    const channel = await this.findOne(channelId);
+  async joinChannelsRooms(socket: Socket) {
+    const channels = await this.getAllMyChannels(socket.data.id);
+
+    for (let i = 0; i < channels.length; i++) {
+      console.log(`id ${socket.data.id} joinning ${channels[i].name}`);
+      socket.join(channels[i].name);
+    }
+  }
+
+  async leavingChannel(channelId: number, userId: number, socket: Socket) {
+    const channel = await this.findChannelAndMembers(channelId);
     
-    for (let i = 0; i < channel.members.length; i++)
-    {
-      if (channel.members[i] === user)
-        channel.members.splice(i, 1);
+    if (!channel) {
+      return null;
     }
-    for (let i = 0; i < channel.admins.length; i++)
-    {
-      if (channel.admins[i] === userId)
-        channel.admins.splice(i, 1);
+
+    for (let i = 0; i < channel[0].members.length; i++) {
+      if (channel[0].members[i].id === userId) {
+        channel[0].members.splice(i, 1);
+      }
     }
-    if (userId === channel.owner)
-    {  
-      if (channel.admins[channel.admins.length - 1] !== null)
-        channel.owner = channel.admins[channel.admins.length - 1];
-      else
-        channel.owner = channel.members[channel.members.length - 1].id;
+
+    for (let i = 0; i < channel[0].admins.length; i++) {
+      if (channel[0].admins[i] === userId) {
+        channel[0].admins.splice(i, 1);
+      }
     }
+
+    if (channel[0].owner === userId) {
+      if (channel[0].members.length === 0) {
+        await this.channelRepository.remove(channel)
+        return channel[0].name;
+      } else if (channel[0].admins.length === 0) {
+        channel[0].owner = channel[0].members[0].id;
+        channel[0].admins[0] = channel[0].members[0].id;
+      } else {
+        channel[0].owner = channel[0].admins[0];
+      }
+    }
+
+    await this.channelRepository.save(channel);
+    return channel[0].name;
+  }
+
+  async makeAdmin(channelId: number, userId: number, newAdminId: number) {
+    const channel = await this.findChannelAndMembers(channelId);
+
+    if (!channel) {
+      return null;
+    }
+    for (let i = 0; i < channel[0].admins.length; i++) {
+      if (channel[0].admins[i] === newAdminId) {
+        return null;
+      }
+    }
+    if (channel[0].owner === userId) {
+      for (let i = 0; i < channel[0].members.length; i++) {
+        if (channel[0].members[i].id === newAdminId) {
+          channel[0].admins.push(newAdminId);
+          await this.channelRepository.save(channel);
+          return channel[0].name;
+        }
+      }
+    }
+    return null;
   }
 
   async joinChannel(userId: number, channelId: number) {

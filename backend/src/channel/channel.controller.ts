@@ -32,6 +32,6 @@ export class ChannelController {
   async getChannelMembers(
     @Param('id') id: number
   ) {
-    return await this.channelService.findChannelMembers(id);
+    return await this.channelService.findChannelAndMembers(id);
   }
 }

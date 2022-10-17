@@ -12,7 +12,9 @@ export class Channel {
     @Column()
     name: string;
 
-    @ManyToMany(() => User, (user) => user.channels)
+    @ManyToMany(() => User, (user) => user.channels, {
+        cascade:true,
+    })
     @JoinTable()
     members: User[];
 

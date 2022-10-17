@@ -61,6 +61,6 @@ defineExpose(
   top: 50%;
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
-  height: 30vh;
+  height: 40vh;
 }
 </style>

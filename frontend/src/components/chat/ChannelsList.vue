@@ -83,6 +83,11 @@ socket.on("receive_channel_created", (newChannel: any) => {
   console.log("my channelssss = ", myChannels.value);
 });
 
+socket.on("exited_channel_list", () => {
+  myChannels.value = [];
+  socket.emit("get_all_my_channels");
+});
+
 onBeforeMount(async () => {
   socket.emit("get_all_my_channels");
   socket.on("receive_all_my_channels", (channel: any) => {

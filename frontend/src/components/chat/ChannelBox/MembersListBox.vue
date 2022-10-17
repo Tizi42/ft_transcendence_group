@@ -21,7 +21,10 @@
               type="submit"
               id="ban-button"
               @click="banUser(member.id)"
-              v-if="channel.admins.includes(user.id, 0)"
+              v-if="
+                channel.admins.includes(user.id, 0) &&
+                !channel.admins.includes(member.id, 0)
+              "
             >
               ban
             </button>
@@ -29,9 +32,26 @@
               type="submit"
               id="mute-button"
               @click="muteUser(member.id)"
-              v-if="channel.admins.includes(user.id, 0)"
+              v-if="
+                channel.admins.includes(user.id, 0) &&
+                !channel.admins.includes(member.id, 0)
+              "
             >
               mute
+            </button>
+            <button
+              type="submit"
+              id="make-admin"
+              @click="makeAdmin(member.id, member.displayName)"
+              v-if="
+                channel.owner === user.id &&
+                !channel.admins.includes(member.id, 0)
+              "
+            >
+              make admin
+            </button>
+            <button id="admin" v-if="channel.admins.includes(member.id, 0)">
+              Admin
             </button>
           </div>
         </li>
@@ -41,6 +61,7 @@
 </template>
 
 <script lang="ts" setup>
+import socket from "@/socket";
 import { useUserStore } from "@/stores/user";
 import { ref, defineComponent, defineExpose, Ref, defineProps } from "vue";
 
@@ -63,6 +84,19 @@ const muteUser = (id: number) => {
     props.channel.name,
     "for ? time"
   );
+};
+
+const makeAdmin = (id: number, displayName: string) => {
+  if (confirm(`Are you sure you to make ${displayName} a new admin ?`)) {
+    socket.emit("make_admin", {
+      channelId: props.channel.id,
+      userId: user.id,
+      newAdminId: id,
+    });
+    console.log("make admin user id", id);
+  } else {
+    console.log("no new admin");
+  }
 };
 
 defineExpose(
@@ -89,7 +123,7 @@ h2 {
 }
 
 .members-list {
-  width: 35vw;
+  width: 40vw;
   margin: 0;
   display: flex;
   flex-direction: row;
@@ -107,29 +141,45 @@ h2 {
 
 .members-list .avatar-frame img,
 #ban-button,
-#mute-button {
+#mute-button,
+#make-admin {
   cursor: pointer;
   transition: transform 0.5s ease;
 }
 
 .members-list .avatar-frame img:hover,
 #ban-button:hover,
-#mute-button:hover {
+#mute-button:hover,
+#make-admin:hover {
   transform: scale(1.1, 1.1);
 }
 
 #ban-button,
-#mute-button {
-  background-color: #ffcb00;
+#mute-button,
+#make-admin,
+#admin {
   border: none;
-  color: #1e2b02;
   border-radius: 14px;
   padding: 0.5em;
   font-weight: bold;
   font-size: 0.8em;
 }
 
-#mute-button {
+#ban-button,
+#mute-button,
+#make-admin {
+  background-color: #ffcb00;
+  color: #1e2b02;
+}
+
+#admin {
+  background-color: #1e2b02;
+  color: #005f3e;
+  border: 3px solid #005f3e;
+}
+
+#mute-button,
+#make-admin {
   margin-left: 10px;
 }
 </style>
