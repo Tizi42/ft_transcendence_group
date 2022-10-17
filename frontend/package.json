@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vue-tsc --noEmit && vite build",
     "serve": "vite preview --port 8080",
     "lint": "eslint --ext .js,.vue,.ts --ignore-path .gitignore --fix src"
   },
@@ -26,6 +26,7 @@
     "vue-load-image": "^1.1.0",
     "vue-router": "^4.0.3",
     "vue-spinner": "^1.0.4",
+    "vue-tsc": "^1.0.8",
     "vue3-chart-v2": "^0.8.3",
     "vue3-lazyload": "^0.3.6"
   },

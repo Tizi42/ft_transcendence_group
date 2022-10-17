@@ -67,7 +67,8 @@ export default class GetReadyScene extends Phaser.Scene {
     // listen for server instruction to start game
     socket.on("game_start", () => {
       console.log("Game start !!!", this.scene);
-      this.scene.start("GameScene");
+      if (gameInfo.mode === "magic") this.scene.start("MagicScene");
+      else this.scene.start("GameScene");
     });
 
     console.log("this: ", this);

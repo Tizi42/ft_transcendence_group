@@ -56,6 +56,7 @@ const modeTitle: Ref<Array<string>> = ref([
   "Magic mode",
   "Speed mode",
 ]);
+const mode: Ref<Array<string>> = ref(["normal", "magic", "speed"]);
 const modeDescription: Ref<Array<string>> = ref([
   "Classic pong : no magic power, just a simple ball and 10 points until victory.",
   "Pong with some magic powers : fireball, windball, super paddle, ...",
@@ -88,7 +89,7 @@ function cancel() {
   socket.emit(
     "quit_queue",
     {
-      mode: "normal", //later: change to choosen mode
+      mode: mode.value[choosenMode.value],
       user_id: user.id,
     },
     (data: any) => {
@@ -102,7 +103,7 @@ async function startGame() {
   socket.emit(
     "queue_register",
     {
-      mode: "normal", //later: change to choosen mode
+      mode: mode.value[choosenMode.value],
       user_id: user.id,
     },
     (data: any) => {

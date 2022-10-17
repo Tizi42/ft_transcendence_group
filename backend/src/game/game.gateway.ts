@@ -2,6 +2,7 @@ import { MessageBody, SubscribeMessage, ConnectedSocket } from '@nestjs/websocke
 import { Socket } from 'socket.io';
 import { GameRoomNS } from "./utils/gameNS";
 import { GameRoom } from "./utils/gameRoom";
+import { Invitation } from "./utils/invitation";
 import { AppGateway } from '../gateway';
 import { UsersService } from '../users/users.service';
 import { GameService } from './game.service';
@@ -19,10 +20,6 @@ export class GameGateway extends AppGateway {
     super(chatService, usersService, channelService);
   }
 
-  async handleConnection(socket: Socket) {}
-
-  handleDisconnect(client: any) {}
-
   private static queues = {
     normal: {
       id: -1,
@@ -33,8 +30,20 @@ export class GameGateway extends AppGateway {
       sid: "",
     }
   };
+
   private static rooms: Map<string, GameRoom> = new Map(); //roomName, GameRoom
-  private static participants: Map<string, string> = new Map(); //socketId, roomName
+  private static invitations: Map<number, Invitation> = new Map(); //unserId, Invitaion
+  private static inGameUsers: Map<number, string> = new Map(); //userId, roomName
+  private static inGameSockets: Map<string, string> = new Map(); //socketId, roomName
+
+  async handleConnection(socket: Socket) {}
+
+  handleDisconnect(socket: Socket) {
+    if (GameGateway.queues.normal.sid === socket.id)
+      this.cleanQueue("normal");
+    else if (GameGateway.queues.magic.sid === socket.id)
+      this.cleanQueue("magic");
+  }
 
   createGameRoom(
     l_id: number,
@@ -51,6 +60,22 @@ export class GameGateway extends AppGateway {
     // annonce to given socket
     this.server.in(l_sid).in(r_sid).socketsJoin(room_name);
     this.server.to(l_sid).to(r_sid).emit("game_found", room_name);
+    // update register
+    GameGateway.inGameUsers.set(l_id, room_name);
+    GameGateway.inGameUsers.set(r_id, room_name);
+    GameGateway.inGameSockets.set(l_sid, room_name);
+    GameGateway.inGameSockets.set(r_sid, room_name);
+  }
+
+  closeRoom(room: GameRoom) {
+    this.server.in(room.room_name).socketsLeave(room.room_name);
+    this.usersService.updateUserStatus(room.playerL, "leave game");
+    this.usersService.updateUserStatus(room.playerR, "leave game");
+    GameGateway.inGameUsers.delete(room.playerL);
+    GameGateway.inGameUsers.delete(room.playerR);
+    GameGateway.inGameSockets.delete(room.sidL);
+    GameGateway.inGameSockets.delete(room.sidR);
+    GameGateway.rooms.delete(room.room_name);
   }
 
   cleanQueue(mode: string) {
@@ -63,8 +88,10 @@ export class GameGateway extends AppGateway {
     console.log("Queue register received: ", data);
     if (GameGateway.queues.normal.id === data.user_id
         || GameGateway.queues.magic.id === data.user_id) {
-      return "Already in a queue!";
+      return "You are already in a queue!"; // need to show an alert in front
     }
+
+    // if already in game, return
 
     let playerL = GameGateway.queues[data.mode];
     if (playerL.id === -1) {
@@ -80,9 +107,60 @@ export class GameGateway extends AppGateway {
   @SubscribeMessage('quit_queue')
   quitQueue(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
     console.log("Quit queue received: ", data);
-    if (GameGateway.queues[data.mode].id === data.user_id)
+    if (GameGateway.queues[data.mode].sid === socket.id)
       this.cleanQueue(data.mode);
     return "You are no longer in queue";
+  }
+
+  @SubscribeMessage('send_invitaton')
+  async onInviteToPlay(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+    // Delete old pending invitation of user
+    GameGateway.invitations.delete(data.user_id);
+
+    // check if sender or receiver is available
+    let sender = await this.usersService.findOne(data.user_id);
+    let invitee = await this.usersService.findOne(data.invitee);
+    if (sender.status !== "online" || invitee.status !== "online")
+      return "You or your invitee is not available";
+
+    // create invitation
+    GameGateway.invitations.set(
+      sender.id,
+      new Invitation(sender.id, socket.id, invitee.id, data.mode)
+    );
+
+    // emit invitation
+    this.server.to(data.invitee).emit("game_invitaion");
+  }
+
+  @SubscribeMessage('cancel_invitaton')
+  onCancelInvite(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+    GameGateway.invitations.delete(data.user_id);
+    this.server.to(data.invitee).emit("invitaion_expired");
+  }
+
+  @SubscribeMessage('accept_invitaton')
+  async onAcceptInvite(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+    const invitation = GameGateway.invitations.get(data.sender);
+    if (!invitation || invitation.invitee_id != data.user_id)
+      return "invitaion no longer exist...";
+
+    // check if sender or receiver is available
+    let sender = await this.usersService.findOne(data.sender);
+    let invitee = await this.usersService.findOne(data.user_id);
+    if (sender.status !== "online" || invitee.status !== "online") {
+      GameGateway.invitations.delete(data.sender);
+      return "You or your inviter is not available";
+    }
+
+    // start game
+    this.createGameRoom(
+      invitation.sender_id,
+      invitation.sender_sid,
+      invitation.invitee_id,
+      socket.id,
+      invitation.mode
+    );
   }
 
   @SubscribeMessage('init_room')
@@ -104,11 +182,7 @@ export class GameGateway extends AppGateway {
       this.server.in(socket.id).socketsLeave(data.room_name);
     } else {
       socket.to(data.room_name).emit("quit_game");
-      this.server.in(data.room_name).socketsLeave(data.room_name);
-      this.usersService.updateUserStatus(room.playerL, "online");
-      this.usersService.updateUserStatus(room.playerR, "online");
-      GameGateway.rooms.delete(data.room_name);
-
+      this.closeRoom(room);
     }
   }
 
