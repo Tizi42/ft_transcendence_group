@@ -28,6 +28,10 @@ export class GameGateway extends AppGateway {
     magic: {
       id: -1,
       sid: "",
+    },
+    speed: {
+      id: -1,
+      sid: "",
     }
   };
 
@@ -43,6 +47,8 @@ export class GameGateway extends AppGateway {
       this.cleanQueue("normal");
     else if (GameGateway.queues.magic.sid === socket.id)
       this.cleanQueue("magic");
+      else if (GameGateway.queues.speed.sid === socket.id)
+        this.cleanQueue("speed");
   }
 
   createGameRoom(
@@ -87,7 +93,8 @@ export class GameGateway extends AppGateway {
   queueRegister(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
     console.log("Queue register received: ", data);
     if (GameGateway.queues.normal.id === data.user_id
-        || GameGateway.queues.magic.id === data.user_id) {
+        || GameGateway.queues.magic.id === data.user_id
+        || GameGateway.queues.speed.id === data.user_id) {
       return "You are already in a queue!"; // need to show an alert in front
     }
 
@@ -257,11 +264,9 @@ export class GameGateway extends AppGateway {
 
   transformRooms(): Array<GameRoomNS> {
     let data: Array<GameRoomNS> = [];
-    const modes: string[] = ["normal", "speed", "magic"]; // to change when mode will be set up
     GameGateway.rooms.forEach((value: GameRoom, key: string) => {
       data.push(new GameRoomNS(value, key));
     });
-    console.log(data);
     return data;
   }
 
