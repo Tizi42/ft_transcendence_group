@@ -3,8 +3,14 @@
     <h2>Channel settings</h2>
     <div class="privacy-settings">
       <ul>
-        <li>Actual channel privacy : <span>protected</span></li>
-        <li>password : <span>yes</span></li>
+        <li>
+          Actual channel privacy : <span>{{ channel.type }}</span>
+        </li>
+        <li>
+          password :
+          <span v-if="channel.password">yes</span>
+          <span v-if="!channel.password">no</span>
+        </li>
         <li>
           <form
             class="update-settings"
@@ -15,25 +21,41 @@
               <div>
                 <label for="options-select">Update channel privacy :</label>
                 <select class="options-select" v-model="channelType">
-                  <option v-bind:value="'public'">public</option>
-                  <option v-bind:value="'private'">private</option>
-                  <!-- <option v-bind:value="'protected'">protected</option> -->
+                  <option
+                    v-bind:value="'public'"
+                    v-if="channel.type != 'public'"
+                  >
+                    public
+                  </option>
+                  <option
+                    v-bind:value="'private'"
+                    v-if="channel.type != 'private'"
+                  >
+                    private
+                  </option>
+                  <option
+                    v-bind:value="'protected'"
+                    v-if="channel.type != 'protected'"
+                  >
+                    protected
+                  </option>
                 </select>
               </div>
-              <!-- <div>
+              <div v-if="channelType === 'protected'">
                 <label for="input-new-password">Set a password :</label>
                 <input
                   class="input-new-password"
                   v-model="newPassword"
                   type="text"
                   placeholder="Your password.."
+                  required
                 />
-              </div> -->
+              </div>
             </div>
             <button type="submit" id="update"></button>
           </form>
         </li>
-        <li>
+        <li v-if="channel.type === 'protected'">
           <form
             class="update-settings"
             id="set-new-password"
@@ -49,29 +71,21 @@
             <button type="submit" id="update"></button>
           </form>
         </li>
-        <li>
-          <form class="update-settings" @submit.prevent="AddNewAdmin">
-            <label for="options-select">Give administrator role :</label>
-            <select class="options-select" v-model="newAdmin">
-              <option v-bind:value="'victor'">victor</option>
-              <option v-bind:value="'lison'">lison</option>
-            </select>
-            <button type="submit" id="update"></button>
-          </form>
-        </li>
       </ul>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { useUserStore } from "@/stores/user";
 import { ref, defineComponent, defineExpose, Ref, defineProps } from "vue";
 
 interface Props {
-  user: any;
   selectedChannel: number;
+  channel: any;
 }
 
+const user = useUserStore();
 const props: Readonly<Props> = defineProps<Props>();
 const channelType: Ref<string> = ref("");
 const newPassword: Ref<string> = ref("");
@@ -105,9 +119,11 @@ defineExpose(
 .privacy-settings {
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
+  justify-content: start;
   align-items: center;
   height: 28vh;
+  overflow: auto;
+  margin-top: 30px;
 }
 
 span {

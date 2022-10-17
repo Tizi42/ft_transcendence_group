@@ -58,8 +58,8 @@
     </UserBoxModal>
     <ChannelBoxModal v-if="settingsWindow || membersWindow" @hide="hide">
       <SettingsChannelBox
-        :user="user"
         :selectedChannel="selectedChannel"
+        :channel="channel[0]"
         v-if="settingsWindow"
       />
       <MembersListBox v-if="membersWindow" :channel="channel[0]" />
@@ -84,6 +84,7 @@ import SettingsChannelBox from "./ChannelBox/SettingsChannelBox.vue";
 import ChannelBoxModal from "./ChannelBox/ChannelBoxModal.vue";
 import MembersListBox from "./ChannelBox/MembersListBox.vue";
 import { getUrlOf } from "@/router";
+import socket from "@/socket";
 
 interface Props {
   history: Array<any>;
@@ -119,6 +120,10 @@ function hide() {
 
 function leaveChannel(selectedChannel: number) {
   if (confirm("Are you sure you want to leave this channel ?")) {
+    socket.emit("leave_channel", {
+      channelId: selectedChannel,
+      userId: user.id,
+    });
     console.log("leaving the channel");
   } else {
     console.log("not leaving the channel");
@@ -135,15 +140,45 @@ watch(
         return response.json();
       })
       .then((data) => {
-        console.log("data :", data);
         channel.value = data;
-        console.log("channel data :", channel.value[0]);
       })
       .catch((error) => {
         console.log("Error :", error);
       });
   }
 );
+
+socket.on("new_admin", async (channelId: number) => {
+  channel.value = [];
+  await fetch(getUrlOf("api/channel/members/" + channelId), {
+    credentials: "include",
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      channel.value = data;
+    })
+    .catch((error) => {
+      console.log("Error :", error);
+    });
+});
+
+socket.on("exited_channel_members", async (channelId: number) => {
+  channel.value = [];
+  await fetch(getUrlOf("api/channel/members/" + channelId), {
+    credentials: "include",
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      channel.value = data;
+    })
+    .catch((error) => {
+      console.log("Error :", error);
+    });
+});
 
 watch(
   () => props.target,

@@ -4,6 +4,7 @@ import { ChannelService } from 'src/channel/channel.service';
 import { ChatService } from 'src/chat/chat.service';
 import { AppGateway } from 'src/gateway';
 import { UsersService } from 'src/users/users.service';
+import { leavingChannel, makingAdmin } from './utils/types';
 
 export class ChannelGateway extends AppGateway {
 
@@ -22,10 +23,14 @@ export class ChannelGateway extends AppGateway {
   @SubscribeMessage('create_channel')
   async handleCreateChannel(
     @MessageBody() data: any,
+    @ConnectedSocket() socket: Socket,
   ) {
     const newChannel = await this.channelService.createChannel(data);
   
-    this.server.sockets.emit('receive_channel_created', newChannel);
+    if (newChannel) {
+      socket.join(newChannel.name);
+      this.server.sockets.to(socket.data.id).emit('receive_channel_created', newChannel);
+    }
     return newChannel;
   }
 
@@ -34,8 +39,7 @@ export class ChannelGateway extends AppGateway {
     @ConnectedSocket() socket: Socket,
   ) {
     const channel = await this.channelService.getAllMyChannels(socket.data.id);
-    // console.log("all my channel = ", channel);
-    // console.log("my id = ", socket.data.id);
+
     this.server.sockets.to(socket.data.id).emit('receive_all_my_channels', channel);
     return channel;
   }
@@ -51,15 +55,24 @@ export class ChannelGateway extends AppGateway {
   }
 
   @SubscribeMessage('leave_channel')
-  async leaveChannel(
-    @MessageBody() data: any,
+  async handleLeaveChannel(
+    @MessageBody() data: leavingChannel,
     @ConnectedSocket() socket: Socket,
   ){
-    if (await this.usersService.findOneById(data.user.id) === null)
-      return console.log("user don't exist");
+    const user = await this.chatService.getUserFromSocket(socket);
 
-    if (socket.data.id === data.user.id)
-      await this.channelService.leavingChannel(data.user, data.channel);
+    if (!user) {
+      return ;
+    } else if (user.id === data.userId) {
+      const channelName = await this.channelService.leavingChannel(data.channelId, user.id, socket);
+
+      // /!\ emit to room channel /!\ \\
+      if (channelName != null) {
+        this.server.sockets.to(socket.data.id).emit('exited_channel_list');
+        this.server.sockets.to(channelName).emit('exited_channel_members', data.channelId);
+        socket.leave(channelName);
+      }
+    }
   }
 
   @SubscribeMessage('ban_member')
@@ -72,10 +85,27 @@ export class ChannelGateway extends AppGateway {
 
     if (await this.channelService.isAdmin(socket.data.id, data.channel.id))
     {  
-      await this.channelService.leavingChannel(data.user, data.channel);
+      // await this.channelService.leavingChannel(data.channel);
       await this.channelService.banUser(data.user, data.channel);
     }
   }
 
+  @SubscribeMessage('make_admin')
+  async handleMakeAdmin(
+    @MessageBody() data: makingAdmin,
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const user = await this.chatService.getUserFromSocket(socket);
 
+    if (!user) {
+      return ;
+    } else if (user.id === data.userId) {
+      const channelName = await this.channelService.makeAdmin(data.channelId, user.id, data.newAdminId);
+
+      // /!\ emit to room channel /!\ \\
+      if (channelName != null) {
+        this.server.sockets.to(channelName).emit('new_admin', data.channelId);
+      }
+    }
+  }
 }

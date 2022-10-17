@@ -27,6 +27,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log("socket user id: ", socket.data);
     if (socket.data) {
       socket.join(socket.data.id);
+      await this.channelService.joinChannelsRooms(socket);
       this.usersService.updateUserStatus(socket.data.id, "online");
       // console log the room for this user //
       const rooms = this.server.of("/").adapter.rooms;

@@ -86,6 +86,7 @@
 import { defineComponent, defineExpose, Ref, ref, defineEmits } from "vue";
 
 const selectedChannel: Ref<number> = ref(-1);
+const inputSearch: Ref<string> = ref("");
 
 const setSelectedChannel = (channelId: number) => {
   selectedChannel.value = channelId;
