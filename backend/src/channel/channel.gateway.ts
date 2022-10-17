@@ -25,7 +25,6 @@ export class ChannelGateway extends AppGateway {
   ) {
     console.log("hola ?");
     const newChannel = await this.channelService.createChannel(data);
-  
     this.server.sockets.emit('receive_channel_created', newChannel);
     return newChannel;
   }
@@ -35,8 +34,8 @@ export class ChannelGateway extends AppGateway {
     @ConnectedSocket() socket: Socket,
   ) {
     const channel = await this.channelService.getAllMyChannels(socket.data.id);
-    // console.log("all my channel = ", channel);
-    // console.log("my id = ", socket.data.id);
+    console.log("all my channel = ", channel);
+    console.log("my id = ", socket.data.id);
     this.server.sockets.to(socket.data.id).emit('receive_all_my_channels', channel);
     return channel;
   }
@@ -47,26 +46,28 @@ export class ChannelGateway extends AppGateway {
   ) {
     const allChannels = await this.channelService.findAll();
     const findMember = await this.channelService.findChannelMembers(socket.data.id);
-    console.log("member ? :", findMember);
-    console.log("member len :", findMember.length);
+    // console.log("member ? :", findMember);
+    // console.log("member len :", findMember.length);
     let notFound: boolean;
     if (findMember.length)
       notFound = false;
     else
       notFound = true;
-    console.log("notFound ? :", notFound);
+    // console.log("notFound ? :", notFound);
     this.server.sockets.emit('receive_all_channels', allChannels, notFound);
     return allChannels;
   }
 
   @SubscribeMessage('join_channel')
   async handleJoinChannel(
-    @MessageBody() channel: number,
+    @MessageBody() data: any,
     @ConnectedSocket() socket: Socket,
   ){
-    console.log("channel this : ", channel);
-    await this.channelService.joinChannel(socket.data.id, channel);
-    this.server.sockets.to(socket.data.id).emit('joined_channel');
+    console.log("data this : ", data);
+    if (data.channel.type === "private") {
+  }
+    const authorized = await this.channelService.joinChannel(socket.data.id, data.channel, data.password);
+    this.server.sockets.to(socket.data.id).emit('joined_channel', authorized);
   }
 
   @SubscribeMessage('leave_channel')
@@ -93,5 +94,25 @@ export class ChannelGateway extends AppGateway {
     }
   }
 
+  @SubscribeMessage('send_request')
+  async handleSendingRequest(
+    @MessageBody() channel: any,
+    @ConnectedSocket() socket: Socket,
+  ) {
+    console.log("request iciiii");
+    const auth = await this.channelService.joinRequest(socket.data.id, channel.id)
+    console.log("channel ?", channel);
+    console.log("pending ?", channel.pending);
+    this.server.sockets.to(channel.owner).emit('receive_pending_request', auth);
+  }
+
+  @SubscribeMessage('accept_request')
+  async handleComingRequest(
+    @MessageBody() channel: any,
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const auth = await this.channelService.joinChannel(socket.data.id, channel.id)
+    this.server.sockets.to(socket.data.id).emit('received_request', auth);
+  }
 
 }

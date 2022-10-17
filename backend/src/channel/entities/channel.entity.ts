@@ -30,4 +30,8 @@ export class Channel {
 
     @Column({ nullable: true })
     password: string;
+    
+    @Column("int", { array: true, default: {} })
+    pendingReqFrom: number[];
+  
 }
