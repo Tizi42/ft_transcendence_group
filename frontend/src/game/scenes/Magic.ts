@@ -5,7 +5,7 @@ import { Racket } from "../sprites/racket";
 import GameStatus from "@/game/type";
 import gameInfo from "../gameInfo";
 
-export default class GameScene extends Phaser.Scene {
+export default class MagicScene extends Phaser.Scene {
   width: number;
   height: number;
 
@@ -22,7 +22,7 @@ export default class GameScene extends Phaser.Scene {
   game_status: GameStatus;
 
   constructor() {
-    super("GameScene");
+    super("MagicScene");
   }
 
   init() {
@@ -33,6 +33,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   create() {
+    console.log("I'm magical ^^");
     this.width = this.cameras.main.width;
     this.height = this.cameras.main.height;
 

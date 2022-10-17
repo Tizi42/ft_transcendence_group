@@ -4,7 +4,7 @@
       <router-link :to="{ name: 'play' }" class="gameButtonPlay">
         Play !
       </router-link>
-      <router-link :to="{ name: 'play' }" class="gameButton">
+      <router-link :to="{ name: 'watch' }" class="gameButton">
         Watch a game
       </router-link>
       <router-link :to="{ name: 'leaderboard' }" class="gameButton">

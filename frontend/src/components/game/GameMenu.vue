@@ -6,6 +6,7 @@
           <div class="previousChoice" @click="changeMode(false)" />
           <Transition name="bounce">
             <div class="titleGame" v-if="show">
+              <img :src="modeIcons[choosenMode].toString()" class="modeIcon" />
               {{ modeTitle[choosenMode] }}
             </div>
           </Transition>
@@ -55,14 +56,21 @@ const modeTitle: Ref<Array<string>> = ref([
   "Magic mode",
   "Speed mode",
 ]);
+const mode: Ref<Array<string>> = ref(["normal", "magic", "speed"]);
 const modeDescription: Ref<Array<string>> = ref([
   "Classic pong : no magic power, just a simple ball and 10 points until victory.",
   "Pong with some magic powers : fireball, windball, super paddle, ...",
   "Classic pong except speed\nhas been increased.",
 ]);
+const modeIcons: Array<URL> = [
+  new URL("../../assets/icons/gameMode/modeNormal.svg", import.meta.url),
+  new URL("../../assets/icons/gameMode/modeMagic.svg", import.meta.url),
+  new URL("../../assets/icons/gameMode/modeSpeed.svg", import.meta.url),
+];
 
 //  change mode
 async function changeMode(next: boolean) {
+  if (waiting.value) return;
   show.value = false;
   if (next) {
     choosenMode.value = (choosenMode.value + 1) % numberModes;
@@ -81,7 +89,7 @@ function cancel() {
   socket.emit(
     "quit_queue",
     {
-      mode: "normal", //later: change to choosen mode
+      mode: mode.value[choosenMode.value],
       user_id: user.id,
     },
     (data: any) => {
@@ -95,7 +103,7 @@ async function startGame() {
   socket.emit(
     "queue_register",
     {
-      mode: "normal", //later: change to choosen mode
+      mode: mode.value[choosenMode.value],
       user_id: user.id,
     },
     (data: any) => {
@@ -135,3 +143,10 @@ defineExpose(
   })
 );
 </script>
+
+<style scoped>
+.modeIcon {
+  height: 50px;
+  width: 50px;
+}
+</style>
