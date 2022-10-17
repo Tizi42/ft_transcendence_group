@@ -32,8 +32,8 @@ export class BattlesController {
     return (this.battlesService.findAllFor(id));
   }
 
-  @Get('/end/:id/:winner')
-  end(@Param('id') id: number, @Param('winner') winner: number, ) {
-    this.battlesService.end(id, winner);
-  }
+  // @Get('/end/:id/:winner')
+  // end(@Param('id') id: number, @Param('winner') winner: number, ) {
+  //   this.battlesService.end(id, winner);
+  // }
 }
