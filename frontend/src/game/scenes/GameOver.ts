@@ -8,8 +8,8 @@ export default class GameOverScene extends Phaser.Scene {
   }
 
   winner: string;
-  button: Phaser.Physics.Arcade.Sprite;
-  text: string;
+  button: Phaser.GameObjects.Sprite;
+  text: Phaser.GameObjects.Text;
 
   init(data: any) {
     console.log("init", data);
