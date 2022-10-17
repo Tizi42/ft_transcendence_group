@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineComponent, defineExpose, Ref, defineProps } from "vue";
+import { defineComponent, defineExpose, defineProps } from "vue";
 
 interface Props {
   channel: any;
