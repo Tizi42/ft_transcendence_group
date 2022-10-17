@@ -176,7 +176,7 @@ router.beforeEach(async (to: any, from: any, next: any) => {
   } else if (isKnownRoute(to.path)) {
     next();
   } else {
-    next({ name: "user" });
+    next({ name: "/" });
   }
 });
 
