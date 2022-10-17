@@ -199,6 +199,8 @@ export default class GameScene extends Phaser.Scene {
     socket.emit("game_end", {
       room_name: gameInfo.room_name,
       winner: this.winner,
+      left: this.score_left,
+      right: this.score_right,
     });
     this.scene.start("GameOverScene", { winner: this.winner });
   }
