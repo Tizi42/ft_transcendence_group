@@ -5,6 +5,7 @@ import UserView from "../views/UserView.vue";
 import UserStats from "../components/users/UserStats/UserStats.vue";
 import TwoFactorView from "../views/TwoFactorView.vue";
 import LeaderboardView from "../views/LeaderboardView.vue";
+import WatchView from "../views/WatchView.vue";
 import HistoryView from "../views/HistoryView.vue";
 import PlayView from "../views/PlayView.vue";
 import DevLogin from "../components/DevLogin.vue";
@@ -16,13 +17,13 @@ import UserSettings from "../components/users/settings/UserSettings.vue";
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    name: "home",
-    redirect: "/user",
-  },
-  {
-    path: "/game",
     name: "game",
     component: GameView,
+  },
+  {
+    path: "/watch",
+    name: "watch",
+    component: WatchView,
   },
   {
     path: "/chat",

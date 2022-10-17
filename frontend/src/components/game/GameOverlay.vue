@@ -3,8 +3,6 @@
     <div class="overlayBox" v-if="dataReady">
       <OverlayTopBar
         v-if="opponent != null"
-        :user="createUserFromStore(user)"
-        :opponent="opponent"
         :playerL="createUserMinimal(playerL)"
         :playerR="createUserMinimal(playerR)"
         :time="timer"
@@ -17,10 +15,10 @@
         :emojiDateL="emojiDateL"
         :emojiDateR="emojiDateR"
       />
-      <GameBox :room_name="room_name" :user_role="user_role" />
+      <GameBox :room_name="room_name" :user_role="user_role" :mode="mode" />
       <OverlayBottomBar
         :user="createUserFromStore(user)"
-        :opponent="opponentId"
+        :role="user_role"
         :room_name="room_name"
         :emojisURL="emojisURL"
         @changeSound="changeSound"
@@ -54,11 +52,11 @@ interface Props {
   room_name: string;
   playerL_id: number;
   playerR_id: number;
+  mode: string;
 }
 
 const user: StoreGeneric = useUserStore();
 const opponent: UserMinimal = new UserMinimal();
-const opponentId = user.id == 4 ? 11 : 4;
 const props: Readonly<Props> = defineProps<Props>();
 const playerL: Ref<User | null> = ref(null);
 const playerR: Ref<User | null> = ref(null);
@@ -150,14 +148,8 @@ function changeSound(value: number) {
 }
 
 function quitGame() {
-  const answer = window.confirm(
-    "Do you really want to leave? You will quit the game room"
-  );
-  if (!answer) return false;
-  socket.emit("leave_game", {
-    room_name: props.room_name,
-    user_id: user.id,
-  });
+  force_quit.value = false;
+  router.push({ name: "play" });
 }
 
 function changeBackground() {
@@ -166,7 +158,14 @@ function changeBackground() {
 
 onBeforeRouteLeave((to: any, from: any) => {
   if (force_quit.value) return true;
-  return quitGame();
+  const answer = window.confirm(
+    "Do you really want to leave? You will quit the game room"
+  );
+  if (!answer) return false;
+  socket.emit("leave_game", {
+    room_name: props.room_name,
+    user_id: user.id,
+  });
 });
 
 onBeforeMount(async () => {

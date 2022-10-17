@@ -92,10 +92,6 @@ export class UsersService {
     await this.usersRepository.delete(id);
   }
 
-  async needRecreate(): Promise<boolean> {
-	return await this.usersRepository.count() < 10;
-  }
-
   async removeAll(): Promise<void> {
     await this.chatRepository.delete({});
     await this.usersRepository.delete({});
@@ -154,7 +150,6 @@ export class UsersService {
   }
 
   async findOneByEmail(email: string): Promise<User | undefined> {
-    console.log("Finding user by email...");
     return this.usersRepository.findOneBy({ email: email });
   }
 
@@ -420,9 +415,20 @@ export class UsersService {
       });
   }
   
-  async updateIsOnline(userId: number, value: string) {
+  async updateUserStatus(userId: number, value: string) {
+    console.log("update user status: ", userId, value);
+
+    // Make sure offline user won't get online status on shutting down game room
+    let newStatus = value;
+    if (newStatus === "leave game") {
+      let oldStatus = (await this.findOne(userId)).status;
+      if (oldStatus === "offline")
+        return;
+      newStatus = "online";
+    }
+
     return this.usersRepository.update(userId, {
-        status: value,
+        status: newStatus,
     });
   }
 

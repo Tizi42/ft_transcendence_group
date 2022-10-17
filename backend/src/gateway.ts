@@ -23,12 +23,11 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleConnection(socket: Socket) {
     const users = [];
-
     socket.data = await this.chatService.getUserFromSocket(socket);
     console.log("socket user id: ", socket.data);
     if (socket.data) {
       socket.join(socket.data.id);
-      this.usersService.updateIsOnline(socket.data.id, "online");
+      this.usersService.updateUserStatus(socket.data.id, "online");
       // console log the room for this user //
       const rooms = this.server.of("/").adapter.rooms;
       console.log("room users id :", socket.data.id, " = ", rooms.get(socket.data.id));
@@ -60,7 +59,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
       // //////////////////////////////////////////////////// //
       if (!rooms.get(socket.data.id)) {
-        this.usersService.updateIsOnline(socket.data.id, "offline");
+        this.usersService.updateUserStatus(socket.data.id, "offline");
       }
     }
 

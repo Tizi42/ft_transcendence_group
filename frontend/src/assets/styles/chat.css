@@ -149,6 +149,10 @@
     background-color: #12D654;
 }
 
+.red-point {
+  background-color: red;
+}
+
 /* Messages config */
 
 .container-chat {

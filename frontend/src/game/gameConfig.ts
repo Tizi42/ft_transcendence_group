@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import GameScene from "@/game/scenes/Game";
 import GameOverScene from "@/game/scenes/GameOver";
 import GetReadyScene from "@/game/scenes/GetReady";
+import MagicScene from "@/game/scenes/Magic";
 
 // class GameInfo extends Phaser.Plugins.BasePlugin {
 //   user_id: number;
@@ -24,6 +25,9 @@ import GetReadyScene from "@/game/scenes/GetReady";
 //     return true;
 //   }
 // }
+// const canvas = document.createElement("canvas");
+// const context =
+//   canvas.getContext("2d", { willReadFrequently: true }) || undefined;
 
 function launch(containerId: string, data: any) {
   return new Phaser.Game({
@@ -49,7 +53,8 @@ function launch(containerId: string, data: any) {
     //     },
     //   ],
     // },
-    scene: [GetReadyScene, GameScene, GameOverScene],
+    // context: context, //	type: CanvasRenderingContext2D
+    scene: [GetReadyScene, GameScene, MagicScene, GameOverScene],
   });
 }
 
