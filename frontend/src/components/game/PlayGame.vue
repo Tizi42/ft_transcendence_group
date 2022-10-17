@@ -4,6 +4,7 @@
     :room_name="room_name"
     :playerL_id="room_info.playerL"
     :playerR_id="room_info.playerR"
+    :mode="room_info.mode"
   />
 </template>
 

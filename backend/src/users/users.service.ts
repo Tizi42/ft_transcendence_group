@@ -421,8 +421,18 @@ export class UsersService {
   
   async updateUserStatus(userId: number, value: string) {
     console.log("update user status: ", userId, value);
+
+    // Make sure offline user won't get online status on shutting down game room
+    let newStatus = value;
+    if (newStatus === "leave game") {
+      let oldStatus = (await this.findOne(userId)).status;
+      if (oldStatus === "offline")
+        return;
+      newStatus = "online";
+    }
+
     return this.usersRepository.update(userId, {
-        status: value,
+        status: newStatus,
     });
   }
 

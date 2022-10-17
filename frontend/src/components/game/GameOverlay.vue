@@ -15,7 +15,7 @@
         :emojiDateL="emojiDateL"
         :emojiDateR="emojiDateR"
       />
-      <GameBox :room_name="room_name" :user_role="user_role" />
+      <GameBox :room_name="room_name" :user_role="user_role" :mode="mode" />
       <OverlayBottomBar
         :user="userMin"
         :role="user_role"
@@ -54,6 +54,7 @@ interface Props {
   room_name: string;
   playerL_id: number;
   playerR_id: number;
+  mode: string;
 }
 
 const user: StoreGeneric = useUserStore();
