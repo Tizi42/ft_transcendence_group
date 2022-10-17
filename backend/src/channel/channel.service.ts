@@ -39,8 +39,13 @@ export class ChannelService {
     return await this.channelRepository.save(newChannel);
   }
 
-  async findOne(id: number): Promise<Channel> {
-    return await this.channelRepository.findOneBy({ id });
+  async findOne(id: number) {
+    return await this.channelRepository.find({
+      relations: ['members'],
+      where: {
+        id: id,
+      }
+    });
   }
 
   async findChannelMembers(id: number): Promise<Channel[]> {
@@ -75,22 +80,22 @@ export class ChannelService {
     const user = await this.userService.findOneById(userId);
     const channel = await this.findOne(channelId);
     
-    for (let i = 0; i < channel.members.length; i++)
+    for (let i = 0; i < channel[0].members.length; i++)
     {
-      if (channel.members[i] === user)
-        channel.members.splice(i, 1);
+      if (channel[0].members[i].id === user.id)
+        channel[0].members.splice(i, 1);
     }
-    for (let i = 0; i < channel.admins.length; i++)
+    for (let i = 0; i < channel[0].admins.length; i++)
     {
-      if (channel.admins[i] === userId)
-        channel.admins.splice(i, 1);
+      if (channel[0].admins[i] === userId)
+        channel[0].admins.splice(i, 1);
     }
-    if (userId === channel.owner)
+    if (userId === channel[0].owner)
     {  
-      if (channel.admins[channel.admins.length - 1] !== null)
-        channel.owner = channel.admins[channel.admins.length - 1];
+      if (channel[0].admins[channel[0].admins.length - 1] !== null)
+        channel[0].owner = channel[0].admins[channel[0].admins.length - 1];
       else
-        channel.owner = channel.members[channel.members.length - 1].id;
+        channel[0].owner = channel[0].members[channel[0].members.length - 1].id;
     }
   }
 
@@ -98,22 +103,28 @@ export class ChannelService {
     const user = await this.userService.findOneById(userId);
     const channel = await this.findOne(channelId);
 
-    for (let i = 0; i < channel.banned.length; i++)
+    for (let i = 0; i < channel[0].banned.length; i++)
     {
-      if (channel.banned[i] === userId)
+      if (channel[0].banned[i] === userId)
         return console.log("unauthorized")
     }
-    console.log("JOIN");
-    console.log("JOIN members", channel.members[0]);
-    channel.members.push(user);
+    for (let i = 0; i < channel[0].members.length; i++)
+    {
+      if (channel[0].members[i].id === user.id)
+        return console.log("unauthorized")
+    }
+    console.log("channel =", channel[0]);
+    console.log("channel mem =", channel[0].members[0]);
+    console.log("JOIN members", channel[0].members);
+    channel[0].members.push(user);
   }
 
   async isAdmin(userId: number, channelId: number) {
     const channel = await this.findOne(channelId);
 
-    for (let i = 0; i < channel.admins.length; i++)
+    for (let i = 0; i < channel[0].admins.length; i++)
     {
-      if (channel.admins[i] === userId)
+      if (channel[0].admins[i] === userId)
         return true;
     }
     return false;
@@ -122,39 +133,39 @@ export class ChannelService {
   async banUser(userId: number, channelId: number) {
     const channel = await this.findOne(channelId);
     const user = await this.userService.findOneById(userId);
-    channel.banned.push(userId);
+    channel[0].banned.push(userId);
   }
 
   async addAdmin(userId: number, channelId: number) {
     const channel = await this.findOne(channelId);
     const user = await this.userService.findOneById(userId);
 
-    channel.admins.push(userId);
+    channel[0].admins.push(userId);
   }
 
   async muteUser(userId: number, channelId: number) {
     const channel = await this.findOne(channelId);
     const user = await this.userService.findOneById(userId);
-    channel.muted.push(userId);
+    channel[0].muted.push(userId);
   }
 
   async unMute(userId: number, channelId: number) {
     const channel = await this.findOne(channelId);
 
-    for (let i = 0; i < channel.muted.length; i++)
+    for (let i = 0; i < channel[0].muted.length; i++)
     {
-      if (channel.muted[i] === userId)
-        channel.muted.splice(i, 1);
+      if (channel[0].muted[i] === userId)
+        channel[0].muted.splice(i, 1);
     }
   }
 
   async unBan(userId: number, channelId: number) {
     const channel = await this.findOne(channelId);
 
-    for (let i = 0; i < channel.banned.length; i++)
+    for (let i = 0; i < channel[0].banned.length; i++)
     {
-      if (channel.banned[i] === userId)
-        channel.banned.splice(i, 1);
+      if (channel[0].banned[i] === userId)
+        channel[0].banned.splice(i, 1);
     }
   }
 
