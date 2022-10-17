@@ -10,7 +10,7 @@
             :time="emojiDateL"
             side="left"
           />
-          <img :src="getPictureUrl(playerL.id)" class="profile" />
+          <img :src="playerL.picture" class="profile" />
         </div>
         <UserChat
           :user="playerL"
@@ -40,7 +40,7 @@
             :time="emojiDateR"
             side="right"
           />
-          <img :src="getPictureUrl(playerR.id)" class="profile" />
+          <img :src="playerR.picture" class="profile" />
         </div>
       </div>
     </div>

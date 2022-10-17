@@ -112,7 +112,7 @@ export class UsersService {
     let user = await this.usersRepository.findOneBy({id});
     if (user == null)
       return ("");
-    return (user.username);
+    return (user.displayName);
   }
   
   async getPicture(id: number) : Promise<string> {
@@ -141,9 +141,9 @@ export class UsersService {
     return this.usersRepository.findOneBy({ id });
   }
 
-  getName(id: number): Promise<String> {
-    return this.findOne(id).then((user) => user.displayName);
-  }
+  // getName(id: number): Promise<String> {
+  //   return this.findOne(id).then((user) => user.displayName);
+  // }
 
   async findOneById(id: number): Promise<User | undefined> {
     return this.usersRepository.findOneBy({ id: id });

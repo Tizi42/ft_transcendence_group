@@ -77,7 +77,7 @@ export class UsersController {
 
   @Get('name/:id')
   getName(@Param('id') id: number): Promise<String> {
-    return this.usersService.getName(id);
+    return this.usersService.getDisplayname(id);
   };
 
   // @Post('/add')
