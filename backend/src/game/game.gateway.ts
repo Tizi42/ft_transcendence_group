@@ -322,7 +322,7 @@ export class GameGateway extends AppGateway {
     //update battle history database
 
     // inform other users in game room
-    socket.to(data.room_name).emit("end", {
+    this.server.to(data.room_name).emit("end", {
       winner: data.winner,
     });
   }
