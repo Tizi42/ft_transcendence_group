@@ -1,6 +1,6 @@
 <template>
   <div class="overlayTopBar">
-    <TimerStart :time="time" />
+    <TimerStart />
     <div class="infoBar" v-if="show">
       <div class="playerInfoLeft">
         <div class="profileBox">
@@ -10,7 +10,7 @@
             :time="emojiDateL"
             side="left"
           />
-          <img :src="getPictureUrl(playerL.id)" class="profile" />
+          <img :src="playerL.picture" class="profile" />
         </div>
         <UserChat
           :user="playerL"
@@ -40,7 +40,7 @@
             :time="emojiDateR"
             side="right"
           />
-          <img :src="getPictureUrl(playerR.id)" class="profile" />
+          <img :src="playerR.picture" class="profile" />
         </div>
       </div>
     </div>
@@ -59,7 +59,6 @@ import { UserMinimal } from "@/components/utils/UserMinimal";
 interface Props {
   playerL: UserMinimal;
   playerR: UserMinimal;
-  time: Date;
   scores: Array<number>;
   messageL: Chat | null;
   messageR: Chat | null;
@@ -72,13 +71,6 @@ interface Props {
 
 defineProps<Props>();
 const show: Ref<boolean> = ref(false);
-// const score_left = ref(0);
-// const score_right = ref(0);
-
-// socket.on("score_update", (data: any) => {
-//   score_left.value = data.left;
-//   score_right.value = data.right;
-// })
 
 function getPictureUrl(id: number): string {
   return "http://localhost:3000/api/users/avatar/" + id.toString();

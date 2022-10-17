@@ -85,10 +85,12 @@ export default class GameScene extends Phaser.Scene {
       // this.ball.setVelocity(data.vx, data.vy);
     });
 
-    socket.on("end", (data: any) => {
-      this.winner = data.winner;
-      this.scene.start("GameOverScene", { winner: this.winner });
-    });
+    if (gameInfo.user_role !== "left") {
+      socket.on("end", (data: any) => {
+        this.winner = data.winner;
+        this.scene.start("GameOverScene", { winner: this.winner });
+      });
+    }
   }
 
   // timer = 0;
