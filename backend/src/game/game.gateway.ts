@@ -38,11 +38,22 @@ export class GameGateway extends AppGateway {
 
   async handleConnection(socket: Socket) {}
 
-  handleDisconnect(socket: Socket) {
-    if (GameGateway.queues.normal.sid === socket.id)
+  async handleDisconnect(@ConnectedSocket() socket: Socket) {
+    //check if socket is in queue
+    if (GameGateway.queues.normal.sid === socket.id) {
+      console.log("socket disconnect, quit queue");
       this.cleanQueue("normal");
+    }
     else if (GameGateway.queues.magic.sid === socket.id)
       this.cleanQueue("magic");
+
+    // check if socket is in game
+    let room_name = GameGateway.inGameSockets.get(socket.id);
+    if (room_name) {
+      let room = GameGateway.rooms.get(room_name);
+      this.server.to(room.room_name).emit("quit_game");
+      this.closeRoom(room);
+    }
   }
 
   createGameRoom(
@@ -68,6 +79,8 @@ export class GameGateway extends AppGateway {
   }
 
   closeRoom(room: GameRoom) {
+    if (!room)
+      return;
     this.server.in(room.room_name).socketsLeave(room.room_name);
     this.usersService.updateUserStatus(room.playerL, "leave game");
     this.usersService.updateUserStatus(room.playerR, "leave game");
