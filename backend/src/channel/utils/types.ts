@@ -8,3 +8,9 @@ export type makingAdmin = {
     userId: number;
     newAdminId: number;
 }
+
+export type banMember = {
+    channelId: number;
+    userId: number;
+    userToBanId: number;
+}

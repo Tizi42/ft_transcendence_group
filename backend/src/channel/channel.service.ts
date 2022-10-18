@@ -76,7 +76,7 @@ export class ChannelService {
     }
   }
 
-  async leavingChannel(channelId: number, userId: number, socket: Socket) {
+  async leavingChannel(channelId: number, userId: number) {
     const channel = await this.findChannelAndMembers(channelId);
     
     if (!channel) {
@@ -157,10 +157,21 @@ export class ChannelService {
     return false;
   }
 
-  async banUser(userId: number, channelId: number) {
-    const channel = await this.findOne(channelId);
-    const user = await this.userService.findOneById(userId);
-    channel.banned.push(userId);
+  async banUser(channelId: number, userId: number, userToBanId: number) {
+    const channel = await this.findChannelAndMembers(channelId);
+
+    if (!channel || await this.isAdmin(userToBanId, channelId)) {
+      return null;
+    }
+    for (let i = 0; i < channel[0].members.length; i++) {
+      if (channel[0].members[i].id === userToBanId) {
+        channel[0].banned.push(userToBanId);
+        // channel[0].members.splice(i, 1);
+        await this.channelRepository.save(channel);
+        return channel[0].name;
+      }
+    }
+    return null;
   }
 
   async addAdmin(userId: number, channelId: number) {
