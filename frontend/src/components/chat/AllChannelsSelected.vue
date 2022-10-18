@@ -21,7 +21,7 @@
       <h3>{{ channel.name }}</h3>
       <div class="buttons-channel">
         <button
-          v-if="!isntMember"
+          v-if="!isMember(channel.id)"
           type="submit"
           class="join-channel"
           @click="toJoin(channel)"
@@ -61,6 +61,7 @@ import {
   onBeforeMount,
   defineProps,
 } from "vue";
+import { getUrlOf } from "@/router";
 
 interface Props {
   user: userInfoStore;
@@ -70,18 +71,16 @@ const addWindow: Ref<boolean> = ref(false);
 const selectedChannel: Ref<number> = ref(-1);
 const allChannels: Ref<any> = ref([]);
 const props: Readonly<Props> = defineProps<Props>();
-const isntMember: Ref<boolean> = ref(true);
 const channelJoined: Ref<any> = ref();
 
 socket.emit("get_all_channels");
-socket.on("receive_all_channels", (channels: any, notfound: boolean) => {
+socket.on("receive_all_channels", (channels: any) => {
   allChannels.value = channels;
-  isntMember.value = notfound;
+  // isMember.value = found;
 });
 
 onBeforeMount(async () => {
   console.log("user = ", props.user.id);
-  console.log("members = ", isntMember.value);
 });
 
 const setSelectedChannel = (channelId: number) => {
@@ -89,10 +88,31 @@ const setSelectedChannel = (channelId: number) => {
   emit("getChannelSelected", selectedChannel.value);
 };
 
+async function isMember(channelId: number) {
+  let found;
+  console.log("coucouuuu = ", props.user.id);
+  await fetch(
+    getUrlOf(
+      "api/channel/isMember?channel=" + channelId + "&user=" + props.user.id
+    ),
+    {
+      credentials: "include",
+    }
+  )
+    .then((response) => {
+      found = response;
+    })
+    .catch((error) => {
+      console.log("ERROR : ", error);
+    });
+  console.log("member ?", found);
+  return found;
+}
+
 const toJoin = (channel: any) => {
   channelJoined.value = channel;
-  addWindow.value = true;
-  isntMember.value = false;
+  // isMember.value = true;
+  addWindow.value = true;let getFriendLvl: Response = 
   // socket.emit("join_channel", channel.id);
   // socket.on("joined_channel", (channel: any) => {
   // emit("addChannelToList", channel);
