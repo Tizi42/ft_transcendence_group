@@ -180,6 +180,30 @@ socket.on("exited_channel_members", async (channelId: number) => {
     });
 });
 
+socket.on("banned_user", async (userToBanId: number, channelId: number) => {
+  if (user.id === userToBanId) {
+    socket.emit("leave_channel", {
+      channelId: channelId,
+      userId: user.id,
+    });
+    hide();
+  } else {
+    channel.value = [];
+    await fetch(getUrlOf("api/channel/members/" + channelId), {
+      credentials: "include",
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        channel.value = data;
+      })
+      .catch((error) => {
+        console.log("Error :", error);
+      });
+  }
+});
+
 watch(
   () => props.target,
   () => {

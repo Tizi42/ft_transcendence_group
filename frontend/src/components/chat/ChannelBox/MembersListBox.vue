@@ -20,7 +20,7 @@
             <button
               type="submit"
               id="ban-button"
-              @click="banUser(member.id)"
+              @click="banUser(member.id, member.displayName)"
               v-if="
                 channel.admins.includes(user.id, 0) &&
                 !channel.admins.includes(member.id, 0)
@@ -72,8 +72,17 @@ interface Props {
 const user = useUserStore();
 const props: Readonly<Props> = defineProps<Props>();
 
-const banUser = (id: number) => {
-  console.log("ban user id", id, "from channel", props.channel.name);
+const banUser = (id: number, displayName: string) => {
+  if (confirm(`Are you sure you want to ban ${displayName} ?`)) {
+    socket.emit("ban_member", {
+      channelId: props.channel.id,
+      userId: user.id,
+      userToBanId: id,
+    });
+    console.log("ban user id", id, "from channel", props.channel.name);
+  } else {
+    console.log("user no banned");
+  }
 };
 
 const muteUser = (id: number) => {

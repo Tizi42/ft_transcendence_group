@@ -4,7 +4,7 @@ import { ChannelService } from 'src/channel/channel.service';
 import { ChatService } from 'src/chat/chat.service';
 import { AppGateway } from 'src/gateway';
 import { UsersService } from 'src/users/users.service';
-import { leavingChannel, makingAdmin } from './utils/types';
+import { banMember, leavingChannel, makingAdmin } from './utils/types';
 
 export class ChannelGateway extends AppGateway {
 
@@ -64,7 +64,7 @@ export class ChannelGateway extends AppGateway {
     if (!user) {
       return ;
     } else if (user.id === data.userId) {
-      const channelName = await this.channelService.leavingChannel(data.channelId, user.id, socket);
+      const channelName = await this.channelService.leavingChannel(data.channelId, user.id);
 
       // /!\ emit to room channel /!\ \\
       if (channelName != null) {
@@ -76,17 +76,25 @@ export class ChannelGateway extends AppGateway {
   }
 
   @SubscribeMessage('ban_member')
-  async removeMember(
-    @MessageBody() data: any,
+  async handleBanMember(
+    @MessageBody() data: banMember,
     @ConnectedSocket() socket: Socket,
   ){
-    if (await this.usersService.findOneById(data.user.id) === null)
-      return console.log("user don't exist");
+    const user = await this.chatService.getUserFromSocket(socket);
 
-    if (await this.channelService.isAdmin(socket.data.id, data.channel.id))
-    {  
-      // await this.channelService.leavingChannel(data.channel);
-      await this.channelService.banUser(data.user, data.channel);
+    if (!user) {
+      return ;
+    }
+
+    if (await this.channelService.isAdmin(socket.data.id, data.channelId))
+    {
+      const channelName = await this.channelService.banUser(data.channelId, user.id, data.userToBanId);
+      if (channelName != null) {
+        console.log("user banned, need to emit to front");
+        this.server.sockets.to(channelName).emit('banned_user', data.userToBanId, data.channelId);
+        //make user to ban leave the socket room
+        // this.server.sockets.to(channelName).emit('banned_user');
+      }
     }
   }
 
