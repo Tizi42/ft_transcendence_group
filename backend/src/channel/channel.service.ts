@@ -75,6 +75,17 @@ export class ChannelService {
     });
     return channels;
   }
+  async isChannelMember(userId: number, channelId: number) {
+    const user = await this.userService.findOneById(userId);
+    const channel = await this.findOne(channelId);
+
+      for (let i = 0; i < channel[0].members.length; i++)
+      {
+        if (channel[0].members[i].id === user.id)
+          return true;
+      }
+      return false;
+  }
 
   async leavingChannel(userId: number, channelId: number) {
     const user = await this.userService.findOneById(userId);
