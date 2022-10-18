@@ -28,6 +28,12 @@ export class ChannelController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get()
+  async getAllChannelsAndMembers(@Req() req: RequestWithUser) {
+    return this.channelService.findAllChannelsAndMembers();
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('members/:id')
   async getChannelMembers(
     @Param('id') id: number

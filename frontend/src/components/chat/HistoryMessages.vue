@@ -30,7 +30,7 @@
       src="@/assets/icons/settings.svg"
       alt="see settings"
       @click="showSettings()"
-      v-if="channel[0].admins.includes(user.id, 0)"
+      v-if="channel.admins.includes(user.id, 0)"
     />
   </div>
   <div
@@ -59,10 +59,10 @@
     <ChannelBoxModal v-if="settingsWindow || membersWindow" @hide="hide">
       <SettingsChannelBox
         :selectedChannel="selectedChannel"
-        :channel="channel[0]"
+        :channel="channel"
         v-if="settingsWindow"
       />
-      <MembersListBox v-if="membersWindow" :channel="channel[0]" />
+      <MembersListBox v-if="membersWindow" :channel="channel" />
     </ChannelBoxModal>
   </teleport>
 </template>
@@ -91,6 +91,7 @@ interface Props {
   target: User;
   isActive: string;
   selectedChannel: number;
+  channel: any;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
@@ -98,7 +99,6 @@ const user: any = useUserStore();
 const userProfileWindow: Ref<boolean> = ref(false);
 const settingsWindow: Ref<boolean> = ref(false);
 const membersWindow: Ref<boolean> = ref(false);
-const channel: Ref<Array<any>> = ref([]);
 
 function showInfoBox() {
   userProfileWindow.value = true;
@@ -130,77 +130,9 @@ function leaveChannel(selectedChannel: number) {
   }
 }
 
-watch(
-  () => props.selectedChannel,
-  async (newSelectedChannel) => {
-    await fetch(getUrlOf("api/channel/members/" + newSelectedChannel), {
-      credentials: "include",
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        channel.value = data;
-      })
-      .catch((error) => {
-        console.log("Error :", error);
-      });
-  }
-);
-
-socket.on("new_admin", async (channelId: number) => {
-  channel.value = [];
-  await fetch(getUrlOf("api/channel/members/" + channelId), {
-    credentials: "include",
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .then((data) => {
-      channel.value = data;
-    })
-    .catch((error) => {
-      console.log("Error :", error);
-    });
-});
-
-socket.on("exited_channel_members", async (channelId: number) => {
-  channel.value = [];
-  await fetch(getUrlOf("api/channel/members/" + channelId), {
-    credentials: "include",
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .then((data) => {
-      channel.value = data;
-    })
-    .catch((error) => {
-      console.log("Error :", error);
-    });
-});
-
-socket.on("banned_user", async (userToBanId: number, channelId: number) => {
+socket.on("hide_window", (userToBanId: number) => {
   if (user.id === userToBanId) {
-    socket.emit("leave_channel", {
-      channelId: channelId,
-      userId: user.id,
-    });
     hide();
-  } else {
-    channel.value = [];
-    await fetch(getUrlOf("api/channel/members/" + channelId), {
-      credentials: "include",
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        channel.value = data;
-      })
-      .catch((error) => {
-        console.log("Error :", error);
-      });
   }
 });
 
