@@ -92,8 +92,7 @@ export class ChannelGateway extends AppGateway {
       if (channelName != null) {
         console.log("user banned, need to emit to front");
         this.server.sockets.to(channelName).emit('banned_user', data.userToBanId, data.channelId);
-        //make user to ban leave the socket room
-        // this.server.sockets.to(channelName).emit('banned_user');
+        this.server.sockets.to(channelName).emit('hide_window', data.userToBanId);
       }
     }
   }
