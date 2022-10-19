@@ -241,6 +241,12 @@
     justify-content: end;
 }
 
+.messages-invite-game div {
+    flex: 1;
+    text-align: left;
+    margin-left: 20px;
+}
+
 .manage-channel #leave-img {
     cursor: pointer;
     transition: transform 0.5s ease;
@@ -312,12 +318,6 @@
 #from-others img {
     margin-left: 6%;
     margin-right: 10px;
-    cursor: pointer;
-    transition: transform 0.5s ease;
-}
-
-#from-others img:hover {
-    transform: scale(1.05, 1.05);
 }
 
 #from-user img {
