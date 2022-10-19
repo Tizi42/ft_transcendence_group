@@ -28,13 +28,14 @@ export class ChannelController {
     return this.channelService.findOne(id);
   }
 
-  @Get('/isMember')
+  @UseGuards(JwtAuthGuard)
+  @Get('isMember/:id')
   getIfMember(
-    @Query('channel') channel: number,
-    @Query('user') userId: number
+    @Req() req: RequestWithUser,
+    @Param('id') id: number
   ) {
-    console.log("chan =", channel, "member =", userId);
-    return this.channelService.isChannelMember(userId, channel);
+    console.log("chan =", id, "member =", req.user.id);
+    return this.channelService.isChannelMember(req.user.id, id);
   }
 
 
