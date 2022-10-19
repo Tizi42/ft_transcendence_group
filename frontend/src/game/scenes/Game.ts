@@ -14,7 +14,7 @@ export default class GameScene extends Phaser.Scene {
   paddle_right: Phaser.Physics.Arcade.Sprite;
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   paddle_pos: number;
-  paddle_velocity_max = 20;
+  paddle_velocity_max = 10;
 
   winner: string;
   score_left: number;
