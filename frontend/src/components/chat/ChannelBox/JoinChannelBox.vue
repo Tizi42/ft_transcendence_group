@@ -47,7 +47,6 @@ onBeforeMount(async () => {
 });
 
 const toJoin = () => {
-  console.log("ici");
   inputBorder.value = "none";
   const data = {
     channel: channel.value.id,
@@ -55,19 +54,15 @@ const toJoin = () => {
   };
   socket.emit("join_channel", data);
   socket.on("joined_channel", (auth: boolean) => {
-    // emit("addChannelToList", channel);
-    // console.log("joined :", channel);
     authorized.value = auth;
   });
   if (!authorized.value) {
     inputBorder.value = "4px solid red";
     password.value = "";
   } else {
-    console.log("hey 1");
     if (channel.value.type === "private") {
       socket.emit("send_request", channel.value);
     }
-    console.log("hey");
     emit("hideAddChannel");
   }
 };

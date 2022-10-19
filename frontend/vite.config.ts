@@ -12,7 +12,7 @@ export default defineConfig({
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue'],
   },
   plugins: [
-    vue(), 
+    vue(),
     eslint()
   ],
   server: {
@@ -26,6 +26,16 @@ export default defineConfig({
   build: {
     // Do not inline images and assets to avoid the phaser error
     // "Local data URIs are not supported"
-    assetsInlineLimit: 0
+    assetsInlineLimit: 0,
+    chunkSizeWarningLimit: 1500,
+    rollupOptions: {
+      output:{
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return id.toString().split('node_modules/')[1].split('/')[0].toString();
+          }
+        }
+      }
+    },
   },
 })

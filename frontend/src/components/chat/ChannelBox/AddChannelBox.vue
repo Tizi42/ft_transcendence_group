@@ -58,9 +58,6 @@ const props: Readonly<Props> = defineProps<Props>();
 // );
 
 const createNewChannel = async () => {
-  console.log("channel name = ", channelName.value);
-  console.log("channel type = ", channelType.value);
-  console.log("bah ?");
   const data = {
     type: channelType.value,
     name: channelName.value,
@@ -69,7 +66,6 @@ const createNewChannel = async () => {
     admins: [props.user.id],
     password: channelPassword.value,
   };
-  console.log("bah ?");
   socket.emit("create_channel", data);
   emit("hideAddChannel");
 };

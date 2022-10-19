@@ -10,15 +10,15 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
+    "experimentalDecorators": true,
     "useDefineForClassFields": true,
     "sourceMap": true,
     "baseUrl": ".",
     "typeRoots": [
 			"node_modules/@types",
-			"node_modules/phaser/types"
+			"node_modules/phaser/types",
 		],
     "types": [
-      "Phaser",
       "vite/client"
     ],
     "paths": {
