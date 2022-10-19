@@ -7,6 +7,8 @@ import { CreatChannelDto } from './utils/createChannel.dto';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/users.entity';
 import { Socket } from 'socket.io';
+import { UpdatePrivacyDto } from './utils/updatePrivacy.dto';
+import { UpdatePasswordDto } from './utils/UpdatePassword.dto';
 
 @Injectable()
 export class ChannelService {
@@ -172,7 +174,6 @@ export class ChannelService {
     for (let i = 0; i < channel[0].members.length; i++) {
       if (channel[0].members[i].id === userToBanId) {
         channel[0].banned.push(userToBanId);
-        // channel[0].members.splice(i, 1);
         await this.channelRepository.save(channel);
         return channel[0].name;
       }
@@ -180,37 +181,86 @@ export class ChannelService {
     return null;
   }
 
-  async addAdmin(userId: number, channelId: number) {
-    const channel = await this.findOne(channelId);
-    const user = await this.userService.findOneById(userId);
+  async muteUser(channelId: number, userToMuteId: number) {
+    const channel = await this.findChannelAndMembers(channelId);
 
-    channel.admins.push(userId);
+    if (!channel || await this.isAdmin(userToMuteId, channelId)) {
+      return null;
+    }
+    for (let i = 0; i < channel[0].members.length; i++) {
+      if (channel[0].members[i].id === userToMuteId) {
+        for (let i =0; i < channel[0].muted.length; i++) {
+          if (channel[0].muted[i] === userToMuteId) {
+            return null;
+          }
+        }
+        channel[0].muted.push(userToMuteId);
+        await this.channelRepository.save(channel);
+        return channel[0].name;
+      }
+    }
+    return null;
   }
 
-  async muteUser(userId: number, channelId: number) {
-    const channel = await this.findOne(channelId);
-    const user = await this.userService.findOneById(userId);
-    channel.muted.push(userId);
-  }
+  async unMuteUser(channelId: number, userToMuteId: number) {
+    const channel = await this.findChannelAndMembers(channelId);
 
-  async unMute(userId: number, channelId: number) {
-    const channel = await this.findOne(channelId);
-
-    for (let i = 0; i < channel.muted.length; i++)
+    if (!channel) {
+      return null;
+    }
+    for (let i = 0; i < channel[0].muted.length; i++)
     {
-      if (channel.muted[i] === userId)
-        channel.muted.splice(i, 1);
+      if (channel[0].muted[i] === userToMuteId)
+        channel[0].muted.splice(i, 1);
+        await this.channelRepository.save(channel);
     }
   }
 
-  async unBan(userId: number, channelId: number) {
-    const channel = await this.findOne(channelId);
-
-    for (let i = 0; i < channel.banned.length; i++)
-    {
-      if (channel.banned[i] === userId)
-        channel.banned.splice(i, 1);
+  validPassword(password: string) {
+    if (password.length >= 8 && password.length <= 20) {
+      return true;
     }
+    return false;
   }
 
+  async updateChannelPrivacy(updatePrivacyDto: UpdatePrivacyDto) {
+    if (updatePrivacyDto.channel.type === updatePrivacyDto.type) {
+      return null;
+    }
+    if (updatePrivacyDto.type === "protected") {
+      if (!updatePrivacyDto.password) {
+        throw new HttpException(
+          'Bad Request, password is required', 
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      if (!this.validPassword(updatePrivacyDto.password)) {
+        return null;
+      }
+      const salt = await bcrypt.genSalt();
+      updatePrivacyDto.channel.password = await bcrypt.hash(updatePrivacyDto.password, salt);
+    } else {
+      updatePrivacyDto.channel.password = null;
+    }
+    updatePrivacyDto.channel.type = updatePrivacyDto.type;
+    return await this.channelRepository.save(updatePrivacyDto.channel);
+  }
+
+  async updateChannelPassword(updatePasswordDto: UpdatePasswordDto) {
+    if (updatePasswordDto.channel.type != "protected") {
+      return null;
+    }
+    if (!updatePasswordDto.password) {
+      throw new HttpException(
+        'Bad Request, password is required', 
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    if (!this.validPassword(updatePasswordDto.password)) {
+      return null;
+    }
+    const salt = await bcrypt.genSalt();
+    updatePasswordDto.channel.password = await bcrypt.hash(updatePasswordDto.password, salt);    
+    return await this.channelRepository.save(updatePasswordDto.channel);
+  }
 }

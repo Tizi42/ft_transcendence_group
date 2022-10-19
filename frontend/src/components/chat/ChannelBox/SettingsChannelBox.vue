@@ -46,13 +46,13 @@
                 <input
                   class="input-new-password"
                   v-model="newPassword"
-                  type="text"
+                  type="password"
                   placeholder="Your password.."
                   required
                 />
               </div>
             </div>
-            <button type="submit" id="update"></button>
+            <button type="submit" class="update"></button>
           </form>
         </li>
         <li v-if="channel.type === 'protected'">
@@ -65,10 +65,11 @@
             <input
               class="input-new-password"
               v-model="newPassword"
-              type="text"
+              type="password"
               placeholder="Your new password.."
+              :style="{ border: inputBorder }"
             />
-            <button type="submit" id="update"></button>
+            <button type="submit" class="update"></button>
           </form>
         </li>
       </ul>
@@ -77,6 +78,7 @@
 </template>
 
 <script lang="ts" setup>
+import socket from "@/socket";
 import { useUserStore } from "@/stores/user";
 import { ref, defineComponent, defineExpose, Ref, defineProps } from "vue";
 
@@ -88,25 +90,40 @@ interface Props {
 const user = useUserStore();
 const props: Readonly<Props> = defineProps<Props>();
 const channelType: Ref<string> = ref("");
-const newPassword: Ref<string> = ref("");
-const newAdmin: Ref<string> = ref("");
+const newPassword: Ref<any> = ref(null);
+let inputBorder = ref("none");
 
-const changePrivacy = () => {
+const changePrivacy = async () => {
   console.log("new channel type = ", channelType.value);
   console.log("password = ", newPassword.value);
+  console.log("channel = ", props.channel);
+  inputBorder.value = "none";
+  socket.emit("update_channel_privacy", {
+    channel: props.channel,
+    type: channelType.value,
+    password: newPassword.value,
+  });
   channelType.value = "";
-  newPassword.value = "";
+  newPassword.value = null;
 };
 
 const UpdatePassword = () => {
   console.log("Your new password = ", newPassword.value);
-  newPassword.value = "";
+  inputBorder.value = "none";
+  if (newPassword.value === null) {
+    return;
+  }
+  socket.emit("update_channel_password", {
+    channel: props.channel,
+    type: channelType.value,
+    password: newPassword.value,
+  });
+  newPassword.value = null;
 };
 
-const AddNewAdmin = () => {
-  console.log("New admin name = ", newAdmin.value);
-  newAdmin.value = "";
-};
+socket.on("password_error", () => {
+  inputBorder.value = "4px solid red";
+});
 
 defineExpose(
   defineComponent({
@@ -122,7 +139,6 @@ defineExpose(
   justify-content: start;
   align-items: center;
   height: 28vh;
-  overflow: auto;
   margin-top: 30px;
 }
 
@@ -183,7 +199,7 @@ h2 {
   color: white;
 }
 
-#update {
+.update {
   background-image: url("@/assets/icons/refresh.svg");
   background-repeat: no-repeat;
   background-size: 35px 35px;
@@ -196,7 +212,7 @@ h2 {
   margin-left: 10px;
 }
 
-#update:hover {
+.update:hover {
   transform: scale(1.2, 1.2) rotate(360deg);
   cursor: pointer;
 }

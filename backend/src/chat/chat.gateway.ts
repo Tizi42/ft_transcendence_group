@@ -41,7 +41,7 @@ export class ChatGateway extends AppGateway {
     const user = await this.chatService.getUserFromSocket(socket);
     const channel = await this.channelService.findOne(data.channelId);
 
-    if (!user || user.id != data.authorId || !channel) {
+    if (!user || user.id != data.authorId || !channel || channel.muted.includes(data.authorId, 0)) {
       return ;
     }
     const message = await this.chatService.saveChannelMessage(data, user);

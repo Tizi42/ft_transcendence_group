@@ -38,7 +38,7 @@
       src="@/assets/icons/settings.svg"
       alt="see settings"
       @click="showSettings()"
-      v-if="channel.admins.includes(user.id, 0)"
+      v-if="channel.owner === user.id"
     />
   </div>
   <div
@@ -75,7 +75,12 @@
         :channel="channel"
         @getUserProfile="showUserProfile"
       />
-      <UserBox v-if="isShowUserProfile" :target="userTarget" :context="channel" />
+      <UserBox
+        v-if="isShowUserProfile"
+        :target="userTarget"
+        :context="'channel'"
+        @closeUserBox="hideUserBox"
+      />
     </ChannelBoxModal>
   </teleport>
 </template>
@@ -119,7 +124,7 @@ function showInfoBox() {
   userProfileWindow.value = true;
 }
 
-function showSettings() {
+async function showSettings() {
   settingsWindow.value = true;
 }
 
@@ -131,6 +136,10 @@ function hide() {
   userProfileWindow.value = false;
   settingsWindow.value = false;
   membersWindow.value = false;
+  isShowUserProfile.value = false;
+}
+
+function hideUserBox() {
   isShowUserProfile.value = false;
 }
 
