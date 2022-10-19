@@ -23,6 +23,15 @@ export default class GetReadyScene extends Phaser.Scene {
     console.log("preload get ready scene");
     this.load.image("background", "background.png");
     this.load.image("ball", "ball.png");
+    this.load.image("spellboard", "spellboard.png");
+    this.load.spritesheet({
+      key: "spell",
+      url: "spell.png",
+      frameConfig: {
+        frameWidth: 64,
+        frameHeight: 64,
+      },
+    });
     this.load.image("paddle", "paddle.png");
     this.load.image("cancel-ready", "cancel-ready.png");
     this.load.image("get-ready", "get-ready.png");
