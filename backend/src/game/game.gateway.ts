@@ -258,6 +258,48 @@ export class GameGateway extends AppGateway {
     });
   }
 
+  @SubscribeMessage('create_spell')
+  async onUpdateSPell(@MessageBody() data: any) {
+    const room = GameGateway.rooms.get(data.room_name);
+    if (!room)
+      return null;
+    room.spell_L = data.spell_L;
+    room.spell_R = data.spell_R;
+    this.server.to(data.room_name).emit("new_spell", {
+      spell_L: data.spell_L,
+      spell_R: data.spell_R,
+    });
+  }
+
+  @SubscribeMessage('launch_spell')
+  async onLaunchSPell(@MessageBody() data: any) {
+    const room = GameGateway.rooms.get(data.room_name);
+    let target;
+    let effect;
+    let side = 0;
+  
+    if (!room)
+      return null;
+    if (room.playerL === data.user_id) {
+      effect = room.spell_L;
+      room.spell_L = 0;
+      target = room.playerR;
+      side = 1;
+    } else if (room.playerR === data.user_id) {
+      effect = room.spell_R;
+      room.spell_R = 0;
+      target = room.playerL;
+      side = -1;
+    }
+    this.server.to(data.room_name).emit("apply_effect", {
+      to: target,
+      side: side,
+      effect: effect,
+      spell_L: room.spell_L,
+      spell_R: room.spell_R,
+    });
+  }
+
   @SubscribeMessage('ball_pos')
   async updateBallPos(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
     // const room = GameGateway.rooms.get(data.room_name);
