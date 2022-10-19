@@ -94,9 +94,8 @@ export default class GameScene extends Phaser.Scene {
   }
 
   // timer = 0;
-  update(time: number, delta: number) {
+  update() {
     // this.timer += delta;
-    console.log("delta: ", delta);
     if (gameInfo.user_role === "left") {
       if (this.game_status === "ready") {
         this.launch_ball("toRight");
