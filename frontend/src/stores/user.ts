@@ -6,6 +6,7 @@ type voidFunction = () => void;
 export interface userInfoStore {
   id: Ref<number>;
   displayName: Ref<string>;
+  status: Ref<string>;
   email: Ref<string>;
   avatarUrl: Ref<string>;
   enabled2FA: Ref<boolean>;
@@ -22,6 +23,7 @@ export interface userInfoStore {
 export const useUserStore = defineStore("user", (): userInfoStore => {
   const id = ref(0);
   const displayName = ref("");
+  const status = ref("");
   const email = ref("");
   const enabled2FA = ref(false);
   const avatarUrl = ref("");
@@ -45,6 +47,7 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
       .then((user) => {
         id.value = user.id;
         displayName.value = user.displayName;
+        status.value = user.status;
         email.value = user.email;
         avatarUrl.value = user.picture;
         enabled2FA.value = user.isTwoFactorAuthenticationEnabled;
@@ -90,6 +93,7 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
   return {
     id,
     displayName,
+    status,
     email,
     avatarUrl,
     enabled2FA,

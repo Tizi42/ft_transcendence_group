@@ -6,30 +6,38 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, defineProps } from "vue";
-import { onMounted, Ref, ref } from "vue";
+import { defineComponent, defineExpose, onBeforeMount } from "vue";
+import { Ref, ref } from "vue";
+import socket from "@/socket";
 
-interface Props {
-  time: Date;
-}
-
-const props: Readonly<Props> = defineProps<Props>();
 const timer: Ref<Array<string>> = ref(["00", "00"]);
+const stop = ref(false);
+const time = ref(new Date());
 
 function updateTimer() {
   const curTime = new Date();
-  let milliDiff = curTime.getTime() - props.time.getTime();
+  let milliDiff = curTime.getTime() - time.value.getTime();
   let minutes = Math.floor(milliDiff / 60000);
   let seconds = Math.floor(milliDiff / 1000) - 60 * minutes;
   timer.value[0] = (minutes < 10 ? "0" : "") + minutes.toString();
   timer.value[1] = (seconds < 10 ? "0" : "") + seconds.toString();
-  setTimeout(() => {
-    updateTimer();
-  }, 100);
+  if (!stop.value) {
+    setTimeout(() => {
+      updateTimer();
+    }, 100);
+  }
 }
 
-onMounted(() => {
-  updateTimer();
+onBeforeMount(() => {
+  socket.on("game_start", (data: any) => {
+    time.value = new Date();
+    stop.value = false;
+    updateTimer();
+  });
+
+  socket.on("end", (data: any) => {
+    stop.value = true;
+  });
 });
 
 defineExpose(

@@ -8,10 +8,10 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
   
-  @Column()
+  @Column({default: ""})
   username: string;
   
-  @Column()
+  @Column({default: ""})
   displayName: string;
   
   @Column({default: "nobody@42.intra.fr"})
