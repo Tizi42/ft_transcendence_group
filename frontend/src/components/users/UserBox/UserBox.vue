@@ -1,4 +1,7 @@
 <template>
+  <div v-if="context === 'channel'" class="return" @click="closeUser">
+    <img src="@/assets/icons/arrowLeft.svg" />
+  </div>
   <TransitionGroup name="list">
     <div class="infoBox" v-if="show">
       <div
@@ -61,7 +64,13 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineComponent, defineExpose, defineProps } from "vue";
+import {
+  ref,
+  defineComponent,
+  defineExpose,
+  defineProps,
+  defineEmits,
+} from "vue";
 import { Ref, onBeforeMount } from "vue";
 import { useUserStore } from "@/stores/user";
 import axios from "axios";
@@ -71,6 +80,7 @@ import socket from "@/socket";
 
 interface Props {
   target: User;
+  context?: string;
 }
 const props: Readonly<Props> = defineProps<Props>();
 const user = useUserStore();
@@ -140,11 +150,17 @@ async function getFriendShipInfo() {
   nbFriends.value = friends.length;
 }
 
+function closeUser() {
+  emit("closeUserBox");
+}
+
 onBeforeMount(async () => {
   show.value = false;
   await getFriendShipInfo();
   show.value = true;
 });
+
+const emit = defineEmits(["closeUserBox"]);
 
 defineExpose(
   defineComponent({
@@ -154,6 +170,23 @@ defineExpose(
 </script>
 
 <style scoped>
+.return {
+  cursor: pointer;
+  width: 35vw;
+  transition: transform 0.5s ease;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+}
+
+.return:hover {
+  transform: scale(1.02, 1.02);
+}
+
+.return img {
+  width: 30px;
+}
+
 .target-name {
   font-family: "Outfit Bold";
   font-size: 24px;

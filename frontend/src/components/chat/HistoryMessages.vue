@@ -7,6 +7,14 @@
     class="messages-invite-game"
     v-if="target != null && isActive === 'players'"
   >
+    <div>
+      <img
+        id="see-profile-user"
+        src="@/assets/icons/profile.svg"
+        alt="see user profile"
+        @click="showInfoBox"
+      />
+    </div>
     <img src="@/assets/icons/watchGame.svg" alt="watch his game" />
     <img src="@/assets/icons/inviteInGame.png" alt="invite in game" />
   </div>
@@ -30,6 +38,7 @@
       src="@/assets/icons/settings.svg"
       alt="see settings"
       @click="showSettings()"
+      v-if="channel.owner === user.id"
     />
   </div>
   <div
@@ -42,7 +51,7 @@
         class="messages"
         id="from-others"
       >
-        <img :src="message.author.picture" @click="showInfoBox" />
+        <img :src="message.author.picture" />
         <p>{{ message.content }}</p>
       </div>
       <div class="messages" id="from-user" v-else>
@@ -57,11 +66,21 @@
     </UserBoxModal>
     <ChannelBoxModal v-if="settingsWindow || membersWindow" @hide="hide">
       <SettingsChannelBox
-        :user="user"
         :selectedChannel="selectedChannel"
+        :channel="channel"
         v-if="settingsWindow"
       />
-      <MembersListBox v-if="membersWindow" :channel="channel[0]" />
+      <MembersListBox
+        v-if="membersWindow && !isShowUserProfile"
+        :channel="channel"
+        @getUserProfile="showUserProfile"
+      />
+      <UserBox
+        v-if="isShowUserProfile"
+        :target="userTarget"
+        :context="'channel'"
+        @closeUserBox="hideUserBox"
+      />
     </ChannelBoxModal>
   </teleport>
 </template>
@@ -83,12 +102,14 @@ import SettingsChannelBox from "./ChannelBox/SettingsChannelBox.vue";
 import ChannelBoxModal from "./ChannelBox/ChannelBoxModal.vue";
 import MembersListBox from "./ChannelBox/MembersListBox.vue";
 import { getUrlOf } from "@/router";
+import socket from "@/socket";
 
 interface Props {
   history: Array<any>;
   target: User;
   isActive: string;
   selectedChannel: number;
+  channel: any;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
@@ -96,13 +117,14 @@ const user: any = useUserStore();
 const userProfileWindow: Ref<boolean> = ref(false);
 const settingsWindow: Ref<boolean> = ref(false);
 const membersWindow: Ref<boolean> = ref(false);
-const channel: Ref<Array<any>> = ref([]);
+const isShowUserProfile: Ref<boolean> = ref(false);
+const userTarget: Ref<User> = ref(props.target);
 
 function showInfoBox() {
   userProfileWindow.value = true;
 }
 
-function showSettings() {
+async function showSettings() {
   settingsWindow.value = true;
 }
 
@@ -114,35 +136,47 @@ function hide() {
   userProfileWindow.value = false;
   settingsWindow.value = false;
   membersWindow.value = false;
+  isShowUserProfile.value = false;
+}
+
+function hideUserBox() {
+  isShowUserProfile.value = false;
 }
 
 function leaveChannel(selectedChannel: number) {
   if (confirm("Are you sure you want to leave this channel ?")) {
+    socket.emit("leave_channel", {
+      channelId: selectedChannel,
+      userId: user.id,
+    });
     console.log("leaving the channel");
   } else {
     console.log("not leaving the channel");
   }
 }
 
-watch(
-  () => props.selectedChannel,
-  async (newSelectedChannel) => {
-    await fetch(getUrlOf("api/channel/members/" + newSelectedChannel), {
-      credentials: "include",
+async function showUserProfile(event: number) {
+  console.log("show user profile id =", event);
+  await fetch(getUrlOf("api/users/info/" + event), {
+    credentials: "include",
+  })
+    .then((response) => {
+      return response.json();
     })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        console.log("data :", data);
-        channel.value = data;
-        console.log("channel data :", channel.value[0]);
-      })
-      .catch((error) => {
-        console.log("Error :", error);
-      });
+    .then((data) => {
+      userTarget.value = data;
+    })
+    .catch((error) => {
+      console.log("error : ", error);
+    });
+  isShowUserProfile.value = true;
+}
+
+socket.on("hide_window", (userToBanId: number) => {
+  if (user.id === userToBanId) {
+    hide();
   }
-);
+});
 
 watch(
   () => props.target,

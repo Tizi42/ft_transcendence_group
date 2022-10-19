@@ -6,7 +6,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { User } from 'src/users/users.entity';
 import { Repository } from "typeorm";
 import { Chat } from './entities/chat.entity';
-import { messageInfos } from './utils/types';
+import { ChannelMessage, messageInfos } from './utils/types';
 
 @Injectable()
 export class ChatService {
@@ -21,6 +21,17 @@ export class ChatService {
         await this.chatRepository.save(newMessage);
 
         return newMessage;
+    }
+
+    async saveChannelMessage(data: ChannelMessage, author: User): Promise<Chat> {
+        const newMessage = new Chat();
+
+        newMessage.content = data.content;
+        newMessage.dest = null;
+        newMessage.author = author;
+        newMessage.channelId = data.channelId;
+
+        return await this.chatRepository.save(newMessage);
     }
 
     async getMessages(): Promise<Chat[]> {
@@ -54,6 +65,17 @@ export class ChatService {
             }],
         });
         // console.log("query = ", query);
+        return query;
+    }
+
+    async getChannelMessagesById(channelId: number, authorId: number): Promise<Chat[]> {
+        const query = await this.chatRepository.find({
+            relations: ['author'],
+            where: {
+                channelId: channelId,
+            },
+        });        
+        console.log("query = ", query);
         return query;
     }
 
