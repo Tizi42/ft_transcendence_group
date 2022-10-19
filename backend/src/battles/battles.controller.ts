@@ -1,6 +1,4 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
-import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
-import { DataSource } from "typeorm";
+import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 import { Battle } from "./battle.entity";
 import { BattlesService } from "./battles.service";
 import { BattleShowDto } from "./utils/battle-show.dto";
@@ -8,15 +6,13 @@ import { BattleDto } from "./utils/battle.dto";
 
 @Controller('/battles')
 export class BattlesController {
-  constructor(private readonly battlesService: BattlesService,
-    private readonly datasource: DataSource) {}
+  constructor(private readonly battlesService: BattlesService) {}
   
   @Get()
   getAll(): Promise<Battle[]>  {
     return this.battlesService.findAll();
   };
-
-  @UseGuards(JwtAuthGuard)
+  
   @Get("/show")
   showAll(): Promise<BattleShowDto[]> {
     return this.battlesService.showAll();
