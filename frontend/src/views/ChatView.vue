@@ -37,6 +37,7 @@
         :user="user"
         :receiver="receiver"
         :selectedChannel="selectedChannel"
+        :channel="channel"
       />
     </div>
   </div>
@@ -118,28 +119,7 @@ const handleChannelSelected = (event: number) => {
   }
 };
 
-socket.on("new_admin", async (channelId: number) => {
-  allMyChannels.value = [];
-  await fetch(getUrlOf("api/channel/"), {
-    credentials: "include",
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .then((data) => {
-      allMyChannels.value = data;
-    })
-    .catch((error) => {
-      console.log("error :", error);
-    });
-  for (let i = 0; i < allMyChannels.value.length; i++) {
-    if (allMyChannels.value[i].id === channelId) {
-      channel.value = allMyChannels.value[i];
-    }
-  }
-});
-
-socket.on("exited_channel_members", async (channelId: number) => {
+socket.on("channel_updated", async (channelId: number) => {
   allMyChannels.value = [];
   await fetch(getUrlOf("api/channel/"), {
     credentials: "include",

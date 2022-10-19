@@ -4,7 +4,9 @@ import { ChannelService } from 'src/channel/channel.service';
 import { ChatService } from 'src/chat/chat.service';
 import { AppGateway } from 'src/gateway';
 import { UsersService } from 'src/users/users.service';
-import { banMember, leavingChannel, makingAdmin } from './utils/types';
+import { banMember, leavingChannel, makingAdmin, muteMember } from './utils/types';
+import { UpdatePasswordDto } from './utils/UpdatePassword.dto';
+import { UpdatePrivacyDto } from './utils/updatePrivacy.dto';
 
 export class ChannelGateway extends AppGateway {
 
@@ -66,10 +68,9 @@ export class ChannelGateway extends AppGateway {
     } else if (user.id === data.userId) {
       const channelName = await this.channelService.leavingChannel(data.channelId, user.id);
 
-      // /!\ emit to room channel /!\ \\
       if (channelName != null) {
         this.server.sockets.to(socket.data.id).emit('exited_channel_list');
-        this.server.sockets.to(channelName).emit('exited_channel_members', data.channelId);
+        this.server.sockets.to(channelName).emit('channel_updated', data.channelId);
         socket.leave(channelName);
       }
     }
@@ -90,7 +91,6 @@ export class ChannelGateway extends AppGateway {
     {
       const channelName = await this.channelService.banUser(data.channelId, user.id, data.userToBanId);
       if (channelName != null) {
-        console.log("user banned, need to emit to front");
         this.server.sockets.to(channelName).emit('banned_user', data.userToBanId, data.channelId);
         this.server.sockets.to(channelName).emit('hide_window', data.userToBanId);
       }
@@ -109,10 +109,73 @@ export class ChannelGateway extends AppGateway {
     } else if (user.id === data.userId) {
       const channelName = await this.channelService.makeAdmin(data.channelId, user.id, data.newAdminId);
 
-      // /!\ emit to room channel /!\ \\
       if (channelName != null) {
-        this.server.sockets.to(channelName).emit('new_admin', data.channelId);
+        this.server.sockets.to(channelName).emit('channel_updated', data.channelId);
       }
+    }
+  }
+
+  @SubscribeMessage('mute_user')
+  async handleMuteUser(
+    @MessageBody() data: muteMember,
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const user = await this.chatService.getUserFromSocket(socket);
+
+    if (!user) {
+      return ;
+    }
+
+    if (await this.channelService.isAdmin(socket.data.id, data.channelId))
+    {
+      const channelName = await this.channelService.muteUser(data.channelId, data.userToMuteId);
+      if (channelName != null) {
+        this.server.sockets.to(channelName).emit('channel_updated', data.channelId);
+        setTimeout(async () => {
+          await this.channelService.unMuteUser(data.channelId, data.userToMuteId);
+          this.server.sockets.to(channelName).emit('channel_updated', data.channelId);
+        }, 300000);
+      }
+    }
+  }
+
+  @SubscribeMessage('update_channel_privacy')
+  async handleUpdatePrivacy(
+    @MessageBody() data: UpdatePrivacyDto,
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const user = await this.chatService.getUserFromSocket(socket);
+    if (!user) {
+      this.server.sockets.to(socket.data.id).emit('password_error');
+      return ;
+    }
+
+    if (data.channel.owner === user.id) {
+      if (await this.channelService.updateChannelPrivacy(data) === null) {
+        this.server.sockets.to(socket.data.id).emit('password_error');
+        return ;
+      }
+      this.server.sockets.to(socket.data.id).emit('channel_updated', data.channel.id);
+    }
+  }
+
+  @SubscribeMessage('update_channel_password')
+  async handleUpdatePassword(
+    @MessageBody() data: UpdatePasswordDto,
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const user = await this.chatService.getUserFromSocket(socket);
+    if (!user) {
+      this.server.sockets.to(socket.data.id).emit('password_error');
+      return ;
+    }
+
+    if (data.channel.owner === user.id) {
+      if (await this.channelService.updateChannelPassword(data) === null) {
+        this.server.sockets.to(socket.data.id).emit('password_error');
+        return ;
+      }
+      this.server.sockets.to(socket.data.id).emit('channel_updated', data.channel.id);
     }
   }
 }

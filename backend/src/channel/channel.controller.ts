@@ -3,6 +3,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import RequestWithUser from 'src/users/utils/requestWithUser.interface';
 import { ChannelService } from './channel.service';
 import { CreatChannelDto } from './utils/createChannel.dto';
+import { UpdatePrivacyDto } from './utils/updatePrivacy.dto';
 
 @Controller('channel')
 export class ChannelController {

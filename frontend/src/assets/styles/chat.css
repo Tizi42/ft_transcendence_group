@@ -159,7 +159,6 @@
     margin-right: 10%;
     display: flex;
     flex-direction: column;
-    /* overflow-y: scroll; */
 }
 
 .container-chat img {
@@ -170,10 +169,6 @@
 .container-chat > .container-messages {
     flex: auto;
 }
-
-/* .container-chat > .message-input {
-    height: 50px;
-} */
 
 .welcome-chat {
     margin-top: 20px;
@@ -201,8 +196,8 @@
     transition: transform 0.5s ease;
 }
 
-.message-text:focus,
-.message-text:hover {
+.userNotMuted .message-text:focus,
+.userNotMuted .message-text:hover {
     transform: scale(1.01, 1.01);
 }
 
@@ -213,11 +208,18 @@
 .message-input button {
     border: none;
     margin-left: 10px;
-    transition: transform 0.5s ease;
     background-color: #1E2B02;
 }
 
-.message-input button:hover {
+.message-input .userMuted button {
+    opacity: 60%;
+}
+
+.message-input .userNotMuted button {
+    transition: transform 0.5s ease;
+}
+
+.message-input .userNotMuted button:hover {
     transform: scale(1.05, 1.05);
     cursor: pointer;
 }
