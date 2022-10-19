@@ -4,7 +4,7 @@ import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { Channel } from './entities/channel.entity';
 import { CreatChannelDto } from './utils/createChannel.dto';
-// import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ChannelService {
@@ -29,9 +29,9 @@ export class ChannelService {
           HttpStatus.BAD_REQUEST
         );
       }
-      // const salt = await bcrypt.genSalt();
-      // newChannel.password = await bcrypt.hash(channelDto.password, salt);
-      newChannel.password = channelDto.password;
+      const salt = await bcrypt.genSalt();
+      newChannel.password = await bcrypt.hash(channelDto.password, salt);
+      // newChannel.password = channelDto.password;
     } else {
       newChannel.password = null;
     }
@@ -148,7 +148,7 @@ export class ChannelService {
     console.log("channel mem =", channel[0].members);
     channel[0].members.push(user);
     console.log("channel mem 2=", channel[0].members);
-    this.channelRepository.save(channel);
+    await this.channelRepository.save(channel);
     return true;
   }
 
