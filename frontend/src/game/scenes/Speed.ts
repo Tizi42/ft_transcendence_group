@@ -12,12 +12,13 @@ export default class SpeedScene extends Phaser.Scene {
   paddle_right: Phaser.Physics.Arcade.Sprite;
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   paddle_pos: number;
-  paddle_velocity_max = 20;
+  paddle_velocity_max = 30;
 
   winner: string;
   score_left: number;
   score_right: number;
   game_status: GameStatus;
+  countdown = 10000;
 
   constructor() {
     super("SpeedScene");
@@ -42,7 +43,7 @@ export default class SpeedScene extends Phaser.Scene {
     );
 
     // set up world bounds
-    this.physics.world.setBounds(-100, 0, this.width + 200, this.height);
+    this.physics.world.setBounds(-300, 0, this.width + 400, this.height);
 
     // set up ball
     this.ball = this.physics.add.sprite(
@@ -83,16 +84,22 @@ export default class SpeedScene extends Phaser.Scene {
       // this.ball.setVelocity(data.vx, data.vy);
     });
 
+    socket.on("score_update", (data) => {
+      this.score_left = data.left;
+      this.score_right = data.right;
+    });
+
     socket.on("end", (data: any) => {
-      this.winner = data.winner;
+      if (this.score_right > this.score_left) this.winner = "right";
+      else if (this.score_right < this.score_left) this.winner = "left";
+      else this.winner = "none";
       this.scene.start("GameOverScene", { winner: this.winner });
     });
   }
 
   // timer = 0;
-  update(time: number, delta: number) {
+  update() {
     // this.timer += delta;
-    console.log("delta: ", delta);
     if (gameInfo.user_role === "left") {
       if (this.game_status === "ready") {
         this.launch_ball("toRight");
@@ -180,22 +187,5 @@ export default class SpeedScene extends Phaser.Scene {
       left: this.score_left,
       right: this.score_right,
     });
-
-    if (
-      (this.score_left >= 2 || this.score_right >= 2) && // change 2 to 11
-      Math.abs(this.score_left - this.score_right) >= 0 // change 0 to 2
-    ) {
-      this.game_end();
-    }
-  }
-
-  game_end() {
-    if (this.score_left > this.score_right) this.winner = "left";
-    else this.winner = "right";
-    socket.emit("game_end", {
-      room_name: gameInfo.room_name,
-      winner: this.winner,
-    });
-    this.scene.start("GameOverScene", { winner: this.winner });
   }
 }
