@@ -15,6 +15,7 @@
       <ChannelsList
         v-else
         @getChannelSelected="handleChannelSelected"
+        @getHistory="handleHistory"
         :selectedChannel="selectedChannel"
         :user="user"
       />
@@ -29,12 +30,14 @@
         :target="receiverProfile"
         :isActive="isActive"
         :selectedChannel="selectedChannel"
+        :channel="channel"
       />
       <MessageInput
         v-if="receiver != -1 || selectedChannel != -1"
         :user="user"
         :receiver="receiver"
         :selectedChannel="selectedChannel"
+        :channel="channel"
       />
     </div>
   </div>
@@ -52,6 +55,7 @@ import MessageInput from "@/components/chat/MessageInput.vue";
 import { getUrlOf } from "@/router";
 import { User } from "@backend/users/users.entity";
 import AllChannelsSelected from "@/components/chat/AllChannelsSelected.vue";
+import socket from "@/socket";
 
 const user: any = useUserStore();
 const isActive: Ref<string> = ref("players");
@@ -59,11 +63,27 @@ const receiver: Ref<number> = ref(-1);
 const history: Ref<Array<any>> = ref([]);
 const receiverProfile: Ref<any> = ref(null);
 const selectedChannel: Ref<number> = ref(-1);
+const allMyChannels: Ref<Array<any>> = ref([]);
+const channel: Ref<any> = ref(null);
 
-const handleSelectedNav = (event: string) => {
+const handleSelectedNav = async (event: string) => {
   isActive.value = event;
   if (event === "players") {
     selectedChannel.value = -1;
+  } else {
+    allMyChannels.value = [];
+    await fetch(getUrlOf("api/channel/"), {
+      credentials: "include",
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        allMyChannels.value = data;
+      })
+      .catch((error) => {
+        console.log("error :", error);
+      });
   }
 };
 
@@ -91,7 +111,62 @@ const handleHistory = (event: Array<any>) => {
 
 const handleChannelSelected = (event: number) => {
   selectedChannel.value = event;
+  channel.value = null;
+  for (let i = 0; i < allMyChannels.value.length; i++) {
+    if (allMyChannels.value[i].id === selectedChannel.value) {
+      channel.value = allMyChannels.value[i];
+    }
+  }
 };
+
+socket.on("channel_updated", async (channelId: number) => {
+  allMyChannels.value = [];
+  await fetch(getUrlOf("api/channel/"), {
+    credentials: "include",
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      allMyChannels.value = data;
+    })
+    .catch((error) => {
+      console.log("error :", error);
+    });
+  for (let i = 0; i < allMyChannels.value.length; i++) {
+    if (allMyChannels.value[i].id === channelId) {
+      channel.value = allMyChannels.value[i];
+    }
+  }
+});
+
+socket.on("banned_user", async (userToBanId: number, channelId: number) => {
+  if (user.id === userToBanId) {
+    socket.emit("leave_channel", {
+      channelId: channelId,
+      userId: user.id,
+    });
+  } else {
+    allMyChannels.value = [];
+    await fetch(getUrlOf("api/channel/"), {
+      credentials: "include",
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        allMyChannels.value = data;
+      })
+      .catch((error) => {
+        console.log("error :", error);
+      });
+    for (let i = 0; i < allMyChannels.value.length; i++) {
+      if (allMyChannels.value[i].id === channelId) {
+        channel.value = allMyChannels.value[i];
+      }
+    }
+  }
+});
 
 onBeforeMount(async () => {
   user.doFetchFriends();

@@ -5,8 +5,8 @@ import { ChannelService } from 'src/channel/channel.service';
 import { AppGateway } from '../gateway';
 import { UsersService } from '../users/users.service';
 import { ChatService } from './chat.service';
-import { emojiInfo } from './utils/types';
 import { BattlesService } from '../battles/battles.service';
+import { ChannelMessage, emojiInfo } from './utils/types';
 
 export class ChatGateway extends AppGateway {
 
@@ -32,6 +32,24 @@ export class ChatGateway extends AppGateway {
 
     this.server.sockets.to(data.dest).to(data.author).emit('receive_message');
 
+    return message;
+  }
+
+  @SubscribeMessage('send_channel_message')
+  async handleChannelMessage(
+    @MessageBody() data: ChannelMessage,
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const user = await this.chatService.getUserFromSocket(socket);
+    const channel = await this.channelService.findOne(data.channelId);
+
+    if (!user || user.id != data.authorId || !channel || channel.muted.includes(data.authorId, 0)) {
+      return ;
+    }
+    const message = await this.chatService.saveChannelMessage(data, user);
+
+    this.server.sockets.to(channel.name).emit('receive_channel_message');
+    
     return message;
   }
 

@@ -3,8 +3,14 @@
     <h2>Channel settings</h2>
     <div class="privacy-settings">
       <ul>
-        <li>Actual channel privacy : <span>protected</span></li>
-        <li>password : <span>yes</span></li>
+        <li>
+          Actual channel privacy : <span>{{ channel.type }}</span>
+        </li>
+        <li>
+          password :
+          <span v-if="channel.password">yes</span>
+          <span v-if="!channel.password">no</span>
+        </li>
         <li>
           <form
             class="update-settings"
@@ -15,25 +21,41 @@
               <div>
                 <label for="options-select">Update channel privacy :</label>
                 <select class="options-select" v-model="channelType">
-                  <option v-bind:value="'public'">public</option>
-                  <option v-bind:value="'private'">private</option>
-                  <!-- <option v-bind:value="'protected'">protected</option> -->
+                  <option
+                    v-bind:value="'public'"
+                    v-if="channel.type != 'public'"
+                  >
+                    public
+                  </option>
+                  <option
+                    v-bind:value="'private'"
+                    v-if="channel.type != 'private'"
+                  >
+                    private
+                  </option>
+                  <option
+                    v-bind:value="'protected'"
+                    v-if="channel.type != 'protected'"
+                  >
+                    protected
+                  </option>
                 </select>
               </div>
-              <!-- <div>
+              <div v-if="channelType === 'protected'">
                 <label for="input-new-password">Set a password :</label>
                 <input
                   class="input-new-password"
                   v-model="newPassword"
-                  type="text"
+                  type="password"
                   placeholder="Your password.."
+                  required
                 />
-              </div> -->
+              </div>
             </div>
-            <button type="submit" id="update"></button>
+            <button type="submit" class="update"></button>
           </form>
         </li>
-        <li>
+        <li v-if="channel.type === 'protected'">
           <form
             class="update-settings"
             id="set-new-password"
@@ -43,20 +65,11 @@
             <input
               class="input-new-password"
               v-model="newPassword"
-              type="text"
+              type="password"
               placeholder="Your new password.."
+              :style="{ border: inputBorder }"
             />
-            <button type="submit" id="update"></button>
-          </form>
-        </li>
-        <li>
-          <form class="update-settings" @submit.prevent="AddNewAdmin">
-            <label for="options-select">Give administrator role :</label>
-            <select class="options-select" v-model="newAdmin">
-              <option v-bind:value="'victor'">victor</option>
-              <option v-bind:value="'lison'">lison</option>
-            </select>
-            <button type="submit" id="update"></button>
+            <button type="submit" class="update"></button>
           </form>
         </li>
       </ul>
@@ -65,34 +78,52 @@
 </template>
 
 <script lang="ts" setup>
+import socket from "@/socket";
+import { useUserStore } from "@/stores/user";
 import { ref, defineComponent, defineExpose, Ref, defineProps } from "vue";
 
 interface Props {
-  user: any;
   selectedChannel: number;
+  channel: any;
 }
 
+const user = useUserStore();
 const props: Readonly<Props> = defineProps<Props>();
 const channelType: Ref<string> = ref("");
-const newPassword: Ref<string> = ref("");
-const newAdmin: Ref<string> = ref("");
+const newPassword: Ref<any> = ref(null);
+let inputBorder = ref("none");
 
-const changePrivacy = () => {
+const changePrivacy = async () => {
   console.log("new channel type = ", channelType.value);
   console.log("password = ", newPassword.value);
+  console.log("channel = ", props.channel);
+  inputBorder.value = "none";
+  socket.emit("update_channel_privacy", {
+    channel: props.channel,
+    type: channelType.value,
+    password: newPassword.value,
+  });
   channelType.value = "";
-  newPassword.value = "";
+  newPassword.value = null;
 };
 
 const UpdatePassword = () => {
   console.log("Your new password = ", newPassword.value);
-  newPassword.value = "";
+  inputBorder.value = "none";
+  if (newPassword.value === null) {
+    return;
+  }
+  socket.emit("update_channel_password", {
+    channel: props.channel,
+    type: channelType.value,
+    password: newPassword.value,
+  });
+  newPassword.value = null;
 };
 
-const AddNewAdmin = () => {
-  console.log("New admin name = ", newAdmin.value);
-  newAdmin.value = "";
-};
+socket.on("password_error", () => {
+  inputBorder.value = "4px solid red";
+});
 
 defineExpose(
   defineComponent({
@@ -105,9 +136,10 @@ defineExpose(
 .privacy-settings {
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
+  justify-content: start;
   align-items: center;
   height: 28vh;
+  margin-top: 30px;
 }
 
 span {
@@ -167,7 +199,7 @@ h2 {
   color: white;
 }
 
-#update {
+.update {
   background-image: url("@/assets/icons/refresh.svg");
   background-repeat: no-repeat;
   background-size: 35px 35px;
@@ -180,7 +212,7 @@ h2 {
   margin-left: 10px;
 }
 
-#update:hover {
+.update:hover {
   transform: scale(1.2, 1.2) rotate(360deg);
   cursor: pointer;
 }
