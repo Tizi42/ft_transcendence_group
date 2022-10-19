@@ -50,8 +50,8 @@ defineExpose(
 
 <style scoped>
 .game-frame {
-  height: 100vh;
-  width: 100vw;
+  height: 70vh;
+  width: 70vw;
   display: flex;
   flex-direction: column;
   align-items: center;

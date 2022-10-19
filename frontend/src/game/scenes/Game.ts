@@ -79,10 +79,22 @@ export default class GameScene extends Phaser.Scene {
       this.paddle_right.y = data.paddle_right_posY;
     });
 
-    socket.on("ball_update", (data: any) => {
-      this.ball.x = data.ball_x;
-      this.ball.y = data.ball_y;
-      // this.ball.setVelocity(data.vx, data.vy);
+    // socket.on("ball_update", (data: any) => {
+    //   this.ball.x = data.ball_x;
+    //   this.ball.y = data.ball_y;
+    //   // this.ball.setVelocity(data.vx, data.vy);
+    // });
+
+    socket.on("launch_ball", (data: any) => {
+      this.ball.disableBody(true, true);
+      this.ball.enableBody(
+        true,
+        this.cameras.main.centerX,
+        data.randomHeight,
+        true,
+        true
+      );
+      this.ball.setVelocity(data.randVx, data.randVy);
     });
 
     if (gameInfo.user_role !== "left") {
@@ -93,18 +105,16 @@ export default class GameScene extends Phaser.Scene {
     }
   }
 
-  // timer = 0;
   update() {
-    // this.timer += delta;
     if (gameInfo.user_role === "left") {
       if (this.game_status === "ready") {
         this.launch_ball("toRight");
         this.game_status = "running";
       }
-
-      this.check_score(); // move logic to backend
-      this.update_ball();
     }
+
+    this.check_score();
+    // this.update_ball();
 
     if (this.cursors.up.isDown) {
       this.update_paddle(-this.paddle_velocity_max);
@@ -135,21 +145,26 @@ export default class GameScene extends Phaser.Scene {
   }
 
   launch_ball(direction: string) {
-    const randomHeight = Phaser.Math.Between(80, this.cameras.main.height - 80);
-    const randVx = Phaser.Math.Between(200, 300);
-    const randVy = Phaser.Math.Between(200, 300);
+    // const randomHeight = Phaser.Math.Between(80, this.cameras.main.height - 80);
+    // const randVx = Phaser.Math.Between(200, 300);
+    // const randVy = Phaser.Math.Between(200, 300);
 
-    this.ball.disableBody(true, true);
-    // add: emit to back and get three random numbers
-    this.ball.enableBody(
-      true,
-      this.cameras.main.centerX,
-      randomHeight,
-      true,
-      true
-    );
-    if (direction === "toLeft") this.ball.setVelocity(-randVx, randVy);
-    else this.ball.setVelocity(randVx, randVy);
+    // this.ball.disableBody(true, true);
+    // // add: emit to back and get three random numbers
+    // this.ball.enableBody(
+    //   true,
+    //   this.cameras.main.centerX,
+    //   randomHeight,
+    //   true,
+    //   true
+    // );
+    // if (direction === "toLeft") this.ball.setVelocity(-randVx, randVy);
+    // else this.ball.setVelocity(randVx, randVy);
+    socket.emit("launch_ball", {
+      room_name: gameInfo.room_name,
+      direction: direction,
+      mode: gameInfo.mode,
+    });
   }
 
   check_score() {
@@ -157,25 +172,29 @@ export default class GameScene extends Phaser.Scene {
     const rightBounds = this.cameras.main.width + 30;
 
     if (this.ball.x < leftBounds) {
+      this.ball.disableBody(true, true);
+      if (gameInfo.user_role !== "left") return;
+      this.launch_ball("toLeft");
       this.score_right += 1;
       this.update_score();
-      this.launch_ball("toLeft");
     } else if (this.ball.x > rightBounds) {
+      this.ball.disableBody(true, true);
+      if (gameInfo.user_role !== "left") return;
+      this.launch_ball("toRight");
       this.score_left += 1;
       this.update_score();
-      this.launch_ball("toRight");
     }
   }
 
-  update_ball() {
-    socket.emit("ball_pos", {
-      room_name: gameInfo.room_name,
-      ball_x: this.ball.x,
-      ball_y: this.ball.y,
-      vx: this.ball.body.velocity.x,
-      vy: this.ball.body.velocity.y,
-    });
-  }
+  // update_ball() {
+  //   socket.emit("ball_pos", {
+  //     room_name: gameInfo.room_name,
+  //     ball_x: this.ball.x,
+  //     ball_y: this.ball.y,
+  //     vx: this.ball.body.velocity.x,
+  //     vy: this.ball.body.velocity.y,
+  //   });
+  // }
 
   update_score() {
     socket.emit("update_score", {
@@ -185,8 +204,8 @@ export default class GameScene extends Phaser.Scene {
     });
 
     if (
-      (this.score_left >= 2 || this.score_right >= 2) && // change 2 to 11
-      Math.abs(this.score_left - this.score_right) >= 0 // change 0 to 2
+      (this.score_left >= 11 || this.score_right >= 11) && // change 2 to 11
+      Math.abs(this.score_left - this.score_right) >= 2 // change 0 to 2
     ) {
       this.game_end();
     }
