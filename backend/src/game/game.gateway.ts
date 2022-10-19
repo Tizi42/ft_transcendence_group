@@ -281,7 +281,7 @@ export class GameGateway extends AppGateway {
     if (!room)
       return null;
     if (room.playerL === data.user_id) {
-      effect = room.spell_L;q
+      effect = room.spell_L;
       room.spell_L = 0;
       target = room.playerR;
       side = 1;
