@@ -1,6 +1,7 @@
 <template>
   <TransitionGroup name="list">
     <div class="infoBox" v-if="show">
+      <div v-if="context === 'channel'">X</div>
       <div
         class="avatarFrame"
         :style="{
@@ -71,6 +72,7 @@ import socket from "@/socket";
 
 interface Props {
   target: User;
+  context?: string;
 }
 const props: Readonly<Props> = defineProps<Props>();
 const user = useUserStore();

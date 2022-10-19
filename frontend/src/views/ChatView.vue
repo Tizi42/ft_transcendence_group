@@ -15,6 +15,7 @@
       <ChannelsList
         v-else
         @getChannelSelected="handleChannelSelected"
+        @getHistory="handleHistory"
         :selectedChannel="selectedChannel"
         :user="user"
       />

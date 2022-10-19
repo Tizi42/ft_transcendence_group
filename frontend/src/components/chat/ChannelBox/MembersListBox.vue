@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 @click="test">Members list</h2>
+    <h2>Members list</h2>
     <div class="manage-members-list">
       <ul>
         <li
@@ -9,7 +9,7 @@
           class="members-list"
         >
           <div class="avatar-frame">
-            <img :src="member.picture" />
+            <img :src="member.picture" @click="emitUserProfile(member.id)" />
           </div>
           <div class="friend-frame">
             <div v-if="member.status === 'offline'" class="grey-point"></div>
@@ -63,7 +63,7 @@
 <script lang="ts" setup>
 import socket from "@/socket";
 import { useUserStore } from "@/stores/user";
-import { ref, defineComponent, defineExpose, Ref, defineProps } from "vue";
+import { defineComponent, defineExpose, defineProps, defineEmits } from "vue";
 
 interface Props {
   channel: any;
@@ -71,10 +71,6 @@ interface Props {
 
 const user = useUserStore();
 const props: Readonly<Props> = defineProps<Props>();
-
-// const test = () => {
-//   console.log("test = ", props.channel);
-// };
 
 const banUser = (id: number, displayName: string) => {
   if (confirm(`Are you sure you want to ban ${displayName} ?`)) {
@@ -111,6 +107,12 @@ const makeAdmin = (id: number, displayName: string) => {
     console.log("no new admin");
   }
 };
+
+const emitUserProfile = (userId: number) => {
+  emit("getUserProfile", userId);
+};
+
+const emit = defineEmits(["getUserProfile"]);
 
 defineExpose(
   defineComponent({

@@ -66,6 +66,7 @@ import ChannelBoxModal from "./ChannelBox/ChannelBoxModal.vue";
 import AddChannelBox from "./ChannelBox/AddChannelBox.vue";
 import socket from "@/socket";
 import { userInfoStore } from "@/stores/user";
+import { getUrlOf } from "@/router";
 
 interface Props {
   selectedChannel: number;
@@ -77,6 +78,7 @@ const inputSearch: Ref<string> = ref("");
 const selectedChannel: Ref<number> = ref(props.selectedChannel);
 const addWindow: Ref<boolean> = ref(false);
 const myChannels: Ref<any> = ref([]);
+const history: Ref<any> = ref([]);
 
 socket.on("receive_channel_created", (newChannel: any) => {
   console.log("new = ", newChannel);
@@ -109,9 +111,23 @@ const getAllChannels = () => {
   emit("getChannelSelected", selectedChannel.value);
 };
 
-const getChannelMessages = (channelId: number) => {
+const getChannelMessages = async (channelId: number) => {
   selectedChannel.value = channelId;
+  history.value = [];
   emit("getChannelSelected", selectedChannel.value);
+  await fetch(getUrlOf("api/chat/channelMessages/" + channelId), {
+    credentials: "include",
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      history.value = data;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+  emit("getHistory", history.value);
 };
 
 const addNewChannel = () => {
@@ -127,7 +143,11 @@ function hide() {
   addWindow.value = false;
 }
 
-const emit = defineEmits(["getChannelSelected"]);
+socket.on("receive_channel_message", () => {
+  getChannelMessages(selectedChannel.value);
+});
+
+const emit = defineEmits(["getChannelSelected", "getHistory"]);
 
 defineExpose(
   defineComponent({

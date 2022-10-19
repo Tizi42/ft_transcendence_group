@@ -7,6 +7,14 @@
     class="messages-invite-game"
     v-if="target != null && isActive === 'players'"
   >
+    <div>
+      <img
+        id="see-profile-user"
+        src="@/assets/icons/profile.svg"
+        alt="see user profile"
+        @click="showInfoBox"
+      />
+    </div>
     <img src="@/assets/icons/watchGame.svg" alt="watch his game" />
     <img src="@/assets/icons/inviteInGame.png" alt="invite in game" />
   </div>
@@ -43,7 +51,7 @@
         class="messages"
         id="from-others"
       >
-        <img :src="message.author.picture" @click="showInfoBox" />
+        <img :src="message.author.picture" />
         <p>{{ message.content }}</p>
       </div>
       <div class="messages" id="from-user" v-else>
@@ -62,7 +70,12 @@
         :channel="channel"
         v-if="settingsWindow"
       />
-      <MembersListBox v-if="membersWindow" :channel="channel" />
+      <MembersListBox
+        v-if="membersWindow && !isShowUserProfile"
+        :channel="channel"
+        @getUserProfile="showUserProfile"
+      />
+      <UserBox v-if="isShowUserProfile" :target="userTarget" :context="channel" />
     </ChannelBoxModal>
   </teleport>
 </template>
@@ -99,6 +112,8 @@ const user: any = useUserStore();
 const userProfileWindow: Ref<boolean> = ref(false);
 const settingsWindow: Ref<boolean> = ref(false);
 const membersWindow: Ref<boolean> = ref(false);
+const isShowUserProfile: Ref<boolean> = ref(false);
+const userTarget: Ref<User> = ref(props.target);
 
 function showInfoBox() {
   userProfileWindow.value = true;
@@ -116,6 +131,7 @@ function hide() {
   userProfileWindow.value = false;
   settingsWindow.value = false;
   membersWindow.value = false;
+  isShowUserProfile.value = false;
 }
 
 function leaveChannel(selectedChannel: number) {
@@ -128,6 +144,23 @@ function leaveChannel(selectedChannel: number) {
   } else {
     console.log("not leaving the channel");
   }
+}
+
+async function showUserProfile(event: number) {
+  console.log("show user profile id =", event);
+  await fetch(getUrlOf("api/users/info/" + event), {
+    credentials: "include",
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      userTarget.value = data;
+    })
+    .catch((error) => {
+      console.log("error : ", error);
+    });
+  isShowUserProfile.value = true;
 }
 
 socket.on("hide_window", (userToBanId: number) => {

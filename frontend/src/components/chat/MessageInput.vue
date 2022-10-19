@@ -43,8 +43,17 @@ const onSubmit = (receiver: number, selectedChannel: number) => {
     socket.emit("send_message", data, () => {
       messageText.value = "";
     });
-  } else {
+  } else if (selectedChannel >= 0) {
     console.log("selected channel id = ", selectedChannel);
+    const data = {
+      content: messageText.value,
+      authorId: props.user.id,
+      channelId: selectedChannel,
+    };
+    console.log("data message = ", data);
+    socket.emit("send_channel_message", data, () => {
+      messageText.value = "";
+    });
   }
 };
 
