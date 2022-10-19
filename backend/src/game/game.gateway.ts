@@ -111,7 +111,7 @@ export class GameGateway extends AppGateway {
           winner: "",
         });
       },
-      5000);
+      180000);
     }
     room.current_game_id = await this.battlesService.addOne({
       opponent1: room.playerL,
