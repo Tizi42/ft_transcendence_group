@@ -318,6 +318,43 @@ export class GameGateway extends AppGateway {
     });
   }
 
+  getRandomIntBetween(min: number, max: number) {
+    return Math.floor(Math.random() * (max - min + 1) + min)
+  }
+
+  getRandomVelocity(mode: string, direction: string) {
+    let minVelocity = 200;
+    let maxVelocity = 300;
+    if (mode === "speed") {
+      minVelocity = 500;
+      maxVelocity = 600;
+    }
+    let vx = this.getRandomIntBetween(minVelocity, maxVelocity);
+    let vy = this.getRandomIntBetween(minVelocity, maxVelocity);
+    if (direction === "toLeft")
+      vx = -vx;
+    if (this.getRandomIntBetween(0, 1) === 0)
+      vy = -vy;
+    return ([
+      vx,
+      vy
+    ]);
+  }
+
+  @SubscribeMessage('launch_ball')
+  async onLaunchBall(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() data: any
+  ){
+    const randomHeight = this.getRandomIntBetween(80, 511); // height 591 - 80 
+    const randVelocity = this.getRandomVelocity(data.mode, data.direction);
+    this.server.to(data.room_name).emit("launch_ball", {
+      randomHeight: randomHeight,
+      randVx: randVelocity[0],
+      randVy: randVelocity[1],
+    });
+  }
+
   @SubscribeMessage('game_end')
   async onGameEnd(
     @ConnectedSocket() socket: Socket,

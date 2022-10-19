@@ -40,9 +40,4 @@ defineExpose(
   justify-content: space-evenly;
   align-items: center;
 }
-
-.container {
-  position: relative;
-  padding: 0;
-}
 </style>
