@@ -51,8 +51,8 @@ export class GameGateway extends AppGateway {
     }
     else if (GameGateway.queues.magic.sid === socket.id)
       this.cleanQueue("magic");
-      else if (GameGateway.queues.speed.sid === socket.id)
-        this.cleanQueue("speed");
+    else if (GameGateway.queues.speed.sid === socket.id)
+      this.cleanQueue("speed");
 
     // check if socket is in game
     let room_name = GameGateway.inGameSockets.get(socket.id);
@@ -105,7 +105,14 @@ export class GameGateway extends AppGateway {
 
   async start_game(room: GameRoom) {
     this.server.to(room.room_name).emit("game_start");
-    console.log(this.battlesService);
+    if (room.mode == "speed") {
+      setTimeout(() => {
+        this.server.to(room.room_name).emit("end", {
+          winner: "",
+        });
+      },
+      5000);
+    }
     room.current_game_id = await this.battlesService.addOne({
       opponent1: room.playerL,
       opponent2: room.playerR,
@@ -340,6 +347,8 @@ export class GameGateway extends AppGateway {
       room.winner = room.playerL;
     else if (data.winner === "right")
       room.winner = room.playerR;
+    else
+      room.winner = -1;
 
     //update battle history database
     this.save_game(room);
