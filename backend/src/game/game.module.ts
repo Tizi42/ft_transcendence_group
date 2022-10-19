@@ -5,6 +5,7 @@ import { GameGateway } from './game.gateway';
 import { UsersModule } from 'src/users/users.module';
 import { ChatModule } from 'src/chat/chat.module';
 import { ChannelModule } from 'src/channel/channel.module';
+import { BattlesService } from 'src/battles/battles.service';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ChannelModule } from 'src/channel/channel.module';
   providers: [
     GameService,
     GameGateway,
+    BattlesService
 ],
 })
 export class GameModule {}

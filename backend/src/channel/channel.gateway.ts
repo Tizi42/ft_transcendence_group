@@ -4,6 +4,7 @@ import { ChannelService } from 'src/channel/channel.service';
 import { ChatService } from 'src/chat/chat.service';
 import { AppGateway } from 'src/gateway';
 import { UsersService } from 'src/users/users.service';
+import { BattlesService } from '../battles/battles.service';
 import { banMember, leavingChannel, makingAdmin, muteMember } from './utils/types';
 import { UpdatePasswordDto } from './utils/UpdatePassword.dto';
 import { UpdatePrivacyDto } from './utils/updatePrivacy.dto';
@@ -14,8 +15,9 @@ export class ChannelGateway extends AppGateway {
     readonly chatService: ChatService,
     readonly usersService: UsersService,
     readonly channelService: ChannelService,
+    readonly battlesService: BattlesService,
   ) {
-    super(chatService, usersService, channelService);
+    super(chatService, usersService, channelService, battlesService);
   }
 
   async handleConnection(socket: Socket) {}

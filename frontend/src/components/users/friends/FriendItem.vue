@@ -27,18 +27,21 @@
     <FriendItemMenu
       v-if="show"
       :style="{ left: clickCoord.x + 'px', top: clickCoord.y + 'px' }"
-      @hide="hide"
+      @hideMenu="hide"
+      @inviting="inviteToPlay"
       :friend="friend"
     />
+    <teleport to="body" v-if="inviteWindow">
+      <InvitationModal @hideInvitation="hideInvitation" />
+    </teleport>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose, defineProps, ref, computed } from "vue";
-import { useUserStore } from "@/stores/user";
 import FriendItemMenu from "./FriendItemMenu.vue";
+import InvitationModal from "../../game/invitation/InvitationModal.vue";
 
-const user = useUserStore();
 const props = defineProps(["friend"]);
 console.log("friend:", props.friend);
 const show = ref(false);
@@ -47,6 +50,7 @@ const clickCoord = ref({
   x: 0,
   y: 0,
 });
+const inviteWindow = ref(false);
 
 function smallDisplayName(displayName: string): string {
   let small = displayName.split(" ")[0].slice(0, 10);
@@ -63,6 +67,15 @@ function onClickFriend(event: Event) {
 
 function hide() {
   show.value = false;
+}
+
+function inviteToPlay() {
+  hide();
+  inviteWindow.value = true;
+}
+
+function hideInvitation() {
+  inviteWindow.value = false;
 }
 
 defineExpose(

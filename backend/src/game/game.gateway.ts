@@ -8,6 +8,7 @@ import { UsersService } from '../users/users.service';
 import { GameService } from './game.service';
 import { ChatService } from '../chat/chat.service';
 import { ChannelService } from 'src/channel/channel.service';
+import { BattlesService } from '../battles/battles.service';
 
 export class GameGateway extends AppGateway {
 
@@ -15,9 +16,9 @@ export class GameGateway extends AppGateway {
     readonly chatService: ChatService,
     readonly usersService: UsersService,
     readonly channelService: ChannelService,
-    readonly gameService: GameService,
+    readonly battlesService: BattlesService,
   ) {
-    super(chatService, usersService, channelService);
+    super(chatService, usersService, channelService, battlesService);
   }
 
   private static queues = {
@@ -38,11 +39,22 @@ export class GameGateway extends AppGateway {
 
   async handleConnection(socket: Socket) {}
 
-  handleDisconnect(socket: Socket) {
-    if (GameGateway.queues.normal.sid === socket.id)
+  async handleDisconnect(@ConnectedSocket() socket: Socket) {
+    //check if socket is in queue
+    if (GameGateway.queues.normal.sid === socket.id) {
+      console.log("socket disconnect, quit queue");
       this.cleanQueue("normal");
+    }
     else if (GameGateway.queues.magic.sid === socket.id)
       this.cleanQueue("magic");
+
+    // check if socket is in game
+    let room_name = GameGateway.inGameSockets.get(socket.id);
+    if (room_name) {
+      let room = GameGateway.rooms.get(room_name);
+      this.server.to(room.room_name).emit("quit_game");
+      this.closeRoom(room);
+    }
   }
 
   createGameRoom(
@@ -68,6 +80,8 @@ export class GameGateway extends AppGateway {
   }
 
   closeRoom(room: GameRoom) {
+    if (!room)
+      return;
     this.server.in(room.room_name).socketsLeave(room.room_name);
     this.usersService.updateUserStatus(room.playerL, "leave game");
     this.usersService.updateUserStatus(room.playerR, "leave game");
@@ -81,6 +95,24 @@ export class GameGateway extends AppGateway {
   cleanQueue(mode: string) {
     GameGateway.queues[mode].id = -1;
     GameGateway.queues[mode].sid = "";
+  }
+
+  async start_game(room: GameRoom) {
+    this.server.to(room.room_name).emit("game_start");
+    console.log(this.battlesService);
+    room.current_game_id = await this.battlesService.addOne({
+      opponent1: room.playerL,
+      opponent2: room.playerR,
+    });
+  }
+
+  save_game(room: GameRoom) {
+    this.battlesService.end(
+      room.current_game_id,
+      room.winner,
+      room.score_left,
+      room.score_right
+    );
   }
 
   @SubscribeMessage('queue_register')
@@ -197,7 +229,7 @@ export class GameGateway extends AppGateway {
       room.ready = data.user_id;
     else {
       room.ready = 0;
-      this.server.to(data.room_name).emit("game_start");
+      this.start_game(room);
     }
   }
 
@@ -223,6 +255,48 @@ export class GameGateway extends AppGateway {
     this.server.to(data.room_name).emit("game_update", {
       paddle_left_posY: room.paddle_left_pos_y,
       paddle_right_posY: room.paddle_right_pos_y,
+    });
+  }
+
+  @SubscribeMessage('create_spell')
+  async onUpdateSPell(@MessageBody() data: any) {
+    const room = GameGateway.rooms.get(data.room_name);
+    if (!room)
+      return null;
+    room.spell_L = data.spell_L;
+    room.spell_R = data.spell_R;
+    this.server.to(data.room_name).emit("new_spell", {
+      spell_L: data.spell_L,
+      spell_R: data.spell_R,
+    });
+  }
+
+  @SubscribeMessage('launch_spell')
+  async onLaunchSPell(@MessageBody() data: any) {
+    const room = GameGateway.rooms.get(data.room_name);
+    let target;
+    let effect;
+    let side = 0;
+  
+    if (!room)
+      return null;
+    if (room.playerL === data.user_id) {
+      effect = room.spell_L;
+      room.spell_L = 0;
+      target = room.playerR;
+      side = 1;
+    } else if (room.playerR === data.user_id) {
+      effect = room.spell_R;
+      room.spell_R = 0;
+      target = room.playerL;
+      side = -1;
+    }
+    this.server.to(data.room_name).emit("apply_effect", {
+      to: target,
+      side: side,
+      effect: effect,
+      spell_L: room.spell_L,
+      spell_R: room.spell_R,
     });
   }
 
@@ -286,15 +360,50 @@ export class GameGateway extends AppGateway {
     });
   }
 
+  getRandomIntBetween(min: number, max: number) {
+    return Math.floor(Math.random() * (max - min + 1) + min)
+  }
+
+  getRandomVelocity(mode: string, direction: string) {
+    let minVelocity = 200;
+    let maxVelocity = 300;
+    if (mode === "speed") {
+      minVelocity = 500;
+      maxVelocity = 600;
+    }
+    let vx = this.getRandomIntBetween(minVelocity, maxVelocity);
+    let vy = this.getRandomIntBetween(minVelocity, maxVelocity);
+    if (direction === "toLeft")
+      vx = -vx;
+    if (this.getRandomIntBetween(0, 1) === 0)
+      vy = -vy;
+    return ([
+      vx,
+      vy
+    ]);
+  }
+
+  @SubscribeMessage('launch_ball')
+  async onLaunchBall(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() data: any
+  ){
+    const randomHeight = this.getRandomIntBetween(80, 511); // height 591 - 80 
+    const randVelocity = this.getRandomVelocity(data.mode, data.direction);
+    this.server.to(data.room_name).emit("launch_ball", {
+      randomHeight: randomHeight,
+      randVx: randVelocity[0],
+      randVy: randVelocity[1],
+    });
+  }
+
   @SubscribeMessage('game_end')
   async onGameEnd(
     @ConnectedSocket() socket: Socket,
     @MessageBody() data: any
   ){
     console.log("game end, winner is player ", data.winner);
-
     const room = GameGateway.rooms.get(data.room_name);
-
     if (!room)
       return null;
 
@@ -307,9 +416,10 @@ export class GameGateway extends AppGateway {
       room.winner = room.playerR;
 
     //update battle history database
+    this.save_game(room);
 
     // inform other users in game room
-    socket.to(data.room_name).emit("end", {
+    this.server.to(data.room_name).emit("end", {
       winner: data.winner,
     });
   }

@@ -7,13 +7,6 @@
     >
       Invite to play &nbsp;&nbsp;&nbsp;>
     </div>
-    <div
-      class="friend-menu-option"
-      v-if="friend.status === 'in game'"
-      @click="onSpectateGame"
-    >
-      Spectate game
-    </div>
     <div class="friend-menu-option" @click="onRemoveFriend">Delete friend</div>
     <div class="friend-menu-option" @click="onBlockUser">Block this user</div>
   </div>
@@ -33,15 +26,12 @@ import axios from "axios";
 
 const user = useUserStore();
 const props = defineProps(["friend"]);
-const emit = defineEmits(["hide"]);
+const emit = defineEmits(["hideMenu", "inviting"]);
 const menu = ref();
 
 function onInvitePlay() {
   console.log("Inviting friend to play a game");
-}
-
-function onSpectateGame() {
-  console.log("Spectate friend's game");
+  emit("inviting");
 }
 
 function onRemoveFriend() {
@@ -58,7 +48,7 @@ function onRemoveFriend() {
     .catch((error) => {
       console.log(error);
     });
-  emit("hide");
+  emit("hideMenu");
 }
 
 function onBlockUser() {
@@ -75,11 +65,11 @@ function onBlockUser() {
     .catch((error) => {
       console.log(error);
     });
-  emit("hide");
+  emit("hideMenu");
 }
 
 useClickOutside(menu, () => {
-  emit("hide");
+  emit("hideMenu");
 });
 
 defineExpose(

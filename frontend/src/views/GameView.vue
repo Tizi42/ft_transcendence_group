@@ -18,7 +18,25 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose } from "vue";
+import { defineComponent, defineExpose, onBeforeMount } from "vue";
+import { onBeforeRouteLeave } from "vue-router";
+import { useUserStore } from "@/stores/user";
+
+const user = useUserStore();
+onBeforeRouteLeave((to: any, from: any) => {
+  if (
+    user.status === "in game" &&
+    (to.name === "play" || to.name === "watch")
+  ) {
+    window.alert("You already have a running game, please close it first.");
+    return false;
+  }
+  return true;
+});
+
+onBeforeMount(() => {
+  user.doFetch();
+});
 
 defineExpose(
   defineComponent({

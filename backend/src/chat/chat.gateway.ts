@@ -5,6 +5,7 @@ import { ChannelService } from 'src/channel/channel.service';
 import { AppGateway } from '../gateway';
 import { UsersService } from '../users/users.service';
 import { ChatService } from './chat.service';
+import { BattlesService } from '../battles/battles.service';
 import { ChannelMessage, emojiInfo } from './utils/types';
 
 export class ChatGateway extends AppGateway {
@@ -13,8 +14,9 @@ export class ChatGateway extends AppGateway {
     readonly chatService: ChatService,
     readonly usersService: UsersService,
     readonly channelService: ChannelService,
+    readonly battlesService: BattlesService
   ) {
-    super(chatService, usersService, channelService);
+    super(chatService, usersService, channelService, battlesService);
   }
 
   async handleConnection(socket: Socket) {}

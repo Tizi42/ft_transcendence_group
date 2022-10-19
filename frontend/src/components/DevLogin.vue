@@ -15,7 +15,7 @@
 <script lang="ts" setup defer>
 import { ref, defineComponent, defineExpose } from "vue";
 
-let email = ref("user0@student.42.fr");
+let email = ref("user2@student.42.fr");
 
 function onSubmit() {
   window.location.href =
