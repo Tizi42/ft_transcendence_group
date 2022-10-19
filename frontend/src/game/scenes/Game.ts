@@ -85,10 +85,12 @@ export default class GameScene extends Phaser.Scene {
       // this.ball.setVelocity(data.vx, data.vy);
     });
 
-    socket.on("end", (data: any) => {
-      this.winner = data.winner;
-      this.scene.start("GameOverScene", { winner: this.winner });
-    });
+    if (gameInfo.user_role !== "left") {
+      socket.on("end", (data: any) => {
+        this.winner = data.winner;
+        this.scene.start("GameOverScene", { winner: this.winner });
+      });
+    }
   }
 
   // timer = 0;
@@ -197,6 +199,8 @@ export default class GameScene extends Phaser.Scene {
     socket.emit("game_end", {
       room_name: gameInfo.room_name,
       winner: this.winner,
+      left: this.score_left,
+      right: this.score_right,
     });
     this.scene.start("GameOverScene", { winner: this.winner });
   }

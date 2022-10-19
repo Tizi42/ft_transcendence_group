@@ -72,7 +72,6 @@ const emojiDateL: Ref<Date> = ref(new Date());
 const emojiDateR: Ref<Date> = ref(new Date());
 const dataReady: Ref<boolean> = ref(false);
 const readyStatus: Ref<Array<boolean>> = ref([false, false]);
-const timer: Ref<Date> = ref(new Date());
 const scores: Ref<Array<number>> = ref([0, 0]);
 const emojisURL: Array<URL> = [];
 const force_quit = ref(false);
@@ -98,6 +97,7 @@ function createUserMinimal(user: User | null): UserMinimal {
   if (user == null) return newUser;
   newUser.id = user.id;
   newUser.displayName = user.displayName;
+  newUser.picture = user.picture;
   return newUser;
 }
 
@@ -185,7 +185,6 @@ onBeforeMount(async () => {
   console.log("on before mount in game overlay...");
   await getPlayersInfo();
   loadEmojis();
-  timer.value = new Date();
   socket.on("receive_message_ingame", async (data: any) => {
     updateMessage(data);
   });

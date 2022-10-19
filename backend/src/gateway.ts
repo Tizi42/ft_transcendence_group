@@ -3,6 +3,7 @@ import { Server, Socket } from "socket.io";
 import { ChannelService } from "./channel/channel.service";
 import { ChatService } from "./chat/chat.service";
 import { UsersService } from "./users/users.service";
+import { BattlesService } from "./battles/battles.service";
 
 @WebSocketGateway({
   cors: {
@@ -19,6 +20,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     readonly chatService: ChatService,
     readonly usersService: UsersService,
     readonly channelService: ChannelService,
+    readonly battlesService: BattlesService
   ) {}
 
   async handleConnection(socket: Socket) {

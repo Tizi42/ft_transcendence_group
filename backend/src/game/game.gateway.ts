@@ -8,6 +8,7 @@ import { UsersService } from '../users/users.service';
 import { GameService } from './game.service';
 import { ChatService } from '../chat/chat.service';
 import { ChannelService } from 'src/channel/channel.service';
+import { BattlesService } from '../battles/battles.service';
 
 export class GameGateway extends AppGateway {
 
@@ -15,9 +16,9 @@ export class GameGateway extends AppGateway {
     readonly chatService: ChatService,
     readonly usersService: UsersService,
     readonly channelService: ChannelService,
-    readonly gameService: GameService,
+    readonly battlesService: BattlesService,
   ) {
-    super(chatService, usersService, channelService);
+    super(chatService, usersService, channelService, battlesService);
   }
 
   private static queues = {
@@ -42,13 +43,24 @@ export class GameGateway extends AppGateway {
 
   async handleConnection(socket: Socket) {}
 
-  handleDisconnect(socket: Socket) {
-    if (GameGateway.queues.normal.sid === socket.id)
+  async handleDisconnect(@ConnectedSocket() socket: Socket) {
+    //check if socket is in queue
+    if (GameGateway.queues.normal.sid === socket.id) {
+      console.log("socket disconnect, quit queue");
       this.cleanQueue("normal");
+    }
     else if (GameGateway.queues.magic.sid === socket.id)
       this.cleanQueue("magic");
       else if (GameGateway.queues.speed.sid === socket.id)
         this.cleanQueue("speed");
+
+    // check if socket is in game
+    let room_name = GameGateway.inGameSockets.get(socket.id);
+    if (room_name) {
+      let room = GameGateway.rooms.get(room_name);
+      this.server.to(room.room_name).emit("quit_game");
+      this.closeRoom(room);
+    }
   }
 
   createGameRoom(
@@ -74,6 +86,8 @@ export class GameGateway extends AppGateway {
   }
 
   closeRoom(room: GameRoom) {
+    if (!room)
+      return;
     this.server.in(room.room_name).socketsLeave(room.room_name);
     this.usersService.updateUserStatus(room.playerL, "leave game");
     this.usersService.updateUserStatus(room.playerR, "leave game");
@@ -87,6 +101,24 @@ export class GameGateway extends AppGateway {
   cleanQueue(mode: string) {
     GameGateway.queues[mode].id = -1;
     GameGateway.queues[mode].sid = "";
+  }
+
+  async start_game(room: GameRoom) {
+    this.server.to(room.room_name).emit("game_start");
+    console.log(this.battlesService);
+    room.current_game_id = await this.battlesService.addOne({
+      opponent1: room.playerL,
+      opponent2: room.playerR,
+    });
+  }
+
+  save_game(room: GameRoom) {
+    this.battlesService.end(
+      room.current_game_id,
+      room.winner,
+      room.score_left,
+      room.score_right
+    );
   }
 
   @SubscribeMessage('queue_register')
@@ -204,7 +236,7 @@ export class GameGateway extends AppGateway {
       room.ready = data.user_id;
     else {
       room.ready = 0;
-      this.server.to(data.room_name).emit("game_start");
+      this.start_game(room);
     }
   }
 
@@ -297,9 +329,7 @@ export class GameGateway extends AppGateway {
     @MessageBody() data: any
   ){
     console.log("game end, winner is player ", data.winner);
-
     const room = GameGateway.rooms.get(data.room_name);
-
     if (!room)
       return null;
 
@@ -312,9 +342,10 @@ export class GameGateway extends AppGateway {
       room.winner = room.playerR;
 
     //update battle history database
+    this.save_game(room);
 
     // inform other users in game room
-    socket.to(data.room_name).emit("end", {
+    this.server.to(data.room_name).emit("end", {
       winner: data.winner,
     });
   }

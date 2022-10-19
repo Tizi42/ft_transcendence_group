@@ -1,6 +1,7 @@
 import { Socket, Server } from 'socket.io';
 
 export class GameRoom {
+  current_game_id: number;
   score_left: number = 0;
   score_right: number = 0;
   winner: number;
