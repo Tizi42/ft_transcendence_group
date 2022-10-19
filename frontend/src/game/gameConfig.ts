@@ -37,8 +37,15 @@ function launch(containerId: string, data: any) {
     physics: {
       default: "arcade",
     },
-    parent: containerId,
+    // parent: containerId,
     backgroundColor: "#1E2B02",
+    scale: {
+      mode: Phaser.Scale.FIT,
+      parent: containerId,
+      autoCenter: Phaser.Scale.CENTER_BOTH,
+      width: 1043,
+      height: 591,
+    },
     // plugins: {
     //   global: [
     //     // key is plugin key, plugin is class, start true/false if there

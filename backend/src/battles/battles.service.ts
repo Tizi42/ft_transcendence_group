@@ -63,20 +63,25 @@ export class BattlesService {
     await this.battlesRepository.delete(id);
   }
 
-  async end(id: number, winner: number) {
+  async end(id: number, winner: number, score1: number, score2: number) {
     let battle = await this.battlesRepository.findOneBy({id});
     let looser: number = (winner == battle.opponent1 ? battle.opponent2 : battle.opponent1);
     battle.winner = winner;
+    battle.score1 = score1;
+    battle.score2 = score2;
+    battle.isFinished = true;
     this.battlesRepository.save(battle);
     this.usersService.updateResult(winner, true);
     this.usersService.updateResult(looser, false);
   }
 
-  addOne(game: BattleDto) {
+  async addOne(game: BattleDto) {
     let newBattle = new Battle();
     newBattle.opponent1 = game.opponent1;
     newBattle.opponent2 = game.opponent2;
-	  this.battlesRepository.insert(newBattle);
+    newBattle.date_start = new Date();
+	  let result = await this.battlesRepository.insert(newBattle);
+    return (result.identifiers[0].id);
   }
 
   getRandomInt(max: number = 100) : number {

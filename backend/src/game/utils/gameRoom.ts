@@ -1,6 +1,7 @@
 import { Socket, Server } from 'socket.io';
 
 export class GameRoom {
+  current_game_id: number;
   score_left: number = 0;
   score_right: number = 0;
   winner: number;
@@ -12,6 +13,8 @@ export class GameRoom {
   // paddle_height: number = 80;
   paddle_left_pos_y: number = this.height * 0.5;
   paddle_right_pos_y: number = this.height * 0.5;
+  spell_L: number = 0;
+  spell_R: number = 0;
 
   // server: Server;
   // lag: number = 30;

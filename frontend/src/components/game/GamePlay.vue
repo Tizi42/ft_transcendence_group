@@ -28,9 +28,9 @@ let gameInstance: Game | null = null;
 const containerId = "game-container";
 const game = await import("@/game/gameConfig");
 
-onBeforeUnmount(() => {
-  // gameInstance.destroy(true, false);
-});
+// onBeforeUnmount(() => {
+//   gameInstance?.destroy(false, false);
+// });
 
 onMounted(() => {
   gameInfo.setInfo(user.id, props.room_name, props.user_role, props.mode);
@@ -50,8 +50,8 @@ defineExpose(
 
 <style scoped>
 .game-frame {
-  height: 100vh;
-  width: 100vw;
+  height: 70vh;
+  width: 70vw;
   display: flex;
   flex-direction: column;
   align-items: center;
