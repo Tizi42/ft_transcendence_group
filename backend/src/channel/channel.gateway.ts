@@ -86,25 +86,37 @@ export class ChannelGateway extends AppGateway {
     }
   }
 
-  @SubscribeMessage('send_request')
-  async handleSendingRequest(
+  @SubscribeMessage('send_join_request')
+  async handleJoinRequest(
     @MessageBody() channel: any,
     @ConnectedSocket() socket: Socket,
   ) {
     console.log("request iciiii");
     const auth = await this.channelService.joinRequest(socket.data.id, channel.id)
-    console.log("channel ?", channel);
     console.log("pending ?", channel.pending);
-    this.server.sockets.to(channel.owner).emit('receive_pending_request', auth);
+    this.server.sockets.to(channel.owner).emit('receive_pending_request', auth, channel.id);
   }
 
-  @SubscribeMessage('accept_request')
-  async handleComingRequest(
-    @MessageBody() channel: any,
+  @SubscribeMessage('accept_join_request')
+  async handleAcceptingRequest(
+    @MessageBody() request: any,
     @ConnectedSocket() socket: Socket,
   ) {
-    const auth = await this.channelService.joinChannel(socket.data.id, channel.id)
-    this.server.sockets.to(socket.data.id).emit('received_request', auth);
+    if (socket.data.id !== request.channel.owner)
+      return console.log("unauthorized");
+    await this.channelService.joinChannel(request.user.id, request.channel.id);
+    this.server.sockets.to(request.user.id).emit('received_accepted_request', request.channel.id);
+  }
+
+  @SubscribeMessage('refuse_join_request')
+  async handleRefusingRequest(
+    @MessageBody() request: any,
+    @ConnectedSocket() socket: Socket,
+  ) {
+    if (socket.data.id !== request.channel.owner)
+      return console.log("unauthorized");
+    await this.channelService.refuseJoining(request.user.id, request.channel.id);
+    this.server.sockets.to(request.user.id).emit('received_refused_request');
   }
 
 }

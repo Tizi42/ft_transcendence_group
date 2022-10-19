@@ -76,7 +76,6 @@ const channelJoined: Ref<any> = ref();
 socket.emit("get_all_channels");
 socket.on("receive_all_channels", (channels: any) => {
   allChannels.value = channels;
-  // isMember.value = found;
 });
 
 onBeforeMount(async () => {
@@ -90,15 +89,13 @@ const setSelectedChannel = (channelId: number) => {
 
 async function isMember(channelId: number) {
   let found;
-  console.log("coucouuuu = ", props.user.id);
-  await fetch(
-    getUrlOf(
-      "api/channel/isMember?channel=" + channelId + "&user=" + props.user.id
-    ),
-    {
-      credentials: "include",
-    }
-  )
+  console.log("hello ?");
+  await fetch(getUrlOf("api/channel/isMember/" + channelId), {
+    credentials: "include",
+  })
+    .then((response) => {
+      return response.json();
+    })
     .then((response) => {
       found = response;
     })
@@ -112,7 +109,7 @@ async function isMember(channelId: number) {
 const toJoin = (channel: any) => {
   channelJoined.value = channel;
   // isMember.value = true;
-  addWindow.value = true;let getFriendLvl: Response = 
+  addWindow.value = true;
   // socket.emit("join_channel", channel.id);
   // socket.on("joined_channel", (channel: any) => {
   // emit("addChannelToList", channel);

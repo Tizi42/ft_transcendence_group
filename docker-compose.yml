@@ -8,8 +8,8 @@ services:
     image: nestjs:1.0
     networks:
       - transcendence
-    depends_on:
-      - database
+    # depends_on:
+    #   - database
     ports:
       - 3000:3000
     volumes:
@@ -31,18 +31,18 @@ services:
       - ./frontend:/usr/src/app
       - /usr/src/app/node_modules
 
-  database:
-    container_name: ${CONTAINER_NAME_DATABASE}
-    image: postgres
-    restart: always
-    env_file:
-      - .env
-    networks:
-      - transcendence
-    ports:
-      - '9876:5432'
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
+  # database:
+  #   container_name: ${CONTAINER_NAME_DATABASE}
+  #   image: postgres
+  #   restart: always
+  #   env_file:
+  #     - .env
+  #   networks:
+  #     - transcendence
+  #   ports:
+  #     - '9876:5432'
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
 
   pgadmin:
     container_name: pgadmin4_container

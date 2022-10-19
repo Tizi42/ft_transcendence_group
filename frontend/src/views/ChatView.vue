@@ -13,10 +13,10 @@
         :user="user"
       />
       <ChannelsList
-        v-else
-        @getChannelSelected="handleChannelSelected"
-        :selectedChannel="selectedChannel"
-        :user="user"
+      v-else
+      @getChannelSelected="handleChannelSelected"
+      :selectedChannel="selectedChannel"
+      :user="user"
       />
     </div>
     <div class="container-chat">
@@ -52,6 +52,7 @@ import HistoryMessages from "@/components/chat/HistoryMessages.vue";
 import MessageInput from "@/components/chat/MessageInput.vue";
 import { getUrlOf } from "@/router";
 import AllChannelsSelected from "@/components/chat/AllChannelsSelected.vue";
+import socket from "@/socket";
 
 const user: any = useUserStore();
 const isActive: Ref<string> = ref("players");
