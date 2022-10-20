@@ -28,10 +28,12 @@ export class GameRoom {
   readonly paddle_height_half = 40;
   readonly paddle_left_x = this.width * 0.02; //paddle_width is 10
   readonly paddle_right_x  = this.width * 0.98;
+  readonly max_angle = Math.PI / 4;
 
   // changeable
   paddle_velocity = 10;
-  ball_velocity = 7.5; // 5 pixels per 25ms, 300 pixels per 1000ms
+  ball_velocity_init = 7.5; // 7.5 pixels per 25ms, 300 pixels per 1000ms
+  ball_velocity = this.ball_velocity_init;
   
   // update game
   update_frequencey = 25; // 1 time per 25ms, 40th of a second
@@ -59,24 +61,21 @@ export class GameRoom {
     this.room_name = l + " vs " + r;
     this.server = server;
     if (this.mode === "speed") {
-      this.ball_velocity = 15;
+      this.ball_velocity_init = 15;
       this.paddle_velocity = 12;
     }
   }
 
-  getRandomIntBetween(min: number, max: number) {
-    return Math.floor(Math.random() * (max - min + 1) + min)
+  getRandomNumberBetween(min: number, max: number) {
+    return Math.random() * (max - min) + min;
   }
 
   getRandomVelocity(direction: string) {
-    let minVelocity = this.ball_velocity - 2.5;
-    let maxVelocity = this.ball_velocity;
-    let vx = this.getRandomIntBetween(minVelocity, maxVelocity);
-    let vy = this.getRandomIntBetween(minVelocity, maxVelocity);
+    let angle = this.getRandomNumberBetween(-this.max_angle, this.max_angle);
+    let vx = this.ball_velocity * Math.cos(angle);
+    let vy = this.ball_velocity * Math.sin(angle);
     if (direction === "toLeft")
       vx = -vx;
-    if (this.getRandomIntBetween(0, 1) === 0)
-      vy = -vy;
     return ([
       vx,
       vy
@@ -87,7 +86,8 @@ export class GameRoom {
   {
     console.log("on ball launch");
     // intial ball's launch position and velocity
-    const randomHeight = this.getRandomIntBetween(80, 511); // height 591 - 80 
+    this.ball_velocity = this.ball_velocity_init;
+    const randomHeight = this.getRandomNumberBetween(80, 511); // height 591 - 80 
     const randVelocity = this.getRandomVelocity(direction);
     this.ball_x = this.width / 2;
     this.ball_y = randomHeight;
@@ -127,9 +127,10 @@ export class GameRoom {
       ball_top < this.paddle_left_y + this.paddle_height_half &&
       ball_bottom > this.paddle_left_y - this.paddle_height_half
     ){
-      let bounce_angle = (Math.PI / 4) * ((this.paddle_left_y + 40 - this.ball_y) / 40);
+      this.ball_velocity *= 1.05;
+      let bounce_angle = this.max_angle * ((this.ball_y - this.paddle_left_y) / 40);
       this.ball_velocity_x = this.ball_velocity * Math.cos(bounce_angle);
-      this.ball_velocity_y = this.ball_velocity * -Math.sin(bounce_angle);
+      this.ball_velocity_y = this.ball_velocity * Math.sin(bounce_angle);
     }
     else if (
       ball_right < this.paddle_right_x + 5 &&
@@ -137,9 +138,10 @@ export class GameRoom {
       ball_top < this.paddle_right_y + this.paddle_height_half &&
       ball_bottom > this.paddle_right_y - this.paddle_height_half
     ){
-      let bounce_angle = (5 * Math.PI / 12) * ((this.paddle_right_y + 40 - this.ball_y) / 40);
-      this.ball_velocity_x = this.ball_velocity * Math.cos(bounce_angle);
-      this.ball_velocity_y = this.ball_velocity * -Math.sin(bounce_angle);
+      this.ball_velocity *= 1.05;
+      let bounce_angle = this.max_angle * ((this.ball_y - this.paddle_right_y) / 40);
+      this.ball_velocity_x = -this.ball_velocity * Math.cos(bounce_angle);
+      this.ball_velocity_y = this.ball_velocity * Math.sin(bounce_angle);
     }
   }
 
