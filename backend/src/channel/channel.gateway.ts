@@ -132,6 +132,7 @@ export class ChannelGateway extends AppGateway {
     {
       const channelName = await this.channelService.muteUser(data.channelId, data.userToMuteId);
       if (channelName != null) {
+        // this.server.sockets.to(channelName).emit('muted_user', data.channelId, data.userToMuteId, channelName);
         this.server.sockets.to(channelName).emit('channel_updated', data.channelId);
         setTimeout(async () => {
           await this.channelService.unMuteUser(data.channelId, data.userToMuteId);

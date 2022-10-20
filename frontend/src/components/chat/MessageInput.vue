@@ -19,7 +19,7 @@
           v-else
           v-model="messageText"
           type="text"
-          placeholder="Your message.."
+          placeholder="You've been muted.."
           class="message-text"
           disabled
         />
@@ -72,6 +72,10 @@ const onSubmit = (receiver: number, selectedChannel: number) => {
     });
   }
 };
+
+socket.on("muted_by", (channelId: number, userId: number) => {
+  console.log("You've been muted by", userId, "in channel id", channelId);
+});
 
 defineExpose(
   defineComponent({

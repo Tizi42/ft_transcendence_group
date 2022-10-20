@@ -85,7 +85,7 @@ export class ChatGateway extends AppGateway {
   async handleFriendship(
     @MessageBody() data: FriendShip,
   ) {
-    this.server.sockets.to(data.to).emit('receive_friendship', data);
+    this.server.sockets.to(data.to).emit('update_friendship', data);
   }
 
   @SubscribeMessage('remove_notification')

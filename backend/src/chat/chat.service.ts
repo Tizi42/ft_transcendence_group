@@ -64,18 +64,27 @@ export class ChatService {
                 }
             }],
         });
-        // console.log("query = ", query);
         return query;
     }
 
-    async getChannelMessagesById(channelId: number, authorId: number): Promise<Chat[]> {
+    async getChannelMessagesById(channelId: number, authorId: number, blockedByAuthor: number[]): Promise<Chat[]> {
         const query = await this.chatRepository.find({
             relations: ['author'],
             where: {
                 channelId: channelId,
             },
-        });        
+            order: {
+                id: "ASC",
+            }
+        });
         console.log("query = ", query);
+        for (let i = 0; i < query.length; i++) {
+            for (let j = 0; j < blockedByAuthor.length; j++) {
+                if (query[i].author.id === blockedByAuthor[j]) {
+                    query[i].content = "🚫 blocked by you 🚫";
+                }
+            }
+        }
         return query;
     }
 

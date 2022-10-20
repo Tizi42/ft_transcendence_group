@@ -41,6 +41,7 @@ import { ref, defineComponent, defineExpose } from "vue";
 import { useUserStore } from "@/stores/user";
 import socket from "@/socket";
 import axios from "axios";
+import { getUrlOf } from "@/router";
 
 const user = useUserStore();
 let input = ref("");
@@ -81,27 +82,35 @@ function onClickSearch() {
     });
 }
 
-function onSend() {
+async function onSend() {
   const data = {
     from: user.id,
     to: targetUser.value.id,
   };
-  socket.emit("request_friendship", data);
   axios
     .post("http://localhost:3000/api/users/friends/add", {
       id1: user.id,
       id2: targetUser.value.id,
     })
     .then(function (response) {
-      console.log(response);
-      pending.value = true;
+      console.log("response = ", response);
+      if (response.data != "") {
+        pending.value = true;
+        socket.emit("request_friendship", data);
+      } else {
+        alert("You've been blocked by this user !");
+      }
     })
     .catch(function (error) {
       console.log(error);
     });
 }
 
-function onCancel() {
+async function onCancel() {
+  const data = {
+    from: user.id,
+    to: targetUser.value.id,
+  };
   axios
     .post("http://localhost:3000/api/users/friends/ignore", {
       id1: user.id,
@@ -110,6 +119,7 @@ function onCancel() {
     .then(function (response) {
       console.log(response);
       pending.value = false;
+      socket.emit("request_friendship", data);
     })
     .catch(function (error) {
       console.log(error);

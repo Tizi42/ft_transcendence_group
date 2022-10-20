@@ -7,20 +7,20 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineComponent, defineExpose, defineEmits } from "vue";
 import { useClickOutside } from "@/composables/useClickOutside";
+import { ref, defineComponent, defineExpose, defineEmits } from "vue";
 import InvitationContent from "../../game/invitation/InvitationContent.vue";
 
 const emit = defineEmits(["hideInvitation"]);
 const modal = ref();
 
-// useClickOutside(modal, () => {
-//   emit("hide");
-// });
+useClickOutside(modal, () => {
+  emit("hideInvitation");
+});
 
 defineExpose(
   defineComponent({
-    name: "SimpleModal",
+    name: "InvitationModal",
   })
 );
 </script>

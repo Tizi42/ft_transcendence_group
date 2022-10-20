@@ -31,17 +31,23 @@
 import { defineComponent, defineExpose, defineProps } from "vue";
 import { useUserStore } from "@/stores/user";
 import axios from "axios";
+import socket from "@/socket";
 
 const user = useUserStore();
 const props = defineProps(["sender"]);
 
-function onHandleFriendRequest(action: string) {
+async function onHandleFriendRequest(action: string) {
+  const data = {
+    from: user.id,
+    to: props.sender.id,
+  };
   axios
     .post("http://localhost:3000/api/users/friends/" + action, {
       id1: props.sender.id,
       id2: user.id,
     })
     .then((response) => {
+      socket.emit("request_friendship", data);
       user.doFetchPending();
       user.doFetchFriends();
       console.log(response);

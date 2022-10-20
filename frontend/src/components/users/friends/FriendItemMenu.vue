@@ -23,6 +23,7 @@ import {
 import { useUserStore } from "@/stores/user";
 import { useClickOutside } from "@/composables/useClickOutside";
 import axios from "axios";
+import socket from "@/socket";
 
 const user = useUserStore();
 const props = defineProps(["friend"]);
@@ -34,8 +35,12 @@ function onInvitePlay() {
   emit("inviting");
 }
 
-function onRemoveFriend() {
+async function onRemoveFriend() {
   console.log("remove ", props.friend.id);
+  const data = {
+    from: user.id,
+    to: props.friend.id,
+  };
   axios
     .post("http://localhost:3000/api/users/friends/rm/", {
       id1: user.id,
@@ -44,6 +49,7 @@ function onRemoveFriend() {
     .then((response) => {
       user.doFetchFriends();
       console.log(response);
+      socket.emit("request_friendship", data);
     })
     .catch((error) => {
       console.log(error);
@@ -53,6 +59,10 @@ function onRemoveFriend() {
 
 function onBlockUser() {
   console.log("block ", props.friend.id);
+  const data = {
+    from: user.id,
+    to: props.friend.id,
+  };
   axios
     .post("http://localhost:3000/api/users/block/add/", {
       id1: user.id,
@@ -61,6 +71,7 @@ function onBlockUser() {
     .then((response) => {
       user.doFetchFriends();
       console.log(response);
+      socket.emit("request_friendship", data);
     })
     .catch((error) => {
       console.log(error);
