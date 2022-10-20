@@ -6,6 +6,7 @@
         id="input-search-all-channels"
         type="text"
         placeholder="Search all channels..."
+        v-model="inputSearch"
       />
       <button type="submit">
         <img src="@/assets/icons/search.svg" />
@@ -69,6 +70,7 @@ interface Props {
 
 const addWindow: Ref<boolean> = ref(false);
 const selectedChannel: Ref<number> = ref(-1);
+const inputSearch: Ref<string> = ref("");
 const allChannels: Ref<any> = ref([]);
 const props: Readonly<Props> = defineProps<Props>();
 const channelJoined: Ref<any> = ref();

@@ -1,13 +1,13 @@
 <template>
   <div class="page">
-    <div class="title">
-      <div class="titleName">
-        <img src="@/assets/icons/leaderboard.svg" />
-        <h1>Leaderboard</h1>
-      </div>
-      <button class="reload" @click="reloadAll()"></button>
-    </div>
     <div class="content">
+      <div class="title">
+        <div class="titleName">
+          <img src="@/assets/icons/leaderboard.svg" />
+          <h1>Leaderboard</h1>
+        </div>
+        <button class="reload" @click="reloadAll()"></button>
+      </div>
       <LeaderBoard
         title="Global"
         :ready="dataReady[0]"

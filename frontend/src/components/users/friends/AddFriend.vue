@@ -1,5 +1,5 @@
 <template>
-  <form id="search-form" @submit.prevent="onClickSearch">
+  <form id="search-form-friend" @submit.prevent="onClickSearch">
     <input
       id="search-input"
       v-model="input"
@@ -39,7 +39,9 @@
 <script lang="ts" setup>
 import { ref, defineComponent, defineExpose } from "vue";
 import { useUserStore } from "@/stores/user";
+import socket from "@/socket";
 import axios from "axios";
+import { getUrlOf } from "@/router";
 
 const user = useUserStore();
 let input = ref("");
@@ -80,22 +82,35 @@ function onClickSearch() {
     });
 }
 
-function onSend() {
+async function onSend() {
+  const data = {
+    from: user.id,
+    to: targetUser.value.id,
+  };
   axios
     .post("http://localhost:3000/api/users/friends/add", {
       id1: user.id,
       id2: targetUser.value.id,
     })
     .then(function (response) {
-      console.log(response);
-      pending.value = true;
+      console.log("response = ", response);
+      if (response.data != "") {
+        pending.value = true;
+        socket.emit("request_friendship", data);
+      } else {
+        alert("You've been blocked by this user !");
+      }
     })
     .catch(function (error) {
       console.log(error);
     });
 }
 
-function onCancel() {
+async function onCancel() {
+  const data = {
+    from: user.id,
+    to: targetUser.value.id,
+  };
   axios
     .post("http://localhost:3000/api/users/friends/ignore", {
       id1: user.id,
@@ -104,6 +119,7 @@ function onCancel() {
     .then(function (response) {
       console.log(response);
       pending.value = false;
+      socket.emit("request_friendship", data);
     })
     .catch(function (error) {
       console.log(error);
@@ -129,20 +145,49 @@ defineExpose(
   margin: 7%;
 }
 
-#search-form {
+#search-form-friend {
   display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: center;
+  height: fit-content;
+  width: fit-content;
 }
 
 #search-input {
-  height: fit-content;
-  width: fit-content;
-  margin: 1em;
   font-size: 22px;
+  outline: none;
+  display: block;
+  font-family: "Outfit";
+  text-align: center;
+  background: rgba(30, 42, 2, 0.7);
+  box-shadow: inset 0px 0px 4px 3px rgba(0, 0, 0, 0.25);
+  border-radius: 22px;
+  border: none;
+  font-size: 1em;
+  line-height: 3.3em;
+  width: 70%;
+  color: #ffffff;
+  transition: transform 0.5s ease;
 }
 
 #search-button {
-  margin: 10px;
-  padding: 0;
+  display: block;
+  font-family: "Outfit Bold";
+  background: #1e2a02;
+  box-shadow: 0px 0px 4px 3px rgba(0, 0, 0, 0.25);
+  border-radius: 22px;
+  line-height: 2.3em;
+  border: none;
+  font-size: 24px;
+  color: #ffffff;
+  width: 40%;
+  padding: 0em 1em;
+  transition: transform 0.5s ease;
+}
+
+#search-button:hover {
+  transform: scale(1.05, 1.05);
 }
 
 #search-result {
@@ -153,10 +198,12 @@ defineExpose(
   background-color: grey;
   border-radius: 10px;
 }
+
 .target-info {
   display: flex;
   align-items: center;
 }
+
 .buttons {
   margin-left: auto;
   margin-right: 1em;

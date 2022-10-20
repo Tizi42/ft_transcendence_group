@@ -1,22 +1,42 @@
 <template>
   <div class="menu">
-    <router-link :to="{ name: 'play' }" class="gameButtonPlay">
-      Play !
-    </router-link>
-    <router-link :to="{ name: 'play' }" class="gameButton">
-      Watch a game
-    </router-link>
-    <router-link :to="{ name: 'leaderboard' }" class="gameButton">
-      Leaderboard
-    </router-link>
-    <router-link :to="{ name: 'history' }" class="gameButton">
-      Match history
-    </router-link>
+    <div class="menuBox">
+      <router-link :to="{ name: 'play' }" class="gameButtonPlay">
+        Play !
+      </router-link>
+      <router-link :to="{ name: 'watch' }" class="gameButton">
+        Watch a game
+      </router-link>
+      <router-link :to="{ name: 'leaderboard' }" class="gameButton">
+        Leaderboard
+      </router-link>
+      <router-link :to="{ name: 'history' }" class="gameButton">
+        Match history
+      </router-link>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose } from "vue";
+import { defineComponent, defineExpose, onBeforeMount } from "vue";
+import { onBeforeRouteLeave } from "vue-router";
+import { useUserStore } from "@/stores/user";
+
+const user = useUserStore();
+onBeforeRouteLeave((to: any, from: any) => {
+  if (
+    user.status === "in game" &&
+    (to.name === "play" || to.name === "watch")
+  ) {
+    window.alert("You already have a running game, please close it first.");
+    return false;
+  }
+  return true;
+});
+
+onBeforeMount(() => {
+  user.doFetch();
+});
 
 defineExpose(
   defineComponent({
@@ -40,7 +60,6 @@ defineExpose(
   border: solid;
   border: 5px solid var(--main-color);
   border-radius: 53px;
-  margin-top: 30px;
   transition: all 0.3s ease-out;
 }
 
@@ -56,9 +75,23 @@ defineExpose(
   height: 100vh;
   width: 100vw;
   display: flex;
+  justify-content: center;
+}
+
+.menuBox {
+  display: flex;
+  gap: 20px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  background: #1e2a02cc;
+  box-shadow: 0px 0px 8px #000000bf;
+  border-radius: 58px;
+  padding: 3% 6%;
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
 }
 
 .gameButton:hover,

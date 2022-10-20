@@ -83,6 +83,7 @@ const inputSearch: Ref<string> = ref("");
 const selectedChannel: Ref<number> = ref(props.selectedChannel);
 const addWindow: Ref<boolean> = ref(false);
 const myChannels: Ref<any> = ref([]);
+const history: Ref<any> = ref([]);
 const channelToJoin: Ref<number> = ref(-1);
 const comingReq: Ref<boolean> = ref(false);
 
@@ -95,6 +96,12 @@ socket.on("receive_channel_created", (newChannel: any) => {
   console.log("new = ", newChannel);
   myChannels.value.push(newChannel);
   console.log("my channelssss = ", myChannels.value);
+});
+
+socket.on("exited_channel_list", () => {
+  myChannels.value = [];
+  socket.emit("get_all_my_channels");
+  getAllChannels();
 });
 
 onBeforeMount(async () => {
@@ -117,9 +124,23 @@ const getAllChannels = () => {
   emit("getChannelSelected", selectedChannel.value);
 };
 
-const getChannelMessages = (channelId: number) => {
+const getChannelMessages = async (channelId: number) => {
   selectedChannel.value = channelId;
+  history.value = [];
   emit("getChannelSelected", selectedChannel.value);
+  await fetch(getUrlOf("api/chat/channelMessages/" + channelId), {
+    credentials: "include",
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      history.value = data;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+  emit("getHistory", history.value);
 };
 
 const addNewChannel = () => {
@@ -139,7 +160,11 @@ function hideReq() {
   comingReq.value = false;
 }
 
-const emit = defineEmits(["getChannelSelected"]);
+socket.on("receive_channel_message", () => {
+  getChannelMessages(selectedChannel.value);
+});
+
+const emit = defineEmits(["getChannelSelected", "getHistory"]);
 
 defineExpose(
   defineComponent({

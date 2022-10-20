@@ -33,5 +33,4 @@ export class Channel {
     
     @Column("int", { array: true, default: {} })
     pendingReqFrom: number[];
-  
 }

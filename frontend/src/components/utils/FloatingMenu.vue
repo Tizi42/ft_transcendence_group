@@ -28,9 +28,10 @@ interface Props {
   background?: string;
   padding?: string;
   direction: string;
+  canClick?: boolean;
 }
 
-withDefaults(defineProps<Props>(), {
+const props: Readonly<Props> = withDefaults(defineProps<Props>(), {
   height: "",
   width: "",
   top: "",
@@ -39,6 +40,7 @@ withDefaults(defineProps<Props>(), {
   bottom: "65px",
   padding: "",
   background: "",
+  canClick: true,
 });
 
 // variables
@@ -50,15 +52,15 @@ function getOpacity(): string {
 }
 
 function toggleMenu() {
-  show.value = !show.value;
+  if (props.canClick) show.value = !show.value;
 }
 
 function openMenu() {
-  show.value = true;
+  if (props.canClick) show.value = true;
 }
 
 function closeMenu() {
-  show.value = false;
+  if (props.canClick) show.value = false;
 }
 
 useClickOutside(menuRef, () => {
