@@ -14,6 +14,7 @@
         :emojiR="emojiR"
         :emojiDateL="emojiDateL"
         :emojiDateR="emojiDateR"
+        :mode="props.mode"
       />
       <GameBox :room_name="room_name" :user_role="user_role" :mode="mode" />
       <OverlayBottomBar

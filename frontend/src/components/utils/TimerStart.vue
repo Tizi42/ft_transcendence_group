@@ -7,16 +7,23 @@
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose, onBeforeMount } from "vue";
-import { Ref, ref } from "vue";
+import { Ref, ref, defineProps } from "vue";
 import socket from "@/socket";
 
+interface Props {
+  mode: string;
+}
+
+const props: Readonly<Props> = defineProps<Props>();
 const timer: Ref<Array<string>> = ref(["00", "00"]);
 const stop = ref(false);
 const time = ref(new Date());
 
 function updateTimer() {
   const curTime = new Date();
-  let milliDiff = curTime.getTime() - time.value.getTime();
+  let milliDiff  = curTime.getTime() - time.value.getTime();
+  if (props.mode == "speed")
+    milliDiff = 180000 - milliDiff;
   let minutes = Math.floor(milliDiff / 60000);
   let seconds = Math.floor(milliDiff / 1000) - 60 * minutes;
   timer.value[0] = (minutes < 10 ? "0" : "") + minutes.toString();
@@ -29,6 +36,10 @@ function updateTimer() {
 }
 
 onBeforeMount(() => {
+  if (props.mode == "speed") {
+    timer.value = ["03", "00"];
+  }
+
   socket.on("game_start", (data: any) => {
     time.value = new Date();
     stop.value = false;
