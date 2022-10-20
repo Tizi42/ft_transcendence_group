@@ -30,6 +30,11 @@
   >
     <h3>All channels</h3>
   </div>
+  <PendingChannelReq
+    v-if="comingReq"
+    @hideReq="hideReq"
+    :channelToJoin="channelToJoin"
+  />
   <ul class="list-my-channels">
     <li
       v-for="channel in myChannels"
@@ -46,7 +51,7 @@
   </ul>
   <Teleport to="body">
     <ChannelBoxModal v-if="addWindow" @hide="hide">
-      <AddChannelBox :user="user" />
+      <AddChannelBox :user="user" @hideAddChannel="hide" />
     </ChannelBoxModal>
   </Teleport>
 </template>
@@ -66,7 +71,7 @@ import ChannelBoxModal from "./ChannelBox/ChannelBoxModal.vue";
 import AddChannelBox from "./ChannelBox/AddChannelBox.vue";
 import socket from "@/socket";
 import { userInfoStore } from "@/stores/user";
-import { getUrlOf } from "@/router";
+import PendingChannelReq from "@/components/chat/PendingChannelReq.vue";
 
 interface Props {
   selectedChannel: number;
@@ -79,9 +84,17 @@ const selectedChannel: Ref<number> = ref(props.selectedChannel);
 const addWindow: Ref<boolean> = ref(false);
 const myChannels: Ref<any> = ref([]);
 const history: Ref<any> = ref([]);
+const channelToJoin: Ref<number> = ref(-1);
+const comingReq: Ref<boolean> = ref(false);
+
+socket.on("receive_pending_request", (request: boolean, channelId: number) => {
+  comingReq.value = request;
+  channelToJoin.value = channelId;
+});
 
 socket.on("receive_channel_created", (newChannel: any) => {
   console.log("new = ", newChannel);
+  myChannels.value.push(newChannel);
   console.log("my channelssss = ", myChannels.value);
 });
 
@@ -141,6 +154,10 @@ const onSubmit = () => {
 
 function hide() {
   addWindow.value = false;
+}
+
+function hideReq() {
+  comingReq.value = false;
 }
 
 socket.on("receive_channel_message", () => {
