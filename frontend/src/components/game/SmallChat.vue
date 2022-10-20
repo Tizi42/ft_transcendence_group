@@ -4,11 +4,12 @@
       id="inputChat"
       class="chatBar"
       v-model="message"
-      placeholder="Chat here..."
-      maxlength="80"
+      :placeholder="placeHolder()"
+      :maxlength="maxLen()"
       @focusin="chatting(true)"
       @focusout="chatting(false)"
       @submit="sendMsg"
+      :disabled="!isAllowed()"
     />
     <button class="sendMsg" @click="sendMsg" />
   </div>
@@ -19,21 +20,41 @@ import { defineComponent, defineExpose, ref, Ref } from "vue";
 import { defineProps, defineEmits } from "vue";
 import socket from "@/socket";
 import { UserMinimal } from "@/components/utils/UserMinimal";
+import { messageInGame } from "@backend/chat/utils/types";
 
 interface Props {
   user: UserMinimal;
   room_name: string;
+  role: string;
+  canTalk: boolean;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
 const emit = defineEmits(["getChatting"]);
 const message: Ref<string> = ref("");
 
+function placeHolder(): string {
+  if (props.role == "watch") {
+    if (!isAllowed()) return "Turn on viewers chat in settings to chat";
+    return "Chat in viewers chat...";
+  }
+  return "Chat here...";
+}
+
+function maxLen(): number {
+  if (props.role == "watch") return 500;
+  return 80;
+}
+
+function isAllowed() {
+  return props.role != "watch" || props.canTalk;
+}
+
 function sendMsg() {
   if (message.value != "") {
-    const data = {
+    const data: messageInGame = {
       content: message.value,
-      author: props.user.id,
+      author: props.user.id.toString(),
       dest: props.room_name,
     };
     socket.emit("send_message_ingame", data);

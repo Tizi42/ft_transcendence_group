@@ -26,6 +26,7 @@
         @getChannelSelected="handleChannelSelected"
       />
       <HistoryMessages
+        v-if="receiverProfile != null"
         :history="history"
         :target="receiverProfile"
         :isActive="isActive"
@@ -53,15 +54,16 @@ import ChannelsList from "@/components/chat/ChannelsList.vue";
 import HistoryMessages from "@/components/chat/HistoryMessages.vue";
 import MessageInput from "@/components/chat/MessageInput.vue";
 import { getUrlOf } from "@/router";
-import { User } from "@backend/users/users.entity";
 import AllChannelsSelected from "@/components/chat/AllChannelsSelected.vue";
 import socket from "@/socket";
+import { Chat } from "@backend/chat/entities/chat.entity";
+import { User } from "@backend/users/users.entity";
 
 const user: any = useUserStore();
 const isActive: Ref<string> = ref("players");
 const receiver: Ref<number> = ref(-1);
-const history: Ref<Array<any>> = ref([]);
-const receiverProfile: Ref<any> = ref(null);
+const history: Ref<Array<Chat>> = ref([]);
+const receiverProfile: Ref<User | null> = ref(null);
 const selectedChannel: Ref<number> = ref(-1);
 const allMyChannels: Ref<Array<any>> = ref([]);
 const channel: Ref<any> = ref(null);

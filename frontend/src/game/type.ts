@@ -5,4 +5,4 @@ type GameStatus =
   | "running"
   | "ended"; //left_won, right_won
 
-  export default GameStatus;
+export default GameStatus;
