@@ -102,7 +102,7 @@ export class GameGateway extends AppGateway {
       opponent1: room.playerL,
       opponent2: room.playerR,
     });
-    room.on_launch("toRight");
+    this.getRandomInt(1) === 1 ? room.on_launch("toRight") : room.on_launch("toLeft");
   }
 
   save_game(room: GameRoom) {
