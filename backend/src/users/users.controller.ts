@@ -101,23 +101,23 @@ export class UsersController {
   */
 
   @Post('/friends/add')
-  addFriend(@Body() friendship: FriendshipDto) {
-    return this.usersService.sendFriendRequest(friendship);
+  async addFriend(@Body() friendship: FriendshipDto) {
+    return await this.usersService.sendFriendRequest(friendship);
   }
 
   @Post('/friends/accept')
-  acceptFriend(@Body() friendship: FriendshipDto) {
-    return this.usersService.acceptFriendRequest(friendship);
+  async acceptFriend(@Body() friendship: FriendshipDto) {
+    return await this.usersService.acceptFriendRequest(friendship);
   }
 
   @Post('/friends/ignore')
-  ignoreFriendRequest(@Body() friendship: FriendshipDto) {
-    return this.usersService.removeFriendRequest(friendship);
+  async ignoreFriendRequest(@Body() friendship: FriendshipDto) {
+    return await this.usersService.removeFriendRequest(friendship);
   }
 
   @Post('/friends/rm')
-  removeFriend(@Body() friendship: FriendshipDto) {
-    return this.usersService.removeFriendship(friendship);
+  async removeFriend(@Body() friendship: FriendshipDto) {
+    return await this.usersService.removeFriendship(friendship);
   }
 
   @Get('/friends/:id')
@@ -131,8 +131,8 @@ export class UsersController {
   }
 
   @Get('/friends/from/:id')
-  getFriendPendingReqFrom(@Param('id') id: number) {
-	  return this.usersService.showFriendPendingReqFrom(id);
+  async getFriendPendingReqFrom(@Param('id') id: number) {
+	  return await this.usersService.showFriendPendingReqFrom(id);
   }
 
   @Get('/friendship')
@@ -146,13 +146,13 @@ export class UsersController {
   */
 
   @Post('/block/add')
-  block(@Body() friendship: FriendshipDto) {
-    return this.usersService.blockRelationship(friendship);
+  async block(@Body() friendship: FriendshipDto) {
+    return await this.usersService.blockRelationship(friendship);
   }
 
   @Post('/block/rm')
-  unblock(@Body() friendship: FriendshipDto) {
-    return this.usersService.unblockRelationship(friendship);
+  async unblock(@Body() friendship: FriendshipDto) {
+    return await this.usersService.unblockRelationship(friendship);
   }
 
   @Get('/block/:id')

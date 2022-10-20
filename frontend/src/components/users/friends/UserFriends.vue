@@ -43,6 +43,7 @@ import FriendItem from "./FriendItem.vue";
 import FriendReqItem from "./FriendReqItem.vue";
 import AddFriend from "./AddFriend.vue";
 import MyModal from "./MyModal.vue";
+import socket from "@/socket";
 
 const user = useUserStore();
 const addWindow = ref(false);
@@ -54,6 +55,11 @@ function onAdd() {
 function hide() {
   addWindow.value = false;
 }
+
+socket.on("update_friendship", async () => {
+  user.doFetchPending();
+  user.doFetchFriends();
+});
 
 onBeforeMount(() => {
   user.doFetchFriends();

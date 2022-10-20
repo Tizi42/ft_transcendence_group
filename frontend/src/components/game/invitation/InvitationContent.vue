@@ -34,9 +34,8 @@
 import { defineComponent, defineExpose, defineProps, defineEmits } from "vue";
 import { ref } from "vue";
 import "@/assets/styles/gameOverlay.css";
-import LoadingRing from "@/components/utils/LoadingRing.vue";
-import socket from "@/socket";
-import { useUserStore } from "@/stores/user";
+import LoadingRing from "../../utils/LoadingRing.vue";
+import { useUserStore } from "../../../stores/user";
 
 const user = useUserStore();
 const emit = defineEmits(["hideInvitation"]);
