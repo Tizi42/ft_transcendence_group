@@ -22,7 +22,7 @@
       <h3>{{ channel.name }}</h3>
       <div class="buttons-channel">
         <button
-          v-if="!isMember(channel.id)"
+          v-if="!isMember(channel)"
           type="submit"
           class="join-channel"
           @click="toJoin(channel)"
@@ -30,6 +30,7 @@
           <h3>Join</h3>
         </button>
         <button
+          v-else
           type="submit"
           class="message-channel icon-image"
           @click="setSelectedChannel(channel.id)"
@@ -62,7 +63,6 @@ import {
   onBeforeMount,
   defineProps,
 } from "vue";
-import { getUrlOf } from "@/router";
 
 interface Props {
   user: userInfoStore;
@@ -75,13 +75,13 @@ const allChannels: Ref<any> = ref([]);
 const props: Readonly<Props> = defineProps<Props>();
 const channelJoined: Ref<any> = ref();
 
-socket.emit("get_all_channels");
 socket.on("receive_all_channels", (channels: any) => {
+  allChannels.value = [];
   allChannels.value = channels;
 });
 
-onBeforeMount(async () => {
-  console.log("user = ", props.user.id);
+socket.on("new_channel_created", () => {
+  socket.emit("get_all_channels");
 });
 
 const setSelectedChannel = (channelId: number) => {
@@ -89,30 +89,22 @@ const setSelectedChannel = (channelId: number) => {
   emit("getChannelSelected", selectedChannel.value);
 };
 
-async function isMember(channelId: number) {
-  let found;
-  console.log("hello ?");
-  await fetch(getUrlOf("api/channel/isMember/" + channelId), {
-    credentials: "include",
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .then((response) => {
-      found = response;
-    })
-    .catch((error) => {
-      console.log("ERROR : ", error);
-    });
-  console.log("member ?", found);
-  return found;
+function isMember(channel: any) {
+  for (let i = 0; i < channel.members.length; i++) {
+    if (channel.members[i].id === props.user.id) {
+      return true;
+    }
+  }
+  return false;
 }
 
 const toJoin = (channel: any) => {
-  channelJoined.value = channel;
   // isMember.value = true;
-  addWindow.value = true;
-  // socket.emit("join_channel", channel.id);
+  if (channel.type != "public") {
+    channelJoined.value = channel;
+    addWindow.value = true;
+  }
+  socket.emit("join_channel", channel.id);
   // socket.on("joined_channel", (channel: any) => {
   // emit("addChannelToList", channel);
   // console.log("joined :", channel);
@@ -122,6 +114,10 @@ const toJoin = (channel: any) => {
 function hide() {
   addWindow.value = false;
 }
+
+onBeforeMount(() => {
+  socket.emit("get_all_channels");
+});
 
 const emit = defineEmits(["getChannelSelected", "addChannelToList"]);
 

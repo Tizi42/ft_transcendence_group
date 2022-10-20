@@ -29,11 +29,8 @@ export class ChannelService {
     newChannel.owner = channelDto.owner;
     newChannel.admins = channelDto.admins;
     if (channelDto.type === "protected") {
-      if (!channelDto.password) {
-        throw new HttpException(
-          'Bad Request, password is required', 
-          HttpStatus.BAD_REQUEST
-        );
+      if (!channelDto.password || !this.validPassword(channelDto.password)) {
+        return null;
       }
       const salt = await bcrypt.genSalt();
       newChannel.password = await bcrypt.hash(channelDto.password, salt);
@@ -61,13 +58,6 @@ export class ChannelService {
         id: id,
       }
     });
-  }
-
-  async findAll(): Promise<Channel[]> {
-    const channels = await this.channelRepository.find({
-      relations: ['members'],
-    });
-    return channels;
   }
 
   async getAllMyChannels(id: number): Promise<Channel[]> {
@@ -223,13 +213,7 @@ export class ChannelService {
       return null;
     }
     if (updatePrivacyDto.type === "protected") {
-      if (!updatePrivacyDto.password) {
-        throw new HttpException(
-          'Bad Request, password is required', 
-          HttpStatus.BAD_REQUEST
-        );
-      }
-      if (!this.validPassword(updatePrivacyDto.password)) {
+      if (!updatePrivacyDto.password || !this.validPassword(updatePrivacyDto.password)) {
         return null;
       }
       const salt = await bcrypt.genSalt();
@@ -245,13 +229,7 @@ export class ChannelService {
     if (updatePasswordDto.channel.type != "protected") {
       return null;
     }
-    if (!updatePasswordDto.password) {
-      throw new HttpException(
-        'Bad Request, password is required', 
-        HttpStatus.BAD_REQUEST
-      );
-    }
-    if (!this.validPassword(updatePasswordDto.password)) {
+    if (!updatePasswordDto.password || !this.validPassword(updatePasswordDto.password)) {
       return null;
     }
     const salt = await bcrypt.genSalt();
@@ -262,7 +240,7 @@ export class ChannelService {
   /* CHECK IF EXIST */
 
   async isChannelMember(userId: number, channelId: number) {
-    const channel = await this.findOne(channelId);
+    const channel = await this.findChannelAndMembers(channelId);
 
     for (let i = 0; i < channel[0].members.length; i++)
     {

@@ -9,6 +9,7 @@
           v-model="channelName"
           type="text"
           placeholder="Channel name.."
+          :style="{ border: inputBorder }"
         />
       </div>
       <div class="fields">
@@ -24,8 +25,9 @@
         <input
           id="channel-password"
           v-model="channelPassword"
-          type="text"
+          type="password"
           placeholder="Your channel password.."
+          :style="{ border: inputBorderPassword }"
         />
       </div>
       <button type="submit" id="add-channel-button"></button>
@@ -53,13 +55,17 @@ const channelName: Ref<string> = ref("");
 const channelType: Ref<string> = ref("public");
 const channelPassword: Ref<string> = ref("");
 const props: Readonly<Props> = defineProps<Props>();
-
-// watch(
-// );
+let inputBorder = ref("none");
+let inputBorderPassword = ref("none");
 
 const createNewChannel = async () => {
   console.log("channel name = ", channelName.value);
   console.log("channel type = ", channelType.value);
+  if (channelName.value === "") {
+    inputBorder.value = "4px solid red";
+    return;
+  }
+  inputBorder.value = "none";
   const data = {
     type: channelType.value,
     name: channelName.value,
@@ -69,10 +75,11 @@ const createNewChannel = async () => {
     password: channelPassword.value,
   };
   socket.emit("create_channel", data);
-  emit("hideAddChannel");
 };
 
-const emit = defineEmits(["hideAddChannel"]);
+socket.on("password_error", () => {
+  inputBorderPassword.value = "4px solid red";
+});
 
 defineExpose(
   defineComponent({
