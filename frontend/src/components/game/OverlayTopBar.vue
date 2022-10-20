@@ -1,6 +1,6 @@
 <template>
   <div class="overlayTopBar">
-    <TimerStart />
+    <TimerStart :mode="props.mode" />
     <div class="infoBar" v-if="show">
       <div class="playerInfoLeft">
         <div class="profileBox">
@@ -65,6 +65,7 @@ interface Props {
   emojiR: number;
   emojiDateL: Date;
   emojiDateR: Date;
+  mode: string;
 }
 
 defineProps<Props>();
