@@ -8,6 +8,7 @@
       right="0px"
       padding="0px 20px"
       ref="menuRef"
+      :canClick="props.role != 'watch'"
     >
       <template #button>
         <div class="settingsBtn emoji" />
@@ -34,6 +35,7 @@
       height="60px"
       background="#0c1200fa"
       right="0px"
+      :canClick="props.role != 'watch'"
     >
       <template #button>
         <button class="settingsBtn sound" />
@@ -62,6 +64,7 @@
       height="350px"
       background="#0c1200fa"
       left="0px"
+      :canClick="props.role != 'watch'"
     >
       <template #button>
         <button class="settingsBtn help" />
@@ -86,6 +89,7 @@
       height="100px"
       background="#0c1200fa"
       left="0px"
+      :canClick="props.role != 'watch'"
     >
       <template #button>
         <button class="settingsBtn settings" />
@@ -105,13 +109,14 @@
 <script lang="ts" setup>
 import { defineComponent, defineExpose, onMounted, ref, Ref } from "vue";
 import { defineProps, defineEmits } from "vue";
-import { userInfoStore } from "@/stores/user";
+import { UserMinimal } from "@/components/utils/UserMinimal";
 import FloatingMenu from "../utils/FloatingMenu.vue";
 import SmallChat from "./SmallChat.vue";
 import socket from "@/socket";
 
 interface Props {
-  user: userInfoStore;
+  user: UserMinimal;
+  role: string;
   room_name: string;
   emojisURL: Array<URL>;
 }

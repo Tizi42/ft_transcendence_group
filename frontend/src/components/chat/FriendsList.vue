@@ -15,7 +15,8 @@
       <div class="friend-frame">
         <div v-if="friend.status === 'offline'" class="grey-point"></div>
         <div v-if="friend.status === 'online'" class="green-point"></div>
-        <h3>{{ friend.username }}</h3>
+        <div v-if="friend.status === 'in game'" class="red-point"></div>
+        <h3>{{ friend.displayName }}</h3>
         <!-- <p>{{ lastMessage[profile] }}</p> -->
       </div>
     </li>

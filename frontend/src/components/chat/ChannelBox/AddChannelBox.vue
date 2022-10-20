@@ -58,6 +58,8 @@ const props: Readonly<Props> = defineProps<Props>();
 // );
 
 const createNewChannel = async () => {
+  console.log("channel name = ", channelName.value);
+  console.log("channel type = ", channelType.value);
   const data = {
     type: channelType.value,
     name: channelName.value,

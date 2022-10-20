@@ -36,24 +36,30 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, ref, onBeforeMount } from "vue";
+import { defineComponent, defineExpose, ref } from "vue";
+import { onBeforeMount } from "vue";
 import { useUserStore } from "@/stores/user";
 import FriendItem from "./FriendItem.vue";
 import FriendReqItem from "./FriendReqItem.vue";
 import AddFriend from "./AddFriend.vue";
 import MyModal from "./MyModal.vue";
+import socket from "@/socket";
 
 const user = useUserStore();
 const addWindow = ref(false);
 
 function onAdd() {
   addWindow.value = true;
-  console.log("set add window true");
 }
 
 function hide() {
   addWindow.value = false;
 }
+
+socket.on("update_friendship", async () => {
+  user.doFetchPending();
+  user.doFetchFriends();
+});
 
 onBeforeMount(() => {
   user.doFetchFriends();
@@ -69,6 +75,8 @@ defineExpose(
 
 <style scoped>
 .friends-section {
+  position: absolute;
+  top: 0;
   width: 86%;
   margin-left: 7%;
   margin-right: 7%;
@@ -106,5 +114,10 @@ defineExpose(
   width: 99%;
   grid-gap: 15px;
   margin-bottom: 50px;
+  scrollbar-width: 0px;
+}
+
+.friends-grid::-webkit-scrollbar {
+  display: none;
 }
 </style>

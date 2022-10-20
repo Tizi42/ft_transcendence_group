@@ -1,8 +1,12 @@
 <template>
   <div class="friend-menu" ref="menu">
-    <div class="friend-menu-option">Invite to play &nbsp;&nbsp;&nbsp;></div>
-    <div class="friend-menu-option">Spectate game</div>
-    <div class="friend-menu-option">Send a message</div>
+    <div
+      class="friend-menu-option"
+      v-if="friend.status === 'online'"
+      @click="onInvitePlay"
+    >
+      Invite to play &nbsp;&nbsp;&nbsp;>
+    </div>
     <div class="friend-menu-option" @click="onRemoveFriend">Delete friend</div>
     <div class="friend-menu-option" @click="onBlockUser">Block this user</div>
   </div>
@@ -19,14 +23,24 @@ import {
 import { useUserStore } from "@/stores/user";
 import { useClickOutside } from "@/composables/useClickOutside";
 import axios from "axios";
+import socket from "@/socket";
 
 const user = useUserStore();
 const props = defineProps(["friend"]);
-const emit = defineEmits(["hide"]);
+const emit = defineEmits(["hideMenu", "inviting"]);
 const menu = ref();
 
-function onRemoveFriend() {
+function onInvitePlay() {
+  console.log("Inviting friend to play a game");
+  emit("inviting");
+}
+
+async function onRemoveFriend() {
   console.log("remove ", props.friend.id);
+  const data = {
+    from: user.id,
+    to: props.friend.id,
+  };
   axios
     .post("http://localhost:3000/api/users/friends/rm/", {
       id1: user.id,
@@ -35,15 +49,20 @@ function onRemoveFriend() {
     .then((response) => {
       user.doFetchFriends();
       console.log(response);
+      socket.emit("request_friendship", data);
     })
     .catch((error) => {
       console.log(error);
     });
-  emit("hide");
+  emit("hideMenu");
 }
 
 function onBlockUser() {
   console.log("block ", props.friend.id);
+  const data = {
+    from: user.id,
+    to: props.friend.id,
+  };
   axios
     .post("http://localhost:3000/api/users/block/add/", {
       id1: user.id,
@@ -52,15 +71,16 @@ function onBlockUser() {
     .then((response) => {
       user.doFetchFriends();
       console.log(response);
+      socket.emit("request_friendship", data);
     })
     .catch((error) => {
       console.log(error);
     });
-  emit("hide");
+  emit("hideMenu");
 }
 
 useClickOutside(menu, () => {
-  emit("hide");
+  emit("hideMenu");
 });
 
 defineExpose(
@@ -72,10 +92,12 @@ defineExpose(
 
 <style scoped>
 .friend-menu {
+  position: fixed;
   width: 227px;
-  height: 246px;
+  height: auto;
+  padding-bottom: 12px;
   background-color: rgba(20, 29, 1, 1);
-  position: absolute;
+  left: 400px;
   color: rgba(255, 203, 0, 1);
   text-align: left;
 }

@@ -6,7 +6,7 @@
           v-if="show"
           :player="player"
           :pos="id + 1"
-          :pp="getPictureUrl(player.id)"
+          :pp="player.picture"
           :alone="alone"
         />
       </li>

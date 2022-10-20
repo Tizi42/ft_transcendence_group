@@ -35,6 +35,16 @@ export class ChatController {
     return res.json(await this.chatService.getMessagesById(id, req.user.id));
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('channelMessages/:id')
+  async getChannelMessages(
+    @Req() req: RequestWithUser,
+    @Res() res: Response,
+    @Param('id') id: number
+  ) {
+    return res.json(await this.chatService.getChannelMessagesById(id, req.user.id, req.user.blocked));
+  }
+
   @Get('dest')
   async dest(@Res() res: Response) {
     const dest = await this.chatService.getAllDest();

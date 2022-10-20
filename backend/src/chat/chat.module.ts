@@ -10,10 +10,12 @@ import { ChatController } from './chat.controller';
 import { ChatGateway } from './chat.gateway';
 import { ChatService } from './chat.service';
 import { Chat } from './entities/chat.entity';
+import { Battle } from 'src/battles/battle.entity';
+import { BattlesService } from 'src/battles/battles.service';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([User, Chat, Channel]),
+        TypeOrmModule.forFeature([User, Chat, Channel, Battle]),
         UsersModule,
         JwtModule,
     ],
@@ -21,7 +23,8 @@ import { Chat } from './entities/chat.entity';
         ChatGateway,
         ChatService,
         AuthService,
-        ChannelService
+        ChannelService,
+        BattlesService
     ],
     exports: [
         ChatService,

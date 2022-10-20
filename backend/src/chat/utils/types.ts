@@ -11,3 +11,9 @@ export type emojiInfo = {
     dest: string;
     content: number;
 }
+
+export type ChannelMessage = {
+    content: string;
+    authorId: number;
+    channelId: number;
+}
