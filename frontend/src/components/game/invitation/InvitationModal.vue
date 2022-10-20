@@ -1,22 +1,39 @@
 <template>
   <div class="pageCenter">
     <div class="modalContainer" ref="modal">
-      <InvitationContent @hideInvitation="$emit('hideInvitation')" />
+      <InvitationContent
+        @hideInvitation="$emit('hideInvitation')"
+        @sending="changeStatus(true)"
+        @cancel="changeStatus(false)"
+        :friend="props.friend"
+      />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, defineComponent, defineExpose, defineEmits } from "vue";
+import { defineComponent, defineExpose, defineProps, defineEmits } from "vue";
+import { Ref, ref } from "vue";
 import { useClickOutside } from "@/composables/useClickOutside";
 import InvitationContent from "../../game/invitation/InvitationContent.vue";
+import { User } from "@backend/users/users.entity";
 
+interface Props {
+  friend: User;
+}
+
+const props: Readonly<Props> = defineProps<Props>();
 const emit = defineEmits(["hideInvitation"]);
 const modal = ref();
+const sending: Ref<boolean> = ref(false);
 
-// useClickOutside(modal, () => {
-//   emit("hide");
-// });
+function changeStatus(status: boolean) {
+  sending.value = status;
+}
+
+useClickOutside(modal, () => {
+  if (!sending.value) emit("hideInvitation");
+});
 
 defineExpose(
   defineComponent({
@@ -48,18 +65,17 @@ defineExpose(
   display: flex;
   align-items: center;
   text-align: center;
-  justify-content: space-around;
+  justify-content: space-between;
   flex-direction: column;
-  gap: 15px;
-  padding-top: 2em;
-  padding-bottom: 2em;
-  width: 50vw;
-  background: rgba(30, 42, 2, 1);
-  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.75);
+  width: 30vw;
+  min-width: 400px;
+  background: #1e2a02;
+  box-shadow: 0px 0px 8px #000000bf;
   border-radius: 58px;
   position: absolute;
   top: 50%;
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
+  height: 350px;
 }
 </style>

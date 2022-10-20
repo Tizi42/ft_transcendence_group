@@ -69,7 +69,7 @@ export class GameGateway extends AppGateway {
     r_id: number,
     r_sid:string,
     mode: string
-  ) {
+  ): string {
     const room_name = l_id + " vs " + r_id;
     GameGateway.rooms.set(room_name, new GameRoom(l_id, l_sid, r_id, r_sid, mode));
     // update user status
@@ -83,6 +83,8 @@ export class GameGateway extends AppGateway {
     GameGateway.inGameUsers.set(r_id, room_name);
     GameGateway.inGameSockets.set(l_sid, room_name);
     GameGateway.inGameSockets.set(r_sid, room_name);
+
+    return room_name;
   }
 
   closeRoom(room: GameRoom) {
@@ -158,8 +160,9 @@ export class GameGateway extends AppGateway {
     return "You are no longer in queue";
   }
 
-  @SubscribeMessage('send_invitaton')
+  @SubscribeMessage('send_invitation')
   async onInviteToPlay(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+    console.log("create invitation from", data.user_id, "to", data.invitee);
     // Delete old pending invitation of user
     GameGateway.invitations.delete(data.user_id);
 
@@ -170,26 +173,36 @@ export class GameGateway extends AppGateway {
       return "You or your invitee is not available";
 
     // create invitation
-    GameGateway.invitations.set(
-      sender.id,
-      new Invitation(sender.id, socket.id, invitee.id, data.mode)
-    );
+    let invitation = new Invitation(sender.id, socket.id, invitee.id, data.mode);
+    GameGateway.invitations.set(sender.id, invitation);
 
     // emit invitation
-    this.server.to(data.invitee).emit("game_invitaion");
+    this.server.to(data.invitee).emit("game_invitation", invitation);
   }
 
-  @SubscribeMessage('cancel_invitaton')
+  @SubscribeMessage('cancel_invitation')
   onCancelInvite(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+    console.log("cancel invitation from", data.user_id, "to", data.invitee);
     GameGateway.invitations.delete(data.user_id);
-    this.server.to(data.invitee).emit("invitaion_expired");
+    this.server.to(data.invitee).emit("invitation_expired");
   }
 
-  @SubscribeMessage('accept_invitaton')
+  @SubscribeMessage('refuse_invitation')
+  onRefuseInvite(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+    const invitation = GameGateway.invitations.get(data.sender);
+    if (!invitation || invitation.invitee_id != data.user_id)
+      return "invitation no longer exist...";
+    
+    GameGateway.invitations.delete(data.sender);
+    this.server.to(data.sender).emit("decline_invitation");
+    this.server.to(data.user_id).emit("invitation_expired");
+  }
+
+  @SubscribeMessage('accept_invitation')
   async onAcceptInvite(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
     const invitation = GameGateway.invitations.get(data.sender);
     if (!invitation || invitation.invitee_id != data.user_id)
-      return "invitaion no longer exist...";
+      return "invitation no longer exist...";
 
     // check if sender or receiver is available
     let sender = await this.usersService.findOne(data.sender);
@@ -200,13 +213,16 @@ export class GameGateway extends AppGateway {
     }
 
     // start game
-    this.createGameRoom(
+    const roomName = this.createGameRoom(
       invitation.sender_id,
       invitation.sender_sid,
       invitation.invitee_id,
       socket.id,
       invitation.mode
     );
+
+    // emit go play signal
+    this.server.to(data.sender).to(data.user_id).emit("go_play", roomName);
   }
 
   @SubscribeMessage('init_room')

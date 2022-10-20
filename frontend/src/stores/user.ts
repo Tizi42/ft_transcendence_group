@@ -1,5 +1,6 @@
 import { ref, Ref } from "vue";
 import { defineStore } from "pinia";
+import { User } from "@backend/users/users.entity";
 
 type voidFunction = () => void;
 
@@ -10,8 +11,8 @@ export interface userInfoStore {
   email: Ref<string>;
   avatarUrl: Ref<string>;
   enabled2FA: Ref<boolean>;
-  friends: Ref<Array<number>>;
-  pending: Ref<Array<number>>;
+  friends: Ref<Array<User>>;
+  pending: Ref<Array<User>>;
   totalGames: Ref<number>;
   totalVictories: Ref<number>;
   winRate: Ref<number>;
