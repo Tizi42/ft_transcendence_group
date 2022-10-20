@@ -77,6 +77,8 @@ export default class GameScene extends Phaser.Scene {
     socket.on("game_update", (data: any) => {
       this.paddle_left.y = data.paddle_left_posY;
       this.paddle_right.y = data.paddle_right_posY;
+      this.ball.x = data.ball_x;
+      this.ball.y = data.ball_y;
     });
 
     // socket.on("ball_update", (data: any) => {
@@ -85,35 +87,33 @@ export default class GameScene extends Phaser.Scene {
     //   // this.ball.setVelocity(data.vx, data.vy);
     // });
 
-    socket.on("launch_ball", (data: any) => {
-      this.ball.disableBody(true, true);
-      this.ball.enableBody(
-        true,
-        this.cameras.main.centerX,
-        data.randomHeight,
-        true,
-        true
-      );
-      this.ball.setVelocity(data.randVx, data.randVy);
-    });
+    // socket.on("launch_ball", (data: any) => {
+    //   this.ball.disableBody(true, true);
+    //   this.ball.enableBody(
+    //     true,
+    //     this.cameras.main.centerX,
+    //     data.randomHeight,
+    //     true,
+    //     true
+    //   );
+    //   // this.ball.setVelocity(data.randVx, data.randVy);
+    // });
 
-    if (gameInfo.user_role !== "left") {
-      socket.on("end", (data: any) => {
-        this.winner = data.winner;
-        this.scene.start("GameOverScene", { winner: this.winner });
-      });
-    }
+    socket.on("end", (data: any) => {
+      this.winner = data.winner;
+      this.scene.start("GameOverScene", { winner: this.winner });
+    });
   }
 
   update() {
-    if (gameInfo.user_role === "left") {
-      if (this.game_status === "ready") {
-        this.launch_ball("toRight");
-        this.game_status = "running";
-      }
-    }
+    // if (gameInfo.user_role === "left") {
+    //   if (this.game_status === "ready") {
+    //     this.launch_ball("toRight");
+    //     this.game_status = "running";
+    //   }
+    // }
 
-    this.check_score();
+    // this.check_score();
     // this.update_ball();
 
     if (this.cursors.up.isDown) {
