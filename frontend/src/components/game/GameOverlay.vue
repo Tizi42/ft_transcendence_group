@@ -5,7 +5,6 @@
         v-if="opponent != null"
         :playerL="playerLMin"
         :playerR="playerRMin"
-        :time="timer"
         :scores="scores"
         :messageL="messageL"
         :messageR="messageR"

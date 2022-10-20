@@ -68,7 +68,7 @@ interface Props {
   mode: string;
 }
 
-defineProps<Props>();
+const props: Readonly<Props> = defineProps<Props>();
 const show: Ref<boolean> = ref(false);
 
 function getPictureUrl(id: number): string {

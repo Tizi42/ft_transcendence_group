@@ -21,9 +21,8 @@ const time = ref(new Date());
 
 function updateTimer() {
   const curTime = new Date();
-  let milliDiff  = curTime.getTime() - time.value.getTime();
-  if (props.mode == "speed")
-    milliDiff = 180000 - milliDiff;
+  let milliDiff = curTime.getTime() - time.value.getTime();
+  if (props.mode == "speed") milliDiff = 180000 - milliDiff;
   let minutes = Math.floor(milliDiff / 60000);
   let seconds = Math.floor(milliDiff / 1000) - 60 * minutes;
   timer.value[0] = (minutes < 10 ? "0" : "") + minutes.toString();
