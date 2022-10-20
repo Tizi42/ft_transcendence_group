@@ -5,7 +5,6 @@ import { GameRoom } from "./utils/gameRoom";
 import { Invitation } from "./utils/invitation";
 import { AppGateway } from '../gateway';
 import { UsersService } from '../users/users.service';
-import { GameService } from './game.service';
 import { ChatService } from '../chat/chat.service';
 import { ChannelService } from 'src/channel/channel.service';
 import { BattlesService } from '../battles/battles.service';
@@ -65,7 +64,7 @@ export class GameGateway extends AppGateway {
     mode: string
   ) {
     const room_name = l_id + " vs " + r_id;
-    GameGateway.rooms.set(room_name, new GameRoom(l_id, l_sid, r_id, r_sid, mode));
+    GameGateway.rooms.set(room_name, new GameRoom(l_id, l_sid, r_id, r_sid, mode, this.server));
     // update user status
     this.usersService.updateUserStatus(l_id, "in game");
     this.usersService.updateUserStatus(r_id, "in game");
@@ -99,11 +98,11 @@ export class GameGateway extends AppGateway {
 
   async start_game(room: GameRoom) {
     this.server.to(room.room_name).emit("game_start");
-    console.log(this.battlesService);
     room.current_game_id = await this.battlesService.addOne({
       opponent1: room.playerL,
       opponent2: room.playerR,
     });
+    room.on_launch("toRight");
   }
 
   save_game(room: GameRoom) {
@@ -196,13 +195,17 @@ export class GameGateway extends AppGateway {
   }
 
   @SubscribeMessage('init_room')
-  async sendRoomInfo(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+  sendRoomInfo(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
     const room = GameGateway.rooms.get(data.room_name);
     if (!room)
       return null;
     if (data.user_id !== room.playerL && data.user_id !== room.playerR)
       this.server.in(socket.id).socketsJoin(data.room_name);
-    return room;
+    return {
+      playerL: room.playerL,
+      playerR: room.playerR,
+      mode: room.mode,
+    };
   }
 
   @SubscribeMessage('leave_game')
@@ -248,14 +251,14 @@ export class GameGateway extends AppGateway {
     if (!room)
       return null;
     if (room.playerL === data.user_id) {
-      room.paddle_left_pos_y = data.paddle_pos;
+      room.paddle_left_y = data.paddle_pos;
     } else if (room.playerR === data.user_id) {
-      room.paddle_right_pos_y = data.paddle_pos;
+      room.paddle_right_y = data.paddle_pos;
     }
-    this.server.to(data.room_name).emit("game_update", {
-      paddle_left_posY: room.paddle_left_pos_y,
-      paddle_right_posY: room.paddle_right_pos_y,
-    });
+    // this.server.to(data.room_name).emit("game_update", {
+    //   paddle_left_posY: room.paddle_left_y,
+    //   paddle_right_posY: room.paddle_right_y,
+    // });
   }
 
   @SubscribeMessage('create_spell')
@@ -300,20 +303,20 @@ export class GameGateway extends AppGateway {
     });
   }
 
-  @SubscribeMessage('ball_pos')
-  async updateBallPos(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
-    // const room = GameGateway.rooms.get(data.room_name);
-    // if (!room)
-    //   return null;
-    // room.ball_pos_x = data.ball_x;
-    // room.ball_pos_y = data.ball_y;
-    socket.to(data.room_name).emit("ball_update", {
-      ball_x: data.ball_x,
-      ball_y: data.ball_y,
-      vx: data.vx,
-      vy: data.vy,
-    });
-  }
+  // @SubscribeMessage('ball_pos')
+  // async updateBallPos(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+  //   // const room = GameGateway.rooms.get(data.room_name);
+  //   // if (!room)
+  //   //   return null;
+  //   // room.ball_pos_x = data.ball_x;
+  //   // room.ball_pos_y = data.ball_y;
+  //   socket.to(data.room_name).emit("ball_update", {
+  //     ball_x: data.ball_x,
+  //     ball_y: data.ball_y,
+  //     vx: data.vx,
+  //     vy: data.vy,
+  //   });
+  // }
 
   @SubscribeMessage('update_score')
   async onUpdateScore(@MessageBody() data: any) {
@@ -341,14 +344,14 @@ export class GameGateway extends AppGateway {
 
   @SubscribeMessage('get_updated_rooms')
   updateRooms(@ConnectedSocket() socket: Socket) {
-    if (GameGateway.rooms.size == 0) { // to delete when everything is good
-      let room_name = 2 + " vs " + 3;
-      GameGateway.rooms.set(room_name, new GameRoom(2, "", 3, "", "normal",));
-      room_name = 4 + " vs " + 5;
-      GameGateway.rooms.set(room_name, new GameRoom(4, "", 5, "", "magic"));
-      room_name = 6 + " vs " + 7;
-      GameGateway.rooms.set(room_name, new GameRoom(6, "", 7, "", "speed"));
-    }
+    // if (GameGateway.rooms.size == 0) { // to delete when everything is good
+    //   let room_name = 2 + " vs " + 3;
+    //   GameGateway.rooms.set(room_name, new GameRoom(2, "", 3, "", "normal",));
+    //   room_name = 4 + " vs " + 5;
+    //   GameGateway.rooms.set(room_name, new GameRoom(4, "", 5, "", "magic"));
+    //   room_name = 6 + " vs " + 7;
+    //   GameGateway.rooms.set(room_name, new GameRoom(6, "", 7, "", "speed"));
+    // }
     this.server.to(socket.id).emit("updated_rooms", this.transformRooms());
   }
 
@@ -357,43 +360,6 @@ export class GameGateway extends AppGateway {
     this.server.to(socket.id).emit("score_update", {
       left: 0,
       right: 0,
-    });
-  }
-
-  getRandomIntBetween(min: number, max: number) {
-    return Math.floor(Math.random() * (max - min + 1) + min)
-  }
-
-  getRandomVelocity(mode: string, direction: string) {
-    let minVelocity = 200;
-    let maxVelocity = 300;
-    if (mode === "speed") {
-      minVelocity = 500;
-      maxVelocity = 600;
-    }
-    let vx = this.getRandomIntBetween(minVelocity, maxVelocity);
-    let vy = this.getRandomIntBetween(minVelocity, maxVelocity);
-    if (direction === "toLeft")
-      vx = -vx;
-    if (this.getRandomIntBetween(0, 1) === 0)
-      vy = -vy;
-    return ([
-      vx,
-      vy
-    ]);
-  }
-
-  @SubscribeMessage('launch_ball')
-  async onLaunchBall(
-    @ConnectedSocket() socket: Socket,
-    @MessageBody() data: any
-  ){
-    const randomHeight = this.getRandomIntBetween(80, 511); // height 591 - 80 
-    const randVelocity = this.getRandomVelocity(data.mode, data.direction);
-    this.server.to(data.room_name).emit("launch_ball", {
-      randomHeight: randomHeight,
-      randVx: randVelocity[0],
-      randVy: randVelocity[1],
     });
   }
 
