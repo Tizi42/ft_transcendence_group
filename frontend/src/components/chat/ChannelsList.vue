@@ -51,7 +51,7 @@
   </ul>
   <Teleport to="body">
     <ChannelBoxModal v-if="addWindow" @hide="hide">
-      <AddChannelBox :user="user" @hideAddChannel="hide" />
+      <AddChannelBox :user="user" />
     </ChannelBoxModal>
   </Teleport>
 </template>
@@ -72,6 +72,7 @@ import AddChannelBox from "./ChannelBox/AddChannelBox.vue";
 import socket from "@/socket";
 import { userInfoStore } from "@/stores/user";
 import PendingChannelReq from "@/components/chat/PendingChannelReq.vue";
+import { getUrlOf } from "@/router";
 
 interface Props {
   selectedChannel: number;
@@ -93,9 +94,8 @@ socket.on("receive_pending_request", (request: boolean, channelId: number) => {
 });
 
 socket.on("receive_channel_created", (newChannel: any) => {
-  console.log("new = ", newChannel);
+  hide();
   myChannels.value.push(newChannel);
-  console.log("my channelssss = ", myChannels.value);
 });
 
 socket.on("exited_channel_list", () => {

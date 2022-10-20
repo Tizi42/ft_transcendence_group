@@ -1,16 +1,19 @@
 <template>
   <div class="notification">
     <ul class="list-my-channels">
-      <li
-      v-for="pending in myRequests"
-      :key="pending"
-      >
-        {{ pending.user.name}} is waiting for your agreement
-        <button >
-          <img @click="acceptRequest(pending.user.id)" src="@/assets/icons/check.svg" />  
+      <li v-for="pending in myRequests" :key="pending">
+        {{ pending.user.name }} is waiting for your agreement
+        <button>
+          <img
+            @click="acceptRequest(pending.user.id)"
+            src="@/assets/icons/check.svg"
+          />
         </button>
-        <button >
-          <img @click="refuseRequest(pending.user.id)" src="@/assets/icons/leave.png" />  
+        <button>
+          <img
+            @click="refuseRequest(pending.user.id)"
+            src="@/assets/icons/leave.png"
+          />
         </button>
       </li>
     </ul>
@@ -19,7 +22,7 @@
 
 <script lang="ts" setup>
 import socket from "@/socket";
-import { defineComponent, defineExpose, defineEmits } from "vue";
+import { defineComponent, defineExpose, defineEmits, defineProps } from "vue";
 
 interface Props {
   channelToJoin: number;
@@ -34,7 +37,7 @@ const acceptRequest = (reqFrom: number) => {
   };
   socket.emit("accept_join_request", data);
   emit("hideReq");
-}
+};
 
 const refuseRequest = (reqFrom: number) => {
   const data = {
@@ -43,7 +46,7 @@ const refuseRequest = (reqFrom: number) => {
   };
   socket.emit("refuse_join_request", data);
   emit("hideReq");
-}
+};
 
 const emit = defineEmits(["hideReq"]);
 
