@@ -63,6 +63,13 @@ export class ChannelService {
     });
   }
 
+  async findAll(): Promise<Channel[]> {
+    const channels = await this.channelRepository.find({
+      relations: ['members'],
+    });
+    return channels;
+  }
+
   async getAllMyChannels(id: number): Promise<Channel[]> {
     const channels = await this.channelRepository.find({
       relations: ['members'],
@@ -140,18 +147,6 @@ export class ChannelService {
       }
     }
     return null;
-  }
-
-  async joinChannel(userId: number, channelId: number) {
-    const user = await this.userService.findOneById(userId);
-    const channel = await this.findOne(channelId);
-
-    for (let i = 0; i < channel.banned.length; i++)
-    {
-      if (channel.banned[i] === userId)
-        return console.log("unauthorized")
-    }
-    channel.members.push(user);
   }
 
   async isAdmin(userId: number, channelId: number) {
@@ -262,5 +257,84 @@ export class ChannelService {
     const salt = await bcrypt.genSalt();
     updatePasswordDto.channel.password = await bcrypt.hash(updatePasswordDto.password, salt);    
     return await this.channelRepository.save(updatePasswordDto.channel);
+  }
+
+  /* CHECK IF EXIST */
+
+  async isChannelMember(userId: number, channelId: number) {
+    const channel = await this.findOne(channelId);
+
+    for (let i = 0; i < channel[0].members.length; i++)
+    {
+      if (channel[0].members[i].id === userId)
+        return true;
+    }
+    return false;
+  }
+
+  async isMemberBan(userId: number, channelId: number) {
+    const channel = await this.findOne(channelId);
+
+      for (let i = 0; i < channel[0].banned.length; i++)
+      {
+        if (channel[0].banned[i] === userId)
+          return true;
+      }  
+      return false;
+  }
+
+  /* JOIN AND LEAVE */
+
+  async joinChannel(userId: number, channelId: number, password?: string) {
+    const user = await this.userService.findOneById(userId);
+    const channel = await this.findOne(channelId);
+
+    if (this.isChannelMember(userId, channelId) || this.isMemberBan(userId, channelId))
+    {
+      console.log("unauthorized");
+      return false;
+    }
+    if (channel[0].type === "protected")
+    {
+      if (channel[0].password !== password)
+      {
+        console.log("unauthorized");
+        return false;
+      }
+    }
+    for (let i = 0; i < channel[0].pendingReqFrom.length; i++)
+    {
+      if (channel[0].pendingReqFrom[i] === user.id)
+        channel[0].pendingReqFrom.splice(i, 1);
+    }
+    channel[0].members.push(user);
+    await this.channelRepository.save(channel);
+    return true;
+  }
+
+  async refuseJoining(userId: number, channelId: number) {
+    const channel = await this.findOne(channelId);
+
+    for (let i = 0; i < channel[0].pendingReqFrom.length; i++)
+    {
+      if (channel[0].pendingReqFrom[i] === userId)
+        channel[0].pendingReqFrom.splice(i, 1);
+    }
+    this.channelRepository.save(channel);
+    return true;
+  }
+
+  async joinRequest(userId: number, channelId: number) {
+    const channel = await this.findOne(channelId);
+
+    if (this.isChannelMember(userId, channelId) || this.isMemberBan(userId, channelId))
+    {
+      console.log("unauthorized");
+      return false;
+    }
+    channel[0].pendingReqFrom.push(userId);
+    console.log("chann ?", channel[0]);
+    this.channelRepository.save(channel);
+    return true;
   }
 }

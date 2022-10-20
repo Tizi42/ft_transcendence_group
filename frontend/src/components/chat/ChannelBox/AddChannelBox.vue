@@ -34,7 +34,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineComponent, defineExpose, Ref, defineProps } from "vue";
+import {
+  ref,
+  defineComponent,
+  defineExpose,
+  Ref,
+  defineProps,
+  defineEmits,
+} from "vue";
 import socket from "@/socket";
 import { userInfoStore } from "@/stores/user";
 
@@ -62,7 +69,10 @@ const createNewChannel = async () => {
     password: channelPassword.value,
   };
   socket.emit("create_channel", data);
+  emit("hideAddChannel");
 };
+
+const emit = defineEmits(["hideAddChannel"]);
 
 defineExpose(
   defineComponent({

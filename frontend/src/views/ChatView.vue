@@ -24,6 +24,7 @@
       <AllChannelsSelected
         v-if="isActive === 'channels' && selectedChannel == -1"
         @getChannelSelected="handleChannelSelected"
+        :user="user"
       />
       <HistoryMessages
         :history="history"
@@ -53,7 +54,6 @@ import ChannelsList from "@/components/chat/ChannelsList.vue";
 import HistoryMessages from "@/components/chat/HistoryMessages.vue";
 import MessageInput from "@/components/chat/MessageInput.vue";
 import { getUrlOf } from "@/router";
-import { User } from "@backend/users/users.entity";
 import AllChannelsSelected from "@/components/chat/AllChannelsSelected.vue";
 import socket from "@/socket";
 
@@ -108,6 +108,10 @@ const handleSelectedReceiver = async (event: number) => {
 const handleHistory = (event: Array<any>) => {
   history.value = event;
 };
+
+// const handleJoinedChannel = (event: any) => {
+//   joinedChannel.value = event;
+// };
 
 const handleChannelSelected = (event: number) => {
   selectedChannel.value = event;
