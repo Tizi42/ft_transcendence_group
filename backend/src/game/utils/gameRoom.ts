@@ -29,9 +29,9 @@ export class GameRoom {
   readonly paddle_right_x  = this.width * 0.98;
 
   // changeable
-  paddle_height = 80;
+  paddle_height_half = 40;
   paddle_velocity = 10;
-  ball_velocity = 7; // 5 pixels per 25ms, 300 pixels per 1000ms
+  ball_velocity = 6; // 5 pixels per 25ms, 300 pixels per 1000ms
   
   // update game
   update_frequencey = 25; // 1 time per 25ms, 40th of a second
@@ -116,14 +116,18 @@ export class GameRoom {
         this.ball_velocity_y *= -1;
     }
     // check if ball collides with paddle
-    // else if (
-    //   this.ball_x + this.ball_radius < this.paddle_left_x &&
-    //   this.ball_x > (this.paddle_left_x - (this.paddle_width_half)) &&
-    //   this.ball_y < this.paddle_left_y + (this.paddle_height / 2) &&
-    //   this.ball_y > (this.paddle_left_y -  (this.paddle_height / 2))
-    // ){
-
-    // }
+    else if (
+      (this.ball_x - this.ball_radius < this.paddle_left_x + 5 &&
+      this.ball_x - this.ball_radius > this.paddle_left_x - 5 &&
+      this.ball_y < this.paddle_left_y + this.paddle_height_half &&
+      this.ball_y > this.paddle_left_y - this.paddle_height_half) || (
+      this.ball_x + this.ball_radius < this.paddle_right_x + 5 &&
+      this.ball_x + this.ball_radius > this.paddle_right_x - 5  &&
+      this.ball_y < this.paddle_right_y + this.paddle_height_half &&
+      this.ball_y > this.paddle_right_y - this.paddle_height_half)
+    ){
+      this.ball_velocity_x *= -1;
+    }
   }
 
   check_score() {
