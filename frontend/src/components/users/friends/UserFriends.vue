@@ -103,6 +103,7 @@ defineExpose(
 .friends-grid {
   max-height: 500px;
   overflow-y: scroll;
+  overflow-x: hidden;
   display: grid;
   grid-template-columns: repeat(4, minmax(350px, 1fr));
   width: 99%;

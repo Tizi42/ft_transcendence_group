@@ -53,10 +53,9 @@ export class AuthController {
 
     @Post('2fa/generate')
     @UseGuards(JwtAuthGuard)
-    async register(@Res() response: Response, @Req() request: RequestWithUser): Promise<any> {
+    async register(@Res() response: Response, @Req() request: RequestWithUser): Promise<void> {
         const { otpAuthUrl } = await this.authService.generateTwoFactorAuthenticationSecret(request.user);
-        
-        return this.authService.pipeQrCodeStream(response, otpAuthUrl);
+        this.authService.pipeQrCodeStream(response, otpAuthUrl);
     }
 
     @Get('2fa/reGenerate')
