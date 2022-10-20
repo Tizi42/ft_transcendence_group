@@ -25,13 +25,13 @@ export class GameRoom {
   readonly rightBounds = this.width + 30;
   readonly ball_radius = 12.8;
   readonly paddle_width_half = 5;
+  readonly paddle_height_half = 40;
   readonly paddle_left_x = this.width * 0.02; //paddle_width is 10
   readonly paddle_right_x  = this.width * 0.98;
 
   // changeable
-  paddle_height_half = 40;
   paddle_velocity = 10;
-  ball_velocity = 6; // 5 pixels per 25ms, 300 pixels per 1000ms
+  ball_velocity = 7.5; // 5 pixels per 25ms, 300 pixels per 1000ms
   
   // update game
   update_frequencey = 25; // 1 time per 25ms, 40th of a second
@@ -110,23 +110,36 @@ export class GameRoom {
   }
 
   check_collision() {
+    let ball_top = this.ball_y - this.ball_radius;
+    let ball_bottom = this.ball_y + this.ball_radius;
+    let ball_left = this.ball_x - this.ball_radius;
+    let ball_right = this.ball_x + this.ball_radius;
+
     // check if ball collides with world bound
-    if (this.ball_y < this.ball_radius ||
-        this.ball_y > this.height - this.ball_radius) {
+    if (ball_top < 0 ||
+        ball_bottom > this.height) {
         this.ball_velocity_y *= -1;
     }
     // check if ball collides with paddle
     else if (
-      (this.ball_x - this.ball_radius < this.paddle_left_x + 5 &&
-      this.ball_x - this.ball_radius > this.paddle_left_x - 5 &&
-      this.ball_y < this.paddle_left_y + this.paddle_height_half &&
-      this.ball_y > this.paddle_left_y - this.paddle_height_half) || (
-      this.ball_x + this.ball_radius < this.paddle_right_x + 5 &&
-      this.ball_x + this.ball_radius > this.paddle_right_x - 5  &&
-      this.ball_y < this.paddle_right_y + this.paddle_height_half &&
-      this.ball_y > this.paddle_right_y - this.paddle_height_half)
+      ball_left < this.paddle_left_x + 10 &&
+      ball_left > this.paddle_left_x - 5 &&
+      ball_top < this.paddle_left_y + this.paddle_height_half &&
+      ball_bottom > this.paddle_left_y - this.paddle_height_half
     ){
-      this.ball_velocity_x *= -1;
+      let bounce_angle = (Math.PI / 4) * ((this.paddle_left_y + 40 - this.ball_y) / 40);
+      this.ball_velocity_x = this.ball_velocity * Math.cos(bounce_angle);
+      this.ball_velocity_y = this.ball_velocity * -Math.sin(bounce_angle);
+    }
+    else if (
+      ball_right < this.paddle_right_x + 5 &&
+      ball_right > this.paddle_right_x - 10  &&
+      ball_top < this.paddle_right_y + this.paddle_height_half &&
+      ball_bottom > this.paddle_right_y - this.paddle_height_half
+    ){
+      let bounce_angle = (5 * Math.PI / 12) * ((this.paddle_right_y + 40 - this.ball_y) / 40);
+      this.ball_velocity_x = this.ball_velocity * Math.cos(bounce_angle);
+      this.ball_velocity_y = this.ball_velocity * -Math.sin(bounce_angle);
     }
   }
 
@@ -140,9 +153,12 @@ export class GameRoom {
       direction = "toRight";
       this.score_left += 1;
     }
-    else
-      return;
-
+    else return;
+    // if new score
+    this.server.to(this.room_name).emit("score_update", {
+      left: this.score_left,
+      right: this.score_right,
+    });
     clearInterval(this.interval);
     if (!this.check_game_end())
       this.on_launch(direction);
@@ -174,33 +190,4 @@ export class GameRoom {
     this.score_left = 0;
     this.score_right = 0;
   }
-
-  // update_gamestate(socketId: string, pos: string) {
-  //     if (this.player1 == socketId) {
-  //         this.paddle_left_y = +pos;
-  //     } else {
-  //         this.paddle_right_y = +pos;
-  //     }
-
-  //     const now = Date.now();
-  //     var diff = now - this.tick;
-
-  //     if (diff > this.lag) {
-  //         while (diff > this.lag) {
-  //             var speed = this.ball_speed * (this.lag * 0.001);
-  //             this.ball_pos_x += this.ball_dir_x * speed;
-  //             this.ball_y += this.ball_dir_y * speed;
-  //             diff -= this.lag; 
-  //             this.check_collision();
-  //         }
-  //     } else {
-  //         var speed = this.ball_speed * ((now - this.tick) * 0.001);
-  //         this.ball_pos_x += this.ball_dir_x * speed;
-  //         this.ball_y += this.ball_dir_y * speed;
-  //         this.check_collision();
-  //     }
-  //     this.tick = now;
-  //     this.update_clients();
-  // }
-
 }
