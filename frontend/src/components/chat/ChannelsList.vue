@@ -30,10 +30,10 @@
   >
     <h3>All channels</h3>
   </div>
-  <PendingChannelReq 
-    v-if="comingReq" 
-    @hideReq="hideReq" 
-    :channelToJoin="channelToJoin" 
+  <PendingChannelReq
+    v-if="comingReq"
+    @hideReq="hideReq"
+    :channelToJoin="channelToJoin"
   />
   <ul class="list-my-channels">
     <li
