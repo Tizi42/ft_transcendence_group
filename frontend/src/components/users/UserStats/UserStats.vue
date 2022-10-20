@@ -93,7 +93,7 @@ function getWinRate(): string {
 
 function getRank(): number {
   for (var i = 0; i < leaderboard.value.length; i++)
-    if (leaderboard.value[i].id == user.id) return i;
+    if (leaderboard.value[i].id == user.id) return i + 1;
   return leaderboard.value.length + 1;
 }
 
