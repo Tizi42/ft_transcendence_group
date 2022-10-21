@@ -34,7 +34,7 @@ export class UsersController {
   @UseInterceptors(FileInterceptor('file', storage))
   async uploadAvatar(@Req() req: RequestWithUser, @UploadedFile() file: Express.Multer.File) : Promise<any> {
     console.log("File received, saved as " + file.filename);
-    return await this.usersService.updateUserAvatar(req.user.id, file.filename, "http://localhost:3000/api/users/avatar/"); //`${this.SERVER_URL}${file.path}`
+    return await this.usersService.updateUserAvatar(req.user.id, file.filename, "http://localhost:3000/api/users/avatar/" + req.user.id); //`${this.SERVER_URL}${file.path}`
   }
 
   @Get('avatar/:id')
@@ -50,6 +50,7 @@ export class UsersController {
 
   @Get('avatar')
   async getMyAvatar(@Req() req: RequestWithUser, @Res() res: Response): Promise<any> {
+    console.log(req.user);
     let user = await this.usersService.findOne(req.user.id);
     if (user.pictureLocalFilename === "")
     {
