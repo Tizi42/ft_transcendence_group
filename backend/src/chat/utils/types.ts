@@ -17,3 +17,9 @@ export type ChannelMessage = {
     authorId: number;
     channelId: number;
 }
+
+export type messageInGame = {
+    author: string;
+    dest: string;
+    content: string;
+}

@@ -26,6 +26,8 @@
     <SmallChat
       :user="user"
       :room_name="room_name"
+      :role="props.role"
+      :canTalk="showWatchersChat"
       @getChatting="changeChattingStatus"
       ref="chatRef"
     />
@@ -35,7 +37,6 @@
       height="60px"
       background="#0c1200fa"
       right="0px"
-      :canClick="props.role != 'watch'"
     >
       <template #button>
         <button class="settingsBtn sound" />
@@ -64,7 +65,6 @@
       height="350px"
       background="#0c1200fa"
       left="0px"
-      :canClick="props.role != 'watch'"
     >
       <template #button>
         <button class="settingsBtn help" />
@@ -86,15 +86,17 @@
     <FloatingMenu
       direction="column"
       width="250px"
-      height="100px"
+      height="150px"
       background="#0c1200fa"
       left="0px"
-      :canClick="props.role != 'watch'"
     >
       <template #button>
         <button class="settingsBtn settings" />
       </template>
       <template #choices>
+        <div class="setting-choice" @click="toogleChatW()">
+          {{ showWatchersChat ? "Hide" : "Show" }} viewers chat
+        </div>
         <div class="setting-choice" @click="emit('changeBackground')">
           Change background
         </div>
@@ -103,6 +105,7 @@
         </div>
       </template>
     </FloatingMenu>
+    <WatchersChat :message="message" v-if="showWatchersChat" />
   </div>
 </template>
 
@@ -113,19 +116,26 @@ import { UserMinimal } from "@/components/utils/UserMinimal";
 import FloatingMenu from "../utils/FloatingMenu.vue";
 import SmallChat from "./SmallChat.vue";
 import socket from "@/socket";
+import WatchersChat from "./WatchersChat.vue";
+import { messageInGame } from "@backend/chat/utils/types";
 
 interface Props {
   user: UserMinimal;
   role: string;
   room_name: string;
+  message: messageInGame | null;
   emojisURL: Array<URL>;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
 const isChatting: Ref<boolean> = ref(false);
+const showWatchersChat: Ref<boolean> = ref(true);
 const chatRef = ref();
 const menuRef = ref();
 const emit = defineEmits(["quitGame", "changeSound", "changeBackground"]);
+const opacity = props.role == "watch" ? 0.2 : 1;
+const scale = props.role == "watch" ? "" : "scale(1.15)";
+const pointer = props.role == "default" ? "" : "pointer";
 
 function changeChattingStatus(event: boolean) {
   isChatting.value = event;
@@ -144,7 +154,7 @@ onMounted(() => {
   window.addEventListener("keyup", (event) => {
     if (event.key == "Enter") {
       if (isChatting.value) {
-        chatRef.value.methods.sendMsg();
+        if (chatRef.value) chatRef.value.methods.sendMsg();
       } else {
         document.getElementById("inputChat")?.focus();
         isChatting.value = true;
@@ -162,6 +172,10 @@ onMounted(() => {
     }
   });
 });
+
+function toogleChatW() {
+  showWatchersChat.value = !showWatchersChat.value;
+}
 
 defineExpose(
   defineComponent({
@@ -186,7 +200,7 @@ defineExpose(
   min-width: 50px;
   height: 50px;
   min-height: 50px;
-  background: rgba(30, 43, 2, 0.8);
+  background: #1e2b02cc;
   border: 2px solid var(--main-color);
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 12px;
@@ -194,11 +208,21 @@ defineExpose(
   background-position: center;
   background-size: 37px 37px;
   background-repeat: no-repeat;
+  opacity: 1;
 }
 
 .settingsBtn:hover {
-  transform: scale(1.15, 1.15);
+  transform: scale(1.15);
   cursor: pointer;
+}
+
+.emoji {
+  opacity: v-bind(opacity);
+}
+
+.emoji:hover {
+  transform: v-bind(scale);
+  cursor: v-bind(pointer);
 }
 
 .emoji {

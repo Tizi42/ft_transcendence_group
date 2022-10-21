@@ -3,6 +3,7 @@ import GameScene from "@/game/scenes/Game";
 import GameOverScene from "@/game/scenes/GameOver";
 import GetReadyScene from "@/game/scenes/GetReady";
 import MagicScene from "@/game/scenes/Magic";
+import SpeedScene from "./scenes/Speed";
 
 function launch(containerId: string, data: any) {
   return new Phaser.Game({
@@ -21,7 +22,7 @@ function launch(containerId: string, data: any) {
       width: 1043,
       height: 591,
     },
-    scene: [GetReadyScene, GameScene, MagicScene, GameOverScene],
+    scene: [GetReadyScene, GameScene, MagicScene, SpeedScene, GameOverScene],
   });
 }
 

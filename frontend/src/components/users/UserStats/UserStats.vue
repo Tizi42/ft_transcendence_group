@@ -156,4 +156,8 @@ defineExpose(
 .statValue {
   color: var(--main-color);
 }
+
+.historyTable {
+  margin-bottom: 50px;
+}
 </style>
