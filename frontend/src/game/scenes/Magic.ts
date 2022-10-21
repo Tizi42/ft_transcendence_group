@@ -188,11 +188,13 @@ export default class MagicScene extends Phaser.Scene {
   }
 
   update_paddle(dir: number) {
-    socket.emit("update_paddle", {
-      user_id: gameInfo.user_id,
-      room_name: gameInfo.room_name,
-      paddle_move_direction: dir,
-    });
+    if (gameInfo.user_role !== "watch") {
+      socket.emit("update_paddle", {
+        user_id: gameInfo.user_id,
+        room_name: gameInfo.room_name,
+        paddle_move_direction: dir,
+      });
+    }
   }
 
   check_effect(time: number) {

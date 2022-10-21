@@ -34,11 +34,7 @@ const game = await import("@/game/gameConfig");
 
 onMounted(() => {
   gameInfo.setInfo(user.id, props.room_name, props.user_role, props.mode);
-  gameInstance = game.launch(containerId, {
-    user_id: user.id,
-    room_name: props.room_name,
-    user_role: props.user_role,
-  });
+  gameInstance = game.launch(containerId);
 });
 
 defineExpose(

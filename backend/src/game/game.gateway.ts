@@ -311,6 +311,16 @@ export class GameGateway extends AppGateway {
     this.server.to(socket.id).emit("updated_rooms", this.transformRooms());
   }
 
+  @SubscribeMessage('get_game_status')
+  async onGetGameStatus(@MessageBody() data: any) {
+    const room = GameGateway.rooms.get(data.room_name);
+    if (!room)
+      return null;
+    return {
+      game_status: room.game_status,
+    }
+  }
+
   @SubscribeMessage('reset_score')
   async onResetScore(@ConnectedSocket() socket: Socket) {
     this.server.to(socket.id).emit("score_update", {

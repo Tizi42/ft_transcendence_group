@@ -5,7 +5,7 @@ import GetReadyScene from "@/game/scenes/GetReady";
 import MagicScene from "@/game/scenes/Magic";
 import SpeedScene from "./scenes/Speed";
 
-function launch(containerId: string, data: any) {
+function launch(containerId: string) {
   return new Phaser.Game({
     type: Phaser.AUTO,
     width: 1043,
@@ -13,7 +13,6 @@ function launch(containerId: string, data: any) {
     physics: {
       default: "arcade",
     },
-    // parent: containerId,
     backgroundColor: "#1E2B02",
     scale: {
       mode: Phaser.Scale.FIT,
