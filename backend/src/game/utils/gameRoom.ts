@@ -38,9 +38,9 @@ export class GameRoom {
     speed: 15,
   };
   readonly paddle_velocity_init = {
-    normal: 6,
-    magic: 6,
-    speed: 12,
+    normal: 10,
+    magic: 10,
+    speed: 20,
   };
   readonly acceleration = {
     normal: 1.15,
@@ -145,8 +145,10 @@ export class GameRoom {
     if (this.playerL === user_id) side = "left";
     else if (this.playerR === user_id) side = "right";
     else return;
-
-    this.paddle[side].y += this.paddle[side].velocity * paddle_move_direction;
+    
+    let dir = paddle_move_direction > 0 ? 1 : -1;
+    this.paddle[side].y += this.paddle[side].velocity[this.mode] * dir;
+  
     if (this.paddle[side].y < this.paddle[side].height_half)
       this.paddle[side].y = this.paddle[side].height_half;
     else if (this.paddle[side].y > this.height - this.paddle[side].height_half) 
@@ -171,23 +173,23 @@ export class GameRoom {
     }
     // check if ball collides with paddle
     else if (
-      ball_left < this.paddle.left.x + 5 &&
-      ball_left > this.paddle.left.x - 5 &&
+      ball_left < this.paddle.left.x + this.hit_range[this.mode] &&
+      ball_left > this.paddle.left.x - this.hit_range[this.mode]  &&
       ball_top < this.paddle.left.y + this.paddle.left.height_half &&
       ball_bottom > this.paddle.left.y - this.paddle.left.height_half
     ){
-      this.ball_velocity *= 1.15;
+      this.ball_velocity *= this.acceleration[this.mode];
       let bounce_angle = this.max_angle * ((this.ball_y - this.paddle.left.y) / this.paddle.left.height_half);
       this.ball_velocity_x = this.ball_velocity * Math.cos(bounce_angle);
       this.ball_velocity_y = this.ball_velocity * Math.sin(bounce_angle);
     }
     else if (
-      ball_right < this.paddle.right.x + 5 &&
-      ball_right > this.paddle.right.x - 10  &&
+      ball_right < this.paddle.right.x + this.hit_range[this.mode] &&
+      ball_right > this.paddle.right.x - this.hit_range[this.mode] &&
       ball_top < this.paddle.right.y + this.paddle.right.height_half &&
       ball_bottom > this.paddle.right.y - this.paddle.right.height_half
     ){
-      this.ball_velocity *= 1.15;
+      this.ball_velocity *= this.acceleration[this.mode];
       let bounce_angle = this.max_angle * ((this.ball_y - this.paddle.right.y) / this.paddle.right.height_half);
       this.ball_velocity_x = -this.ball_velocity * Math.cos(bounce_angle);
       this.ball_velocity_y = this.ball_velocity * Math.sin(bounce_angle);
@@ -222,6 +224,10 @@ export class GameRoom {
     ){
       this.winner = this.score_left > this.score_right ? this.playerL : this.playerR;
       let winner_side = this.score_left > this.score_right ? "left" : "right";
+      if (this.score_left === this.score_right) {
+        // this.winner = -1; //change to match battles
+        winner_side = "none";
+      }
       this.server.to(this.room_name).emit("end", {
         winner: winner_side,
       });
@@ -245,6 +251,10 @@ export class GameRoom {
     this.score_left = 0;
     this.score_right = 0;
     this.winner = -1;
+  }
+
+  stop_game() {
+    clearInterval(this.interval);
   }
 
   /*

@@ -88,6 +88,7 @@ export class GameGateway extends AppGateway {
   closeRoom(room: GameRoom) {
     if (!room)
       return;
+    room.stop_game();
     this.server.in(room.room_name).socketsLeave(room.room_name);
     this.usersService.updateUserStatus(room.playerL, "leave game");
     this.usersService.updateUserStatus(room.playerR, "leave game");
