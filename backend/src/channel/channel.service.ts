@@ -30,7 +30,7 @@ export class ChannelService {
     newChannel.admins = channelDto.admins;
     if (channelDto.type === "protected") {
       if (!channelDto.password || !this.validPassword(channelDto.password)) {
-        return null;
+        return "password_error";
       }
       const salt = await bcrypt.genSalt();
       newChannel.password = await bcrypt.hash(channelDto.password, salt);
@@ -214,7 +214,7 @@ export class ChannelService {
     }
     if (updatePrivacyDto.type === "protected") {
       if (!updatePrivacyDto.password || !this.validPassword(updatePrivacyDto.password)) {
-        return null;
+        return "password_error";
       }
       const salt = await bcrypt.genSalt();
       updatePrivacyDto.channel.password = await bcrypt.hash(updatePrivacyDto.password, salt);
@@ -230,7 +230,7 @@ export class ChannelService {
       return null;
     }
     if (!updatePasswordDto.password || !this.validPassword(updatePasswordDto.password)) {
-      return null;
+      return "password_error";
     }
     const salt = await bcrypt.genSalt();
     updatePasswordDto.channel.password = await bcrypt.hash(updatePasswordDto.password, salt);    
@@ -239,62 +239,62 @@ export class ChannelService {
 
   /* CHECK IF EXIST */
 
-  async isChannelMember(userId: number, channelId: number) {
-    const channel = await this.findChannelAndMembers(channelId);
-
-    for (let i = 0; i < channel[0].members.length; i++)
-    {
-      if (channel[0].members[i].id === userId)
+  isChannelMember(userId: number, channel: Channel) {
+    for (let i = 0; i < channel.members.length; i++){
+      if (channel.members[i].id === userId) {
         return true;
+      }
     }
     return false;
   }
 
-  async isMemberBan(userId: number, channelId: number) {
-    const channel = await this.findOne(channelId);
-
-      for (let i = 0; i < channel[0].banned.length; i++)
-      {
-        if (channel[0].banned[i] === userId)
-          return true;
-      }  
-      return false;
+  isMemberBan(userId: number, channel: Channel) {
+    for (let i = 0; i < channel.banned.length; i++) {
+      if (channel.banned[i] === userId) {
+        return true;
+      }
+    }  
+    return false;
   }
 
   /* JOIN AND LEAVE */
 
-  async joinChannel(userId: number, channelId: number, password?: string) {
-    const user = await this.userService.findOneById(userId);
-    const channel = await this.findOne(channelId);
+  async joinChannel(user: User, channelId: number, password?: string) {
+    const channel = await this.findChannelAndMembers(channelId);
 
-    if (this.isChannelMember(userId, channelId) || this.isMemberBan(userId, channelId))
-    {
-      console.log("unauthorized");
-      return false;
+    if (!channel) {
+      return null;
     }
-    if (channel[0].type === "protected")
-    {
-      if (channel[0].password !== password)
-      {
-        console.log("unauthorized");
-        return false;
+    if (this.isChannelMember(user.id, channel[0]) || this.isMemberBan(user.id, channel[0])) {
+      console.log("unauthorized");
+      return null;
+    }
+    if (channel[0].type === "protected") {
+      if (!this.validPassword(password)) {
+        return "password_error";
+      }
+      const match = await bcrypt.compare(password, channel[0].password);
+      if (!match) {
+        return "password_error";
       }
     }
-    for (let i = 0; i < channel[0].pendingReqFrom.length; i++)
-    {
-      if (channel[0].pendingReqFrom[i] === user.id)
-        channel[0].pendingReqFrom.splice(i, 1);
-    }
+    // for (let i = 0; i < channel[0].pendingReqFrom.length; i++) {
+    //   if (channel[0].pendingReqFrom[i] === user.id)
+    //     channel[0].pendingReqFrom.splice(i, 1);
+    // }
     channel[0].members.push(user);
     await this.channelRepository.save(channel);
-    return true;
+    
+    return channel[0].name;
   }
 
   async refuseJoining(userId: number, channelId: number) {
-    const channel = await this.findOne(channelId);
+    const channel = await this.findChannelAndMembers(channelId);
 
-    for (let i = 0; i < channel[0].pendingReqFrom.length; i++)
-    {
+    if (!channel) {
+      return null;
+    }
+    for (let i = 0; i < channel[0].pendingReqFrom.length; i++) {
       if (channel[0].pendingReqFrom[i] === userId)
         channel[0].pendingReqFrom.splice(i, 1);
     }
@@ -303,10 +303,12 @@ export class ChannelService {
   }
 
   async joinRequest(userId: number, channelId: number) {
-    const channel = await this.findOne(channelId);
+    const channel = await this.findChannelAndMembers(channelId);
 
-    if (this.isChannelMember(userId, channelId) || this.isMemberBan(userId, channelId))
-    {
+    if (!channel) {
+      return null;
+    }
+    if (this.isChannelMember(userId, channel[0]) || this.isMemberBan(userId, channel[0])) {
       console.log("unauthorized");
       return false;
     }

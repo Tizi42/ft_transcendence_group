@@ -27,7 +27,6 @@
         :user="user"
       />
       <HistoryMessages
-        v-if="receiverProfile != null"
         :history="history"
         :target="receiverProfile"
         :isActive="isActive"
@@ -64,7 +63,7 @@ const user: any = useUserStore();
 const isActive: Ref<string> = ref("players");
 const receiver: Ref<number> = ref(-1);
 const history: Ref<Array<Chat>> = ref([]);
-const receiverProfile: Ref<User | null> = ref(null);
+const receiverProfile: Ref<any> = ref(null);
 const selectedChannel: Ref<number> = ref(-1);
 const allMyChannels: Ref<Array<any>> = ref([]);
 const channel: Ref<any> = ref(null);
