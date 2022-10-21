@@ -55,6 +55,7 @@ const toJoin = () => {
 
 socket.on("joined_channel", (channelId: number) => {
   console.log("joined channel id ", channelId);
+  socket.emit("get_all_channels");
   emit("hideAddChannel");
 });
 

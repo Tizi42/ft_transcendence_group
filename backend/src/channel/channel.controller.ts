@@ -23,10 +23,10 @@ export class ChannelController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  getChannel(
+  async getChannel(
     @Param('id') id: number
   ) {
-    return this.channelService.findOne(id);
+    return await this.channelService.findChannelAndMembers(id);
   }
 
   @UseGuards(JwtAuthGuard)

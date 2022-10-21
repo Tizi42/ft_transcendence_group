@@ -27,6 +27,7 @@
     margin-top: 40px;
     height: 86%;
     border-radius: 2em;
+    /* overflow: auto; */
 }
 
 .container-channels {
@@ -419,6 +420,11 @@
 
 .search-in-my-channels button img:hover {
     transform: scale(1.1, 1.1);
+}
+
+.list-my-channels {
+    height: 75%;
+    overflow: auto;
 }
 
 .list-my-channels li {
