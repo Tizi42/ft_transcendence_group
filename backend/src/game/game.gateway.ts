@@ -240,11 +240,7 @@ export class GameGateway extends AppGateway {
     const room = GameGateway.rooms.get(data.room_name);
     if (!room)
       return null;
-    if (room.playerL === data.user_id) {
-      room.paddle_left_y = data.paddle_pos;
-    } else if (room.playerR === data.user_id) {
-      room.paddle_right_y = data.paddle_pos;
-    }
+    room.on_paddle_move(data.user_id, data.paddle_move_direction);
   }
 
   @SubscribeMessage('create_spell')

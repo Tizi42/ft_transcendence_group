@@ -74,9 +74,9 @@ export default class GameScene extends Phaser.Scene {
 
   update() {
     if (this.cursors.up.isDown) {
-      this.update_paddle(-this.paddle_velocity_max);
+      this.update_paddle(-1);
     } else if (this.cursors.down.isDown) {
-      this.update_paddle(this.paddle_velocity_max);
+      this.update_paddle(1);
     }
   }
 
@@ -87,17 +87,11 @@ export default class GameScene extends Phaser.Scene {
     return paddle;
   }
 
-  update_paddle(velocity: number) {
-    this.paddle_pos += velocity;
-    if (this.paddle_pos <= 40) {
-      this.paddle_pos = 40;
-    } else if (this.paddle_pos >= this.height - 40) {
-      this.paddle_pos = this.height - 40;
-    }
+  update_paddle(dir: number) {
     socket.emit("update_paddle", {
       user_id: gameInfo.user_id,
       room_name: gameInfo.room_name,
-      paddle_pos: this.paddle_pos,
+      paddle_move_direction: dir,
     });
   }
 }
