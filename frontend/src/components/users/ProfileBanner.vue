@@ -50,14 +50,17 @@ function onSubmit() {
   if (newname.value === "") return;
   editingMode.value = false;
   if (newname.value !== user.displayName) {
-    axios.post(
-      "http://localhost:3000/api/users/info/" +
-        user.id +
-        "?displayname=" +
-        newname.value
-    );
+    axios
+      .post(
+        "http://localhost:3000/api/users/info/" +
+          user.id +
+          "?displayname=" +
+          newname.value
+      )
+      .then(() => {
+        user.doFetch();
+      });
   }
-  user.doFetch();
 }
 
 defineExpose(
