@@ -1,4 +1,5 @@
-import { Socket, Server } from 'socket.io';
+import { Server } from 'socket.io';
+import { BattlesService } from '../../battles/battles.service';
 
 export class GameRoom {
 
@@ -50,7 +51,15 @@ export class GameRoom {
   spell_R = 0;
 
 
-  constructor(l: number, l_sid: string, r: number, r_sid: string, mode:string, server: Server) {
+  constructor(
+    l: number,
+    l_sid: string, 
+    r: number,
+    r_sid: string,
+    mode:string,
+    server: Server,
+    readonly battlesService: BattlesService,
+    ) {
     // this.tick = Date.now();
     this.playerL = l;
     this.playerR = r;
@@ -66,20 +75,21 @@ export class GameRoom {
     }
   }
 
-  getRandomNumberBetween(min: number, max: number) {
-    return Math.random() * (max - min) + min;
-  }
-
-  getRandomVelocity(direction: string) {
-    let angle = this.getRandomNumberBetween(-this.max_angle, this.max_angle);
-    let vx = this.ball_velocity * Math.cos(angle);
-    let vy = this.ball_velocity * Math.sin(angle);
-    if (direction === "toLeft")
-      vx = -vx;
-    return ([
-      vx,
-      vy
-    ]);
+  async start_game() {
+    this.server.to(this.room_name).emit("game_start");
+    if (this.mode == "speed") {
+      setTimeout(() => {
+        this.server.to(this.room_name).emit("end", {
+          winner: "",
+        });
+      },
+      180000);
+    }
+    this.current_game_id = await this.battlesService.addOne({
+      opponent1: this.playerL,
+      opponent2: this.playerR,
+    });
+    this.getRandomInt(1) === 1 ? this.on_launch("toRight") : this.on_launch("toLeft");
   }
 
   on_launch(direction: string)
@@ -109,6 +119,11 @@ export class GameRoom {
     });
   }
 
+  next_ball_pos() {
+    this.ball_x += this.ball_velocity_x;
+    this.ball_y += this.ball_velocity_y;
+  }
+
   check_collision() {
     let ball_top = this.ball_y - this.ball_radius;
     let ball_bottom = this.ball_y + this.ball_radius;
@@ -127,7 +142,7 @@ export class GameRoom {
       ball_top < this.paddle_left_y + this.paddle_height_half &&
       ball_bottom > this.paddle_left_y - this.paddle_height_half
     ){
-      this.ball_velocity *= 1.05;
+      this.ball_velocity *= 1.15;
       let bounce_angle = this.max_angle * ((this.ball_y - this.paddle_left_y) / 40);
       this.ball_velocity_x = this.ball_velocity * Math.cos(bounce_angle);
       this.ball_velocity_y = this.ball_velocity * Math.sin(bounce_angle);
@@ -138,7 +153,7 @@ export class GameRoom {
       ball_top < this.paddle_right_y + this.paddle_height_half &&
       ball_bottom > this.paddle_right_y - this.paddle_height_half
     ){
-      this.ball_velocity *= 1.05;
+      this.ball_velocity *= 1.15;
       let bounce_angle = this.max_angle * ((this.ball_y - this.paddle_right_y) / 40);
       this.ball_velocity_x = -this.ball_velocity * Math.cos(bounce_angle);
       this.ball_velocity_y = this.ball_velocity * Math.sin(bounce_angle);
@@ -173,23 +188,51 @@ export class GameRoom {
     ){
       this.winner = this.score_left > this.score_right ? this.playerL : this.playerR;
       let winner_side = this.score_left > this.score_right ? "left" : "right";
-      console.log(this.score_left, " : ", this.score_right);
       this.server.to(this.room_name).emit("end", {
         winner: winner_side,
       });
-      this.reset_score();
+      this.save_game();
+      this.reset_game();
       return true;
     }
     return false;
   }
 
-  next_ball_pos() {
-    this.ball_x += this.ball_velocity_x;
-    this.ball_y += this.ball_velocity_y;
+  save_game() {
+    this.battlesService.end(
+      this.current_game_id,
+      this.winner,
+      this.score_left,
+      this.score_right
+    );
   }
 
-  reset_score() {
+  reset_game() {
     this.score_left = 0;
     this.score_right = 0;
+    this.winner = -1;
+  }
+
+  /*
+  **    UTILS
+  */
+  getRandomInt(max: number = 100) : number {
+    return Math.floor(Math.random() * max);
+  }
+
+  getRandomNumberBetween(min: number, max: number) {
+    return Math.random() * (max - min) + min;
+  }
+
+  getRandomVelocity(direction: string) {
+    let angle = this.getRandomNumberBetween(-this.max_angle, this.max_angle);
+    let vx = this.ball_velocity * Math.cos(angle);
+    let vy = this.ball_velocity * Math.sin(angle);
+    if (direction === "toLeft")
+      vx = -vx;
+    return ([
+      vx,
+      vy
+    ]);
   }
 }
