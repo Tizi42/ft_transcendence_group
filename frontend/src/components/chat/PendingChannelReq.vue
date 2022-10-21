@@ -1,5 +1,6 @@
 <template>
-  <div class="notification">
+  <h1>salut</h1>
+  <!-- <div class="notification">
     <ul class="list-my-channels">
       <li v-for="pending in myRequests" :key="pending">
         {{ pending.user.name }} is waiting for your agreement
@@ -17,7 +18,7 @@
         </button>
       </li>
     </ul>
-  </div>
+  </div> -->
 </template>
 
 <script lang="ts" setup>

@@ -467,6 +467,8 @@
 
 .all-channels {
     margin-top: 14px;
+    overflow: auto;
+    margin-bottom: 27px;
 }
 
 .channel-attributes {
