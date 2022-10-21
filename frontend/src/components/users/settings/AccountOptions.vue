@@ -72,8 +72,8 @@ defineExpose(
 
 <style scoped>
 .wrapper-account {
-  position: absolute;
-  width: 60%;
+  position: relative;
+  width: 100%;
 }
 
 .option-group {
