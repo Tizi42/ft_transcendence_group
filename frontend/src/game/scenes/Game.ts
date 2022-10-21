@@ -81,24 +81,7 @@ export default class GameScene extends Phaser.Scene {
       this.ball.y = data.ball_y;
     });
 
-    // socket.on("ball_update", (data: any) => {
-    //   this.ball.x = data.ball_x;
-    //   this.ball.y = data.ball_y;
-    //   // this.ball.setVelocity(data.vx, data.vy);
-    // });
-
-    // socket.on("launch_ball", (data: any) => {
-    //   this.ball.disableBody(true, true);
-    //   this.ball.enableBody(
-    //     true,
-    //     this.cameras.main.centerX,
-    //     data.randomHeight,
-    //     true,
-    //     true
-    //   );
-    //   // this.ball.setVelocity(data.randVx, data.randVy);
-    // });
-
+    // listen for game end
     socket.on("end", (data: any) => {
       this.winner = data.winner;
       this.scene.start("GameOverScene", { winner: this.winner });
