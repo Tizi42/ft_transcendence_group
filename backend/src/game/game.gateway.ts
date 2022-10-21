@@ -5,7 +5,6 @@ import { GameRoom } from "./utils/gameRoom";
 import { Invitation } from "./utils/invitation";
 import { AppGateway } from '../gateway';
 import { UsersService } from '../users/users.service';
-import { GameService } from './game.service';
 import { ChatService } from '../chat/chat.service';
 import { ChannelService } from 'src/channel/channel.service';
 import { BattlesService } from '../battles/battles.service';
@@ -71,7 +70,8 @@ export class GameGateway extends AppGateway {
     mode: string
   ) {
     const room_name = l_id + " vs " + r_id;
-    GameGateway.rooms.set(room_name, new GameRoom(l_id, l_sid, r_id, r_sid, mode));
+    GameGateway.rooms.set(room_name, new GameRoom(
+      l_id, l_sid, r_id, r_sid, mode, this.server, this.battlesService));
     // update user status
     this.usersService.updateUserStatus(l_id, "in game");
     this.usersService.updateUserStatus(r_id, "in game");
@@ -88,6 +88,7 @@ export class GameGateway extends AppGateway {
   closeRoom(room: GameRoom) {
     if (!room)
       return;
+    room.stop_game();
     this.server.in(room.room_name).socketsLeave(room.room_name);
     this.usersService.updateUserStatus(room.playerL, "leave game");
     this.usersService.updateUserStatus(room.playerR, "leave game");
@@ -101,31 +102,6 @@ export class GameGateway extends AppGateway {
   cleanQueue(mode: string) {
     GameGateway.queues[mode].id = -1;
     GameGateway.queues[mode].sid = "";
-  }
-
-  async start_game(room: GameRoom) {
-    this.server.to(room.room_name).emit("game_start");
-    if (room.mode == "speed") {
-      setTimeout(() => {
-        this.server.to(room.room_name).emit("end", {
-          winner: "",
-        });
-      },
-      180000);
-    }
-    room.current_game_id = await this.battlesService.addOne({
-      opponent1: room.playerL,
-      opponent2: room.playerR,
-    });
-  }
-
-  save_game(room: GameRoom) {
-    this.battlesService.end(
-      room.current_game_id,
-      room.winner,
-      room.score_left,
-      room.score_right
-    );
   }
 
   @SubscribeMessage('queue_register')
@@ -210,13 +186,17 @@ export class GameGateway extends AppGateway {
   }
 
   @SubscribeMessage('init_room')
-  async sendRoomInfo(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+  sendRoomInfo(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
     const room = GameGateway.rooms.get(data.room_name);
     if (!room)
       return null;
     if (data.user_id !== room.playerL && data.user_id !== room.playerR)
       this.server.in(socket.id).socketsJoin(data.room_name);
-    return room;
+    return {
+      playerL: room.playerL,
+      playerR: room.playerR,
+      mode: room.mode,
+    };
   }
 
   @SubscribeMessage('leave_game')
@@ -243,7 +223,7 @@ export class GameGateway extends AppGateway {
       room.ready = data.user_id;
     else {
       room.ready = 0;
-      this.start_game(room);
+      room.start_game();
     }
   }
 
@@ -261,15 +241,7 @@ export class GameGateway extends AppGateway {
     const room = GameGateway.rooms.get(data.room_name);
     if (!room)
       return null;
-    if (room.playerL === data.user_id) {
-      room.paddle_left_pos_y = data.paddle_pos;
-    } else if (room.playerR === data.user_id) {
-      room.paddle_right_pos_y = data.paddle_pos;
-    }
-    this.server.to(data.room_name).emit("game_update", {
-      paddle_left_posY: room.paddle_left_pos_y,
-      paddle_right_posY: room.paddle_right_pos_y,
-    });
+    room.on_paddle_move(data.user_id, data.paddle_move_direction);
   }
 
   @SubscribeMessage('create_spell')
@@ -314,31 +286,6 @@ export class GameGateway extends AppGateway {
     });
   }
 
-  @SubscribeMessage('ball_pos')
-  async updateBallPos(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
-    // const room = GameGateway.rooms.get(data.room_name);
-    // if (!room)
-    //   return null;
-    // room.ball_pos_x = data.ball_x;
-    // room.ball_pos_y = data.ball_y;
-    socket.to(data.room_name).emit("ball_update", {
-      ball_x: data.ball_x,
-      ball_y: data.ball_y,
-      vx: data.vx,
-      vy: data.vy,
-    });
-  }
-
-  @SubscribeMessage('update_score')
-  async onUpdateScore(@MessageBody() data: any) {
-    console.log(GameGateway.rooms);
-    console.log("score:", data);
-    this.server.to(data.room_name).emit("score_update", {
-      left: data.left,
-      right: data.right,
-    });
-  }
-
   getRandomInt(max: number = 100) : number {
     return Math.floor(Math.random() * max);
   }
@@ -353,14 +300,14 @@ export class GameGateway extends AppGateway {
 
   @SubscribeMessage('get_updated_rooms')
   updateRooms(@ConnectedSocket() socket: Socket) {
-    if (GameGateway.rooms.size == 0) { // to delete when everything is good
-      let room_name = 2 + " vs " + 3;
-      GameGateway.rooms.set(room_name, new GameRoom(2, "", 3, "", "normal",));
-      room_name = 4 + " vs " + 5;
-      GameGateway.rooms.set(room_name, new GameRoom(4, "", 5, "", "magic"));
-      room_name = 6 + " vs " + 7;
-      GameGateway.rooms.set(room_name, new GameRoom(6, "", 7, "", "speed"));
-    }
+    // if (GameGateway.rooms.size == 0) { // to delete when everything is good
+    //   let room_name = 2 + " vs " + 3;
+    //   GameGateway.rooms.set(room_name, new GameRoom(2, "", 3, "", "normal",));
+    //   room_name = 4 + " vs " + 5;
+    //   GameGateway.rooms.set(room_name, new GameRoom(4, "", 5, "", "magic"));
+    //   room_name = 6 + " vs " + 7;
+    //   GameGateway.rooms.set(room_name, new GameRoom(6, "", 7, "", "speed"));
+    // }
     this.server.to(socket.id).emit("updated_rooms", this.transformRooms());
   }
 
@@ -371,80 +318,4 @@ export class GameGateway extends AppGateway {
       right: 0,
     });
   }
-
-  getRandomIntBetween(min: number, max: number) {
-    return Math.floor(Math.random() * (max - min + 1) + min)
-  }
-
-  getRandomVelocity(mode: string, direction: string) {
-    let minVelocity = 200;
-    let maxVelocity = 300;
-    if (mode === "speed") {
-      minVelocity = 500;
-      maxVelocity = 600;
-    }
-    let vx = this.getRandomIntBetween(minVelocity, maxVelocity);
-    let vy = this.getRandomIntBetween(minVelocity, maxVelocity);
-    if (direction === "toLeft")
-      vx = -vx;
-    if (this.getRandomIntBetween(0, 1) === 0)
-      vy = -vy;
-    return ([
-      vx,
-      vy
-    ]);
-  }
-
-  @SubscribeMessage('launch_ball')
-  async onLaunchBall(
-    @ConnectedSocket() socket: Socket,
-    @MessageBody() data: any
-  ){
-    const randomHeight = this.getRandomIntBetween(80, 511); // height 591 - 80 
-    const randVelocity = this.getRandomVelocity(data.mode, data.direction);
-    this.server.to(data.room_name).emit("launch_ball", {
-      randomHeight: randomHeight,
-      randVx: randVelocity[0],
-      randVy: randVelocity[1],
-    });
-  }
-
-  @SubscribeMessage('game_end')
-  async onGameEnd(
-    @ConnectedSocket() socket: Socket,
-    @MessageBody() data: any
-  ){
-    console.log("game end, winner is player ", data.winner);
-    const room = GameGateway.rooms.get(data.room_name);
-    if (!room)
-      return null;
-
-    // save game data
-    room.score_left = data.left;
-    room.score_right = data.right;
-    if (data.winner === "left")
-      room.winner = room.playerL;
-    else if (data.winner === "right")
-      room.winner = room.playerR;
-    else
-      room.winner = -1;
-
-    //update battle history database
-    this.save_game(room);
-
-    // inform other users in game room
-    this.server.to(data.room_name).emit("end", {
-      winner: data.winner,
-    });
-  }
-
-  // @SubscribeMessage('update_pos')
-  // async updatePaddle(socket: Socket, data: any) {
-  //     const socketId = socket.id;
-  //     console.log(socketId);
-  //     console.log(data[0]);
-  //     console.log(data[1]);
-  //     console.log(data);
-  //     GameGateway.rooms.get(data[0]).update_gamestate(socketId, data[1]);
-  // }
 }
