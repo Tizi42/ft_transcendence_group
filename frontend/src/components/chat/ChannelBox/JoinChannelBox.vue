@@ -7,7 +7,7 @@
       <input
         v-model="password"
         id="channel-password"
-        type="text"
+        type="password"
         placeholder="Password.."
         required="true"
         autofocus
@@ -33,39 +33,39 @@ import { userInfoStore } from "@/stores/user";
 
 interface Props {
   user: userInfoStore;
-  channelJoined: any;
+  channel: any;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
-const channel: Ref<any> = ref();
 const password: Ref<string> = ref("");
 const authorized: Ref<boolean> = ref(true);
 let inputBorder = ref("none");
 
-onBeforeMount(async () => {
-  channel.value = props.channelJoined;
-});
-
 const toJoin = () => {
   inputBorder.value = "none";
   const data = {
-    channel: channel.value.id,
-    password: password,
+    channelId: props.channel.id,
+    password: password.value,
   };
+  console.log("channel to join =>", props.channel.name);
+  console.log("banned list =>", props.channel.banned);
   socket.emit("join_channel", data);
-  socket.on("joined_channel", (auth: boolean) => {
-    authorized.value = auth;
-  });
-  if (!authorized.value) {
-    inputBorder.value = "4px solid red";
-    password.value = "";
-  } else {
-    if (channel.value.type === "private") {
-      socket.emit("send_request", channel.value);
-    }
-    emit("hideAddChannel");
-  }
+  password.value = "";
 };
+
+socket.on("joined_channel", (channelId: number) => {
+  console.log("joined channel id ", channelId);
+  emit("hideAddChannel");
+});
+
+socket.on("password_error", () => {
+  inputBorder.value = "4px solid red";
+});
+
+// if (props.channel.value.type === "private") {
+//   socket.emit("send_request", props.channel.value);
+// }
+
 const emit = defineEmits(["hideAddChannel"]);
 
 defineExpose(

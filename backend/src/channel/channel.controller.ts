@@ -35,15 +35,15 @@ export class ChannelController {
     return this.channelService.findAllChannelsAndMembers();
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('isMember/:id')
-  getIfMember(
-    @Req() req: RequestWithUser,
-    @Param('id') id: number
-  ) {
-    console.log("chan =", id, "member =", req.user.id);
-    return this.channelService.isChannelMember(req.user.id, id);
-  }
+  // @UseGuards(JwtAuthGuard)
+  // @Get('isMember/:id')
+  // getIfMember(
+  //   @Req() req: RequestWithUser,
+  //   @Param('id') id: number
+  // ) {
+  //   console.log("chan =", id, "member =", req.user.id);
+  //   return this.channelService.isChannelMember(req.user.id, id);
+  // }
 
   @UseGuards(JwtAuthGuard)
   @Get('members/:id')

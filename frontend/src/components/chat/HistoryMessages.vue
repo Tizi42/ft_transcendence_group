@@ -126,7 +126,6 @@ const membersWindow: Ref<boolean> = ref(false);
 const inviteWindow: Ref<boolean> = ref(false);
 const isShowUserProfile: Ref<boolean> = ref(false);
 const userTarget: Ref<User> = ref(props.target);
-const channel: Ref<Array<any>> = ref([]);
 
 function inviteInGame() {
   inviteWindow.value = true;
