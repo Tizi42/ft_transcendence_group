@@ -3,8 +3,8 @@
     <div class="overlayBox" v-if="dataReady">
       <OverlayTopBar
         v-if="opponent != null"
-        :playerL="createUserMinimal(playerL)"
-        :playerR="createUserMinimal(playerR)"
+        :playerL="playerLMin"
+        :playerR="playerRMin"
         :scores="scores"
         :messageL="messageL"
         :messageR="messageR"
@@ -13,16 +13,19 @@
         :emojiR="emojiR"
         :emojiDateL="emojiDateL"
         :emojiDateR="emojiDateR"
+        :mode="props.mode"
       />
       <GameBox :room_name="room_name" :user_role="user_role" :mode="mode" />
       <OverlayBottomBar
-        :user="createUserFromStore(user)"
+        :user="userMin"
         :role="user_role"
         :room_name="room_name"
         :emojisURL="emojisURL"
+        :message="messageW"
         @changeSound="changeSound"
         @quitGame="quitGame"
         @changeBackground="changeBackground"
+        @hideChat="hideChat"
       />
       <ReadyButton v-if="readyStatus[0]" />
       <ReadyButton v-if="readyStatus[1]" />
@@ -38,7 +41,6 @@ import OverlayBottomBar from "./OverlayBottomBar.vue";
 import GameBox from "./GameBox.vue";
 import ReadyButton from "./ReadyButton.vue";
 import { useUserStore } from "@/stores/user";
-import { Chat } from "@backend/chat/entities/chat.entity";
 import { UserMinimal } from "@/components/utils/UserMinimal";
 import { User } from "@backend/users/users.entity";
 import { getUrlOf } from "@/router";
@@ -46,6 +48,7 @@ import socket from "@/socket";
 import { onBeforeRouteLeave } from "vue-router";
 import router from "@/router/index";
 import { StoreGeneric } from "pinia";
+import { messageInGame } from "@backend/chat/utils/types";
 
 interface Props {
   room_name: string;
@@ -55,12 +58,14 @@ interface Props {
 }
 
 const user: StoreGeneric = useUserStore();
+const userMin: UserMinimal = createUserFromStore(user);
 const opponent: UserMinimal = new UserMinimal();
 const props: Readonly<Props> = defineProps<Props>();
 const playerL: Ref<User | null> = ref(null);
 const playerR: Ref<User | null> = ref(null);
-const messageL: Ref<Chat | null> = ref(null);
-const messageR: Ref<Chat | null> = ref(null);
+const messageL: Ref<messageInGame | null> = ref(null);
+const messageR: Ref<messageInGame | null> = ref(null);
+const messageW: Ref<messageInGame | null> = ref(null);
 const emojiL: Ref<number> = ref(3);
 const emojiR: Ref<number> = ref(0);
 const emojiDateL: Ref<Date> = ref(new Date());
@@ -71,6 +76,8 @@ const scores: Ref<Array<number>> = ref([0, 0]);
 const emojisURL: Array<URL> = [];
 const force_quit = ref(false);
 const user_role = ref("");
+const playerLMin: Ref<UserMinimal> = ref(createUserMinimal(null));
+const playerRMin: Ref<UserMinimal> = ref(createUserMinimal(null));
 
 type emojiInfo = {
   author: string;
@@ -102,16 +109,17 @@ function loadEmojis() {
   }
 }
 
-function updateMessage(msg: Chat) {
-  if (msg.author == user.id) messageL.value = msg;
-  else messageR.value = msg;
+function updateMessage(msg: messageInGame) {
+  if (msg.author == props.playerL_id.toString()) messageL.value = msg;
+  else if (msg.author == props.playerR_id.toString()) messageR.value = msg;
+  else messageW.value = msg;
 }
 
 function updateEmoji(msg: emojiInfo) {
-  if (msg.author == user.id.toString()) {
+  if (msg.author == props.playerL_id.toString()) {
     emojiL.value = msg.content;
     emojiDateL.value = new Date();
-  } else {
+  } else if (msg.author == props.playerR_id.toString()) {
     emojiR.value = msg.content;
     emojiDateR.value = new Date();
   }
@@ -128,6 +136,7 @@ async function getPlayersInfo() {
     }
   );
   playerL.value = await left.json();
+  playerLMin.value = createUserMinimal(playerL.value);
 
   let right: Response = await fetch(
     getUrlOf("api/users/info/" + props.playerR_id),
@@ -136,6 +145,7 @@ async function getPlayersInfo() {
     }
   );
   playerR.value = await right.json();
+  playerRMin.value = createUserMinimal(playerR.value);
 
   setTimeout(() => {
     dataReady.value = true;
@@ -155,7 +165,11 @@ function changeBackground() {
   console.log("user wants to change background");
 }
 
-onBeforeRouteLeave((to: any, from: any) => {
+function hideChat() {
+  console.log("hide chat");
+}
+
+onBeforeRouteLeave(() => {
   if (force_quit.value) return true;
   const answer = window.confirm(
     "Do you really want to leave? You will quit the game room"
@@ -209,7 +223,9 @@ defineExpose(
   justify-content: space-evenly;
   align-items: center;
   position: absolute;
-  width: 80%;
+  width: 90%;
+  max-width: 1400px;
+  max-height: 1000px;
   height: 90%;
   top: 50%;
   -ms-transform: translateY(-50%);

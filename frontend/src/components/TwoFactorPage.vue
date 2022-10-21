@@ -29,8 +29,9 @@ export default defineComponent({
 <script lang="ts" setup>
 import { onBeforeMount, ref, Ref } from "vue";
 import { getUrlOf } from "@/router";
+import { User } from "@backend/users/users.entity";
 
-const profile: Ref<any> = ref("");
+const profile: Ref<User | null> = ref(null);
 const isTwoFactorAuthentication: Ref<boolean> = ref(false);
 const firstEnablingTwoFactor: Ref<boolean> = ref(false);
 
@@ -64,7 +65,7 @@ onBeforeMount(async () => {
       }
       return response.json();
     })
-    .then((user) => {
+    .then((user: User) => {
       profile.value = user;
       firstEnablingTwoFactor.value = user.isFirstEnablingTwoFactor;
     })

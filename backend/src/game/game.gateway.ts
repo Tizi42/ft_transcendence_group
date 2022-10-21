@@ -28,6 +28,10 @@ export class GameGateway extends AppGateway {
     magic: {
       id: -1,
       sid: "",
+    },
+    speed: {
+      id: -1,
+      sid: "",
     }
   };
 
@@ -46,6 +50,8 @@ export class GameGateway extends AppGateway {
     }
     else if (GameGateway.queues.magic.sid === socket.id)
       this.cleanQueue("magic");
+    else if (GameGateway.queues.speed.sid === socket.id)
+      this.cleanQueue("speed");
 
     // check if socket is in game
     let room_name = GameGateway.inGameSockets.get(socket.id);
@@ -98,6 +104,14 @@ export class GameGateway extends AppGateway {
 
   async start_game(room: GameRoom) {
     this.server.to(room.room_name).emit("game_start");
+    if (room.mode == "speed") {
+      setTimeout(() => {
+        this.server.to(room.room_name).emit("end", {
+          winner: "",
+        });
+      },
+      180000);
+    }
     room.current_game_id = await this.battlesService.addOne({
       opponent1: room.playerL,
       opponent2: room.playerR,
@@ -118,7 +132,8 @@ export class GameGateway extends AppGateway {
   queueRegister(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
     console.log("Queue register received: ", data);
     if (GameGateway.queues.normal.id === data.user_id
-        || GameGateway.queues.magic.id === data.user_id) {
+        || GameGateway.queues.magic.id === data.user_id
+        || GameGateway.queues.speed.id === data.user_id) {
       return "You are already in a queue!"; // need to show an alert in front
     }
 
@@ -334,11 +349,9 @@ export class GameGateway extends AppGateway {
 
   transformRooms(): Array<GameRoomNS> {
     let data: Array<GameRoomNS> = [];
-    const modes: string[] = ["normal", "speed", "magic"]; // to change when mode will be set up
     GameGateway.rooms.forEach((value: GameRoom, key: string) => {
       data.push(new GameRoomNS(value, key));
     });
-    console.log(data);
     return data;
   }
 
@@ -380,6 +393,8 @@ export class GameGateway extends AppGateway {
       room.winner = room.playerL;
     else if (data.winner === "right")
       room.winner = room.playerR;
+    else
+      room.winner = -1;
 
     //update battle history database
     this.save_game(room);
