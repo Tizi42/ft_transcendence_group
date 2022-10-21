@@ -3,7 +3,7 @@ import socket from "@/socket";
 import gameInfo from "../gameInfo";
 
 export default class GetReadyScene extends Phaser.Scene {
-  readyButton: Phaser.Physics.Arcade.Sprite;
+  readyButton: Phaser.GameObjects.Sprite;
   ready = false;
 
   constructor() {
@@ -77,6 +77,7 @@ export default class GetReadyScene extends Phaser.Scene {
     socket.on("game_start", () => {
       console.log("Game start !!!", this.scene);
       if (gameInfo.mode === "magic") this.scene.start("MagicScene");
+      else if (gameInfo.mode === "speed") this.scene.start("SpeedScene");
       else this.scene.start("GameScene");
     });
 
