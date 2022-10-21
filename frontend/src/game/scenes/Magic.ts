@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import socket from "@/socket";
-import GameStatus from "@/game/type";
 import gameInfo from "../gameInfo";
 
 export default class MagicScene extends Phaser.Scene {
@@ -14,7 +13,7 @@ export default class MagicScene extends Phaser.Scene {
   spell_right: Phaser.GameObjects.Sprite;
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   paddle_pos: number;
-  paddle_velocity_max = 20;
+  paddle_velocity_max = 10;
 
   spell_time = 0;
   active_spell = 0;
@@ -30,25 +29,16 @@ export default class MagicScene extends Phaser.Scene {
   reverse_time = -1;
 
   spell_spawn_timing = 5000;
-  winner: string;
-  score_left: number;
-  score_right: number;
-  game_status: GameStatus;
 
   constructor() {
     super("MagicScene");
   }
 
   init() {
-    this.game_status = "ready";
-    this.score_left = 0;
-    this.score_right = 0;
-    this.winner = "";
     this.spell_time = 0;
   }
 
   create() {
-    console.log("I'm magical ^^");
     this.width = this.cameras.main.width;
     this.height = this.cameras.main.height;
 
@@ -109,16 +99,13 @@ export default class MagicScene extends Phaser.Scene {
     socket.on("game_update", (data: any) => {
       this.paddle_left.y = data.paddle_left_posY;
       this.paddle_right.y = data.paddle_right_posY;
-    });
-
-    socket.on("ball_update", (data: any) => {
       this.ball.x = data.ball_x;
       this.ball.y = data.ball_y;
     });
 
+    // listen for game end
     socket.on("end", (data: any) => {
-      this.winner = data.winner;
-      this.scene.start("GameOverScene", { winner: this.winner });
+      this.scene.start("GameOverScene", { winner: data.winner });
     });
 
     socket.on("new_spell", (data: any) => {
@@ -166,10 +153,6 @@ export default class MagicScene extends Phaser.Scene {
   update(time: number, delta: number) {
     this.spell_time += delta;
     if (gameInfo.user_role === "left") {
-      if (this.game_status === "ready") {
-        this.launch_ball("toRight");
-        this.game_status = "running";
-      }
       if (this.spell_time > this.spell_spawn_timing) {
         this.spell_time = 0;
         const spell_L = Phaser.Math.Between(1, 6);
@@ -180,8 +163,6 @@ export default class MagicScene extends Phaser.Scene {
           spell_R: spell_R,
         });
       }
-      this.check_score(); // move logic to backend
-      this.update_ball();
     }
     this.check_effect(time);
     let dir = 1;
@@ -224,49 +205,6 @@ export default class MagicScene extends Phaser.Scene {
     });
   }
 
-  launch_ball(direction: string) {
-    const randomHeight = Phaser.Math.Between(80, this.cameras.main.height - 80);
-    const randVx = Phaser.Math.Between(20, 30);
-    const randVy = Phaser.Math.Between(20, 30);
-
-    this.ball.disableBody(true, true);
-    // add: emit to back and get three random numbers
-    this.ball.enableBody(
-      true,
-      this.cameras.main.centerX,
-      randomHeight,
-      true,
-      true
-    );
-    if (direction === "toLeft") this.ball.setVelocity(-randVx, randVy);
-    else this.ball.setVelocity(randVx, randVy);
-  }
-
-  check_score() {
-    const leftBounds = -30;
-    const rightBounds = this.cameras.main.width + 30;
-
-    if (this.ball.x < leftBounds) {
-      this.score_right += 1;
-      this.update_score();
-      this.launch_ball("toLeft");
-    } else if (this.ball.x > rightBounds) {
-      this.score_left += 1;
-      this.update_score();
-      this.launch_ball("toRight");
-    }
-  }
-
-  update_ball() {
-    socket.emit("ball_pos", {
-      room_name: gameInfo.room_name,
-      ball_x: this.ball.x,
-      ball_y: this.ball.y,
-      vx: this.ball.body.velocity.x,
-      vy: this.ball.body.velocity.y,
-    });
-  }
-
   check_effect(time: number) {
     if (this.paddle_right_effect) {
       if (this.paddle_right_time == -1) this.paddle_right_time = time;
@@ -291,30 +229,5 @@ export default class MagicScene extends Phaser.Scene {
         this.reverse_effect = 0;
       }
     }
-  }
-
-  update_score() {
-    socket.emit("update_score", {
-      room_name: gameInfo.room_name,
-      left: this.score_left,
-      right: this.score_right,
-    });
-
-    if (
-      (this.score_left >= 2 || this.score_right >= 2) && // change 2 to 11
-      Math.abs(this.score_left - this.score_right) >= 0 // change 0 to 2
-    ) {
-      this.game_end();
-    }
-  }
-
-  game_end() {
-    if (this.score_left > this.score_right) this.winner = "left";
-    else this.winner = "right";
-    socket.emit("game_end", {
-      room_name: gameInfo.room_name,
-      winner: this.winner,
-    });
-    this.scene.start("GameOverScene", { winner: this.winner });
   }
 }
