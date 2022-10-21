@@ -1,5 +1,6 @@
 import { Server } from 'socket.io';
 import { BattlesService } from '../../battles/battles.service';
+import GameStatus from "./type";
 
 export class GameRoom {
 
@@ -8,6 +9,7 @@ export class GameRoom {
   score_left = 0;
   score_right = 0;
   winner: number;
+  game_status: GameStatus;
   
   // basic room info
   room_name: string;
@@ -94,6 +96,7 @@ export class GameRoom {
     this.room_name = l + " vs " + r;
     this.server = server;
     this.ball_velocity = this.ball_velocity_init[mode];
+    this.game_status = "not_ready";
   }
 
   async start_game() {
@@ -111,6 +114,7 @@ export class GameRoom {
       opponent2: this.playerR,
     });
     this.getRandomInt(1) === 1 ? this.on_launch("toRight") : this.on_launch("toLeft");
+    this.game_status = "running";
   }
 
   on_launch(direction: string)
@@ -225,12 +229,13 @@ export class GameRoom {
       this.winner = this.score_left > this.score_right ? this.playerL : this.playerR;
       let winner_side = this.score_left > this.score_right ? "left" : "right";
       if (this.score_left === this.score_right) {
-        // this.winner = -1; //change to match battles
+        this.winner = -1;
         winner_side = "none";
       }
       this.server.to(this.room_name).emit("end", {
         winner: winner_side,
       });
+      this.game_status = "ended";
       this.save_game();
       this.reset_game();
       return true;
@@ -254,6 +259,7 @@ export class GameRoom {
   }
 
   stop_game() {
+    this.game_status = "ended";
     clearInterval(this.interval);
   }
 

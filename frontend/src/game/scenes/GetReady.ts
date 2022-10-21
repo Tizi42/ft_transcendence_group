@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import socket from "@/socket";
 import gameInfo from "../gameInfo";
+import { createHistogram } from "perf_hooks";
 
 export default class GetReadyScene extends Phaser.Scene {
   readyButton: Phaser.GameObjects.Sprite;
@@ -46,6 +47,15 @@ export default class GetReadyScene extends Phaser.Scene {
         this.cameras.main.centerY,
         "not_ready_grey"
       );
+      socket.emit(
+        "get_game_status",
+        {
+          room_name: gameInfo.room_name,
+        },
+        (data: any) => {
+          if (data.game_status === "running") this.start_game_scene();
+        }
+      );
     } else {
       this.readyButton = this.add.sprite(
         this.cameras.main.centerX,
@@ -75,12 +85,14 @@ export default class GetReadyScene extends Phaser.Scene {
 
     // listen for server instruction to start game
     socket.on("game_start", () => {
-      console.log("Game start !!!", this.scene);
-      if (gameInfo.mode === "magic") this.scene.start("MagicScene");
-      else if (gameInfo.mode === "speed") this.scene.start("SpeedScene");
-      else this.scene.start("GameScene");
+      this.start_game_scene();
     });
+  }
 
-    console.log("this: ", this);
+  start_game_scene() {
+    console.log("Game start !!!", this.scene);
+    if (gameInfo.mode === "magic") this.scene.start("MagicScene");
+    else if (gameInfo.mode === "speed") this.scene.start("SpeedScene");
+    else this.scene.start("GameScene");
   }
 }

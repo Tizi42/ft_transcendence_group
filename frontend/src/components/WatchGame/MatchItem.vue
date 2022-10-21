@@ -55,6 +55,10 @@ function onLoad() {
 }
 
 function joinGame() {
+  if (user.status === "in game") {
+    window.alert("You already have a running game, please close it first.");
+    return;
+  }
   console.log("joining", props.room.room_name);
   const data = {
     room_name: props.room.room_name,
