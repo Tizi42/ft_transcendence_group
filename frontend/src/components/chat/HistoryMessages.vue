@@ -32,7 +32,7 @@
       />
     </div>
     <img
-      id="leave-img"
+      class="leave-img"
       src="@/assets/icons/leave.png"
       alt="leave channel"
       @click="leaveChannel(selectedChannel)"
@@ -44,6 +44,7 @@
       @click="showSettings"
       v-if="channel.owner === user.id"
     />
+    <AddMember :channel="channel" />
   </div>
   <div
     class="container-messages"
@@ -109,6 +110,7 @@ import MembersListBox from "./ChannelBox/MembersListBox.vue";
 import { getUrlOf } from "@/router";
 import socket from "@/socket";
 import InvitationModal from "../game/invitation/InvitationModal.vue";
+import AddMember from "@/components/chat/AddMember.vue";
 
 interface Props {
   history: Array<any>;
@@ -126,7 +128,6 @@ const membersWindow: Ref<boolean> = ref(false);
 const inviteWindow: Ref<boolean> = ref(false);
 const isShowUserProfile: Ref<boolean> = ref(false);
 const userTarget: Ref<User> = ref(props.target);
-const channel: Ref<Array<any>> = ref([]);
 
 function inviteInGame() {
   inviteWindow.value = true;

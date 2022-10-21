@@ -49,7 +49,6 @@ export class UsersService {
     return  this.usersRepository.update(id, {email: email});
   }
 
-
   /*
   **    CREATE/DELETE
   */
@@ -144,6 +143,10 @@ export class UsersService {
   // getName(id: number): Promise<String> {
   //   return this.findOne(id).then((user) => user.displayName);
   // }
+
+  async getUsername(id: number): Promise<String> {
+    return this.findOne(id).then((user) => user.username);
+  }
 
   async findOneById(id: number): Promise<User | undefined> {
     return this.usersRepository.findOneBy({ id: id });

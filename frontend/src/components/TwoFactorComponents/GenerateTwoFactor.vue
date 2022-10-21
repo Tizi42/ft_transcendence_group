@@ -1,14 +1,15 @@
 <template>
   <div class="container-generate">
     <h4>Scan this Qr Code to get the<br />6 numbers verification code</h4>
-    <img id="QrCode" src="" />
+    <img id="QrCode" :src="imageUrl" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, onBeforeMount } from "vue";
-import "@/assets/styles/authentication.css";
+import { Ref, ref } from "vue";
 import { getUrlOf } from "@/router";
+import "@/assets/styles/authentication.css";
 
 export default defineComponent({
   name: "GenerateTwoFactor",
@@ -16,6 +17,8 @@ export default defineComponent({
 </script>
 
 <script lang="ts" setup>
+const imageUrl: Ref<string> = ref("");
+
 onBeforeMount(async () => {
   await fetch(getUrlOf("api/auth/2fa/generate"), {
     method: "POST",
@@ -24,10 +27,8 @@ onBeforeMount(async () => {
     .then((response) => {
       return response.blob();
     })
-    .then((blob: any) => {
-      const myImage: any = document.getElementById("QrCode");
-      const imageUrl = URL.createObjectURL(blob);
-      myImage.src = imageUrl;
+    .then((blob: Blob) => {
+      imageUrl.value = URL.createObjectURL(blob);
     })
     .catch((error) => {
       console.log(error);

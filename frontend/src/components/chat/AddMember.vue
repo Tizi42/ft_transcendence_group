@@ -21,15 +21,12 @@
       ></div>
       <div class="target-name">{{ targetUser.displayName }}</div>
     </div>
-    <button v-if="pending" id="cancel-button" class="buttons" @click="onCancel">
-      Cancel
-    </button>
     <button
       v-if="!pending"
       id="send-button"
       class="buttons"
       @click="onSend"
-      :disabled="friendWith"
+      :disabled="alreadyMember"
     >
       Send
     </button>
@@ -37,23 +34,28 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineComponent, defineExpose } from "vue";
+import { ref, defineComponent, defineExpose, defineProps } from "vue";
 import { useUserStore } from "@/stores/user";
 import socket from "@/socket";
 import axios from "axios";
-import { getUrlOf } from "@/router";
 
 const user = useUserStore();
 let input = ref("");
 let targetUser = ref();
 let pending = ref(false);
-let friendWith = ref(false);
+let alreadyMember = ref(false);
 let inputBorder = ref("none");
+
+interface Props {
+  channel: any;
+}
+
+const props: Readonly<Props> = defineProps<Props>();
 
 function onClickSearch() {
   targetUser.value = null;
   pending.value = false;
-  friendWith.value = false;
+  alreadyMember.value = false;
   inputBorder.value = "none";
 
   console.log(input.value);
@@ -63,16 +65,13 @@ function onClickSearch() {
       console.log(response);
       if (response.data) {
         targetUser.value = response.data;
-        if (
-          Number(targetUser.value.id) === user.id ||
-          targetUser.value.friendWith.includes(user.id)
-        )
-          friendWith.value = true;
-        else if (targetUser.value.friendPendingReqFrom.includes(user.id))
-          pending.value = true;
-      } else {
-        inputBorder.value = "4px solid red";
-        input.value = "";
+        for (let i = 0; i < props.channel.members.lenght; i++) {
+          if (props.channel.members[i] === targetUser.value.id) {
+            alreadyMember.value = true;
+            inputBorder.value = "4px solid red";
+            input.value = "";
+          }
+        }
       }
     })
     .catch((error) => {
@@ -84,51 +83,16 @@ function onClickSearch() {
 
 async function onSend() {
   const data = {
-    from: user.id,
-    to: targetUser.value.id,
+    user: targetUser.value,
+    channel: props.channel.id,
   };
-  axios
-    .post("http://localhost:3000/api/users/friends/add", {
-      id1: user.id,
-      id2: targetUser.value.id,
-    })
-    .then(function (response) {
-      console.log("response = ", response);
-      if (response.data != "") {
-        pending.value = true;
-        socket.emit("request_friendship", data);
-      } else {
-        alert("You've been blocked by this user !");
-      }
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-}
-
-async function onCancel() {
-  const data = {
-    from: user.id,
-    to: targetUser.value.id,
-  };
-  axios
-    .post("http://localhost:3000/api/users/friends/ignore", {
-      id1: user.id,
-      id2: targetUser.value.id,
-    })
-    .then(function (response) {
-      console.log(response);
-      pending.value = false;
-      socket.emit("request_friendship", data);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
+  socket.emit("send_join_request", data);
+  pending.value = true;
 }
 
 defineExpose(
   defineComponent({
-    name: "AddFriend",
+    name: "AddMember",
   })
 );
 </script>

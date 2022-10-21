@@ -32,5 +32,5 @@ export class Channel {
     password: string;
     
     @Column("int", { array: true, default: {} })
-    pendingReqFrom: number[];
+    pendingReqTo: number[];
 }

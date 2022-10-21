@@ -26,7 +26,6 @@ function fillRooms(data: GameRoomNS[]) {
   show.value = false;
   rooms.splice(0);
   data.forEach((value: GameRoomNS) => {
-    console.log(value.room_name);
     rooms.push(value);
     rooms.push(value);
     rooms.push(value);

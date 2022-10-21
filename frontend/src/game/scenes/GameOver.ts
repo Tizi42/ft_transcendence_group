@@ -8,8 +8,8 @@ export default class GameOverScene extends Phaser.Scene {
   }
 
   winner: string;
-  button: Phaser.Physics.Arcade.Sprite;
-  text: string;
+  button: Phaser.GameObjects.Sprite;
+  text: Phaser.GameObjects.Text;
 
   init(data: any) {
     console.log("init", data);
@@ -35,6 +35,7 @@ export default class GameOverScene extends Phaser.Scene {
           user_id: gameInfo.user_id,
         });
         if (gameInfo.mode === "magic") this.scene.start("MagicScene");
+        else if (gameInfo.mode === "speed") this.scene.start("SpeedScene");
         else this.scene.start("GameScene");
       });
 
@@ -45,9 +46,14 @@ export default class GameOverScene extends Phaser.Scene {
       this.cameras.main.centerX - 90,
       this.cameras.main.centerY - 40,
       "You won!!!",
-      { fontSize: "32px", fill: "#fff" }
+      { fontSize: "32px", color: "#fff" }
     );
-    if (gameInfo.user_role !== this.winner) {
+
+    if (gameInfo.user_role == "watch") {
+      this.text.setText("Finished");
+    } else if (this.winner == "none") {
+      this.text.setText("Draw");
+    } else if (gameInfo.user_role !== this.winner) {
       this.text.setText("You lost...");
     }
 

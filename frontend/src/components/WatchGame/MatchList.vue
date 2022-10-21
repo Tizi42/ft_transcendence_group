@@ -42,7 +42,7 @@ async function reshowData() {
   for await (const [key, item] of props.rooms.entries()) {
     setTimeout(() => {
       items.value.push(item);
-    }, 200 * (key + 1));
+    }, 100 * (key + 1));
   }
 }
 

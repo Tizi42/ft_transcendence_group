@@ -42,7 +42,7 @@
     <ChannelBoxModal v-if="addWindow" @hide="hide">
       <JoinChannelBox
         :user="user"
-        :channelJoined="channelJoined"
+        :channel="channelJoined"
         @hideAddChannel="hide"
       />
     </ChannelBoxModal>
@@ -99,17 +99,16 @@ function isMember(channel: any) {
 }
 
 const toJoin = (channel: any) => {
-  // isMember.value = true;
-  if (channel.type != "public") {
-    channelJoined.value = channel;
-    addWindow.value = true;
-  }
+  console.log("to join :", channel.id);
+  channelJoined.value = channel;
+  addWindow.value = true;
   socket.emit("join_channel", channel.id);
-  // socket.on("joined_channel", (channel: any) => {
-  // emit("addChannelToList", channel);
-  // console.log("joined :", channel);
-  // });
 };
+
+socket.on("joined_channel", (channel: any) => {
+  emit("addChannelToList", channel);
+  console.log("joined :", channel);
+});
 
 function hide() {
   addWindow.value = false;

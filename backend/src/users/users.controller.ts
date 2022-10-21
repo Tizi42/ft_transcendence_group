@@ -80,6 +80,12 @@ export class UsersController {
     return this.usersService.getDisplayname(id);
   };
 
+  @Get('username/:id')
+  getUsername(@Param('id') id: number): Promise<String> {
+    return this.usersService.getUsername(id);
+  };
+  
+
   // @Post('/add')
   // create(@Body() user: UserDto) {
   //   return this.usersService.addOne(user);

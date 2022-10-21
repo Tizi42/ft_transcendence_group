@@ -249,7 +249,7 @@
     margin-left: 20px;
 }
 
-.manage-channel #leave-img {
+.leave-img {
     cursor: pointer;
     transition: transform 0.5s ease;
     margin-right: 10px;
@@ -266,7 +266,7 @@
     transition: transform 0.5s ease;
 }
 
-.manage-channel #leave-img:hover,
+.leave-img:hover,
 .manage-channel #see-members:hover,
 .messages-invite-game img:hover,
 .manage-channel #settings-img:hover {

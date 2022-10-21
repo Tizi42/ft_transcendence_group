@@ -31,9 +31,10 @@
     <h3>All channels</h3>
   </div>
   <PendingChannelReq
-    v-if="comingReq"
-    @hideReq="hideReq"
+    v-if="true"
+    @hide="hideReq"
     :channelToJoin="channelToJoin"
+    :reqFrom="1"
   />
   <ul class="list-my-channels">
     <li
@@ -73,43 +74,38 @@ import socket from "@/socket";
 import { userInfoStore } from "@/stores/user";
 import PendingChannelReq from "@/components/chat/PendingChannelReq.vue";
 import { getUrlOf } from "@/router";
+import AddMember from "./AddMember.vue";
 
 interface Props {
   selectedChannel: number;
   user: userInfoStore;
+  myChannels: any;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
 const inputSearch: Ref<string> = ref("");
 const selectedChannel: Ref<number> = ref(props.selectedChannel);
 const addWindow: Ref<boolean> = ref(false);
-const myChannels: Ref<any> = ref([]);
 const history: Ref<any> = ref([]);
-const channelToJoin: Ref<number> = ref(-1);
-const comingReq: Ref<boolean> = ref(false);
+const channelToJoin: Ref<any> = ref();
+const comingReq: Ref<boolean> = ref(true);
 
-socket.on("receive_pending_request", (request: boolean, channelId: number) => {
-  comingReq.value = request;
-  channelToJoin.value = channelId;
+socket.emit("joining_request");
+socket.on("receive_pending_request", (channel: any) => {
+  channelToJoin.value = channel;
 });
 
 socket.on("receive_channel_created", (newChannel: any) => {
   hide();
-  myChannels.value.push(newChannel);
 });
 
 socket.on("exited_channel_list", () => {
-  myChannels.value = [];
   socket.emit("get_all_my_channels");
   getAllChannels();
 });
 
 onBeforeMount(async () => {
   socket.emit("get_all_my_channels");
-  socket.on("receive_all_my_channels", (channel: any) => {
-    myChannels.value = channel;
-    console.log("my channels :", myChannels.value);
-  });
 });
 
 watch(

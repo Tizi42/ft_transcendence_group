@@ -1,52 +1,76 @@
 <template>
-  <div class="notification">
-    <ul class="list-my-channels">
-      <li v-for="pending in myRequests" :key="pending">
-        {{ pending.user.name }} is waiting for your agreement
-        <button>
-          <img
-            @click="acceptRequest(pending.user.id)"
-            src="@/assets/icons/check.svg"
-          />
-        </button>
-        <button>
-          <img
-            @click="refuseRequest(pending.user.id)"
-            src="@/assets/icons/leave.png"
-          />
-        </button>
-      </li>
-    </ul>
-  </div>
+  <ul class="list-my-channels">
+    <li>
+      is sending you a request to join
+      <img @click="acceptRequest()" src="@/assets/icons/check.svg" />
+      <img
+        class="leave-img"
+        @click="refuseRequest()"
+        src="@/assets/icons/leave.png"
+      />
+    </li>
+  </ul>
 </template>
 
 <script lang="ts" setup>
+import { getUrlOf } from "@/router";
 import socket from "@/socket";
-import { defineComponent, defineExpose, defineEmits, defineProps } from "vue";
+import {
+  defineComponent,
+  defineExpose,
+  defineEmits,
+  defineProps,
+  Ref,
+  ref,
+  onBeforeMount,
+} from "vue";
 
 interface Props {
   channelToJoin: number;
+  reqFrom: number;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
+const theChannel: Ref<any> = ref();
+const theUser: Ref<any> = ref();
 
-const acceptRequest = (reqFrom: number) => {
+const acceptRequest = () => {
   const data = {
     channel: props.channelToJoin,
-    user: reqFrom,
+    // user: reqFrom,
   };
-  socket.emit("accept_join_request", data);
+  // socket.emit("accept_join_request", data);
+  // emit("hideReq");
+};
+
+const refuseRequest = () => {
+  const data = {
+    channel: props.channelToJoin,
+    // user: reqFrom,
+  };
+  // socket.emit("refuse_join_request", data);
   emit("hideReq");
 };
 
-const refuseRequest = (reqFrom: number) => {
-  const data = {
-    channel: props.channelToJoin,
-    user: reqFrom,
-  };
-  socket.emit("refuse_join_request", data);
-  emit("hideReq");
-};
+onBeforeMount(async () => {
+  await fetch(getUrlOf("api/channel/", props.channelToJoin), {
+    credentials: "include",
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      theChannel.value = data;
+    })
+    .catch((error) => {
+      console.log("error :", error);
+    });
+  // for (let i = 0; i < theChannel.value.pending.length; i++) {
+  //   if (theChannel.value.pending[i].id === props.reqFrom) {
+  //     theUser.value = theChannel.value.pending[i];
+  //   }
+  // }
+});
 
 const emit = defineEmits(["hideReq"]);
 
