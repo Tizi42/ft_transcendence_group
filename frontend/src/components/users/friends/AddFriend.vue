@@ -152,6 +152,7 @@ defineExpose(
   align-items: center;
   height: fit-content;
   width: fit-content;
+  min-width: 400px;
 }
 
 #search-input {
@@ -193,8 +194,10 @@ defineExpose(
 #search-result {
   display: flex;
   align-items: center;
-  width: 88%;
-  margin: 20px auto 20px auto;
+  width: 100%;
+  min-width: 400px;
+  margin-top: 20px;
+  margin-bottom: 20px;
   background-color: grey;
   border-radius: 10px;
 }
@@ -202,6 +205,11 @@ defineExpose(
 .target-info {
   display: flex;
   align-items: center;
+}
+
+.target-name {
+  min-width: 100%;
+  text-align: left;
 }
 
 .buttons {
