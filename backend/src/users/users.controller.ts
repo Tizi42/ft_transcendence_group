@@ -67,7 +67,9 @@ export class UsersController {
 
   @Post('info/:id')
   setDisplayName(@Param('id') id: number, @Query('displayname') name: string) {
-      return this.usersService.updateUserDisplayName(id, name);
+    if (name.length > 16)
+      return "error: Name too long";
+    return this.usersService.updateUserDisplayName(id, name);
   }
 
   @Get('info/:id')

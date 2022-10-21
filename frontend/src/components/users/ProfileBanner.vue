@@ -12,6 +12,7 @@
           type="text"
           required="true"
           autofocus
+          maxlength="16"
         />
       </form>
       <p id="info-id">&nbsp;user_id: {{ user.id }}</p>
