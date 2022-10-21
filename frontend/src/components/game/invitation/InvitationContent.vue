@@ -10,7 +10,7 @@
             <option value="speed">Speed mode</option>
           </select>
         </div>
-        <div class="cancelBtn" @click="send">Send</div>
+        <div class="cancelBtn" @click="send()">Send</div>
       </div>
     </Transition>
   </div>
@@ -19,7 +19,7 @@
       <div class="popUpInvite">
         <div class="popUpTxt">Waiting for friend to accept...</div>
         <LoadingRing color="#ffcb00" size="50px" height="50px" />
-        <div class="cancelBtn" @click="cancelClick">Cancel</div>
+        <div class="cancelBtn" @click="cancel()">Cancel</div>
       </div>
     </Transition>
   </div>
@@ -29,7 +29,7 @@
         <div class="popUpTxt">
           Your friend has turned down your invitation &#128542;
         </div>
-        <div class="cancelBtn" @click="hide">Okay...</div>
+        <div class="cancelBtn" @click="hide()">Okay...</div>
       </div>
     </Transition>
   </div>
@@ -37,7 +37,7 @@
     <Transition name="bounce" appear>
       <div class="popUpInvite">
         <div class="popUpTxt">Your friend did not answer in time &#128542;</div>
-        <div class="cancelBtn" @click="hide">Okay...</div>
+        <div class="cancelBtn" @click="hide()">Okay...</div>
       </div>
     </Transition>
   </div>
@@ -78,31 +78,31 @@ function send() {
     invitee: props.friend.id,
   });
   setTimeout(() => {
-    if (new Date().getTime() - lastSending.value.getTime() > 29900) cancel();
+    if (new Date().getTime() - lastSending.value.getTime() > 29900)
+      cancelTooLong();
   }, 30000);
 }
 
-function cancel() {
-  console.log("cancel");
-  emit("cancel");
-  socket.emit("cancel_invitation", {
-    user_id: user.id,
-    invitee: props.friend.id,
-  });
+function cancelTooLong() {
   tooLong.value = true;
+  cancel();
+}
+
+function hideAfterTime() {
   setTimeout(() => {
-    hide();
     sent.value = false;
+    console.log("hide call");
+    hide();
   }, 3000);
 }
 
-function cancelClick() {
+function cancel() {
   emit("cancel");
   socket.emit("cancel_invitation", {
     user_id: user.id,
     invitee: props.friend.id,
   });
-  sent.value = false;
+  hideAfterTime();
 }
 
 function hide() {
@@ -112,6 +112,7 @@ function hide() {
 onBeforeMount(() => {
   socket.on("decline_invitation", () => {
     refused.value = true;
+    hideAfterTime();
   });
   socket.on("go_play", (roomName: string) => {
     router.push({ name: "pong", params: { room_name: roomName } });
