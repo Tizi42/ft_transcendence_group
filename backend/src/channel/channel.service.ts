@@ -1,7 +1,7 @@
 import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersService } from 'src/users/users.service';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Channel } from './entities/channel.entity';
 import { CreatChannelDto } from './utils/createChannel.dto';
 import * as bcrypt from 'bcrypt';
@@ -20,10 +20,28 @@ export class ChannelService {
     private readonly userRepository: Repository<User>,
   ) {}
 
+  async nameAlreadyExist(channelName: string) {
+    const allChannels = await this.findAllChannelsAndMembers();
+
+    for(let i = 0; i < allChannels.length; i++) {
+      if (allChannels[i].name === channelName) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   async createChannel(channelDto: CreatChannelDto) {
     const newChannel = new Channel();
 
+    if (await this.nameAlreadyExist(channelDto.name)) {
+      console.log("name already exist");
+      return "channel_name_error";
+    }
     newChannel.type = channelDto.type;
+    if (channelDto.name.length < 3 || channelDto.name.length > 30) {
+      return "channel_name_error";
+    }
     newChannel.name = channelDto.name;
     newChannel.members = channelDto.members;
     newChannel.owner = channelDto.owner;
@@ -65,7 +83,7 @@ export class ChannelService {
       relations: ['members'],
       where: [{
         members: {
-              id: id,
+              id: In([id]),
           },
       }]
     });

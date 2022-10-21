@@ -61,7 +61,10 @@ let inputBorderPassword = ref("none");
 const createNewChannel = async () => {
   console.log("channel name = ", channelName.value);
   console.log("channel type = ", channelType.value);
-  if (channelName.value === "") {
+  if (
+    channelName.value === "" ||
+    (channelName.value.length < 3 && channelName.value.length > 30)
+  ) {
     inputBorder.value = "4px solid red";
     return;
   }
@@ -79,6 +82,10 @@ const createNewChannel = async () => {
 
 socket.on("password_error", () => {
   inputBorderPassword.value = "4px solid red";
+});
+
+socket.on("channel_name_error", () => {
+  inputBorder.value = "4px solid red";
 });
 
 defineExpose(

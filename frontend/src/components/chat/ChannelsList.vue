@@ -77,13 +77,13 @@ import { getUrlOf } from "@/router";
 interface Props {
   selectedChannel: number;
   user: userInfoStore;
+  myChannels: any;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
 const inputSearch: Ref<string> = ref("");
 const selectedChannel: Ref<number> = ref(props.selectedChannel);
 const addWindow: Ref<boolean> = ref(false);
-const myChannels: Ref<any> = ref([]);
 const history: Ref<any> = ref([]);
 const channelToJoin: Ref<number> = ref(-1);
 const comingReq: Ref<boolean> = ref(false);
@@ -93,23 +93,17 @@ socket.on("receive_pending_request", (request: boolean, channelId: number) => {
   channelToJoin.value = channelId;
 });
 
-socket.on("receive_channel_created", (newChannel: any) => {
+socket.on("receive_channel_created", () => {
   hide();
-  myChannels.value.push(newChannel);
 });
 
 socket.on("exited_channel_list", () => {
-  myChannels.value = [];
   socket.emit("get_all_my_channels");
   getAllChannels();
 });
 
 onBeforeMount(async () => {
   socket.emit("get_all_my_channels");
-  socket.on("receive_all_my_channels", (channel: any) => {
-    myChannels.value = channel;
-    console.log("my channels :", myChannels.value);
-  });
 });
 
 watch(

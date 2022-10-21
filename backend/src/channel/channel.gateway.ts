@@ -32,12 +32,15 @@ export class ChannelGateway extends AppGateway {
   ) {
     const newChannel = await this.channelService.createChannel(data);
   
-    if (newChannel != null && newChannel != "password_error") {
+    if (newChannel != null && newChannel != "password_error" && newChannel != "channel_name_error") {
       socket.join(newChannel.name);
-      this.server.sockets.to(socket.data.id).emit('receive_channel_created', newChannel);
+      this.server.sockets.to(socket.data.id).emit('receive_channel_created');
+      this.server.sockets.to(newChannel.name).emit('channel_updated', newChannel.id);
       this.server.sockets.emit('new_channel_created');
     } else if (newChannel === "password_error") {
       this.server.sockets.to(socket.data.id).emit('password_error');
+    } else if (newChannel === "channel_name_error") {
+      this.server.sockets.to(socket.data.id).emit('channel_name_error');
     }
     return newChannel;
   }
@@ -58,6 +61,7 @@ export class ChannelGateway extends AppGateway {
   ) {
     const allChannels = await this.channelService.findAllChannelsAndMembers();
     this.server.sockets.to(socket.data.id).emit('receive_all_channels', allChannels);
+    this.server.sockets.to(socket.data.id).emit('channel_updated', -1);
     return allChannels;
   }
 
@@ -78,9 +82,6 @@ export class ChannelGateway extends AppGateway {
     } else if (channelName != null) {
       socket.join(channelName);
       this.server.sockets.to(socket.data.id).emit('joined_channel', data.channelId);
-      const joinedChannel = await this.channelService.findChannelAndMembers(data.channelId);
-      this.server.sockets.to(socket.data.id).emit('receive_channel_created', joinedChannel[0]);
-      this.server.sockets.to(socket.data.id).emit('new_channel_created');
       this.server.sockets.to(channelName).emit('channel_updated', data.channelId);
     }
   }
@@ -100,6 +101,8 @@ export class ChannelGateway extends AppGateway {
       if (channelName != null) {
         this.server.sockets.to(socket.data.id).emit('exited_channel_list');
         this.server.sockets.to(channelName).emit('channel_updated', data.channelId);
+        const allChannels = await this.channelService.findAllChannelsAndMembers();
+        this.server.sockets.to(socket.data.id).emit('receive_all_channels', allChannels);
         socket.leave(channelName);
       }
     }

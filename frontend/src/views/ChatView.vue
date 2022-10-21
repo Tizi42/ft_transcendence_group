@@ -18,6 +18,7 @@
         @getHistory="handleHistory"
         :selectedChannel="selectedChannel"
         :user="user"
+        :myChannels="allMyChannels"
       />
     </div>
     <div class="container-chat">
@@ -115,18 +116,18 @@ const handleHistory = (event: Array<any>) => {
 //   joinedChannel.value = event;
 // };
 
-const handleChannelSelected = (event: number) => {
+const handleChannelSelected = async (event: number) => {
   selectedChannel.value = event;
   channel.value = null;
   for (let i = 0; i < allMyChannels.value.length; i++) {
     if (allMyChannels.value[i].id === selectedChannel.value) {
       channel.value = allMyChannels.value[i];
+      console.log("channel id ", event, "=", channel.value);
     }
   }
 };
 
 socket.on("channel_updated", async (channelId: number) => {
-  allMyChannels.value = [];
   await fetch(getUrlOf("api/channel/"), {
     credentials: "include",
   })
@@ -134,11 +135,20 @@ socket.on("channel_updated", async (channelId: number) => {
       return response.json();
     })
     .then((data) => {
-      allMyChannels.value = data;
+      allMyChannels.value = [];
+      for (let i = 0; i < data.length; i++) {
+        for (let j = 0; j < data[i].members.length; j++) {
+          if (data[i].members[j].id === user.id) {
+            allMyChannels.value.push(data[i]);
+            break;
+          }
+        }
+      }
     })
     .catch((error) => {
       console.log("error :", error);
     });
+  console.log("my channels = ", allMyChannels.value);
   for (let i = 0; i < allMyChannels.value.length; i++) {
     if (allMyChannels.value[i].id === channelId) {
       channel.value = allMyChannels.value[i];

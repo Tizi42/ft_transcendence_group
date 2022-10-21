@@ -101,11 +101,6 @@ function isMember(channel: any) {
 const toJoin = (channel: any) => {
   channelJoined.value = channel;
   addWindow.value = true;
-  // socket.emit("join_channel", channel.id);
-  // socket.on("joined_channel", (channel: any) => {
-  // emit("addChannelToList", channel);
-  // console.log("joined :", channel);
-  // });
 };
 
 function hide() {
