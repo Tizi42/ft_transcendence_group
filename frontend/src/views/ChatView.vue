@@ -147,33 +147,6 @@ socket.on("channel_updated", async (channelId: number) => {
   }
 });
 
-// socket.on(
-//   "muted_user",
-//   async (channelId: number, userToBanId: number, channelName: string) => {
-//     if (user.id === userToBanId) {
-//       alert(`You've been muted by admin in the channel ${channelName}`);
-//     }
-//     allMyChannels.value = [];
-//     await fetch(getUrlOf("api/channel/"), {
-//       credentials: "include",
-//     })
-//       .then((response) => {
-//         return response.json();
-//       })
-//       .then((data) => {
-//         allMyChannels.value = data;
-//       })
-//       .catch((error) => {
-//         console.log("error :", error);
-//       });
-//     for (let i = 0; i < allMyChannels.value.length; i++) {
-//       if (allMyChannels.value[i].id === channelId) {
-//         channel.value = allMyChannels.value[i];
-//       }
-//     }
-//   }
-// );
-
 socket.on("banned_user", async (userToBanId: number, channelId: number) => {
   if (user.id === userToBanId) {
     socket.emit("leave_channel", {

@@ -5,6 +5,7 @@ import { ChatService } from 'src/chat/chat.service';
 import { AppGateway } from 'src/gateway';
 import { UsersService } from 'src/users/users.service';
 import { BattlesService } from '../battles/battles.service';
+import { CreatChannelDto } from './utils/createChannel.dto';
 import { banMember, leavingChannel, makingAdmin, muteMember } from './utils/types';
 import { UpdatePasswordDto } from './utils/UpdatePassword.dto';
 import { UpdatePrivacyDto } from './utils/updatePrivacy.dto';
@@ -26,7 +27,7 @@ export class ChannelGateway extends AppGateway {
 
   @SubscribeMessage('create_channel')
   async handleCreateChannel(
-    @MessageBody() data: any,
+    @MessageBody() data: CreatChannelDto,
     @ConnectedSocket() socket: Socket,
   ) {
     const newChannel = await this.channelService.createChannel(data);
@@ -34,6 +35,9 @@ export class ChannelGateway extends AppGateway {
     if (newChannel) {
       socket.join(newChannel.name);
       this.server.sockets.to(socket.data.id).emit('receive_channel_created', newChannel);
+      this.server.sockets.emit('new_channel_created');
+    } else {
+      this.server.sockets.to(socket.data.id).emit('password_error');
     }
     return newChannel;
   }
@@ -52,8 +56,7 @@ export class ChannelGateway extends AppGateway {
   async handleAllChannels(
     @ConnectedSocket() socket: Socket,
   ) {
-    const allChannels = await this.channelService.findAll();
-    // console.log("member len :", findMember.length);
+    const allChannels = await this.channelService.findAllChannelsAndMembers();
     this.server.sockets.to(socket.data.id).emit('receive_all_channels', allChannels);
     return allChannels;
   }
@@ -64,8 +67,7 @@ export class ChannelGateway extends AppGateway {
     @ConnectedSocket() socket: Socket,
   ){
     console.log("data this : ", data);
-    if (data.channel.type === "private") {
-  }
+    if (data.channel.type === "private") {}
     const authorized = await this.channelService.joinChannel(socket.data.id, data.channel, data.password);
     this.server.sockets.to(socket.data.id).emit('joined_channel', authorized);
   }
