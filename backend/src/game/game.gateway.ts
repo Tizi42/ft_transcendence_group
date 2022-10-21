@@ -110,7 +110,9 @@ export class GameGateway extends AppGateway {
     if (GameGateway.queues.normal.id === data.user_id
         || GameGateway.queues.magic.id === data.user_id
         || GameGateway.queues.speed.id === data.user_id) {
-      return "You are already in a queue!"; // need to show an alert in front
+      return {
+        alreadyInQueue: true,
+      };
     }
 
     // if already in game, return
