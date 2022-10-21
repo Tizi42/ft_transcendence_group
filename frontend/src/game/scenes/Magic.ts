@@ -12,8 +12,6 @@ export default class MagicScene extends Phaser.Scene {
   spell_left: Phaser.GameObjects.Sprite;
   spell_right: Phaser.GameObjects.Sprite;
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-  paddle_pos: number;
-  paddle_velocity_max = 10;
 
   spell_time = 0;
   active_spell = 0;
@@ -85,8 +83,6 @@ export default class MagicScene extends Phaser.Scene {
       this.width * 0.98,
       this.height * 0.5
     );
-
-    this.paddle_pos = this.height * 0.5;
 
     //  set up input event
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -171,9 +167,9 @@ export default class MagicScene extends Phaser.Scene {
     }
     console.log(dir);
     if (this.cursors.up.isDown) {
-      this.update_paddle(-this.paddle_velocity_max * dir);
+      this.update_paddle(-dir);
     } else if (this.cursors.down.isDown) {
-      this.update_paddle(this.paddle_velocity_max * dir);
+      this.update_paddle(dir);
     } else if (this.cursors.space.isDown && this.active_spell) {
       console.log("use spell : ", this.active_spell);
       this.active_spell = 0;
@@ -191,17 +187,11 @@ export default class MagicScene extends Phaser.Scene {
     return paddle;
   }
 
-  update_paddle(velocity: number) {
-    this.paddle_pos += velocity;
-    if (this.paddle_pos <= 40) {
-      this.paddle_pos = 40;
-    } else if (this.paddle_pos >= this.height - 40) {
-      this.paddle_pos = this.height - 40;
-    }
+  update_paddle(dir: number) {
     socket.emit("update_paddle", {
       user_id: gameInfo.user_id,
       room_name: gameInfo.room_name,
-      paddle_pos: this.paddle_pos,
+      paddle_move_direction: dir,
     });
   }
 

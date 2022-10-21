@@ -10,8 +10,6 @@ export default class SpeedScene extends Phaser.Scene {
   paddle_left: Phaser.Physics.Arcade.Sprite;
   paddle_right: Phaser.Physics.Arcade.Sprite;
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-  paddle_pos: number;
-  paddle_velocity_max = 20;
 
   constructor() {
     super("SpeedScene");
@@ -49,8 +47,6 @@ export default class SpeedScene extends Phaser.Scene {
       this.height * 0.5
     );
 
-    this.paddle_pos = this.height * 0.5;
-
     //  set up input event
     this.cursors = this.input.keyboard.createCursorKeys();
 
@@ -74,9 +70,9 @@ export default class SpeedScene extends Phaser.Scene {
 
   update() {
     if (this.cursors.up.isDown) {
-      this.update_paddle(-this.paddle_velocity_max);
+      this.update_paddle(-1);
     } else if (this.cursors.down.isDown) {
-      this.update_paddle(this.paddle_velocity_max);
+      this.update_paddle(1);
     }
   }
 
@@ -87,17 +83,11 @@ export default class SpeedScene extends Phaser.Scene {
     return paddle;
   }
 
-  update_paddle(velocity: number) {
-    this.paddle_pos += velocity;
-    if (this.paddle_pos <= 40) {
-      this.paddle_pos = 40;
-    } else if (this.paddle_pos >= this.height - 40) {
-      this.paddle_pos = this.height - 40;
-    }
+  update_paddle(dir: number) {
     socket.emit("update_paddle", {
       user_id: gameInfo.user_id,
       room_name: gameInfo.room_name,
-      paddle_pos: this.paddle_pos,
+      paddle_move_direction: dir,
     });
   }
 }

@@ -26,25 +26,50 @@ export class GameRoom {
   readonly rightBounds = this.width + 30;
   readonly ball_radius = 12.8;
   readonly paddle_width_half = 5;
-  readonly paddle_height_half = 40;
-  readonly paddle_left_x = this.width * 0.02; //paddle_width is 10
-  readonly paddle_right_x  = this.width * 0.98;
   readonly max_angle = Math.PI / 4;
-
-  // changeable
-  paddle_velocity = 10;
-  ball_velocity_init = 7.5; // 7.5 pixels per 25ms, 300 pixels per 1000ms
-  ball_velocity = this.ball_velocity_init;
+  readonly hit_range = {
+    normal: 5,
+    magic: 5,
+    speed: 8,
+  };
+  readonly ball_velocity_init = {
+    normal: 7.5, // 7.5 pixels per 25ms, 300 pixels per 1000ms
+    magic: 7.5,
+    speed: 15,
+  };
+  readonly paddle_velocity_init = {
+    normal: 6,
+    magic: 6,
+    speed: 12,
+  };
+  readonly acceleration = {
+    normal: 1.15,
+    magic: 1.15,
+    speed: 1.05,
+  };
   
   // update game
   update_frequencey = 25; // 1 time per 25ms, 40th of a second
   interval: ReturnType<typeof setInterval>;
   ball_velocity_x: number;
   ball_velocity_y: number;
-  paddle_left_y = this.height * 0.5;
-  paddle_right_y = this.height * 0.5;
   ball_x: number;
   ball_y: number;
+  ball_velocity: number;
+  paddle = {
+    left: {
+      x: this.width * 0.02,
+      y: this.height * 0.5,
+      height_half: 40,
+      velocity: this.paddle_velocity_init,
+    },
+    right: {
+      x: this.width * 0.98,
+      y: this.height * 0.5,
+      height_half: 40,
+      velocity: this.paddle_velocity_init,
+    }
+  }
   
   // for magic mode
   spell_L = 0;
@@ -59,8 +84,7 @@ export class GameRoom {
     mode:string,
     server: Server,
     readonly battlesService: BattlesService,
-    ) {
-    // this.tick = Date.now();
+  ){
     this.playerL = l;
     this.playerR = r;
     this.sidL =  l_sid;
@@ -69,10 +93,7 @@ export class GameRoom {
     this.mode = mode;
     this.room_name = l + " vs " + r;
     this.server = server;
-    if (this.mode === "speed") {
-      this.ball_velocity_init = 15;
-      this.paddle_velocity = 12;
-    }
+    this.ball_velocity = this.ball_velocity_init[mode];
   }
 
   async start_game() {
@@ -96,7 +117,7 @@ export class GameRoom {
   {
     console.log("on ball launch");
     // intial ball's launch position and velocity
-    this.ball_velocity = this.ball_velocity_init;
+    this.ball_velocity = this.ball_velocity_init[this.mode];
     const randomHeight = this.getRandomNumberBetween(80, 511); // height 591 - 80 
     const randVelocity = this.getRandomVelocity(direction);
     this.ball_x = this.width / 2;
@@ -112,11 +133,24 @@ export class GameRoom {
     this.check_score();
     this.next_ball_pos();
     this.server.to(this.room_name).emit("game_update", {
-      paddle_left_posY: this.paddle_left_y,
-      paddle_right_posY: this.paddle_right_y,
+      paddle_left_posY: this.paddle.left.y,
+      paddle_right_posY: this.paddle.right.y,
       ball_x: this.ball_x,
       ball_y: this.ball_y,
     });
+  }
+
+  on_paddle_move(user_id: number, paddle_move_direction: number) {
+    let side: string;
+    if (this.playerL === user_id) side = "left";
+    else if (this.playerR === user_id) side = "right";
+    else return;
+
+    this.paddle[side].y += this.paddle[side].velocity * paddle_move_direction;
+    if (this.paddle[side].y < this.paddle[side].height_half)
+      this.paddle[side].y = this.paddle[side].height_half;
+    else if (this.paddle[side].y > this.height - this.paddle[side].height_half) 
+      this.paddle[side].y = this.height - this.paddle[side].height_half;
   }
 
   next_ball_pos() {
@@ -137,24 +171,24 @@ export class GameRoom {
     }
     // check if ball collides with paddle
     else if (
-      ball_left < this.paddle_left_x + 10 &&
-      ball_left > this.paddle_left_x - 5 &&
-      ball_top < this.paddle_left_y + this.paddle_height_half &&
-      ball_bottom > this.paddle_left_y - this.paddle_height_half
+      ball_left < this.paddle.left.x + 5 &&
+      ball_left > this.paddle.left.x - 5 &&
+      ball_top < this.paddle.left.y + this.paddle.left.height_half &&
+      ball_bottom > this.paddle.left.y - this.paddle.left.height_half
     ){
       this.ball_velocity *= 1.15;
-      let bounce_angle = this.max_angle * ((this.ball_y - this.paddle_left_y) / 40);
+      let bounce_angle = this.max_angle * ((this.ball_y - this.paddle.left.y) / this.paddle.left.height_half);
       this.ball_velocity_x = this.ball_velocity * Math.cos(bounce_angle);
       this.ball_velocity_y = this.ball_velocity * Math.sin(bounce_angle);
     }
     else if (
-      ball_right < this.paddle_right_x + 5 &&
-      ball_right > this.paddle_right_x - 10  &&
-      ball_top < this.paddle_right_y + this.paddle_height_half &&
-      ball_bottom > this.paddle_right_y - this.paddle_height_half
+      ball_right < this.paddle.right.x + 5 &&
+      ball_right > this.paddle.right.x - 10  &&
+      ball_top < this.paddle.right.y + this.paddle.right.height_half &&
+      ball_bottom > this.paddle.right.y - this.paddle.right.height_half
     ){
       this.ball_velocity *= 1.15;
-      let bounce_angle = this.max_angle * ((this.ball_y - this.paddle_right_y) / 40);
+      let bounce_angle = this.max_angle * ((this.ball_y - this.paddle.right.y) / this.paddle.right.height_half);
       this.ball_velocity_x = -this.ball_velocity * Math.cos(bounce_angle);
       this.ball_velocity_y = this.ball_velocity * Math.sin(bounce_angle);
     }
