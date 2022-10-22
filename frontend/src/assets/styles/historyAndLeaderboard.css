@@ -85,7 +85,7 @@
 .titleContainer {
   z-index: 1;
   display: flex;
-  background-image: url("@/assets/icons/tables/title.svg");
+  background-image: url("@/assets/icons/titleFrame.svg");
   background-size: 100% 100%;
   background-repeat: no-repeat;
   width: 15%;
@@ -250,6 +250,7 @@ li {
   justify-content: space-between;
   flex-direction: row;
   width: 10vw;
+  gap: 20px;
 }
 
 .opponentRight {
@@ -320,9 +321,9 @@ li {
 }
 
 .playerInfo .namePlayer {
-  width: 11vw;
   margin-left: 20px;
   text-align: left;
+  width: 11vw;
 }
 
 .playerInfo .username {
@@ -377,11 +378,16 @@ li {
     display: none;
   }
 
+  .matchResults {
+    width: 100%;
+    gap: 20px;
+  }
+
   .username {
     display: none;
   }
 
-  .namePlayer {
+  .playerInfo {
     width: 100%;
   }
 
@@ -391,5 +397,10 @@ li {
 
   .tabContainer {
     font-size: 12px;
+  }
+
+  .opponentLeft,
+  .opponentRight {
+    width: 100%;
   }
 }
