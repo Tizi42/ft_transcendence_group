@@ -24,7 +24,6 @@
         :message="messageW"
         @changeSound="changeSound"
         @quitGame="quitGame"
-        @changeBackground="changeBackground"
         @hideChat="hideChat"
       />
       <ReadyButton v-if="readyStatus[0]" />
