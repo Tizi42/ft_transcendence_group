@@ -10,13 +10,14 @@
             :time="emojiDateL"
             side="left"
           />
-          <img :src="playerL.picture" class="profile" />
+          <img :src="playerL.picture" class="profilePP" />
         </div>
         <UserChat
           :user="playerL"
           :message="messageL"
           transition="fadeGroup"
           align="flex-start"
+          class="userChat"
         />
       </div>
       <div class="scores">
@@ -30,6 +31,7 @@
           :message="messageR"
           transition="fadeGroupR"
           align="flex-end"
+          class="userChat"
         />
         <div class="profileBox">
           <EmoteBox
@@ -38,7 +40,7 @@
             :time="emojiDateR"
             side="right"
           />
-          <img :src="playerR.picture" class="profile" />
+          <img :src="playerR.picture" class="profilePP" />
         </div>
       </div>
     </div>
@@ -70,10 +72,6 @@ interface Props {
 
 const props: Readonly<Props> = defineProps<Props>();
 const show: Ref<boolean> = ref(false);
-
-function getPictureUrl(id: number): string {
-  return "http://localhost:3000/api/users/avatar/" + id.toString();
-}
 
 onMounted(() => {
   show.value = true;
@@ -115,6 +113,7 @@ defineExpose(
 
 .scoreNb {
   width: 40%;
+  min-width: 70px;
   text-align: center;
 }
 
@@ -145,7 +144,7 @@ defineExpose(
   width: auto;
 }
 
-.profile {
+.profilePP {
   display: block;
   width: 80px;
   min-width: 80px;
@@ -155,9 +154,12 @@ defineExpose(
   opacity: 1;
   transition: all 0.3s ease-out;
   outline: 5px solid rgba(0, 0, 0, 0.2);
+  border-radius: 100%;
 }
 
-.profile:hover {
-  transform: scale(1.2);
+@media screen and (max-width: 1050px) {
+  .userChat {
+    display: none;
+  }
 }
 </style>
