@@ -23,10 +23,15 @@ function updateTimer() {
   const curTime = new Date();
   let milliDiff = curTime.getTime() - time.value.getTime();
   if (props.mode == "speed") milliDiff = 180000 - milliDiff;
-  let minutes = Math.floor(milliDiff / 60000);
-  let seconds = Math.floor(milliDiff / 1000) - 60 * minutes;
-  timer.value[0] = (minutes < 10 ? "0" : "") + minutes.toString();
-  timer.value[1] = (seconds < 10 ? "0" : "") + seconds.toString();
+  if (milliDiff < 0) {
+    timer.value[0] = "00";
+    timer.value[1] = "00";
+  } else {
+    let minutes = Math.floor(milliDiff / 60000);
+    let seconds = Math.floor(milliDiff / 1000) - 60 * minutes;
+    timer.value[0] = (minutes < 10 ? "0" : "") + minutes.toString();
+    timer.value[1] = (seconds < 10 ? "0" : "") + seconds.toString();
+  }
   if (!stop.value) {
     setTimeout(() => {
       updateTimer();
