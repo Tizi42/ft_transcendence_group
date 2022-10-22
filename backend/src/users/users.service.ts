@@ -108,6 +108,7 @@ export class UsersService {
   /*
   **    GET USER INFORMATIONS
   */
+
   async getDisplayname(id: number) : Promise<string> {
     let user = await this.usersRepository.findOneBy({id});
     if (user == null)
@@ -515,6 +516,17 @@ export class UsersService {
       default:
         return this.getLeadByGames(global, id);
     }
+  }
+
+  /*
+  **    CHANGE USER SETTINGS
+  */
+
+  async changeSettingNotification(id: number, value: boolean) {
+    let user = await this.usersRepository.findOneBy({ id: id });
+    user.allowNotifications = value;
+    console.log("allow?", user.allowNotifications);
+    this.usersRepository.save(user);
   }
 
   /*
