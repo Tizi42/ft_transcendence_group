@@ -61,11 +61,6 @@
     </div>
   </div>
   <teleport to="body">
-    <UserBoxModal
-      v-if="userProfileWindow"
-      @hideUserBox="hide"
-      :target="target"
-    />
     <ChannelBoxModal v-if="settingsWindow || membersWindow" @hide="hide">
       <SettingsChannelBox
         :selectedChannel="selectedChannel"
@@ -97,7 +92,6 @@ import {
   ref,
   watch,
 } from "vue";
-import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
 import UserBox from "../users/UserBox/UserBox.vue";
 import { User } from "@backend/users/users.entity";
 import SettingsChannelBox from "./ChannelBox/SettingsChannelBox.vue";
