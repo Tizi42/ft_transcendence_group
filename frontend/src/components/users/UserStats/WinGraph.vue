@@ -5,29 +5,18 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, ref } from "vue";
-import { defineProps } from "vue";
+import { defineComponent, defineExpose, onUpdated, ref } from "vue";
+import { defineProps, onBeforeMount } from "vue";
 import { DoughnutChart } from "vue-chart-3";
 import { Chart, registerables, TooltipItem } from "chart.js";
 
 interface Props {
   totalGames: number;
   totalVictories: number;
+  totalDraws: number;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
-const data = {
-  labels: ["Win", "Loose"],
-  datasets: [
-    {
-      data: [props.totalVictories, props.totalGames - props.totalVictories],
-      backgroundColor: ["#ffcb00", "#005f3e"],
-      borderWidth: 0,
-      spacing: 0,
-      hoverOffset: 4,
-    },
-  ],
-};
 const empty = {
   datasets: [
     {
@@ -39,6 +28,8 @@ const empty = {
     },
   ],
 };
+const dataRef = ref();
+dataRef.value = empty;
 
 const options = ref({
   responsive: true,
@@ -52,8 +43,8 @@ const options = ref({
       intersect: false,
       callbacks: {
         label: (item: TooltipItem<"doughnut">) => {
-          if (props.totalGames == 0) return " no data";
-          return " " + item.parsed;
+          if (props.totalGames == props.totalDraws) return " no data";
+          return " " + item.parsed + " " + item.label;
         },
       },
     },
@@ -68,9 +59,36 @@ const options = ref({
 });
 
 function getData() {
-  if (props.totalGames == 0) return empty;
-  return data;
+  if (props.totalGames == props.totalDraws) return empty;
+  return dataRef.value;
 }
+
+function updateData() {
+  dataRef.value = {
+    labels: ["win", "loose"],
+    datasets: [
+      {
+        data: [
+          props.totalVictories,
+          props.totalGames - props.totalVictories - props.totalDraws,
+        ],
+        backgroundColor: ["#ffcb00", "#005f3e"],
+        borderWidth: 0,
+        spacing: 0,
+        hoverOffset: 4,
+      },
+    ],
+  };
+}
+
+onUpdated(() => {
+  updateData();
+});
+
+onBeforeMount(() => {
+  console.log(props);
+  updateData();
+});
 
 Chart.register(...registerables);
 

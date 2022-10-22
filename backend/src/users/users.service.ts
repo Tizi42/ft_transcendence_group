@@ -81,11 +81,6 @@ export class UsersService {
       newUser.username = "username" + i.toString();
       newUser.email = "user" + i.toString() + "@student.42.fr";
 	    this.usersRepository.insert(newUser);
-      let id = this.usersRepository.getId(newUser);
-      newUser.picture = id;
-      newUser.totalGames = this.getRandomInt() + 1;
-      newUser.totalVictories = this.getRandomInt(newUser.totalGames);
-      newUser.winRate = Math.floor((newUser.totalVictories / newUser.totalGames * 100));
     }
   }
 
@@ -443,12 +438,17 @@ export class UsersService {
   **    GAME STATS
   */
 
-  async updateResult(id: number, winner: boolean) {
+  async updateResult(id: number, winner: boolean, draw: boolean) {
     let target = await this.usersRepository.findOneBy({ id });
+    if (target == null) return ;
     target.totalGames++;
-    if (winner)
-      target.totalVictories++;
-    target.winRate = Math.floor((target.totalVictories / target.totalGames) * 100);
+    if (winner) target.totalVictories++;
+    else if (draw) target.totalDraws++;
+    if (target.totalDraws == target.totalGames)
+      target.winRate = -1;
+    else {
+      target.winRate = Math.floor(100 * target.totalVictories / (target.totalGames - target.totalDraws));
+    }
     this.usersRepository.save(target);
   }
 

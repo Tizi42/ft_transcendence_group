@@ -22,7 +22,7 @@ export class BattlesService {
   async showAll(userId?: number): Promise<BattleShow[]> {
     let battles: Battle[];
     if (userId === undefined) {
-      battles = await this.battlesRepository.find({order: {date_start: "DESC"}});
+      battles = await this.battlesRepository.find({order: {date_start: "DESC"}, take: 50});
     } else {
       battles = await this.battlesRepository.find({
         where: [
@@ -30,6 +30,7 @@ export class BattlesService {
             { opponent2: userId },
         ],
         order: {date_start: "DESC"},
+        take: 50,
       });
     }
     let res = [];
@@ -49,9 +50,6 @@ export class BattlesService {
       showbattle.isFinished = battle.isFinished;
       res.push(showbattle);
     }
-    battles.forEach(async (battle) => {
-      
-    });
     return (res);
   }
 
@@ -84,17 +82,20 @@ export class BattlesService {
 
   async end(id: number, winner: number, score1: number, score2: number) {
     let battle = await this.battlesRepository.findOneBy({id});
-    let looser: number = (winner == battle.opponent1 ? battle.opponent2 : battle.opponent1);
+    let draw: boolean = false;
+    let winner1: boolean = (winner == battle.opponent1 ? true : false);
+    let winner2: boolean = (winner == battle.opponent2 ? true : false);
+    if (!winner1 && !winner2) draw = true;
     battle.winner = winner;
     battle.score1 = score1;
     battle.score2 = score2;
     battle.isFinished = true;
     this.battlesRepository.save(battle);
-    this.usersService.updateResult(winner, true);
-    this.usersService.updateResult(looser, false);
+    this.usersService.updateResult(battle.opponent1, winner1, draw);
+    this.usersService.updateResult(battle.opponent2, winner2, draw);
   }
 
-  async addOne(game: BattleDto) {
+  async addOne(game: BattleDto): Promise<number> {
     let newBattle = new Battle();
     newBattle.opponent1 = game.opponent1;
     newBattle.opponent2 = game.opponent2;
@@ -107,10 +108,11 @@ export class BattlesService {
     return Math.floor(Math.random() * max);
   }
 
-  createFakeBattles(nb: number, maxId: number)
+  async createFakeBattles(nb: number, maxId: number)
   {
     for (var i = 0; i < nb; i++) {
       let newBattle = new Battle();
+      let newBattleDto = new BattleDto();
       newBattle.opponent1 = this.getRandomInt(maxId - 2) + 1;
       newBattle.opponent2 = newBattle.opponent1 + 1;
       newBattle.winner = (this.getRandomInt(2) >= 1 ? newBattle.opponent1 : newBattle.opponent2);
@@ -121,18 +123,26 @@ export class BattlesService {
         newBattle.score1 = this.getRandomInt(9);
         newBattle.score2 = 11;
       }
+      newBattleDto.opponent1 = newBattle.opponent1;
+      newBattleDto.opponent2 = newBattle.opponent2;
       newBattle.isFinished = true;
-      this.battlesRepository.insert(newBattle);
+      let battleId = await this.addOne(newBattleDto);
+      this.end(battleId, newBattle.winner, newBattle.score1, newBattle.score2);
     }
+
     // add draw situation
     let newBattle = new Battle();
-    newBattle.opponent1 = this.getRandomInt(maxId - 2) + 1;
-    newBattle.opponent2 = newBattle.opponent1 + 1;
+    newBattle.opponent1 = 11;
+    newBattle.opponent2 = 2;
     newBattle.winner = -1;
     newBattle.score1 = 4;
     newBattle.score2 = 4;
     newBattle.isFinished = true;
-    this.battlesRepository.insert(newBattle);
+    let newBattleDto = new BattleDto();
+    newBattleDto.opponent1 = newBattle.opponent1;
+    newBattleDto.opponent2 = newBattle.opponent2;
+    let battleId = await this.addOne(newBattleDto);
+    this.end(battleId, newBattle.winner, newBattle.score1, newBattle.score2);
   }
 
   removeAll() {
