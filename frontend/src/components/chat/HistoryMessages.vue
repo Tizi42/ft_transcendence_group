@@ -61,9 +61,11 @@
     </div>
   </div>
   <teleport to="body">
-    <UserBoxModal v-if="userProfileWindow" @hide="hide">
-      <UserBox :target="target" />
-    </UserBoxModal>
+    <UserBoxModal
+      v-if="userProfileWindow"
+      @hideUserBox="hide"
+      :target="target"
+    />
     <ChannelBoxModal v-if="settingsWindow || membersWindow" @hide="hide">
       <SettingsChannelBox
         :selectedChannel="selectedChannel"

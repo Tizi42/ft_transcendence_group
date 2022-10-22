@@ -11,6 +11,7 @@ export interface userInfoStore {
   email: Ref<string>;
   avatarUrl: Ref<string>;
   enabled2FA: Ref<boolean>;
+  allowNotifications: Ref<boolean>;
   friends: Ref<Array<User>>;
   pending: Ref<Array<User>>;
   totalGames: Ref<number>;
@@ -33,6 +34,7 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
   const totalGames = ref(0);
   const totalVictories = ref(0);
   const winRate = ref(-1);
+  const allowNotifications = ref(true);
 
   doFetch();
   doFetchFriends();
@@ -45,7 +47,7 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
       .then((response) => {
         return response.json();
       })
-      .then((user) => {
+      .then((user: User) => {
         id.value = user.id;
         displayName.value = user.displayName;
         status.value = user.status;
@@ -55,6 +57,7 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
         totalGames.value = user.totalGames;
         totalVictories.value = user.totalVictories;
         winRate.value = user.winRate;
+        allowNotifications.value = user.allowNotifications;
       })
       .catch((error) => {
         console.log(error);
@@ -98,6 +101,7 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
     email,
     avatarUrl,
     enabled2FA,
+    allowNotifications,
     friends,
     pending,
     totalGames,

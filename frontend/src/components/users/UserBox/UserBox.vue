@@ -2,7 +2,7 @@
   <div v-if="context === 'channel'" class="return" @click="closeUser">
     <img src="@/assets/icons/arrowLeft.svg" />
   </div>
-  <TransitionGroup name="list">
+  <TransitionGroup name="slide-top">
     <div class="infoBox" v-if="show">
       <div
         class="avatarFrame"
@@ -60,7 +60,19 @@
         Friends ({{ nbFriends }})
       </div>
     </div>
+    <button
+      @click="inviteToPlay()"
+      v-if="target.status === 'online' && target.id != user.id"
+      class="inviteBtn"
+    >
+      Invite to Play
+    </button>
   </TransitionGroup>
+  <InvitationModal
+    @hideInvitation="hideInvitation"
+    :friend="props.target"
+    v-if="inviteWindow"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -77,18 +89,22 @@ import axios from "axios";
 import { User } from "@backend/users/users.entity";
 import { getUrlOf } from "@/router";
 import socket from "@/socket";
+import { StoreGeneric } from "pinia";
+import InvitationModal from "@/components/game/invitation/InvitationModal.vue";
 
 interface Props {
   target: User;
   context?: string;
 }
-const props: Readonly<Props> = defineProps<Props>();
-const user = useUserStore();
 
-let pending: Ref<boolean> = ref(false);
-let friendWith: Ref<boolean> = ref(false);
-let nbFriends: Ref<number> = ref(0);
-let show: Ref<boolean> = ref(false);
+const props: Readonly<Props> = defineProps<Props>();
+const user: StoreGeneric = useUserStore();
+const inviteWindow: Ref<boolean> = ref(false);
+const pending: Ref<boolean> = ref(false);
+const friendWith: Ref<boolean> = ref(false);
+const nbFriends: Ref<number> = ref(0);
+const show: Ref<boolean> = ref(false);
+const emit = defineEmits(["closeUserBox", "statusOn", "statusOff"]);
 
 function onSend() {
   const data = {
@@ -150,6 +166,16 @@ async function getFriendShipInfo() {
   nbFriends.value = friends.length;
 }
 
+function hideInvitation() {
+  inviteWindow.value = false;
+  emit("statusOff");
+}
+
+function inviteToPlay() {
+  inviteWindow.value = true;
+  emit("statusOn");
+}
+
 function closeUser() {
   emit("closeUserBox");
 }
@@ -159,8 +185,6 @@ onBeforeMount(async () => {
   await getFriendShipInfo();
   show.value = true;
 });
-
-const emit = defineEmits(["closeUserBox"]);
 
 defineExpose(
   defineComponent({
@@ -245,7 +269,7 @@ defineExpose(
   position: absolute;
   transition: all 0.5s ease-in-out 0s;
   transform: translateX(10px) translateY(10px);
-  z-index: 999;
+  z-index: 997;
 }
 
 #cancelButton:hover .hoverInfo,
@@ -305,5 +329,27 @@ tr:last-child {
 .statsBox,
 .friendsBox {
   gap: 20px;
+}
+
+.inviteBtn {
+  border: 2px solid var(--main-color);
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-family: "Outfit Bold";
+  box-shadow: 0px 0px 4px 3px rgba(0, 0, 0, 0.25);
+  border-radius: 22px;
+  line-height: 2.3em;
+  width: 200px;
+  font-size: 22px;
+  color: var(--main-color);
+  transition: transform 0.5s ease;
+  background: none;
+}
+
+.inviteBtn:hover {
+  cursor: pointer;
+  transform: scale(1.1);
 }
 </style>

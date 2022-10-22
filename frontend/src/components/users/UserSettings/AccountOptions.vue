@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper-account">
     <div class="option-group">
-      <div class="on-off-option" @click="toggle2FA">
+      <div class="on-off-option" @click="toggle2FA()">
         <div class="option">
           Two-factor authentication with Google Authenticator
         </div>
@@ -10,11 +10,28 @@
           id="option-icon-2FA"
           class="on-off"
           src="@/assets/icons/option-on.png"
-          alt="option-off"
+          alt="option-on"
         />
         <img
           v-else
           id="option-icon-2FA"
+          class="on-off"
+          src="@/assets/icons/option-off.png"
+          alt="option-off"
+        />
+      </div>
+    </div>
+    <div class="option-group">
+      <div class="on-off-option" @click="toogleNotifications()">
+        <div class="option">Allow invitations to play from everyone</div>
+        <img
+          v-if="user.allowNotifications"
+          class="on-off"
+          src="@/assets/icons/option-on.png"
+          alt="option-on"
+        />
+        <img
+          v-else
           class="on-off"
           src="@/assets/icons/option-off.png"
           alt="option-off"
@@ -30,16 +47,14 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeMount, defineComponent, defineExpose } from "vue";
+import { onBeforeMount, defineComponent, defineExpose, onUpdated } from "vue";
+import { Ref, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
+import socket from "@/socket";
 
 const user = useUserStore();
 const router = useRouter();
-
-onBeforeMount(async () => {
-  await user.doFetch();
-});
 
 async function toggle2FA() {
   if (user.enabled2FA === false) {
@@ -62,6 +77,17 @@ async function toggle2FA() {
       });
   }
 }
+
+function toogleNotifications() {
+  socket.emit("change_notification_settings", !user.allowNotifications);
+}
+
+onBeforeMount(() => {
+  user.doFetch();
+  socket.on("notification_settings_changed", () => {
+    user.doFetch();
+  });
+});
 
 defineExpose(
   defineComponent({

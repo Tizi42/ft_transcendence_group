@@ -11,8 +11,8 @@ import PlayView from "../views/PlayView.vue";
 import DevLogin from "../components/DevLogin.vue";
 import PlayGame from "../components/game/PlayGame.vue";
 import GamePlay from "../components/game/GamePlay.vue";
-import UserFriends from "../components/users/friends/UserFriends.vue";
-import UserSettings from "../components/users/settings/UserSettings.vue";
+import UserFriends from "../components/users/UserFriends/UserFriends.vue";
+import UserSettings from "../components/users/UserSettings/UserSettings.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
