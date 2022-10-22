@@ -1,7 +1,7 @@
 <template>
-  <div class="content" v-if="!sent">
-    <Transition name="bounce" appear>
-      <div class="popUpInvite">
+  <div class="content">
+    <TransitionGroup name="fadeGroup" appear>
+      <div class="popUpInvite" v-if="!sent">
         <div class="selectMenu">
           <label class="labelMode">Choose game mode :</label>
           <select class="selectMode" v-model="choosenMode">
@@ -12,34 +12,16 @@
         </div>
         <div class="cancelBtn" @click="send()">Send</div>
       </div>
-    </Transition>
-  </div>
-  <div class="content" v-if="sent && !refused && !tooLong">
-    <Transition name="bounce" appear>
-      <div class="popUpInvite">
-        <div class="popUpTxt">Waiting for friend to accept...</div>
+      <div class="popUpInvite" v-if="sent && !refused">
+        <div class="popUpTxt">Waiting for opponent to accept...</div>
         <LoadingRing color="#ffcb00" size="50px" height="50px" />
-        <div class="cancelBtn" @click="cancel()">Cancel</div>
+        <div class="cancelBtn" @click="cancelClick()">Cancel</div>
       </div>
-    </Transition>
-  </div>
-  <div class="content" v-if="sent && refused">
-    <Transition name="bounce" appear>
-      <div class="popUpInvite">
-        <div class="popUpTxt">
-          Your friend has turned down your invitation &#128542;
-        </div>
+      <div class="popUpInvite" v-if="sent && refused">
+        <div class="popUpTxt">{{ refusedMsg }} &#128542;</div>
         <div class="cancelBtn" @click="hide()">Okay...</div>
       </div>
-    </Transition>
-  </div>
-  <div class="content" v-if="sent && tooLong">
-    <Transition name="bounce" appear>
-      <div class="popUpInvite">
-        <div class="popUpTxt">Your friend did not answer in time &#128542;</div>
-        <div class="cancelBtn" @click="hide()">Okay...</div>
-      </div>
-    </Transition>
+    </TransitionGroup>
   </div>
 </template>
 
@@ -61,39 +43,40 @@ interface Props {
 const props: Readonly<Props> = defineProps<Props>();
 const user: StoreGeneric = useUserStore();
 const emit = defineEmits(["hideInvitation", "sending", "cancel"]);
-const sent = ref(false);
-const refused = ref(false);
-const tooLong = ref(false);
+const sent: Ref<boolean> = ref(false);
+const refused: Ref<boolean> = ref(false);
 const choosenMode: Ref<string> = ref("normal");
 const lastSending: Ref<Date> = ref(new Date());
+const refusedMsg: Ref<string> = ref("");
 
 function send() {
   emit("sending");
   lastSending.value = new Date();
   sent.value = true;
-  tooLong.value = false;
+  refused.value = false;
   socket.emit("send_invitation", {
     mode: choosenMode.value,
     user_id: user.id,
     invitee: props.friend.id,
   });
   setTimeout(() => {
-    if (new Date().getTime() - lastSending.value.getTime() > 29900)
+    if (new Date().getTime() - lastSending.value.getTime() > 29000)
       cancelTooLong();
   }, 30000);
 }
 
 function cancelTooLong() {
-  tooLong.value = true;
+  refused.value = true;
+  refusedMsg.value = "Your opponent did not answer in time";
   cancel();
+  hideAfterTime();
 }
 
 function hideAfterTime() {
   setTimeout(() => {
     sent.value = false;
-    console.log("hide call");
     hide();
-  }, 3000);
+  }, 5000);
 }
 
 function cancel() {
@@ -102,7 +85,11 @@ function cancel() {
     user_id: user.id,
     invitee: props.friend.id,
   });
-  hideAfterTime();
+}
+
+function cancelClick() {
+  cancel();
+  sent.value = false;
 }
 
 function hide() {
@@ -112,10 +99,22 @@ function hide() {
 onBeforeMount(() => {
   socket.on("decline_invitation", () => {
     refused.value = true;
+    refusedMsg.value = "Your opponent has turned down your invitation";
     hideAfterTime();
   });
   socket.on("go_play", (roomName: string) => {
     router.push({ name: "pong", params: { room_name: roomName } });
+  });
+  socket.on("unavailable", () => {
+    refused.value = true;
+    refusedMsg.value = "You or your opponent is unavailable";
+    hideAfterTime();
+  });
+  socket.on("not_allowed", () => {
+    refused.value = true;
+    refusedMsg.value =
+      "Your opponent did not allow invitations from all players";
+    hideAfterTime();
   });
 });
 
@@ -156,6 +155,7 @@ defineExpose(
 .content {
   height: 100%;
   width: 100%;
+  position: relative;
 }
 
 .popUpInvite {
@@ -166,5 +166,11 @@ defineExpose(
   justify-content: center;
   gap: 30px;
   align-items: center;
+}
+
+.popUpTxt {
+  width: 60%;
+  word-wrap: break-word;
+  line-height: 1.4em;
 }
 </style>

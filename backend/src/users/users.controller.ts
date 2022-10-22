@@ -33,7 +33,6 @@ export class UsersController {
   @Put('uploads/avatar')
   @UseInterceptors(FileInterceptor('file', storage))
   async uploadAvatar(@Req() req: RequestWithUser, @UploadedFile() file: Express.Multer.File) : Promise<any> {
-    console.log("File received, saved as " + file.filename);
     return await this.usersService.updateUserAvatar(req.user.id, file.filename, "http://localhost:3000/api/users/avatar/"); //`${this.SERVER_URL}${file.path}`
   }
 
@@ -41,10 +40,7 @@ export class UsersController {
   async getAvatar(@Param('id') id: number, @Res() res: Response): Promise<any> {
     let user = await this.usersService.findOne(id);
     if (user.pictureLocalFilename === "")
-    {
-      console.log("Using default avatar...");
       return res.sendFile("default.png", { root: 'src/uploads/avatar'});
-    }
     return res.sendFile(user.pictureLocalFilename, { root: 'src/uploads/avatar'});
   }
 
@@ -52,16 +48,12 @@ export class UsersController {
   async getMyAvatar(@Req() req: RequestWithUser, @Res() res: Response): Promise<any> {
     let user = await this.usersService.findOne(req.user.id);
     if (user.pictureLocalFilename === "")
-    {
-      console.log("Using default avatar...");
       return res.sendFile("default.png", { root: 'src/uploads/avatar'});
-    }
     return res.sendFile(user.pictureLocalFilename, { root: 'src/uploads/avatar'});
   }
 
   @Get('avatar_default')
   getDefaultAvatar(@Res() res: Response) {
-    console.log("send default");
     return res.sendFile("default.png", { root: 'src/uploads/avatar'});
   }
 
@@ -84,22 +76,10 @@ export class UsersController {
   getUsername(@Param('id') id: number): Promise<String> {
     return this.usersService.getUsername(id);
   };
-  
-
-  // @Post('/add')
-  // create(@Body() user: UserDto) {
-  //   return this.usersService.addOne(user);
-  // }
 
   @Post('/add')
   create(@Body() user: UserDto) {
     return this.usersService.createNewUser(user);
-  }
-
-  // to delete 
-  @Get('/rm')
-  removeAll() {
-    return this.usersService.removeAll();
   }
   
   /*

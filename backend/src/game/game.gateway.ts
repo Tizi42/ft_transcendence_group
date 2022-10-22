@@ -160,9 +160,12 @@ export class GameGateway extends AppGateway {
     return "You are no longer in queue";
   }
 
+  /*
+  **    HANDLE INVITATIONS
+  */
+
   @SubscribeMessage('send_invitation')
   async onInviteToPlay(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
-    console.log("create invitation from", data.user_id, "to", data.invitee);
     // Delete old pending invitation of user
     GameGateway.invitations.delete(data.user_id);
 
@@ -170,7 +173,11 @@ export class GameGateway extends AppGateway {
     let sender = await this.usersService.findOne(data.user_id);
     let invitee = await this.usersService.findOne(data.invitee);
     if (sender.status !== "online" || invitee.status !== "online")
-      return "You or your invitee is not available";
+      return this.server.to(data.user_id).emit("unavailable");
+    
+    // check if they are friends or if invitee allow invites from anyone
+    if (!(invitee.id in sender.friendWith) && invitee.allowNotifications == false)
+      return this.server.to(data.user_id).emit("not_allowed");
 
     // create invitation
     let invitation = new Invitation(sender.id, socket.id, invitee.id, data.mode);
@@ -224,6 +231,10 @@ export class GameGateway extends AppGateway {
     // emit go play signal
     this.server.to(data.sender).to(data.user_id).emit("go_play", roomName);
   }
+
+  /*
+  **    GAME
+  */
 
   @SubscribeMessage('init_room')
   async sendRoomInfo(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
@@ -359,27 +370,6 @@ export class GameGateway extends AppGateway {
     return Math.floor(Math.random() * max);
   }
 
-  transformRooms(): Array<GameRoomNS> {
-    let data: Array<GameRoomNS> = [];
-    GameGateway.rooms.forEach((value: GameRoom, key: string) => {
-      data.push(new GameRoomNS(value, key));
-    });
-    return data;
-  }
-
-  @SubscribeMessage('get_updated_rooms')
-  updateRooms(@ConnectedSocket() socket: Socket) {
-    if (GameGateway.rooms.size == 0) { // to delete when everything is good
-      let room_name = 2 + " vs " + 3;
-      GameGateway.rooms.set(room_name, new GameRoom(2, "", 3, "", "normal",));
-      room_name = 4 + " vs " + 5;
-      GameGateway.rooms.set(room_name, new GameRoom(4, "", 5, "", "magic"));
-      room_name = 6 + " vs " + 7;
-      GameGateway.rooms.set(room_name, new GameRoom(6, "", 7, "", "speed"));
-    }
-    this.server.to(socket.id).emit("updated_rooms", this.transformRooms());
-  }
-
   @SubscribeMessage('reset_score')
   async onResetScore(@ConnectedSocket() socket: Socket) {
     this.server.to(socket.id).emit("score_update", {
@@ -463,4 +453,32 @@ export class GameGateway extends AppGateway {
   //     console.log(data);
   //     GameGateway.rooms.get(data[0]).update_gamestate(socketId, data[1]);
   // }
+
+  /*
+  **    WATCH LIST
+  */
+
+  transformRooms(): Array<GameRoomNS> {
+    let data: Array<GameRoomNS> = [];
+    GameGateway.rooms.forEach((value: GameRoom, key: string) => {
+      data.push(new GameRoomNS(value, key));
+    });
+    return data;
+  }
+
+  @SubscribeMessage('get_updated_rooms')
+  updateRooms(@ConnectedSocket() socket: Socket) {
+    this.server.to(socket.id).emit("updated_rooms", this.transformRooms());
+  }
+
+  /*
+  **    USER SETTINGS
+  */
+
+  @SubscribeMessage('change_notification_settings')
+  async onChangeNotificationSettings(@ConnectedSocket() socket: Socket, @MessageBody() data: boolean) {
+    const user = await this.chatService.getUserFromSocket(socket);
+    await this.usersService.changeSettingNotification(user.id, data);
+    this.server.sockets.to(socket.id).emit('notification_settings_changed');
+  }
 }
