@@ -1,5 +1,5 @@
 <template>
-  <div v-if="context === 'channel'" class="return" @click="closeUser">
+  <div class="return" @click="closeUser">
     <img src="@/assets/icons/arrowLeft.svg" />
   </div>
   <TransitionGroup name="slide-top">
@@ -195,8 +195,13 @@ defineExpose(
 
 <style scoped>
 .return {
+  position: fixed;
+  top: 25px;
+  left: 25px;
   cursor: pointer;
   width: 35vw;
+  max-width: 700px;
+  min-width: 500px;
   transition: transform 0.5s ease;
   display: flex;
   flex-direction: row;
@@ -323,6 +328,8 @@ tr:last-child {
   flex-direction: column;
   align-items: center;
   width: 35vw;
+  max-width: 700px;
+  min-width: 500px;
   gap: 5px;
 }
 

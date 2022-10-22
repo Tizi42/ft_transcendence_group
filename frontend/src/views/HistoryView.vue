@@ -32,20 +32,19 @@ import { Ref, ref } from "vue";
 import { getUrlOf } from "@/router";
 import TableHistory from "@/components/MatchHistory/TableHistory.vue";
 import { useUserStore } from "@/stores/user";
-import { Battle } from "@backend/battles/battle.entity";
+import { BattleShow } from "@backend/battles/utils/battle-show";
 
 // variables
 const user = useUserStore();
 const dataReady: Ref<Array<boolean>> = ref([false, false]);
-const history: Ref<Array<Battle[]>> = ref([[], []]);
-const noMatch: Ref<Array<boolean>> = ref([true, true]);
+const history: Ref<Array<BattleShow[]>> = ref([[], []]);
+const noMatch: Ref<Array<boolean>> = ref([false, true]);
 
 // loading functions
 async function reloadOne(index: number) {
   dataReady.value[index] = false;
-  console.log(user.id);
   let response: Response = await fetch(
-    getUrlOf("api/battles/" + (index == 0 ? "" : user.id)),
+    getUrlOf("api/battles/show/" + (index == 0 ? "" : user.id)),
     {
       credentials: "include",
     }
@@ -59,8 +58,6 @@ async function reloadOne(index: number) {
 async function reloadData() {
   await reloadOne(0);
   await reloadOne(1);
-  if (history.value[0].length > 0) noMatch.value[0] = false;
-  else noMatch.value[0] = true;
   if (history.value[1].length > 0) noMatch.value[1] = false;
   else noMatch.value[1] = true;
 }

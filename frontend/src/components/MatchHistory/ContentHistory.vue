@@ -3,8 +3,8 @@
     <li v-for="battle in items" :key="battle.id">
       <MatchResult
         :match="battle"
-        :pp1="getPictureUrl(battle.opponent1)"
-        :pp2="getPictureUrl(battle.opponent2)"
+        :pp1="battle.picture1"
+        :pp2="battle.picture2"
       />
     </li>
   </TransitionGroup>
@@ -18,21 +18,17 @@
 import { defineComponent, defineExpose, defineProps } from "vue";
 import { onMounted, ref, Ref } from "vue";
 import MatchResult from "./MatchResult.vue";
-import { Battle } from "@backend/battles/battle.entity";
+import { BattleShow } from "@backend/battles/utils/battle-show";
 
 //  variable
 interface Props {
-  battles: Array<Battle>;
+  battles: Array<BattleShow>;
   noMatch: boolean;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
-const items: Ref<Array<Battle>> = ref([]);
+const items: Ref<Array<BattleShow>> = ref([]);
 const show: Ref<boolean> = ref(false);
-
-function getPictureUrl(id: number): string {
-  return "http://localhost:3000/api/users/avatar/" + id.toString();
-}
 
 //  usefull functions
 async function reshowData() {

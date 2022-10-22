@@ -7,8 +7,6 @@ import { User } from "./users.entity";
 import { FriendshipDto } from "./utils/friendship.dto";
 import { UserDetails } from "./utils/types";
 import { UserDto } from "./utils/user.dto";
-import * as fs from "fs";
-// import { HttpService } from "@nestjs/axios";
 
 @Injectable()
 export class UsersService {
@@ -23,6 +21,9 @@ export class UsersService {
 
       @InjectRepository(Chat)
       private readonly chatRepository: Repository<Chat>,
+
+      @InjectRepository(Channel)
+      private readonly channelRepository: Repository<Channel>,
 
       private readonly dataSource: DataSource,
 
@@ -94,6 +95,7 @@ export class UsersService {
 
   async removeAll(): Promise<void> {
     await this.chatRepository.delete({});
+    await this.channelRepository.delete({});
     await this.usersRepository.delete({});
     await this.restartIdSeq();
   }
