@@ -220,10 +220,12 @@ export class ChannelGateway extends AppGateway {
     @MessageBody() channel: any,
     @ConnectedSocket() socket: Socket,
   ) {
-    console.log("request iciiii");
-    const auth = await this.channelService.joinRequest(socket.data.id, channel.id)
-    console.log("pending ?", channel.pending);
-    this.server.sockets.to(channel.owner).emit('receive_pending_request', auth, channel.id);
+    const user = await this.chatService.getUserFromSocket(socket);
+    if (!user) {
+      return ;
+    }
+    //here
+    this.server.sockets.to(channel.owner).emit('receive_pending_request', channel.id);
   }
 
   @SubscribeMessage('accept_join_request')
