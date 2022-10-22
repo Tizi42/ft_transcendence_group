@@ -38,7 +38,6 @@ onBeforeMount(() => {
   if (props.mode == "speed") {
     timer.value = ["03", "00"];
   }
-
   socket.on("game_start", (data: any) => {
     time.value = new Date();
     stop.value = false;

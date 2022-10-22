@@ -35,7 +35,7 @@ defineExpose(
   font-size: 26px;
   position: fixed;
   width: 600px;
-  z-index: 999;
+  z-index: 997;
   top: 30%;
   left: 50%;
   margin-left: -300px;

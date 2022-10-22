@@ -48,12 +48,16 @@
     </div>
   </div>
   <teleport to="body">
-    <UserBoxModal v-if="addWindow[0]" @hide="hide(0)">
-      <UserBox :target="players[0]" />
-    </UserBoxModal>
-    <UserBoxModal v-if="addWindow[1]" @hide="hide(1)">
-      <UserBox :target="players[1]" />
-    </UserBoxModal>
+    <UserBoxModal
+      v-if="addWindow[0]"
+      @hideUserBox="hide(0)"
+      :target="players[0]"
+    />
+    <UserBoxModal
+      v-if="addWindow[1]"
+      @hideUserBox="hide(1)"
+      :target="players[1]"
+    />
   </teleport>
 </template>
 
@@ -64,7 +68,6 @@ import { Battle } from "@backend/battles/battle.entity";
 import { defineComponent, defineExpose, defineProps, ref, Ref } from "vue";
 import { onMounted } from "vue";
 import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
-import UserBox from "../users/UserBox/UserBox.vue";
 import { User } from "@backend/users/users.entity";
 
 //  variables

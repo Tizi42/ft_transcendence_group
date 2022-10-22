@@ -3,7 +3,11 @@
     <div class="friends-buttons">
       <div v-if="user.pending.length">
         <div class="pending-grid">
-          <FriendReqItem v-for="req in user.pending" :key="req" :sender="req" />
+          <FriendReqItem
+            v-for="req in user.pending"
+            :key="req.id"
+            :sender="req"
+          />
         </div>
       </div>
       <img
@@ -27,7 +31,7 @@
       <div class="friends-grid">
         <FriendItem
           v-for="friend in user.friends"
-          :key="friend"
+          :key="friend.id"
           :friend="friend"
         />
       </div>
