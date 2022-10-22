@@ -16,7 +16,6 @@
     <h3>All channels</h3>
   </div>
   <PendingChannelReq
-    v-if="comingReq"
     @hideReq="hideReq"
     :channelToJoin="channelToJoin"
   />
@@ -72,8 +71,7 @@ const history: Ref<any> = ref([]);
 const channelToJoin: Ref<number> = ref(-1);
 const comingReq: Ref<boolean> = ref(false);
 
-socket.on("receive_pending_request", (request: boolean, channelId: number) => {
-  comingReq.value = request;
+socket.on("receive_pending_request", (channelId: number) => {
   channelToJoin.value = channelId;
 });
 

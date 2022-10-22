@@ -4,6 +4,7 @@ import RequestWithUser from 'src/users/utils/requestWithUser.interface';
 import { ChannelService } from './channel.service';
 import { channelMember } from './utils/channelMember.dto';
 import { CreatChannelDto } from './utils/createChannel.dto';
+import { ManageMemberDto } from './utils/manageMembers.dto';
 import { UpdatePrivacyDto } from './utils/updatePrivacy.dto';
 
 @Controller('channel')
@@ -44,21 +45,20 @@ export class ChannelController {
     return myChannels;
   }
 
-  // @UseGuards(JwtAuthGuard)
-  // @Get('isMember/:id')
-  // getIfMember(
-  //   @Req() req: RequestWithUser,
-  //   @Param('id') id: number
-  // ) {
-  //   console.log("chan =", id, "member =", req.user.id);
-  //   return this.channelService.isChannelMember(req.user.id, id);
-  // }
-
   @UseGuards(JwtAuthGuard)
   @Get('members/:id')
   async getChannelMembers(
     @Param('id') id: number
   ) {
     return await this.channelService.findChannelAndMembers(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('addMember')
+  async addMemberPrivateChannel(
+    @Body() manageMemberDto: ManageMemberDto,
+    @Req() req: RequestWithUser
+  ) {
+    return await this.channelService.sendJoinRequest(req.user.id, manageMemberDto);
   }
 }

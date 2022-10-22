@@ -41,6 +41,7 @@ import { ref, defineComponent, defineExpose, defineProps, Ref } from "vue";
 import { useUserStore } from "@/stores/user";
 import socket from "@/socket";
 import axios from "axios";
+import { getUrlOf } from "@/router";
 
 const user = useUserStore();
 const searchInput: Ref<string> = ref("");
@@ -66,22 +67,24 @@ function onClickSearch() {
     .get("http://localhost:3000/api/users/info/" + searchInput.value)
     .then((response) => {
       console.log(response);
-      // if (response.data) {
-      //   targetUser.value = response.data;
-      //   if (
-      //     Number(targetUser.value.id) === user.id ||
-      //     targetUser.value.members.includes(user.id)
-      //   ) {
-      //     alreadyMember.value = true;
-        // for (let i = 0; i < props.channel.members.lenght; i++) {
-        //   if (props.channel.members[i] === targetUser.value.id) {
-        //     alreadyMember.value = true;
-        //   }
-        // }
-      // } else {
-      //   inputBorder.value = "4px solid red";
-      //   searchInput.value = "";
-      // }
+      if (response.data) {
+        targetUser.value = response.data;
+        if (
+          Number(targetUser.value.id) === user.id ||
+          targetUser.value.members.includes(user.id)
+        ) {
+          alreadyMember.value = true;
+        } else if (targetUser.value.memberPendingFrom.includes(props.channel.id)) {
+          pending.value = true;
+        } else if (props.channel.banned.includes(targetUser.value.id)) {
+          alreadyMember.value = true;
+          inputBorder.value = "4px solid red";
+          searchInput.value = "";
+        }
+      } else {
+        inputBorder.value = "4px solid red";
+        searchInput.value = "";
+      }
     })
     .catch((error) => {
       console.log(error);
@@ -92,11 +95,37 @@ function onClickSearch() {
 
 async function onSend() {
   const data = {
-    user: targetUser.value,
-    channel: props.channel.id,
+    from: props.channel.id,
+    to: targetUser.value.id,
   };
-  socket.emit("send_join_request", data);
-  pending.value = true;
+  await fetch(getUrlOf("api/channel/addMember"), {
+    credentials: "include",
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      channelId: props.channel.id,
+      targetId: targetUser.value.id,
+    }),
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      console.log("data = ", data);
+      if (data != "") {
+        pending.value = true;
+        socket.emit("send_join_request", data);
+      }
+    })
+    .catch((error) => {
+      console.log("error : ", error);
+    });
+}
+
+async function onCancel() {
+
 }
 
 defineExpose(

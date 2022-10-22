@@ -9,6 +9,7 @@ import { User } from 'src/users/users.entity';
 import { Socket } from 'socket.io';
 import { UpdatePrivacyDto } from './utils/updatePrivacy.dto';
 import { UpdatePasswordDto } from './utils/UpdatePassword.dto';
+import { ManageMemberDto } from './utils/manageMembers.dto';
 
 @Injectable()
 export class ChannelService {
@@ -299,9 +300,9 @@ export class ChannelService {
         return "password_error";
       }
     }
-    // for (let i = 0; i < channel[0].pendingReqFrom.length; i++) {
-    //   if (channel[0].pendingReqFrom[i] === user.id)
-    //     channel[0].pendingReqFrom.splice(i, 1);
+    // for (let i = 0; i < channel[0].memberPendingReqTo.length; i++) {
+    //   if (channel[0].memberPendingReqTo[i] === user.id)
+    //     channel[0].memberPendingReqTo.splice(i, 1);
     // }
     channel[0].members.push(user);
     await this.channelRepository.save(channel);
@@ -315,27 +316,35 @@ export class ChannelService {
     if (!channel) {
       return null;
     }
-    for (let i = 0; i < channel[0].pendingReqFrom.length; i++) {
-      if (channel[0].pendingReqFrom[i] === userId)
-        channel[0].pendingReqFrom.splice(i, 1);
+    for (let i = 0; i < channel[0].memberPendingReqTo.length; i++) {
+      if (channel[0].memberPendingReqTo[i] === userId)
+        channel[0].memberPendingReqTo.splice(i, 1);
     }
     this.channelRepository.save(channel);
     return true;
   }
 
-  async joinRequest(userId: number, channelId: number) {
-    const channel = await this.findChannelAndMembers(channelId);
+  async sendJoinRequest(userId: number, manageMemberDto: ManageMemberDto) {
+    const channel = await this.findChannelAndMembers(manageMemberDto.channelId);
+    const target = await this.userRepository.findOneBy({ id: manageMemberDto.targetId });
 
-    if (!channel) {
+    if (!channel || !target) {
       return null;
     }
-    if (this.isChannelMember(userId, channel[0]) || this.isMemberBan(userId, channel[0])) {
-      console.log("unauthorized");
-      return false;
+    if (channel[0].owner != userId) {
+      return null;
     }
-    channel[0].pendingReqFrom.push(userId);
-    console.log("chann ?", channel[0]);
-    this.channelRepository.save(channel);
-    return true;
+    if (
+      this.isChannelMember(target.id, channel[0]) ||
+      this.isMemberBan(target.id, channel[0])
+    ) {
+      console.log("unauthorized");
+      return null;
+    }
+    channel[0].memberPendingReqTo.push(target.id);
+    target.memberPendingReqFrom.push(channel[0].id);
+    await this.channelRepository.save(channel);
+    await this.userRepository.save(target);
+    return channel[0];
   }
 }
