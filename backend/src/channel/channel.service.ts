@@ -283,9 +283,12 @@ export class ChannelService {
     if (!channel) {
       return null;
     }
-    if (this.isChannelMember(user.id, channel[0]) || this.isMemberBan(user.id, channel[0])) {
+    if (this.isChannelMember(user.id, channel[0])) {
       console.log("unauthorized");
       return null;
+    }
+    if (this.isMemberBan(user.id, channel[0])) {
+      return "ban_error";
     }
     if (channel[0].type === "protected") {
       if (!this.validPassword(password)) {

@@ -64,5 +64,8 @@ export class User {
 
   @ManyToMany(() => Channel, (channel) => channel.members)
   channels: Channel[];
+
+  @Column("int", { array: true, default: {} })
+  memberPendingReqFrom: number[];
 }
 

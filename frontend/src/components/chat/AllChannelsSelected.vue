@@ -1,18 +1,4 @@
 <template>
-  <form class="search-in-my-channels" @submit.prevent="onSubmit">
-    <div id="div-search-all-channels">
-      <input
-        class="input-search-channels"
-        id="input-search-all-channels"
-        type="text"
-        placeholder="Search all channels..."
-        v-model="inputSearch"
-      />
-      <button type="submit">
-        <img src="@/assets/icons/search.svg" />
-      </button>
-    </div>
-  </form>
   <ul class="all-channels">
     <li
       class="channel-attributes"
@@ -39,18 +25,18 @@
     </li>
   </ul>
   <Teleport to="body">
-    <ChannelBoxModal v-if="addWindow" @hide="hide">
+    <JoinChannelBoxModal v-if="addWindow" @hide="hide">
       <JoinChannelBox
         :user="user"
         :channel="channelJoined"
         @hideAddChannel="hide"
       />
-    </ChannelBoxModal>
+    </JoinChannelBoxModal>
   </Teleport>
 </template>
 
 <script lang="ts" setup>
-import ChannelBoxModal from "./ChannelBox/ChannelBoxModal.vue";
+import JoinChannelBoxModal from "./ChannelBox/JoinChannelBoxModal.vue";
 import JoinChannelBox from "./ChannelBox/JoinChannelBox.vue";
 import socket from "@/socket";
 import { userInfoStore } from "@/stores/user";
@@ -70,7 +56,6 @@ interface Props {
 
 const addWindow: Ref<boolean> = ref(false);
 const selectedChannel: Ref<number> = ref(-1);
-const inputSearch: Ref<string> = ref("");
 const allChannels: Ref<any> = ref([]);
 const props: Readonly<Props> = defineProps<Props>();
 const channelJoined: Ref<any> = ref();

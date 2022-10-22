@@ -10,6 +10,7 @@
           type="text"
           placeholder="Channel name.."
           :style="{ border: inputBorder }"
+          autofocus
         />
       </div>
       <div class="fields">

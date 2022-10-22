@@ -79,6 +79,8 @@ export class ChannelGateway extends AppGateway {
     
     if (channelName === "password_error") {
       this.server.sockets.to(socket.data.id).emit('password_error');
+    } else if (channelName === "ban_error") {
+      this.server.sockets.to(socket.data.id).emit('ban_error');
     } else if (channelName != null) {
       socket.join(channelName);
       this.server.sockets.to(socket.data.id).emit('joined_channel', data.channelId);
@@ -101,9 +103,9 @@ export class ChannelGateway extends AppGateway {
       if (channelName != null) {
         this.server.sockets.to(socket.data.id).emit('exited_channel_list');
         this.server.sockets.to(channelName).emit('channel_updated', data.channelId);
+        socket.leave(channelName);
         const allChannels = await this.channelService.findAllChannelsAndMembers();
         this.server.sockets.to(socket.data.id).emit('receive_all_channels', allChannels);
-        socket.leave(channelName);
       }
     }
   }
@@ -178,7 +180,6 @@ export class ChannelGateway extends AppGateway {
   ) {
     const user = await this.chatService.getUserFromSocket(socket);
     if (!user) {
-      // this.server.sockets.to(socket.data.id).emit('password_error');
       return ;
     }
 
@@ -188,6 +189,8 @@ export class ChannelGateway extends AppGateway {
         this.server.sockets.to(socket.data.id).emit('password_error');
       } else if (channelUpdated != null) {
         this.server.sockets.to(socket.data.id).emit('channel_updated', data.channel.id);
+        const allChannels = await this.channelService.findAllChannelsAndMembers();
+        this.server.sockets.emit('receive_all_channels', allChannels);
       }
     }
   }
@@ -199,7 +202,6 @@ export class ChannelGateway extends AppGateway {
   ) {
     const user = await this.chatService.getUserFromSocket(socket);
     if (!user) {
-      // this.server.sockets.to(socket.data.id).emit('password_error');
       return ;
     }
 
@@ -245,4 +247,7 @@ export class ChannelGateway extends AppGateway {
     await this.channelService.refuseJoining(request.user.id, request.channel.id);
     this.server.sockets.to(request.user.id).emit('received_refused_request');
   }
+
+  @SubscribeMessage("logout_all")
+  async handleLogout() {}
 }
