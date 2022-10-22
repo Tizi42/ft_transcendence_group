@@ -19,6 +19,7 @@ import {
 } from "vue";
 import GameOverlay from "./GameOverlay.vue";
 import { useUserStore } from "@/stores/user";
+import router from "@/router";
 
 const user = useUserStore();
 
@@ -32,6 +33,7 @@ const room_info = ref();
 console.log(props);
 
 onBeforeMount(() => {
+  if (props.room_name === undefined) router.push({ name: "game" });
   socket.emit(
     "init_room",
     {

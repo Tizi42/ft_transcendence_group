@@ -23,7 +23,7 @@ import { onBeforeRouteLeave } from "vue-router";
 import { useUserStore } from "@/stores/user";
 
 const user = useUserStore();
-onBeforeRouteLeave((to: any, from: any) => {
+onBeforeRouteLeave((to: any) => {
   if (
     user.status === "in game" &&
     (to.name === "play" || to.name === "watch")

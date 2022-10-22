@@ -1,29 +1,15 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import GameView from "../views/GameView.vue";
-import LoginView from "../views/LoginView.vue";
-import UserView from "../views/UserView.vue";
-import UserStats from "../components/users/UserStats/UserStats.vue";
-import TwoFactorView from "../views/TwoFactorView.vue";
-import LeaderboardView from "../views/LeaderboardView.vue";
-import WatchView from "../views/WatchView.vue";
-import HistoryView from "../views/HistoryView.vue";
-import PlayView from "../views/PlayView.vue";
-import DevLogin from "../components/DevLogin.vue";
-import PlayGame from "../components/game/PlayGame.vue";
-import GamePlay from "../components/game/GamePlay.vue";
-import UserFriends from "../components/users/UserFriends/UserFriends.vue";
-import UserSettings from "../components/users/UserSettings/UserSettings.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "game",
-    component: GameView,
+    component: () => import("../views/GameView.vue"),
   },
   {
     path: "/watch",
     name: "watch",
-    component: WatchView,
+    component: () => import("../views/WatchView.vue"),
   },
   {
     path: "/chat",
@@ -34,65 +20,62 @@ const routes: Array<RouteRecordRaw> = [
     path: "/user",
     name: "user",
     redirect: "/user/stats",
-    component: UserView,
+    component: () => import("../views/UserView.vue"),
     children: [
       {
         path: "stats",
         name: "stats",
-        component: UserStats,
+        component: () => import("../components/users/UserStats/UserStats.vue"),
       },
       {
         path: "friends",
         name: "friends",
-        component: UserFriends,
+        component: () =>
+          import("../components/users/UserFriends/UserFriends.vue"),
       },
       {
         path: "settings",
         name: "settings",
-        component: UserSettings,
+        component: () =>
+          import("../components/users/UserSettings/UserSettings.vue"),
       },
     ],
   },
   {
     path: "/login",
     name: "login",
-    component: LoginView,
+    component: () => import("../views/LoginView.vue"),
   },
   {
     path: "/dev-login",
     name: "dev-login",
-    component: DevLogin,
+    component: () => import("../components/DevLogin.vue"),
   },
   {
     path: "/2FA",
     name: "2FA",
-    component: TwoFactorView,
+    component: () => import("../views/TwoFactorView.vue"),
   },
   {
     path: "/leaderboard",
     name: "leaderboard",
-    component: LeaderboardView,
+    component: () => import("../views/LeaderboardView.vue"),
   },
   {
     path: "/history",
     name: "history",
-    component: HistoryView,
+    component: () => import("../views/HistoryView.vue"),
   },
   {
     path: "/play",
     name: "play",
-    component: PlayView,
+    component: () => import("../views/PlayView.vue"),
   },
   {
     path: "/pong",
     name: "pong",
-    component: PlayGame,
+    component: () => import("../components/game/PlayGame.vue"),
     props: true,
-  },
-  {
-    path: "/test",
-    name: "test",
-    component: GamePlay,
   },
 ];
 
@@ -176,7 +159,7 @@ router.beforeEach(async (to: any, from: any, next: any) => {
   } else if (isKnownRoute(to.path)) {
     next();
   } else {
-    next({ name: "/" });
+    next({ name: "game" }); // ! change to a custom 404 page !
   }
 });
 
