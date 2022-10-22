@@ -151,11 +151,11 @@ export class GameGateway extends AppGateway {
     let sender = await this.usersService.findOne(data.user_id);
     let invitee = await this.usersService.findOne(data.invitee);
     if (sender.status !== "online" || invitee.status !== "online")
-      return this.server.to(data.user_id).emit("unavailable");
+      return this.server.to(socket.id).emit("unavailable");
     
     // check if they are friends or if invitee allow invites from anyone
     if (!(invitee.id in sender.friendWith) && invitee.allowNotifications == false)
-      return this.server.to(data.user_id).emit("not_allowed");
+      return this.server.to(socket.id).emit("not_allowed");
 
     // create invitation
     let invitation = new Invitation(sender.id, socket.id, invitee.id, data.mode);
@@ -179,7 +179,7 @@ export class GameGateway extends AppGateway {
       return "invitation no longer exist...";
     
     GameGateway.invitations.delete(data.sender);
-    this.server.to(data.sender).emit("decline_invitation");
+    this.server.to(invitation.sender_sid).emit("decline_invitation");
     this.server.to(data.user_id).emit("invitation_expired");
   }
 
@@ -194,7 +194,7 @@ export class GameGateway extends AppGateway {
     let invitee = await this.usersService.findOne(data.user_id);
     if (sender.status !== "online" || invitee.status !== "online") {
       GameGateway.invitations.delete(data.sender);
-      return "You or your inviter is not available";
+      return "You or your inviter is no longer available";
     }
 
     // start game
@@ -204,11 +204,15 @@ export class GameGateway extends AppGateway {
       invitation.invitee_id,
       socket.id,
       invitation.mode
-    );
+      );
 
-    // emit go play signal
-    this.server.to(data.sender).to(data.user_id).emit("go_play", roomName);
-  }
+      // emit go play signal
+      this.server.to(invitation.sender_sid).to(socket.id).emit("go_play", roomName);
+
+      // clean invitaion
+      this.server.to(data.user_id).emit("invitation_expired");
+      GameGateway.invitations.delete(data.sender);
+    }
 
   /*
   **    GAME
