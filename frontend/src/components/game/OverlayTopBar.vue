@@ -71,10 +71,6 @@ interface Props {
 const props: Readonly<Props> = defineProps<Props>();
 const show: Ref<boolean> = ref(false);
 
-function getPictureUrl(id: number): string {
-  return "http://localhost:3000/api/users/avatar/" + id.toString();
-}
-
 onMounted(() => {
   show.value = true;
 });
