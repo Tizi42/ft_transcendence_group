@@ -102,12 +102,7 @@ export class GameRoom {
   async start_game() {
     this.server.to(this.room_name).emit("game_start");
     if (this.mode == "speed") {
-      setTimeout(() => {
-        this.server.to(this.room_name).emit("end", {
-          winner: "",
-        });
-      },
-      180000);
+      setTimeout(this.speed_game_end.bind(this), 180000);
     }
     this.current_game_id = await this.battlesService.addOne({
       opponent1: this.playerL,
@@ -221,17 +216,15 @@ export class GameRoom {
       this.on_launch(direction);
   }
 
-  check_game_end() {
+  check_game_end(): boolean {
+    if (this.mode === "speed")
+      return false;
     if (
       (this.score_left >= 11 || this.score_right >= 11) &&
       Math.abs(this.score_left - this.score_right) >= 2
     ){
       this.winner = this.score_left > this.score_right ? this.playerL : this.playerR;
       let winner_side = this.score_left > this.score_right ? "left" : "right";
-      if (this.score_left === this.score_right) {
-        this.winner = -1;
-        winner_side = "none";
-      }
       this.server.to(this.room_name).emit("end", {
         winner: winner_side,
       });
@@ -241,6 +234,22 @@ export class GameRoom {
       return true;
     }
     return false;
+  }
+
+  speed_game_end(){
+    clearInterval(this.interval);
+    this.winner = this.score_left > this.score_right ? this.playerL : this.playerR;
+    let winner_side = this.score_left > this.score_right ? "left" : "right";
+    if (this.score_left === this.score_right) {
+      this.winner = -1;
+      winner_side = "none";
+    }
+    this.server.to(this.room_name).emit("end", {
+      winner: winner_side,
+    });
+    this.game_status = "ended";
+    this.save_game();
+    this.reset_game();
   }
 
   save_game() {
