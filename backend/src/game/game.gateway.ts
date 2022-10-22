@@ -68,7 +68,7 @@ export class GameGateway extends AppGateway {
     r_id: number,
     r_sid:string,
     mode: string
-  ) {
+  ): string {
     const room_name = l_id + " vs " + r_id;
     GameGateway.rooms.set(room_name, new GameRoom(
       l_id, l_sid, r_id, r_sid, mode, this.server, this.battlesService));
@@ -83,6 +83,8 @@ export class GameGateway extends AppGateway {
     GameGateway.inGameUsers.set(r_id, room_name);
     GameGateway.inGameSockets.set(l_sid, room_name);
     GameGateway.inGameSockets.set(r_sid, room_name);
+
+    return room_name;
   }
 
   closeRoom(room: GameRoom) {
@@ -136,7 +138,11 @@ export class GameGateway extends AppGateway {
     return "You are no longer in queue";
   }
 
-  @SubscribeMessage('send_invitaton')
+  /*
+  **    HANDLE INVITATIONS
+  */
+
+  @SubscribeMessage('send_invitation')
   async onInviteToPlay(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
     // Delete old pending invitation of user
     GameGateway.invitations.delete(data.user_id);
@@ -145,29 +151,43 @@ export class GameGateway extends AppGateway {
     let sender = await this.usersService.findOne(data.user_id);
     let invitee = await this.usersService.findOne(data.invitee);
     if (sender.status !== "online" || invitee.status !== "online")
-      return "You or your invitee is not available";
+      return this.server.to(data.user_id).emit("unavailable");
+    
+    // check if they are friends or if invitee allow invites from anyone
+    if (!(invitee.id in sender.friendWith) && invitee.allowNotifications == false)
+      return this.server.to(data.user_id).emit("not_allowed");
 
     // create invitation
-    GameGateway.invitations.set(
-      sender.id,
-      new Invitation(sender.id, socket.id, invitee.id, data.mode)
-    );
+    let invitation = new Invitation(sender.id, socket.id, invitee.id, data.mode);
+    GameGateway.invitations.set(sender.id, invitation);
 
     // emit invitation
-    this.server.to(data.invitee).emit("game_invitaion");
+    this.server.to(data.invitee).emit("game_invitation", invitation);
   }
 
-  @SubscribeMessage('cancel_invitaton')
+  @SubscribeMessage('cancel_invitation')
   onCancelInvite(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+    console.log("cancel invitation from", data.user_id, "to", data.invitee);
     GameGateway.invitations.delete(data.user_id);
-    this.server.to(data.invitee).emit("invitaion_expired");
+    this.server.to(data.invitee).emit("invitation_expired");
   }
 
-  @SubscribeMessage('accept_invitaton')
+  @SubscribeMessage('refuse_invitation')
+  onRefuseInvite(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+    const invitation = GameGateway.invitations.get(data.sender);
+    if (!invitation || invitation.invitee_id != data.user_id)
+      return "invitation no longer exist...";
+    
+    GameGateway.invitations.delete(data.sender);
+    this.server.to(data.sender).emit("decline_invitation");
+    this.server.to(data.user_id).emit("invitation_expired");
+  }
+
+  @SubscribeMessage('accept_invitation')
   async onAcceptInvite(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
     const invitation = GameGateway.invitations.get(data.sender);
     if (!invitation || invitation.invitee_id != data.user_id)
-      return "invitaion no longer exist...";
+      return "invitation no longer exist...";
 
     // check if sender or receiver is available
     let sender = await this.usersService.findOne(data.sender);
@@ -178,14 +198,21 @@ export class GameGateway extends AppGateway {
     }
 
     // start game
-    this.createGameRoom(
+    const roomName = this.createGameRoom(
       invitation.sender_id,
       invitation.sender_sid,
       invitation.invitee_id,
       socket.id,
       invitation.mode
     );
+
+    // emit go play signal
+    this.server.to(data.sender).to(data.user_id).emit("go_play", roomName);
   }
+
+  /*
+  **    GAME
+  */
 
   @SubscribeMessage('init_room')
   sendRoomInfo(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
@@ -292,25 +319,12 @@ export class GameGateway extends AppGateway {
     return Math.floor(Math.random() * max);
   }
 
-  transformRooms(): Array<GameRoomNS> {
-    let data: Array<GameRoomNS> = [];
-    GameGateway.rooms.forEach((value: GameRoom, key: string) => {
-      data.push(new GameRoomNS(value, key));
+  @SubscribeMessage('reset_score')
+  async onResetScore(@ConnectedSocket() socket: Socket) {
+    this.server.to(socket.id).emit("score_update", {
+      left: 0,
+      right: 0,
     });
-    return data;
-  }
-
-  @SubscribeMessage('get_updated_rooms')
-  updateRooms(@ConnectedSocket() socket: Socket) {
-    // if (GameGateway.rooms.size == 0) { // to delete when everything is good
-    //   let room_name = 2 + " vs " + 3;
-    //   GameGateway.rooms.set(room_name, new GameRoom(2, "", 3, "", "normal",));
-    //   room_name = 4 + " vs " + 5;
-    //   GameGateway.rooms.set(room_name, new GameRoom(4, "", 5, "", "magic"));
-    //   room_name = 6 + " vs " + 7;
-    //   GameGateway.rooms.set(room_name, new GameRoom(6, "", 7, "", "speed"));
-    // }
-    this.server.to(socket.id).emit("updated_rooms", this.transformRooms());
   }
 
   @SubscribeMessage('get_game_status')
@@ -323,11 +337,31 @@ export class GameGateway extends AppGateway {
     }
   }
 
-  @SubscribeMessage('reset_score')
-  async onResetScore(@ConnectedSocket() socket: Socket) {
-    this.server.to(socket.id).emit("score_update", {
-      left: 0,
-      right: 0,
+  /*
+  **    WATCH LIST
+  */
+
+  transformRooms(): Array<GameRoomNS> {
+    let data: Array<GameRoomNS> = [];
+    GameGateway.rooms.forEach((value: GameRoom, key: string) => {
+      data.push(new GameRoomNS(value, key));
     });
+    return data;
+  }
+
+  @SubscribeMessage('get_updated_rooms')
+  updateRooms(@ConnectedSocket() socket: Socket) {
+    this.server.to(socket.id).emit("updated_rooms", this.transformRooms());
+  }
+
+  /*
+  **    USER SETTINGS
+  */
+
+  @SubscribeMessage('change_notification_settings')
+  async onChangeNotificationSettings(@ConnectedSocket() socket: Socket, @MessageBody() data: boolean) {
+    const user = await this.chatService.getUserFromSocket(socket);
+    await this.usersService.changeSettingNotification(user.id, data);
+    this.server.sockets.to(socket.id).emit('notification_settings_changed');
   }
 }

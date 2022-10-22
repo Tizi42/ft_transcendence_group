@@ -61,9 +61,11 @@
     </div>
   </div>
   <teleport to="body">
-    <UserBoxModal v-if="userProfileWindow" @hide="hide">
-      <UserBox :target="target" />
-    </UserBoxModal>
+    <UserBoxModal
+      v-if="userProfileWindow"
+      @hideUserBox="hide"
+      :target="target"
+    />
     <ChannelBoxModal v-if="settingsWindow || membersWindow" @hide="hide">
       <SettingsChannelBox
         :selectedChannel="selectedChannel"
@@ -95,7 +97,6 @@ import {
   ref,
   watch,
 } from "vue";
-import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
 import UserBox from "../users/UserBox/UserBox.vue";
 import { User } from "@backend/users/users.entity";
 import SettingsChannelBox from "./ChannelBox/SettingsChannelBox.vue";
@@ -103,6 +104,7 @@ import ChannelBoxModal from "./ChannelBox/ChannelBoxModal.vue";
 import MembersListBox from "./ChannelBox/MembersListBox.vue";
 import { getUrlOf } from "@/router";
 import socket from "@/socket";
+import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
 
 interface Props {
   history: Array<any>;
