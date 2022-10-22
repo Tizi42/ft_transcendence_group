@@ -69,6 +69,7 @@ import { defineComponent, defineExpose, defineProps, ref, Ref } from "vue";
 import { onMounted } from "vue";
 import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
 import { User } from "@backend/users/users.entity";
+import "@/assets/styles/historyAndLeaderboard.css";
 
 //  variables
 interface Props {
