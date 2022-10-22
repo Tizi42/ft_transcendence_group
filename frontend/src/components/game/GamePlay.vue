@@ -5,14 +5,7 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  defineExpose,
-  defineComponent,
-  onMounted,
-  defineProps,
-  onBeforeUnmount,
-} from "vue";
-import type { Game } from "phaser";
+import { defineExpose, defineComponent, onMounted, defineProps } from "vue";
 import { useUserStore } from "@/stores/user";
 import gameInfo from "@/game/gameInfo";
 
@@ -24,17 +17,12 @@ interface Props {
 
 const props: Readonly<Props> = defineProps<Props>();
 const user = useUserStore();
-let gameInstance: Game | null = null;
 const containerId = "game-container";
 const game = await import("@/game/gameConfig");
 
-// onBeforeUnmount(() => {
-//   gameInstance?.destroy(false, false);
-// });
-
 onMounted(() => {
   gameInfo.setInfo(user.id, props.room_name, props.user_role, props.mode);
-  gameInstance = game.launch(containerId);
+  game.launch(containerId);
 });
 
 defineExpose(
