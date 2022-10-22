@@ -327,6 +327,16 @@ export class GameGateway extends AppGateway {
     });
   }
 
+  @SubscribeMessage('get_game_status')
+  async onGetGameStatus(@MessageBody() data: any) {
+    const room = GameGateway.rooms.get(data.room_name);
+    if (!room)
+      return null;
+    return {
+      game_status: room.game_status,
+    }
+  }
+
   /*
   **    WATCH LIST
   */

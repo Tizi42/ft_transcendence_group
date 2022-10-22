@@ -37,6 +37,7 @@ import { useUserStore } from "@/stores/user";
 import { GameRoomNS } from "@backend/game/utils/gameNS";
 import { defineComponent, defineExpose, defineProps, onMounted } from "vue";
 import { Ref, ref } from "vue";
+import "@/assets/styles/historyAndLeaderboard.css";
 
 interface Props {
   room: GameRoomNS;

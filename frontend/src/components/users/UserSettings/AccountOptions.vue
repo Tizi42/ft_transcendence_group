@@ -47,8 +47,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeMount, defineComponent, defineExpose, onUpdated } from "vue";
-import { Ref, ref } from "vue";
+import { onBeforeMount, defineComponent, defineExpose } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import socket from "@/socket";
