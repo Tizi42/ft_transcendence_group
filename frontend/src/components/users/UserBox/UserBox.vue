@@ -1,5 +1,5 @@
 <template>
-  <div class="return" @click="closeUser">
+  <div v-if="context === 'channel'" class="return" @click="closeUser">
     <img src="@/assets/icons/arrowLeft.svg" />
   </div>
   <TransitionGroup name="slide-top">
