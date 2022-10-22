@@ -6,7 +6,7 @@
         <div class="name">{{ name1 }}</div>
         <img class="profile" :src="pp1" @click="showInfoBox(0)" />
       </div>
-      ...
+      <div class="vsWord">vs</div>
       <div class="opponentRight">
         <img class="profile" :src="pp2" @click="showInfoBox(1)" />
         <div class="name">{{ name2 }}</div>
@@ -22,7 +22,7 @@
         <div class="name">{{ name1 }}</div>
         <img class="profile" :src="pp1" @click="showInfoBox(0)" />
       </div>
-      vs
+      <div class="vsWord">vs</div>
       <div class="opponentRight looser">
         <img class="profile" :src="pp2" @click="showInfoBox(1)" />
         <div class="name">{{ name2 }}</div>
@@ -35,7 +35,7 @@
         <div class="name">{{ name1 }}</div>
         <img class="profile" :src="pp1" @click="showInfoBox(0)" />
       </div>
-      vs
+      <div class="vsWord">vs</div>
       <div class="opponentRight winner">
         <img class="profile" :src="pp2" @click="showInfoBox(1)" />
         <div class="name">{{ name2 }}</div>

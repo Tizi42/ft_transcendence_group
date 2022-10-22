@@ -68,9 +68,6 @@
   display: flex;
   justify-content: center;
   overflow: scroll;
-  background-image: url("@/assets/icons/tables/frame.svg");
-  background-repeat: no-repeat;
-  background-size: 100% 30vh;
   width: 100%;
   height: 30vh;
   margin: 0;
@@ -78,6 +75,8 @@
   scrollbar-color: dark;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  background-color: #1e2b02cc;
+  border-radius: 0px 22px 22px 22px;
 }
 
 .tableContainer::-webkit-scrollbar {
@@ -181,8 +180,6 @@
 .selectedTabContainer {
   z-index: 1;
   display: flex;
-  background-image: url("@/assets/icons/tables/selectedTab.svg");
-  background-size: 100% 100%;
   width: 100%;
   max-width: 150px;
   height: 75%;
@@ -193,6 +190,8 @@
   font-size: 16px;
   opacity: 0.5;
   transition: all 0.5s ease;
+  background-color: #1e2b02;
+  border-radius: 22px 22px 0px 0px;
 }
 
 .selectedTabContainer {
@@ -306,22 +305,23 @@ li {
 }
 
 .playerInfo {
-  margin-left: 3vw;
+  margin-left: 10px;
   display: flex;
   text-align: center;
   align-items: center;
   justify-content: space-between;
   flex-direction: row;
-  width: 30vw;
+  width: 100%;
 }
 
-.playerInfo .positionLb {
-  width: 2vw;
+.playerInfo .positionLb { 
+ width: 50px;
+ margin-right: 10px;
 }
 
 .playerInfo .namePlayer {
   width: 11vw;
-  margin-left: 2vw;
+  margin-left: 20px;
   text-align: left;
 }
 
@@ -368,4 +368,18 @@ li {
 
 li {
   list-style: none;
+}
+
+@media screen and (max-width: 1050px) {
+  .matchDate {
+    display: none;
+  }
+
+  .username {
+    display: none;
+  }
+
+  .namePlayer {
+    width: 100%;
+  }
 }
