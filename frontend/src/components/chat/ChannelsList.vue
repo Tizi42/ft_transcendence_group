@@ -1,24 +1,9 @@
 <template>
   <div class="options-channel">
-    <form class="search-in-my-channels" @submit.prevent="onSubmit">
-      <div id="div-search-my-channels">
-        <input
-          class="input-search-channels"
-          id="input-search-my-channels"
-          type="text"
-          placeholder="Search..."
-          v-model="inputSearch"
-        />
-        <button type="submit">
-          <img src="@/assets/icons/search.svg" />
-        </button>
-      </div>
-    </form>
-    <img
-      src="@/assets/icons/icon-add.png"
-      alt="Create new channel"
-      @click="addNewChannel"
-    />
+    <button id="create-new-channel" type="submit" @click="addNewChannel">
+      <h3>create a new channel</h3>
+      <img src="@/assets/icons/icon-add.png" alt="Create new channel" />
+    </button>
   </div>
   <div
     id="list-all-channels"
@@ -81,7 +66,6 @@ interface Props {
 }
 
 const props: Readonly<Props> = defineProps<Props>();
-const inputSearch: Ref<string> = ref("");
 const selectedChannel: Ref<number> = ref(props.selectedChannel);
 const addWindow: Ref<boolean> = ref(false);
 const history: Ref<any> = ref([]);
@@ -140,10 +124,6 @@ const getChannelMessages = async (channelId: number) => {
 const addNewChannel = () => {
   console.log("add new channel");
   addWindow.value = true;
-};
-
-const onSubmit = () => {
-  console.log("inputSearch = ", inputSearch);
 };
 
 function hide() {

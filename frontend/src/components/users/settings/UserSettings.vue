@@ -33,8 +33,11 @@ import AccountOptions from "./AccountOptions.vue";
 import BlockedUsers from "./BlockedUsers.vue";
 import { useRouter } from "vue-router";
 import { useCookie } from "vue-cookie-next";
+import socket from "@/socket";
+import { useCookies } from "vue3-cookies";
 
-const { isCookieAvailable } = useCookie();
+// const { isCookieAvailable } = useCookie();
+const { cookies } = useCookies();
 
 const router = useRouter();
 let selected = ref("AccountOptions");
@@ -49,21 +52,18 @@ function select(toSelect: string) {
 }
 
 async function toLogout() {
-  if (isCookieAvailable("jwt")) {
-    await fetch("http://localhost:3000/api/logout", {
-      credentials: "include",
-    })
-      .then((response) => {
-        router.push({
-          name: "login",
-        });
-        return response.json();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  if (cookies.get("jwt")) {
+    socket.emit("logout_all");
   }
 }
+
+socket.on("force_logout", () => {
+  console.log("cookie jwt = ", cookies.get("jwt"));
+  cookies.remove("jwt");
+  router.push({
+    name: "login",
+  });
+});
 
 defineExpose(
   defineComponent({

@@ -31,8 +31,17 @@ export class ChannelController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getAllChannelsAndMembers(@Req() req: RequestWithUser) {
-    return this.channelService.findAllChannelsAndMembers();
+  async getAllMyChannelsAndMembers(@Req() req: RequestWithUser) {
+    const allChannels = await this.channelService.findAllChannelsAndMembers();
+    let myChannels = [];
+    for (let i = 0; i < allChannels.length; i++) {
+      for (let j = 0; j < allChannels[i].members.length; j++) {
+        if (allChannels[i].members[j].id === req.user.id) {
+          myChannels.push(allChannels[i]);
+        }
+      }
+    }
+    return myChannels;
   }
 
   // @UseGuards(JwtAuthGuard)

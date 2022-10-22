@@ -71,7 +71,7 @@ const channel: Ref<any> = ref(null);
 
 const handleSelectedNav = async (event: string) => {
   isActive.value = event;
-  if (event === "players") {
+  if (event === "players" || selectedChannel.value != -1) {
     selectedChannel.value = -1;
   } else {
     allMyChannels.value = [];
@@ -182,6 +182,10 @@ socket.on("banned_user", async (userToBanId: number, channelId: number) => {
       }
     }
   }
+});
+
+socket.on("friend_login_logout", async () => {
+  user.doFetchFriends();
 });
 
 onBeforeMount(async () => {

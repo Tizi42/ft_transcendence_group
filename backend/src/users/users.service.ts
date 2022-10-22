@@ -470,7 +470,7 @@ export class UsersService {
       newStatus = "online";
     }
 
-    return this.usersRepository.update(userId, {
+    return await this.usersRepository.update(userId, {
         status: newStatus,
     });
   }

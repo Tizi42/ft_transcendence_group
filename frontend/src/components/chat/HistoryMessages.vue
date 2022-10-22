@@ -32,6 +32,13 @@
       />
     </div>
     <img
+      id="add-member-button"
+      src="@/assets/icons/icon-add.png"
+      alt="add member"
+      @click="addMember"
+      v-if="channel.owner === user.id"
+    />
+    <img
       id="leave-img"
       src="@/assets/icons/leave.png"
       alt="leave channel"
@@ -87,6 +94,9 @@
       />
     </ChannelBoxModal>
     <InvitationModal @hideInvitation="hideInvitation" v-if="inviteWindow" />
+    <MyModal v-if="addMemberWindow" @hide="hide">
+      <AddMember :channel="channel" />
+    </MyModal>
   </teleport>
 </template>
 
@@ -109,6 +119,8 @@ import MembersListBox from "./ChannelBox/MembersListBox.vue";
 import { getUrlOf } from "@/router";
 import socket from "@/socket";
 import InvitationModal from "../game/invitation/InvitationModal.vue";
+import AddMember from "./AddMember.vue";
+import MyModal from "../users/friends/MyModal.vue";
 
 interface Props {
   history: Array<any>;
@@ -124,6 +136,7 @@ const userProfileWindow: Ref<boolean> = ref(false);
 const settingsWindow: Ref<boolean> = ref(false);
 const membersWindow: Ref<boolean> = ref(false);
 const inviteWindow: Ref<boolean> = ref(false);
+const addMemberWindow: Ref<boolean> = ref(false);
 const isShowUserProfile: Ref<boolean> = ref(false);
 const userTarget: Ref<User> = ref(props.target);
 
@@ -143,11 +156,16 @@ function showMembers() {
   membersWindow.value = true;
 }
 
+function addMember() {
+  addMemberWindow.value = true;
+}
+
 function hide() {
   userProfileWindow.value = false;
   settingsWindow.value = false;
   membersWindow.value = false;
   isShowUserProfile.value = false;
+  addMemberWindow.value = false;
 }
 
 function hideUserBox() {

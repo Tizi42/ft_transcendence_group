@@ -318,4 +318,7 @@ export class GameGateway extends AppGateway {
       right: 0,
     });
   }
+
+  @SubscribeMessage("logout_all")
+  async handleLogout() {}
 }

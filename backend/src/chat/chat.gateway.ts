@@ -95,4 +95,7 @@ export class ChatGateway extends AppGateway {
   ) {
     this.server.sockets.to(socket.id).emit('ignore_notification');
   }
+
+  @SubscribeMessage("logout_all")
+  async handleLogout() {}
 }
