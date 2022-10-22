@@ -31,6 +31,9 @@ export class User {
 
   @Column({ default: true })
   isFirstEnablingTwoFactor: boolean;
+
+  @Column({ default: true })
+  allowNotifications: boolean;
   
   @Column("int", { array: true, default: {} })
   friendWith: number[];

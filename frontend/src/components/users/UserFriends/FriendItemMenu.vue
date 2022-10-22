@@ -23,9 +23,14 @@ import {
 import { useUserStore } from "@/stores/user";
 import { useClickOutside } from "@/composables/useClickOutside";
 import axios from "axios";
+import { User } from "@backend/users/users.entity";
+
+interface Props {
+  friend: User;
+}
 
 const user = useUserStore();
-const props = defineProps(["friend"]);
+const props: Readonly<Props> = defineProps<Props>();
 const emit = defineEmits(["hideMenu", "inviting"]);
 const menu = ref();
 
@@ -35,7 +40,7 @@ function onInvitePlay() {
 }
 
 function onRemoveFriend() {
-  console.log("remove ", props.friend.id);
+  console.log("remove", props.friend.id);
   axios
     .post("http://localhost:3000/api/users/friends/rm/", {
       id1: user.id,
