@@ -5,6 +5,7 @@
         :match="battle"
         :pp1="battle.picture1"
         :pp2="battle.picture2"
+        :modeIcon="modeIcons[getModeIndex(battle.mode)]"
       />
     </li>
   </TransitionGroup>
@@ -29,6 +30,17 @@ interface Props {
 const props: Readonly<Props> = defineProps<Props>();
 const items: Ref<Array<BattleShow>> = ref([]);
 const show: Ref<boolean> = ref(false);
+const modeIcons: Array<URL> = [
+  new URL("../../assets/icons/gameMode/modeNormal.svg", import.meta.url),
+  new URL("../../assets/icons/gameMode/modeMagic.svg", import.meta.url),
+  new URL("../../assets/icons/gameMode/modeSpeed.svg", import.meta.url),
+];
+
+function getModeIndex(mode: string): number {
+  if (mode == "normal") return 0;
+  else if (mode == "magic") return 1;
+  return 2;
+}
 
 //  usefull functions
 async function reshowData() {

@@ -6,4 +6,7 @@ export class BattleDto {
   
   @IsNotEmpty()
   opponent2: number;
+
+  @IsNotEmpty()
+  mode: string;
 }

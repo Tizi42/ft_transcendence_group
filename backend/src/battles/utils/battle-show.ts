@@ -36,4 +36,7 @@ export class BattleShow {
 
   @IsNotEmpty()
   isFinished: boolean;
+
+  @IsNotEmpty()
+  mode: string;
 }

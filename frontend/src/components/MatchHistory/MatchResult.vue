@@ -1,46 +1,25 @@
 <template>
   <div class="match" v-if="show">
-    <div class="matchResults" v-if="!match.isFinished">
-      <div class="opponentLeft">
-        <div class="score">{{ match.score1 }}pts</div>
-        <div class="name">{{ match.name1 }}</div>
-        <img class="profile" :src="pp1" @click="showInfoBox(0)" />
-      </div>
-      <div class="vsWord">
-        <LoadingRing color="#ffcb00" size="30px" height="30px" />
-      </div>
-      <div class="opponentRight">
-        <img class="profile" :src="pp2" @click="showInfoBox(1)" />
-        <div class="name">{{ match.name2 }}</div>
-        <div class="score">{{ match.score2 }}pts</div>
-      </div>
-    </div>
-    <div
-      class="matchResults"
-      v-else-if="match.isFinished && match.winner == match.opponent1"
-    >
+    <div class="matchResults" v-if="match.winner == match.opponent1">
       <div class="opponentLeft winner">
         <div class="score">{{ match.score1 }}pts</div>
         <div class="name">{{ match.name1 }}</div>
         <img class="profile" :src="pp1" @click="showInfoBox(0)" />
       </div>
-      <div class="vsWord">vs</div>
+      <img :src="modeIcon.toString()" class="smallModeIcon" />
       <div class="opponentRight looser">
         <img class="profile" :src="pp2" @click="showInfoBox(1)" />
         <div class="name">{{ match.name2 }}</div>
         <div class="score">{{ match.score2 }}pts</div>
       </div>
     </div>
-    <div
-      class="matchResults"
-      v-else-if="match.isFinished && match.winner == match.opponent2"
-    >
+    <div class="matchResults" v-else-if="match.winner == match.opponent2">
       <div class="opponentLeft looser">
         <div class="score">{{ match.score1 }}pts</div>
         <div class="name">{{ match.name1 }}</div>
         <img class="profile" :src="pp1" @click="showInfoBox(0)" />
       </div>
-      <div class="vsWord">vs</div>
+      <img :src="modeIcon.toString()" class="smallModeIcon" />
       <div class="opponentRight winner">
         <img class="profile" :src="pp2" @click="showInfoBox(1)" />
         <div class="name">{{ match.name2 }}</div>
@@ -53,7 +32,7 @@
         <div class="name">{{ match.name1 }}</div>
         <img class="profile" :src="pp1" @click="showInfoBox(0)" />
       </div>
-      <div class="vsWord">vs</div>
+      <img :src="modeIcon.toString()" class="smallModeIcon" />
       <div class="opponentRight looser">
         <img class="profile" :src="pp2" @click="showInfoBox(1)" />
         <div class="name">{{ match.name2 }}</div>
@@ -87,13 +66,13 @@ import { onBeforeMount } from "vue";
 import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
 import { User } from "@backend/users/users.entity";
 import { BattleShow } from "@backend/battles/utils/battle-show";
-import LoadingRing from "../utils/LoadingRing.vue";
 
 //  variables
 interface Props {
   match: BattleShow;
   pp1: string;
   pp2: string;
+  modeIcon: URL;
 }
 
 const props: Readonly<Props> = defineProps<Props>();

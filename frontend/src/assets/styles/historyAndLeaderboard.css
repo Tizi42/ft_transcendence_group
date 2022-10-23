@@ -220,6 +220,12 @@ li {
   margin-bottom: 30px;
 }
 
+.smallModeIcon {
+  width: 25px;
+  height: 25px;
+  object-fit: cover;
+}
+
 .list-enter-active {
   transition: all 0.6s ease-out;
 }
@@ -281,6 +287,7 @@ li {
 .score {
   width: 50px;
   text-align: center;
+  color: #bebebe;
 }
 
 .winner .name {
