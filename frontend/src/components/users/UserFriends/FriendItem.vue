@@ -97,12 +97,13 @@ defineExpose(
   white-space: nowrap;
   overflow: hidden;
   display: flex;
+  min-width: 300px;
   width: 100%;
-  min-width: 260px;
   height: 110px;
   background-color: rgba(20, 29, 1, 1);
   border-radius: 12px;
 }
+
 .avatar-frame {
   margin-left: 0.5em;
   display: inline-block;
