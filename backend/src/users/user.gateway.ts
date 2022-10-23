@@ -30,7 +30,7 @@ export class UserGateway extends AppGateway {
   async onChangeNotificationSettings(@ConnectedSocket() socket: Socket, @MessageBody() data: boolean) {
     const user = await this.chatService.getUserFromSocket(socket);
     await this.usersService.changeSettingNotification(user.id, data);
-    this.server.sockets.to(socket.id).emit('notification_settings_changed');
+    this.server.sockets.to(socket.id).emit('notification_settings_changed', data);
   }
 
   /*
