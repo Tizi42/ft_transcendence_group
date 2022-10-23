@@ -43,6 +43,7 @@ onBeforeMount(() => {
   if (props.mode == "speed") {
     timer.value = ["03", "00"];
   }
+
   socket.on("game_start", () => {
     time.value = new Date();
     stop.value = false;
@@ -51,6 +52,14 @@ onBeforeMount(() => {
 
   socket.on("end", () => {
     stop.value = true;
+    timer.value = ["00", "00"];
+  });
+
+  // // for watch mode
+  socket.on("current_game_time", (time: Date) => {
+    timer.value = time;
+    stop.value = false;
+    updateTimer();
   });
 });
 
