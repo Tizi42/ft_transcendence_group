@@ -74,9 +74,27 @@ export class GameRoom {
   }
   
   // for magic mode
-  spell_L = 0;
-  spell_R = 0;
+  spell1_L = 0;
+  spell2_L = 0;
+  spell1_R = 0;
+  spell2_R = 0;
+  spell_interval: ReturnType<typeof setInterval>;
+  spell_spawn_frequencey = 5000;
 
+  paddle_sized_duration = 5000;
+
+  reverse_duration = 5000;
+  L_reverse_effect = 1;
+  R_reverse_effect = 1;
+
+  L_speed_ball = 0;
+  R_speed_ball = 0;
+  previous_ball_speed = 0;
+
+  L_shield = 0;
+  R_shield = 0;
+
+  eye_effect_duration = 5000;
 
   constructor(
     l: number,
@@ -126,6 +144,119 @@ export class GameRoom {
     this.ball_velocity_y = randVelocity[1];
     // start update
     this.interval = setInterval(this.update_game.bind(this), this.update_frequencey);
+    if (this.mode == "magic") {
+      this.spell_interval = setInterval(this.spawn_spell.bind(this), this.spell_spawn_frequencey);
+    }
+  }
+
+  spawn_spell() {
+    const spellL = this.getRandomInt(6) + 1;
+    const spellR = this.getRandomInt(6) + 1;
+
+    if (!this.spell1_L) this.spell1_L = spellL;
+    else if (!this.spell2_L) this.spell2_L = spellL;
+
+    if (!this.spell1_R) this.spell1_R = spellR;
+    else if (!this.spell2_R) this.spell2_R = spellR;
+    this.server.to(this.room_name).emit("refresh_spells", {
+      spell1_L: this.spell1_L,
+      spell2_L: this.spell2_L,
+      spell1_R: this.spell1_R,
+      spell2_R: this.spell2_R,
+    });
+  }
+
+  on_spell_lauched(user_id: number, spell_slot: number)
+  {
+    let effect;
+    let side: string;
+    let target: string;
+
+    if (this.playerL === user_id) {
+      side = "left";
+      target = "right";
+    } else if (this.playerR === user_id) {
+      side = "right";
+      target = "left";
+    }
+
+    if (side == "left") {
+      if (!spell_slot) {
+        effect = this.spell1_L;
+        this.spell1_L = 0;
+      } else {
+        effect = this.spell2_L;
+        this.spell2_L = 0;
+      }
+    } else {
+      if (!spell_slot) {
+        effect = this.spell1_R;
+        this.spell1_R = 0;
+      } else {
+        effect = this.spell2_R;
+        this.spell2_R = 0;
+      }
+    }
+
+    if (effect == 1) {
+      this.paddle[side].height_half += 10;
+      setTimeout(() => {
+        this.paddle[side].height_half -= 10;
+        this.server.to(this.room_name).emit("update_paddle_size", {
+          left: this.paddle["left"].height_half,
+          right: this.paddle["right"].height_half,
+        });
+      }, this.paddle_sized_duration);
+    } else if (effect == 2) {
+      this.paddle[target].height_half -= 10;
+      setTimeout(() => {
+        this.paddle[target].height_half += 10;
+        this.server.to(this.room_name).emit("update_paddle_size", {
+          left: this.paddle["left"].height_half,
+          right: this.paddle["right"].height_half,
+        });
+      }, this.paddle_sized_duration);
+    } else if (effect == 3) {
+      if (side == "left") this.L_speed_ball += 1;
+      else this.R_speed_ball += 1;
+    } else if (effect == 4) {
+      if (target == "left") this.L_reverse_effect = -1;
+      else if (target == "right") this.R_reverse_effect = -1;  
+      setTimeout(() => {
+        if (target == "left" && this.L_reverse_effect == -1) this.L_reverse_effect = 1;
+        else if (target == "right" && this.R_reverse_effect == -1) this.R_reverse_effect = 1;
+      }, this.reverse_duration);
+    } else if (effect == 5) {
+      if (side == "left") this.L_shield = 1;
+      else this.R_shield = 1;
+    } else if (effect == 6) {
+      setTimeout(() => {
+        this.server.to(this.room_name).emit("apply_effect", {
+          launcher: side,
+          target: target,
+          effect: -6,
+        });
+      }, this.eye_effect_duration);
+    }
+
+    if (effect > 2) {
+      this.server.to(this.room_name).emit("apply_effect", {
+        launcher: side,
+        target: target,
+        effect: effect,
+      });
+    } else {
+      this.server.to(this.room_name).emit("update_paddle_size", {
+        left: this.paddle["left"].height_half,
+        right: this.paddle["right"].height_half,
+      });
+    }
+    this.server.to(this.room_name).emit("refresh_spells", {
+      spell1_L: this.spell1_L,
+      spell2_L: this.spell2_L,
+      spell1_R: this.spell1_R,
+      spell2_R: this.spell2_R,   
+    });
   }
 
   update_game() {
@@ -147,8 +278,12 @@ export class GameRoom {
     else return;
     
     let dir = paddle_move_direction > 0 ? 1 : -1;
+
+    if (side == "left") dir *= this.L_reverse_effect;
+    else dir *= this.R_reverse_effect;
+
     this.paddle[side].y += this.paddle[side].velocity[this.mode] * dir;
-  
+
     if (this.paddle[side].y < this.paddle[side].height_half)
       this.paddle[side].y = this.paddle[side].height_half;
     else if (this.paddle[side].y > this.height - this.paddle[side].height_half) 
@@ -166,6 +301,15 @@ export class GameRoom {
     let ball_left = this.ball_x - this.ball_radius;
     let ball_right = this.ball_x + this.ball_radius;
 
+    // check shields
+    if (ball_left < this.leftBounds && this.L_shield) {
+        this.ball_velocity_x *= -1;
+        this.L_shield = 0;
+    } else if (ball_right > this.rightBounds && this.R_shield) {
+        this.ball_velocity_x *= -1;
+        this.R_shield = 0;
+    }
+
     // check if ball collides with world bound
     if (ball_top < 0 ||
         ball_bottom > this.height) {
@@ -179,6 +323,14 @@ export class GameRoom {
       ball_bottom > this.paddle.left.y - this.paddle.left.height_half
     ){
       this.ball_velocity *= this.acceleration[this.mode];
+      if (this.L_speed_ball) {
+        if (!this.previous_ball_speed) this.previous_ball_speed = this.ball_velocity;
+        this.ball_velocity *= 1.5;
+        this.L_speed_ball -= 1;
+      } else if (this.previous_ball_speed) {
+        this.ball_velocity = this.previous_ball_speed;
+        this.previous_ball_speed = 0;
+      }
       let bounce_angle = this.max_angle * ((this.ball_y - this.paddle.left.y) / this.paddle.left.height_half);
       this.ball_velocity_x = this.ball_velocity * Math.cos(bounce_angle);
       this.ball_velocity_y = this.ball_velocity * Math.sin(bounce_angle);
@@ -190,6 +342,14 @@ export class GameRoom {
       ball_bottom > this.paddle.right.y - this.paddle.right.height_half
     ){
       this.ball_velocity *= this.acceleration[this.mode];
+      if (this.R_speed_ball) {
+        if (!this.previous_ball_speed) this.previous_ball_speed = this.ball_velocity;
+        this.ball_velocity *= 1.5;
+        this.R_speed_ball -= 1;
+      } else if (this.previous_ball_speed) {
+        this.ball_velocity = this.previous_ball_speed;
+        this.previous_ball_speed = 0;
+      }
       let bounce_angle = this.max_angle * ((this.ball_y - this.paddle.right.y) / this.paddle.right.height_half);
       this.ball_velocity_x = -this.ball_velocity * Math.cos(bounce_angle);
       this.ball_velocity_y = this.ball_velocity * Math.sin(bounce_angle);
@@ -213,6 +373,7 @@ export class GameRoom {
       right: this.score_right,
     });
     clearInterval(this.interval);
+    if (this.mode == "magic") clearInterval(this.spell_interval);
     if (!this.check_game_end())
       this.on_launch(direction);
   }
