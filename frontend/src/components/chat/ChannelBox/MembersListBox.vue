@@ -160,6 +160,7 @@ h2 {
 
 .members-list {
   width: 40vw;
+  max-width: 800px;
   margin: 0;
   display: flex;
   flex-direction: row;
