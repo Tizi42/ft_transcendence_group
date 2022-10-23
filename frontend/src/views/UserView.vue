@@ -48,10 +48,12 @@ function removeNotification() {
 }
 
 onBeforeRouteUpdate(() => {
+  removeNotification();
   scrollTop();
 });
 
 onBeforeRouteLeave(() => {
+  removeNotification();
   scrollTop();
 });
 
