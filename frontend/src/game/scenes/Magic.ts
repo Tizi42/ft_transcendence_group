@@ -13,27 +13,20 @@ export default class MagicScene extends Phaser.Scene {
   spell_right: Phaser.GameObjects.Sprite;
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
 
-  spell_time = 0;
+  spell1 = 0;
+  spell2 = 0;
   active_spell = 0;
 
-  paddle_left_effect = 0;
-  paddle_right_effect = 0;
-  paddle_left_time = -1;
-  paddle_right_time = -1;
   paddle_left_size = 1;
   paddle_right_size = 1;
 
-  reverse_effect = 0;
-  reverse_time = -1;
-
-  spell_spawn_timing = 5000;
+  Lpaddle_eye_effect = 0;
+  Lpaddle_alpha = 1;
+  Rpaddle_eye_effect = 0;
+  Rpaddle_alpha = 1;
 
   constructor() {
     super("MagicScene");
-  }
-
-  init() {
-    this.spell_time = 0;
   }
 
   create() {
@@ -104,78 +97,60 @@ export default class MagicScene extends Phaser.Scene {
       this.scene.start("GameOverScene", { winner: data.winner });
     });
 
-    socket.on("new_spell", (data: any) => {
-      console.log(data.spell_L);
-      console.log(data.spell_R);
-      this.spell_left.setFrame(data.spell_L);
-      this.spell_right.setFrame(data.spell_R);
-      if (gameInfo.user_id === data.to) {
-        this.active_spell = data.spell_L;
+    socket.on("refresh_spells", (data: any) => {
+      this.spell_left.setFrame(data.spell1_L);
+      this.spell_right.setFrame(data.spell1_R);
+      if (gameInfo.user_role === "left") {
+        this.spell1 = data.spell1_L;
+        this.spell2 = data.spell2_L;
       } else {
-        this.active_spell = data.spell_R;
+        this.spell1 = data.spell1_R;
+        this.spell2 = data.spell2_R;
       }
+    });
+    socket.on("update_paddle_size", (data: any) => {
+      this.paddle_left.setScale(1, data.left / 40);
+      this.paddle_right.setScale(1, data.right / 40);
     });
 
     socket.on("apply_effect", (data: any) => {
-      this.spell_left.setFrame(data.spell_L);
-      this.spell_right.setFrame(data.spell_R);
-      if (gameInfo.user_id === data.to) {
-        if (data.effect === 4) {
-          if (gameInfo.user_role === "left") {
-            this.reverse_effect = 1;
-          } else {
-            this.reverse_effect = 1;
-          }
-        }
-      }
-      if (data.effect === 2) {
-        if (data.side === -1) {
-          if (this.paddle_left_size > 0.25) {
-            this.paddle_left_effect += 1;
-            this.paddle_left_size -= 0.25;
-            this.paddle_left.setScale(1, this.paddle_left_size);
-          }
+      if (data.effect == 6) {
+        if (data.target == "left") this.Lpaddle_eye_effect = 1;
+        else this.Rpaddle_eye_effect = 1;
+      } else if (data.effect == -6) {
+        if (data.target == "left") {
+          this.Lpaddle_eye_effect = 0;
+          this.Lpaddle_alpha = 1;
+          this.paddle_left.alpha = 1;
         } else {
-          if (this.paddle_right_size > 0.25) {
-            this.paddle_right_effect += 1;
-            this.paddle_right_size -= 0.25;
-            this.paddle_right.setScale(1, this.paddle_right_size);
-          }
+          this.Rpaddle_eye_effect = 0;
+          this.Rpaddle_alpha = 1;
+          this.paddle_right.alpha = 1;
         }
       }
     });
   }
 
   update(time: number, delta: number) {
-    this.spell_time += delta;
-    if (gameInfo.user_role === "left") {
-      if (this.spell_time > this.spell_spawn_timing) {
-        this.spell_time = 0;
-        const spell_L = Phaser.Math.Between(1, 6);
-        const spell_R = Phaser.Math.Between(1, 6);
-        socket.emit("create_spell", {
-          room_name: gameInfo.room_name,
-          spell_L: spell_L,
-          spell_R: spell_R,
-        });
-      }
+    if (this.Lpaddle_eye_effect) {
+      if (this.Lpaddle_alpha <= 0) this.Lpaddle_alpha = 1;
+      else this.Lpaddle_alpha -= 0.05;
+      this.paddle_left.alpha = this.Lpaddle_alpha;
+    } else if (this.Rpaddle_eye_effect) {
+      if (this.Rpaddle_alpha <= 0) this.Rpaddle_alpha = 1;
+      else this.Rpaddle_alpha -= 0.05;
+      this.paddle_right.alpha = this.Rpaddle_alpha;
     }
-    this.check_effect(time);
-    let dir = 1;
-    if (this.reverse_effect) {
-      dir = -1;
-    }
-    console.log(dir);
+
     if (this.cursors.up.isDown) {
-      this.update_paddle(-dir);
+      this.update_paddle(-1);
     } else if (this.cursors.down.isDown) {
-      this.update_paddle(dir);
-    } else if (this.cursors.space.isDown && this.active_spell) {
-      console.log("use spell : ", this.active_spell);
-      this.active_spell = 0;
+      this.update_paddle(1);
+    } else if (this.cursors.shift.isDown) {
       socket.emit("launch_spell", {
         user_id: gameInfo.user_id,
         room_name: gameInfo.room_name,
+        spell_slot: this.active_spell,
       });
     }
   }
@@ -194,32 +169,6 @@ export default class MagicScene extends Phaser.Scene {
         room_name: gameInfo.room_name,
         paddle_move_direction: dir,
       });
-    }
-  }
-
-  check_effect(time: number) {
-    if (this.paddle_right_effect) {
-      if (this.paddle_right_time == -1) this.paddle_right_time = time;
-      else if (this.paddle_right_time + 3000 < time) {
-        this.paddle_right_time = -1;
-        this.paddle_right_effect -= 1;
-        this.paddle_right_size += 0.25;
-        this.paddle_right.setScale(1, this.paddle_right_size);
-      }
-    } else if (this.paddle_left_effect) {
-      if (this.paddle_left_time == -1) this.paddle_left_time = time;
-      else if (this.paddle_left_time + 3000 < time) {
-        this.paddle_left_time = -1;
-        this.paddle_left_effect -= 1;
-        this.paddle_left_size += 0.25;
-        this.paddle_left.setScale(1, this.paddle_left_size);
-      }
-    } else if (this.reverse_effect) {
-      if (this.reverse_time == -1) this.reverse_time = time;
-      else if (this.reverse_time + 5000 < time) {
-        this.reverse_time = -1;
-        this.reverse_effect = 0;
-      }
     }
   }
 }
