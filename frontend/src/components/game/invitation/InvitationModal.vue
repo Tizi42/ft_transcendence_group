@@ -1,21 +1,38 @@
 <template>
   <div class="pageCenter">
     <div class="modalContainer" ref="modal">
-      <InvitationContent @hideInvitation="$emit('hideInvitation')" />
+      <InvitationContent
+        @hideInvitation="$emit('hideInvitation')"
+        @sending="changeStatus(true)"
+        @cancel="changeStatus(false)"
+        :friend="props.friend"
+      />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { defineComponent, defineExpose, defineProps, defineEmits } from "vue";
+import { Ref, ref } from "vue";
 import { useClickOutside } from "@/composables/useClickOutside";
-import { ref, defineComponent, defineExpose, defineEmits } from "vue";
 import InvitationContent from "../../game/invitation/InvitationContent.vue";
+import { User } from "@backend/users/users.entity";
 
+interface Props {
+  friend: User;
+}
+
+const props: Readonly<Props> = defineProps<Props>();
 const emit = defineEmits(["hideInvitation"]);
 const modal = ref();
+const sending: Ref<boolean> = ref(false);
+
+function changeStatus(status: boolean) {
+  sending.value = status;
+}
 
 useClickOutside(modal, () => {
-  emit("hideInvitation");
+  if (!sending.value) emit("hideInvitation");
 });
 
 defineExpose(
@@ -32,11 +49,9 @@ defineExpose(
   display: flex;
   align-items: center;
   flex-direction: column;
-  z-index: 999;
+  z-index: 997;
   width: 100vw;
   height: 100vh;
-  top: 0%;
-  left: 0%;
   background-color: #ffffff44;
   font-family: "Outfit";
   font-size: 18px;
@@ -48,18 +63,17 @@ defineExpose(
   display: flex;
   align-items: center;
   text-align: center;
-  justify-content: space-around;
+  justify-content: space-between;
   flex-direction: column;
-  gap: 15px;
-  padding-top: 2em;
-  padding-bottom: 2em;
-  width: 50vw;
-  background: rgba(30, 42, 2, 1);
-  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.75);
+  width: 30vw;
+  min-width: 400px;
+  background: #1e2a02;
+  box-shadow: 0px 0px 8px #000000bf;
   border-radius: 58px;
   position: absolute;
   top: 50%;
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
+  height: 350px;
 }
 </style>

@@ -40,7 +40,6 @@
 <script lang="ts" setup>
 import { defineComponent, defineExpose, onMounted, Ref } from "vue";
 import { ref } from "vue";
-import "@/assets/styles/gameOverlay.css";
 import LoadingRing from "../utils/LoadingRing.vue";
 import router from "@/router/index";
 import socket from "@/socket";
@@ -99,7 +98,6 @@ function cancel() {
 }
 
 async function startGame() {
-  waiting.value = true;
   socket.emit(
     "queue_register",
     {
@@ -108,6 +106,8 @@ async function startGame() {
     },
     (data: any) => {
       console.log(data);
+      if (data.alreadyInQueue) window.alert("You are already in queue!");
+      else waiting.value = true;
     }
   );
 }

@@ -14,7 +14,6 @@
 
 <script lang="ts">
 import { defineComponent, ref, Ref } from "vue";
-import "@/assets/styles/authentication.css";
 import { getUrlOf } from "@/router";
 
 export default defineComponent({

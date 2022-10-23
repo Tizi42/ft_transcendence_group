@@ -5,6 +5,7 @@
         <WinGraph
           :totalGames="user.totalGames"
           :totalVictories="user.totalVictories"
+          :totalDraws="user.totalDraws"
         />
       </div>
       <div class="stats-item">
@@ -43,13 +44,13 @@ import { defineExpose, defineComponent } from "vue";
 import { onBeforeMount, ref, Ref } from "vue";
 import WinGraph from "./WinGraph.vue";
 import TableHistory from "@/components/MatchHistory/TableHistory.vue";
-import { Battle } from "@backend/battles/battle.entity";
+import { BattleShow } from "@backend/battles/utils/battle-show";
 
 const user = useUserStore();
 const dataReady: Ref<boolean> = ref(false);
 const historyReady: Ref<boolean> = ref(false);
 const leaderboard: Ref<User[]> = ref([]);
-const history: Ref<Battle[]> = ref([]);
+const history: Ref<BattleShow[]> = ref([]);
 const noMatch: Ref<boolean> = ref(true);
 const leagues: string[] = [
   "Challenger",
@@ -77,9 +78,12 @@ async function reload() {
 
 async function reloadHistory() {
   historyReady.value = false;
-  let response: Response = await fetch(getUrlOf("api/battles/" + user.id), {
-    credentials: "include",
-  });
+  let response: Response = await fetch(
+    getUrlOf("api/battles/show/" + user.id),
+    {
+      credentials: "include",
+    }
+  );
   history.value = await response.json();
   setTimeout(() => {
     historyReady.value = true;
@@ -93,7 +97,7 @@ function getWinRate(): string {
 
 function getRank(): number {
   for (var i = 0; i < leaderboard.value.length; i++)
-    if (leaderboard.value[i].id == user.id) return i;
+    if (leaderboard.value[i].id == user.id) return i + 1;
   return leaderboard.value.length + 1;
 }
 
@@ -106,6 +110,7 @@ function getLeague(): string {
 }
 
 onBeforeMount(async () => {
+  user.doFetch();
   await reload();
   await reloadHistory();
   if (history.value.length > 0) noMatch.value = false;

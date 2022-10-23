@@ -6,6 +6,7 @@
       width="300px"
       background="#0c1200ee"
       right="0px"
+      left=""
       padding="0px 20px"
       ref="menuRef"
       :canClick="props.role != 'watch'"
@@ -86,7 +87,7 @@
     <FloatingMenu
       direction="column"
       width="250px"
-      height="150px"
+      height="100px"
       background="#0c1200fa"
       left="0px"
     >
@@ -96,9 +97,6 @@
       <template #choices>
         <div class="setting-choice" @click="toogleChatW()">
           {{ showWatchersChat ? "Hide" : "Show" }} viewers chat
-        </div>
-        <div class="setting-choice" @click="emit('changeBackground')">
-          Change background
         </div>
         <div class="setting-choice red" @click="emit('quitGame')">
           Quit game
@@ -132,7 +130,7 @@ const isChatting: Ref<boolean> = ref(false);
 const showWatchersChat: Ref<boolean> = ref(true);
 const chatRef = ref();
 const menuRef = ref();
-const emit = defineEmits(["quitGame", "changeSound", "changeBackground"]);
+const emit = defineEmits(["quitGame", "changeSound"]);
 const opacity = props.role == "watch" ? 0.2 : 1;
 const scale = props.role == "watch" ? "" : "scale(1.15)";
 const pointer = props.role == "default" ? "" : "pointer";

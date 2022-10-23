@@ -4,15 +4,15 @@
       <div class="setting-navbar">
         <div
           class="setting-navbar-item"
-          :class="{ active: selected === 'AccountOptions' }"
-          @click="select('AccountOptions')"
+          :class="{ active: selected === 0 }"
+          @click="select(0)"
         >
           Account
         </div>
         <div
           class="setting-navbar-item"
-          :class="{ active: selected === 'BlockedUsers' }"
-          @click="select('BlockedUsers')"
+          :class="{ active: selected === 1 }"
+          @click="select(1)"
         >
           Blocked Users
         </div>
@@ -29,6 +29,7 @@
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose, ref } from "vue";
+import { Component as ComponentVue } from "vue";
 import AccountOptions from "./AccountOptions.vue";
 import BlockedUsers from "./BlockedUsers.vue";
 import { useRouter } from "vue-router";
@@ -40,14 +41,11 @@ import { useCookies } from "vue3-cookies";
 const { cookies } = useCookies();
 
 const router = useRouter();
-let selected = ref("AccountOptions");
+let selected = ref(0);
 
-let menu = {
-  AccountOptions,
-  BlockedUsers,
-};
+let menu: Array<ComponentVue> = [AccountOptions, BlockedUsers];
 
-function select(toSelect: string) {
+function select(toSelect: number) {
   selected.value = toSelect;
 }
 
@@ -74,6 +72,7 @@ defineExpose(
 
 <style scoped>
 .wrapper-settings {
+  display: flex;
   position: absolute;
   top: 0;
   width: 100%;
@@ -83,14 +82,17 @@ defineExpose(
 .settings {
   display: flex;
   position: relative;
-  width: 100%;
+  justify-content: center;
+  height: 100%;
+  width: 80%;
+  left: 10%;
   gap: 50px;
 }
 
 .setting-navbar {
-  margin-left: 8%;
   align-items: left;
   width: 14%;
+  min-width: 190px;
   text-align: left;
   display: flex;
   flex-direction: column;
@@ -144,13 +146,13 @@ defineExpose(
 }
 
 .setting-field {
-  overflow-y: scroll;
-  overflow-x: hidden;
   scrollbar-width: 0px;
-  background-color: var(--dark-green-background);
   text-align: left;
   display: flex;
   flex-direction: column;
+  background: none;
+  width: 100%;
+  height: 100%;
 }
 
 .setting-field::-webkit-scrollbar {

@@ -1,5 +1,6 @@
 <template>
   <NavBar />
+  <InviteNotif />
   <div class="wrapper">
     <RouterView v-slot="{ Component }">
       <Transition name="slide-right">
@@ -12,6 +13,7 @@
 <script lang="ts" setup>
 import { useUserStore } from "@/stores/user";
 import NavBar from "./components/NavBar.vue";
+import InviteNotif from "./components/InviteNotif.vue";
 
 const user = useUserStore();
 user.doFetch();

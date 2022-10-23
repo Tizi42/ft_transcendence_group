@@ -53,7 +53,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // ////////////////////////////////////////////////// //
   }
 
-  handleDisconnect(socket: Socket) {
+  async handleDisconnect(socket: Socket) {
     const users = [];
     if (socket.data) {
       socket.leave(socket.data.id);
@@ -66,7 +66,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
       // //////////////////////////////////////////////////// //
       if (!rooms.get(socket.data.id)) {
-        this.usersService.updateUserStatus(socket.data.id, "offline");
+        await this.usersService.updateUserStatus(socket.data.id, "offline");
       }
     }
 
