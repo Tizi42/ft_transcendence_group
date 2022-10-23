@@ -133,8 +133,8 @@ export class UsersService {
   **    FIND USER
   */
  
-  findAll(): Promise<User[]> {
-   return this.usersRepository.find();
+  async findAll(): Promise<User[]> {
+   return await this.usersRepository.find();
   }
   
   findOne(id: number): Promise<User> {

@@ -61,4 +61,33 @@ export class ChannelController {
   ) {
     return await this.channelService.sendJoinRequest(req.user.id, manageMemberDto);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('ignoreMember')
+  async ignoreMemberPrivateChannel(
+    @Body() manageMemberDto: ManageMemberDto,
+    @Req() req: RequestWithUser
+  ) {
+    return await this.channelService.removeJoinRequest(req.user.id, manageMemberDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('acceptJoin')
+  async acceptJoinPrivateChannel(
+    @Body() manageMemberDto: ManageMemberDto,
+    @Req() req: RequestWithUser
+  ) {
+    const channelName = await this.channelService.joinChannel(req.user, manageMemberDto.channelId);    
+    return { channelName };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('refuseJoin')
+  async refuseJoinPrivateChannel(
+    @Body() manageMemberDto: ManageMemberDto,
+    @Req() req: RequestWithUser
+  ) {
+    const channelName = await this.channelService.refuseJoinChannel(req.user, manageMemberDto.channelId);    
+    return { channelName };
+  }
 }

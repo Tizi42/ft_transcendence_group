@@ -339,7 +339,7 @@
 .messages {
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     padding: 1em;
     text-align: left;
 }

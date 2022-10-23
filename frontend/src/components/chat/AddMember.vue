@@ -66,15 +66,19 @@ function onClickSearch() {
   axios
     .get("http://localhost:3000/api/users/info/" + searchInput.value)
     .then((response) => {
-      console.log(response);
       if (response.data) {
         targetUser.value = response.data;
-        if (
-          Number(targetUser.value.id) === user.id ||
-          targetUser.value.members.includes(user.id)
-        ) {
+        console.log("data =", targetUser.value);
+        for (let i = 0; i < props.channel.members.length; i++) {
+          if (props.channel.members[i].id === targetUser.value.id) {
+            alreadyMember.value = true;
+          }
+        }
+        if (Number(targetUser.value.id) === user.id) {
           alreadyMember.value = true;
-        } else if (targetUser.value.memberPendingFrom.includes(props.channel.id)) {
+        } else if (
+          targetUser.value.memberPendingReqFrom.includes(props.channel.id)
+        ) {
           pending.value = true;
         } else if (props.channel.banned.includes(targetUser.value.id)) {
           alreadyMember.value = true;
@@ -94,7 +98,7 @@ function onClickSearch() {
 }
 
 async function onSend() {
-  const data = {
+  const dataToEmit = {
     from: props.channel.id,
     to: targetUser.value.id,
   };
@@ -113,10 +117,10 @@ async function onSend() {
       return response.json();
     })
     .then((data) => {
-      console.log("data = ", data);
+      console.log("onSend data = ", data);
       if (data != "") {
         pending.value = true;
-        socket.emit("send_join_request", data);
+        socket.emit("update_join_request", dataToEmit);
       }
     })
     .catch((error) => {
@@ -125,7 +129,34 @@ async function onSend() {
 }
 
 async function onCancel() {
-
+  const dataToEmit = {
+    from: props.channel.id,
+    to: targetUser.value.id,
+  };
+  await fetch(getUrlOf("api/channel/ignoreMember"), {
+    credentials: "include",
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      channelId: props.channel.id,
+      targetId: targetUser.value.id,
+    }),
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      console.log("onCancel data = ", data);
+      if (data != "") {
+        pending.value = false;
+        socket.emit("update_join_request", dataToEmit);
+      }
+    })
+    .catch((error) => {
+      console.log("error : ", error);
+    });
 }
 
 defineExpose(

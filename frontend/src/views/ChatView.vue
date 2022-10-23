@@ -112,10 +112,6 @@ const handleHistory = (event: Array<any>) => {
   history.value = event;
 };
 
-// const handleJoinedChannel = (event: any) => {
-//   joinedChannel.value = event;
-// };
-
 const handleChannelSelected = async (event: number) => {
   selectedChannel.value = event;
   channel.value = null;
@@ -128,6 +124,7 @@ const handleChannelSelected = async (event: number) => {
 };
 
 socket.on("channel_updated", async (channelId: number) => {
+  user.doFetch();
   await fetch(getUrlOf("api/channel/"), {
     credentials: "include",
   })
