@@ -158,7 +158,7 @@ function changeSound(value: number) {
 
 function quitGame() {
   force_quit.value = false;
-  router.push({ name: "play" });
+  router.push({ name: "game" });
 }
 
 function changeBackground() {
@@ -178,7 +178,7 @@ socket.on("score_update", (data: any) => {
 socket.on("quit_game", () => {
   window.alert("Player has left game, return to game menu...");
   force_quit.value = true;
-  router.push({ name: "play" });
+  router.push({ name: "game" });
 });
 
 onBeforeRouteLeave(() => {

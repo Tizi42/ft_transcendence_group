@@ -10,7 +10,15 @@
             :time="emojiDateL"
             side="left"
           />
-          <img :src="playerL.picture" class="profile" />
+          <img
+            :src="playerL.picture"
+            class="profile"
+            v-bind:style="
+              onLeftSide
+                ? 'outline: 5px solid #ffcb00;'
+                : 'outline: 5px solid rgba(0, 0, 0, 0.2);'
+            "
+          />
         </div>
         <UserChat
           :user="playerL"
@@ -38,7 +46,15 @@
             :time="emojiDateR"
             side="right"
           />
-          <img :src="playerR.picture" class="profile" />
+          <img
+            :src="playerR.picture"
+            class="profile"
+            v-bind:style="
+              onRightSide
+                ? 'outline: 5px solid #ffcb00;'
+                : 'outline: 5px solid rgba(0, 0, 0, 0.2);'
+            "
+          />
         </div>
       </div>
     </div>
@@ -53,6 +69,7 @@ import UserChat from "./UserChat.vue";
 import EmoteBox from "./EmoteBox.vue";
 import { UserMinimal } from "@/components/utils/UserMinimal";
 import { messageInGame } from "@backend/chat/utils/types";
+import { useUserStore } from "@/stores/user";
 
 interface Props {
   playerL: UserMinimal;
@@ -70,8 +87,13 @@ interface Props {
 
 const props: Readonly<Props> = defineProps<Props>();
 const show: Ref<boolean> = ref(false);
+const user = useUserStore();
+const onLeftSide = ref(false);
+const onRightSide = ref(false);
 
 onMounted(() => {
+  if (user.id === props.playerL.id) onLeftSide.value = true;
+  else if (user.id === props.playerR.id) onRightSide.value = true;
   show.value = true;
 });
 
@@ -151,7 +173,6 @@ defineExpose(
   border-radius: 100%;
   opacity: 1;
   transition: all 0.3s ease-out;
-  outline: 5px solid rgba(0, 0, 0, 0.2);
 }
 
 .profile:hover {
