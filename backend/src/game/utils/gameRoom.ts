@@ -107,6 +107,7 @@ export class GameRoom {
     this.current_game_id = await this.battlesService.addOne({
       opponent1: this.playerL,
       opponent2: this.playerR,
+      mode: this.mode,
     });
     this.getRandomInt(1) === 1 ? this.on_launch("toRight") : this.on_launch("toLeft");
     this.game_status = "running";
