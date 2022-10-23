@@ -60,16 +60,12 @@ function hide() {
   addWindow.value = false;
 }
 
-socket.on("update_friendship", async () => {
-  user.doFetchPending();
-  user.doFetchFriends();
-});
-
 onBeforeMount(() => {
   user.doFetchFriends();
   user.doFetchPending();
   socket.on("receive_friendship", () => {
     user.doFetchPending();
+    user.doFetchFriends();
   });
   socket.on("friend_update", () => {
     user.doFetchFriends();
