@@ -297,13 +297,20 @@ export class GameGateway extends AppGateway {
   }
 
   @SubscribeMessage('get_game_status')
-  async onGetGameStatus(@MessageBody() data: any) {
+  async onGetGameStatus(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() data: any
+  ) {
     const room = GameGateway.rooms.get(data.room_name);
     if (!room)
       return null;
+    // if (room.game_status === "running")
+    //   this.server.to(socket.id).emit("current_game_time", {
+    //     game_start_time: room.current_game_start_time,
+    //   });
     return {
       game_status: room.game_status,
-    }
+    };
   }
 
   /*

@@ -6,6 +6,7 @@ export class GameRoom {
 
   //current game info
   current_game_id: number;
+  current_game_start_time: Date;
   score_left = 0;
   score_right = 0;
   winner: number;
@@ -122,6 +123,7 @@ export class GameRoom {
     if (this.mode == "speed") {
       setTimeout(this.game_end.bind(this), 180000);
     }
+    this.current_game_start_time = new Date();
     this.current_game_id = await this.battlesService.addOne({
       opponent1: this.playerL,
       opponent2: this.playerR,

@@ -425,8 +425,12 @@ export class UsersService {
 
     // Make sure offline user won't get online status on shutting down game room
     let newStatus = value;
+    let oldStatus = (await this.findOne(userId)).status;
+    
+    if (newStatus === "online" && oldStatus !== "offline")
+      return;
+
     if (newStatus === "leave game") {
-      let oldStatus = (await this.findOne(userId)).status;
       if (oldStatus === "offline")
         return;
       newStatus = "online";
