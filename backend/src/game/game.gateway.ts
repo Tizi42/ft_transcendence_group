@@ -67,7 +67,7 @@ export class GameGateway extends AppGateway {
   }
 
   informEveryoneGameUpdate() {
-    this.server.emit("game_update");
+    this.server.emit("games_update");
   }
 
   async createGameRoom(
