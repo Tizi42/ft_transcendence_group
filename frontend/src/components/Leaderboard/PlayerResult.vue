@@ -14,9 +14,7 @@
   </div>
   <div class="nofriends" v-if="alone">You don't have any friend &#128533;</div>
   <teleport to="body">
-    <UserBoxModal v-if="addWindow" @hide="hide">
-      <UserBox :target="player" />
-    </UserBoxModal>
+    <UserBoxModal v-if="addWindow" @hideUserBox="hide" :target="player" />
   </teleport>
 </template>
 
@@ -26,7 +24,6 @@ import { User } from "@backend/users/users.entity";
 import { defineComponent, defineExpose, defineProps } from "vue";
 import { ref } from "vue";
 import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
-import UserBox from "../users/UserBox/UserBox.vue";
 
 //  variables
 interface Props {

@@ -32,7 +32,10 @@
       :friend="friend"
     />
     <teleport to="body" v-if="inviteWindow">
-      <InvitationModal @hideInvitation="hideInvitation" />
+      <InvitationModal
+        @hideInvitation="hideInvitation"
+        :friend="props.friend"
+      />
     </teleport>
   </div>
 </template>
@@ -41,9 +44,13 @@
 import { defineComponent, defineExpose, defineProps, ref, computed } from "vue";
 import FriendItemMenu from "./FriendItemMenu.vue";
 import InvitationModal from "../../game/invitation/InvitationModal.vue";
+import { User } from "@backend/users/users.entity";
 
-const props = defineProps(["friend"]);
-console.log("friend:", props.friend);
+interface Props {
+  friend: User;
+}
+
+const props: Readonly<Props> = defineProps<Props>();
 const show = ref(false);
 const buttonText = computed(() => (show.value === true ? "+" : "="));
 const clickCoord = ref({
@@ -58,7 +65,7 @@ function smallDisplayName(displayName: string): string {
   return small;
 }
 
-function onClickFriend(event: Event) {
+function onClickFriend(event: MouseEvent) {
   clickCoord.value.x = event.pageX - 100;
   clickCoord.value.y = event.pageY + 10;
   show.value = !show.value;
@@ -90,12 +97,13 @@ defineExpose(
   white-space: nowrap;
   overflow: hidden;
   display: flex;
+  min-width: 300px;
   width: 100%;
-  min-width: 260px;
   height: 110px;
   background-color: rgba(20, 29, 1, 1);
   border-radius: 12px;
 }
+
 .avatar-frame {
   margin-left: 0.5em;
   display: inline-block;

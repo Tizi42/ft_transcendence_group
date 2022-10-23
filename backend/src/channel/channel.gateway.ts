@@ -23,7 +23,7 @@ export class ChannelGateway extends AppGateway {
 
   async handleConnection(socket: Socket) {}
 
-  handleDisconnect(client: any) {}
+  async handleDisconnect(client: any) {}
 
   @SubscribeMessage('create_channel')
   async handleCreateChannel(

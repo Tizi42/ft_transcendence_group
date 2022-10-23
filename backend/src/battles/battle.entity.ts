@@ -26,4 +26,7 @@ export class Battle {
   
     @Column({ default: false })
     isFinished: boolean;
+
+    @Column({ default: "normal" })
+    mode: string;
 }

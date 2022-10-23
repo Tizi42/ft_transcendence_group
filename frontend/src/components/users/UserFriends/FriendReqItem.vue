@@ -50,6 +50,10 @@ async function onHandleFriendRequest(action: string) {
       socket.emit("request_friendship", data);
       user.doFetchPending();
       user.doFetchFriends();
+      socket.emit("update_friend", {
+        from: props.sender.id,
+        to: user.id,
+      });
       console.log(response);
     })
     .catch((error) => {

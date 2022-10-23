@@ -22,7 +22,7 @@ export class ChatGateway extends AppGateway {
 
   async handleConnection(socket: Socket) {}
 
-  handleDisconnect(client: any) {}
+  async handleDisconnect(client: any) {}
 
   @SubscribeMessage('send_message')
   async handleMessage(
@@ -81,21 +81,7 @@ export class ChatGateway extends AppGateway {
   ) {
     this.server.sockets.to(data.dest).to(data.author).emit('receive_emoji_ingame', data);
   }
-
-  @SubscribeMessage('request_friendship')
-  async handleFriendship(
-    @MessageBody() data: FriendShip,
-  ) {
-    this.server.sockets.to(data.to).emit('update_friendship', data);
-  }
-
-  @SubscribeMessage('remove_notification')
-  async ignoreNotifcation(
-    @ConnectedSocket() socket: Socket
-  ) {
-    this.server.sockets.to(socket.id).emit('ignore_notification');
-  }
-
+  
   @SubscribeMessage("logout_all")
   async handleLogout() {}
 }

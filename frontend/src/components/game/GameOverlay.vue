@@ -1,6 +1,7 @@
 <template>
   <div class="pageCenter">
     <div class="overlayBox" v-if="dataReady">
+      <img :src="modeIcon" class="modeIconGame" />
       <OverlayTopBar
         v-if="opponent != null"
         :playerL="playerLMin"
@@ -24,7 +25,6 @@
         :message="messageW"
         @changeSound="changeSound"
         @quitGame="quitGame"
-        @changeBackground="changeBackground"
         @hideChat="hideChat"
       />
       <ReadyButton v-if="readyStatus[0]" />
@@ -78,6 +78,18 @@ const force_quit = ref(false);
 const user_role = ref("");
 const playerLMin: Ref<UserMinimal> = ref(createUserMinimal(null));
 const playerRMin: Ref<UserMinimal> = ref(createUserMinimal(null));
+const modeIcons: Array<URL> = [
+  new URL("../../assets/icons/gameMode/modeNormal.svg", import.meta.url),
+  new URL("../../assets/icons/gameMode/modeMagic.svg", import.meta.url),
+  new URL("../../assets/icons/gameMode/modeSpeed.svg", import.meta.url),
+];
+const modeIcon: string = modeIcons[getModeIndex(props.mode)].toString();
+
+function getModeIndex(mode: string): number {
+  if (mode == "normal") return 0;
+  else if (mode == "magic") return 1;
+  return 2;
+}
 
 type emojiInfo = {
   author: string;
@@ -246,5 +258,13 @@ defineExpose(
   height: 100vh;
   width: 100vw;
   background: var(--main-gradient-background);
+}
+
+.modeIconGame {
+  position: fixed;
+  top: 25px;
+  left: 25px;
+  width: 50px;
+  height: 50px;
 }
 </style>

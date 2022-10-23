@@ -31,6 +31,9 @@ export class User {
 
   @Column({ default: true })
   isFirstEnablingTwoFactor: boolean;
+
+  @Column({ default: true })
+  allowNotifications: boolean;
   
   @Column("int", { array: true, default: {} })
   friendWith: number[];
@@ -52,6 +55,9 @@ export class User {
 
   @Column({default: 0})
   totalVictories: number;
+
+  @Column({default: 0})
+  totalDraws: number;
 
   @Column({default: -1, nullable: true})
   winRate: number;

@@ -1,83 +1,82 @@
 <template>
   <div class="match" v-if="show">
-    <div class="matchResults" v-if="!match.isFinished">
-      <div class="opponentLeft">
+    <div class="matchResults" v-if="match.winner == match.opponent1">
+      <div class="opponentLeft winner">
         <div class="score">{{ match.score1 }}pts</div>
-        <div class="name">{{ name1 }}</div>
+        <div class="name">{{ match.name1 }}</div>
         <img class="profile" :src="pp1" @click="showInfoBox(0)" />
       </div>
-      ...
-      <div class="opponentRight">
+      <img :src="modeIcon.toString()" class="smallModeIcon" />
+      <div class="opponentRight looser">
         <img class="profile" :src="pp2" @click="showInfoBox(1)" />
-        <div class="name">{{ name2 }}</div>
+        <div class="name">{{ match.name2 }}</div>
         <div class="score">{{ match.score2 }}pts</div>
       </div>
     </div>
-    <div
-      class="matchResults"
-      v-else-if="match.isFinished && match.winner == match.opponent1"
-    >
-      <div class="opponentLeft winner">
+    <div class="matchResults" v-else-if="match.winner == match.opponent2">
+      <div class="opponentLeft looser">
         <div class="score">{{ match.score1 }}pts</div>
-        <div class="name">{{ name1 }}</div>
+        <div class="name">{{ match.name1 }}</div>
         <img class="profile" :src="pp1" @click="showInfoBox(0)" />
       </div>
-      vs
-      <div class="opponentRight looser">
+      <img :src="modeIcon.toString()" class="smallModeIcon" />
+      <div class="opponentRight winner">
         <img class="profile" :src="pp2" @click="showInfoBox(1)" />
-        <div class="name">{{ name2 }}</div>
+        <div class="name">{{ match.name2 }}</div>
         <div class="score">{{ match.score2 }}pts</div>
       </div>
     </div>
     <div class="matchResults" v-else>
       <div class="opponentLeft looser">
         <div class="score">{{ match.score1 }}pts</div>
-        <div class="name">{{ name1 }}</div>
+        <div class="name">{{ match.name1 }}</div>
         <img class="profile" :src="pp1" @click="showInfoBox(0)" />
       </div>
-      vs
-      <div class="opponentRight winner">
+      <img :src="modeIcon.toString()" class="smallModeIcon" />
+      <div class="opponentRight looser">
         <img class="profile" :src="pp2" @click="showInfoBox(1)" />
-        <div class="name">{{ name2 }}</div>
+        <div class="name">{{ match.name2 }}</div>
         <div class="score">{{ match.score2 }}pts</div>
       </div>
     </div>
     <div class="matchDate">
-      <div class="date">{{ getDate(match.date_start) }}</div>
-      <div class="time">{{ getTime(match.date_start) }}</div>
+      <div class="date">{{ getDate(match.date) }}</div>
+      <div class="time">{{ getTime(match.date) }}</div>
     </div>
   </div>
   <teleport to="body">
-    <UserBoxModal v-if="addWindow[0]" @hide="hide(0)">
-      <UserBox :target="players[0]" />
-    </UserBoxModal>
-    <UserBoxModal v-if="addWindow[1]" @hide="hide(1)">
-      <UserBox :target="players[1]" />
-    </UserBoxModal>
+    <UserBoxModal
+      v-if="addWindow[0]"
+      @hideUserBox="hide(0)"
+      :target="players[0]"
+    />
+    <UserBoxModal
+      v-if="addWindow[1]"
+      @hideUserBox="hide(1)"
+      :target="players[1]"
+    />
   </teleport>
 </template>
 
 <script lang="ts" setup>
 //  imports
 import { getUrlOf } from "@/router";
-import { Battle } from "@backend/battles/battle.entity";
 import { defineComponent, defineExpose, defineProps, ref, Ref } from "vue";
-import { onMounted } from "vue";
+import { onBeforeMount } from "vue";
 import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
-import UserBox from "../users/UserBox/UserBox.vue";
 import { User } from "@backend/users/users.entity";
+import { BattleShow } from "@backend/battles/utils/battle-show";
 
 //  variables
 interface Props {
-  match: Battle;
+  match: BattleShow;
   pp1: string;
   pp2: string;
+  modeIcon: URL;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
 const show: Ref<boolean> = ref(false);
-const name1: Ref<string> = ref("");
-const name2: Ref<string> = ref("");
 const players: Ref<Array<User>> = ref([]);
 const addWindow: Ref<Array<boolean>> = ref([false, false]);
 
@@ -118,11 +117,11 @@ async function getPlayer(id: number): Promise<User> {
 }
 
 //  lifecycle hook
-onMounted(async () => {
-  name1.value = await getName(props.match.opponent1);
-  name2.value = await getName(props.match.opponent2);
-  players.value.push(await getPlayer(props.match.opponent1));
-  players.value.push(await getPlayer(props.match.opponent2));
+onBeforeMount(async () => {
+  players.value = [
+    await getPlayer(props.match.opponent1),
+    await getPlayer(props.match.opponent2),
+  ];
   show.value = true;
 });
 

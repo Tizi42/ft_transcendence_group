@@ -2,13 +2,12 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Channel } from "src/channel/entities/channel.entity";
 import { Chat } from "src/chat/entities/chat.entity";
+import { AppGateway } from "src/gateway";
 import { Any, DataSource, In, Not, QueryRunner, Repository } from "typeorm";
 import { User } from "./users.entity";
 import { FriendshipDto } from "./utils/friendship.dto";
 import { UserDetails } from "./utils/types";
 import { UserDto } from "./utils/user.dto";
-import * as fs from "fs";
-// import { HttpService } from "@nestjs/axios";
 
 @Injectable()
 export class UsersService {
@@ -23,6 +22,9 @@ export class UsersService {
 
       @InjectRepository(Chat)
       private readonly chatRepository: Repository<Chat>,
+
+      @InjectRepository(Channel)
+      private readonly channelRepository: Repository<Channel>,
 
       private readonly dataSource: DataSource,
 
@@ -80,11 +82,6 @@ export class UsersService {
       newUser.username = "username" + i.toString();
       newUser.email = "user" + i.toString() + "@student.42.fr";
 	    this.usersRepository.insert(newUser);
-      let id = this.usersRepository.getId(newUser);
-      newUser.picture = id;
-      newUser.totalGames = this.getRandomInt() + 1;
-      newUser.totalVictories = this.getRandomInt(newUser.totalGames);
-      newUser.winRate = Math.floor((newUser.totalVictories / newUser.totalGames * 100));
     }
   }
 
@@ -94,6 +91,7 @@ export class UsersService {
 
   async removeAll(): Promise<void> {
     await this.chatRepository.delete({});
+    await this.channelRepository.delete({});
     await this.usersRepository.delete({});
     await this.restartIdSeq();
   }
@@ -108,6 +106,7 @@ export class UsersService {
   /*
   **    GET USER INFORMATIONS
   */
+
   async getDisplayname(id: number) : Promise<string> {
     let user = await this.usersRepository.findOneBy({id});
     if (user == null)
@@ -198,7 +197,7 @@ export class UsersService {
     let target = await this.usersRepository.findOneBy({ id: param.id2 });
 
     if (askingForFriend == null || target == null) {
-      console.log("cancel friend reques aborted");
+      console.log("cancel friend request aborted");
       return null;
     }
 
@@ -223,7 +222,7 @@ export class UsersService {
     let target = await this.usersRepository.findOneBy({ id: param.id2 });
 
     if (askingForFriend == null || target == null) {
-      console.log("cancel friend reques aborted");
+      console.log("accept friend request aborted");
       return null;
     }
 
@@ -479,12 +478,17 @@ export class UsersService {
   **    GAME STATS
   */
 
-  async updateResult(id: number, winner: boolean) {
+  async updateResult(id: number, winner: boolean, draw: boolean) {
     let target = await this.usersRepository.findOneBy({ id });
+    if (target == null) return ;
     target.totalGames++;
-    if (winner)
-      target.totalVictories++;
-    target.winRate = Math.floor((target.totalVictories / target.totalGames) * 100);
+    if (winner) target.totalVictories++;
+    else if (draw) target.totalDraws++;
+    if (target.totalDraws == target.totalGames)
+      target.winRate = -1;
+    else {
+      target.winRate = Math.floor(100 * target.totalVictories / (target.totalGames - target.totalDraws));
+    }
     this.usersRepository.save(target);
   }
 
@@ -554,6 +558,16 @@ export class UsersService {
       default:
         return this.getLeadByGames(global, id);
     }
+  }
+
+  /*
+  **    CHANGE USER SETTINGS
+  */
+
+  async changeSettingNotification(id: number, value: boolean) {
+    let user = await this.usersRepository.findOneBy({ id: id });
+    user.allowNotifications = value;
+    await this.usersRepository.save(user);
   }
 
   /*

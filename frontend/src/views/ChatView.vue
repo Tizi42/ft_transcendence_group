@@ -48,7 +48,6 @@
 <script lang="ts" setup>
 import { Ref, ref, onBeforeMount, defineComponent, defineExpose } from "vue";
 import { useUserStore } from "@/stores/user";
-import "@/assets/styles/chat.css";
 import NavChat from "@/components/chat/NavChat.vue";
 import FriendsList from "@/components/chat/FriendsList.vue";
 import ChannelsList from "@/components/chat/ChannelsList.vue";

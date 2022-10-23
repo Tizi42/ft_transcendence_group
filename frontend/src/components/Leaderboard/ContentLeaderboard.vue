@@ -32,10 +32,6 @@ const props: Readonly<Props> = defineProps<Props>();
 const items: Ref<Array<User>> = ref([]);
 const show: Ref<boolean> = ref(false);
 
-function getPictureUrl(id: number): string {
-  return "http://localhost:3000/api/users/avatar/" + id.toString();
-}
-
 //  usefull functions
 async function reshowData() {
   show.value = false;
