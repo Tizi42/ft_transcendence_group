@@ -151,6 +151,7 @@ defineExpose(
   height: 80px;
   min-height: 80px;
   object-fit: cover;
+  border-radius: 100%;
   opacity: 1;
   transition: all 0.3s ease-out;
   outline: 5px solid rgba(0, 0, 0, 0.2);
