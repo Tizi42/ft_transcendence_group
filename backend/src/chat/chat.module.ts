@@ -5,18 +5,17 @@ import { AuthService } from 'src/auth/auth.service';
 import { ChannelService } from 'src/channel/channel.service';
 import { Channel } from 'src/channel/entities/channel.entity';
 import { User } from 'src/users/users.entity';
-import { UsersModule } from 'src/users/users.module';
 import { ChatController } from './chat.controller';
 import { ChatGateway } from './chat.gateway';
 import { ChatService } from './chat.service';
 import { Chat } from './entities/chat.entity';
 import { Battle } from 'src/battles/battle.entity';
 import { BattlesService } from 'src/battles/battles.service';
+import { UsersService } from 'src/users/users.service';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([User, Chat, Channel, Battle]),
-        UsersModule,
         JwtModule,
     ],
     providers: [
@@ -24,7 +23,8 @@ import { BattlesService } from 'src/battles/battles.service';
         ChatService,
         AuthService,
         ChannelService,
-        BattlesService
+        BattlesService,
+        UsersService,
     ],
     exports: [
         ChatService,
