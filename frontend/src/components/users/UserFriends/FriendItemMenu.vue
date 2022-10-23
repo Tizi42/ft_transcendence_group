@@ -58,7 +58,6 @@ async function onRemoveFriend() {
         to: user.id,
       });
       console.log(response);
-      socket.emit("request_friendship", data);
     })
     .catch((error) => {
       console.log(error);
@@ -84,7 +83,6 @@ function onBlockUser() {
         to: user.id,
       });
       console.log(response);
-      socket.emit("request_friendship", data);
     })
     .catch((error) => {
       console.log(error);

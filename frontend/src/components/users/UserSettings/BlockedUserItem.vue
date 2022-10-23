@@ -40,7 +40,7 @@ async function onRemoveBlock() {
     .then((response) => {
       console.log(response);
       emit("renew");
-      socket.emit("request_friendship", data);
+      socket.emit("update_friend", data);
     })
     .catch((error) => {
       console.log(error);

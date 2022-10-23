@@ -96,6 +96,7 @@ async function onSend() {
       console.log("response = ", response);
       if (response.data != "") {
         pending.value = true;
+        socket.emit("update_friend", data);
         socket.emit("request_friendship", data);
       } else {
         alert("You've been blocked by this user !");
@@ -119,7 +120,7 @@ async function onCancel() {
     .then(function (response) {
       console.log(response);
       pending.value = false;
-      socket.emit("request_friendship", data);
+      socket.emit("update_friend", data);
     })
     .catch(function (error) {
       console.log(error);
