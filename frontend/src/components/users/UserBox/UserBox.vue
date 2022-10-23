@@ -119,6 +119,10 @@ function onSend() {
     })
     .then(function () {
       pending.value = true;
+      socket.emit("update_friend", {
+        from: props.target.id,
+        to: user.id,
+      });
     })
     .catch(function (error) {
       console.log(error);
@@ -133,6 +137,10 @@ function onCancel() {
     })
     .then(function () {
       pending.value = false;
+      socket.emit("update_friend", {
+        from: props.target.id,
+        to: user.id,
+      });
     })
     .catch(function (error) {
       console.log(error);
