@@ -30,12 +30,13 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (socket.data) {
       socket.join(socket.data.id);
       await this.channelService.joinChannelsRooms(socket);
-      this.usersService.updateUserStatus(socket.data.id, "online");
+      await this.usersService.updateUserStatus(socket.data.id, "online");
       // console log the room for this user //
       const rooms = this.server.of("/").adapter.rooms;
       console.log("room users id :", socket.data.id, " = ", rooms.get(socket.data.id));
       console.log("length room = ", rooms.get(socket.data.id).size);
       // ////////////////////////////////// //
+      this.informEveryoneUpdate();
     }
 
     // console log all socket detected, even login or not //
@@ -49,7 +50,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // ////////////////////////////////////////////////// //
   }
 
-  handleDisconnect(socket: Socket) {
+  async handleDisconnect(socket: Socket) {
     const users = [];
     if (socket.data) {
       socket.leave(socket.data.id);
@@ -62,8 +63,9 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
       // //////////////////////////////////////////////////// //
       if (!rooms.get(socket.data.id)) {
-        this.usersService.updateUserStatus(socket.data.id, "offline");
+        await this.usersService.updateUserStatus(socket.data.id, "offline");
       }
+      this.informEveryoneUpdate();
     }
 
     // console log all socket detected, even login or not //
@@ -75,5 +77,9 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
     console.log("users = ", users);
     // ////////////////////////////////////////////////// //
+  }
+
+  informEveryoneUpdate() {
+    this.server.emit("connect_update");
   }
 }

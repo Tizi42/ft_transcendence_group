@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Channel } from "src/channel/entities/channel.entity";
 import { Chat } from "src/chat/entities/chat.entity";
+import { AppGateway } from "src/gateway";
 import { Any, DataSource, In, Not, QueryRunner, Repository } from "typeorm";
 import { User } from "./users.entity";
 import { FriendshipDto } from "./utils/friendship.dto";
@@ -185,7 +186,7 @@ export class UsersService {
     let target = await this.usersRepository.findOneBy({ id: param.id2 });
 
     if (askingForFriend == null || target == null)
-      return console.log("cancel friend reques aborted");
+      return console.log("cancel friend request aborted");
 
     // remove from pending list
     let index = askingForFriend.friendPendingReqTo.indexOf(target.id);
@@ -196,8 +197,8 @@ export class UsersService {
     if (index > -1)
       target.friendPendingReqFrom.splice(index, 1);
 
-    this.usersRepository.save(target);
-    this.usersRepository.save(askingForFriend);
+    await this.usersRepository.save(target);
+    await this.usersRepository.save(askingForFriend);
 
     console.log(askingForFriend.displayName, "'s friend request to ", target.displayName, " is removed");
   }
@@ -228,8 +229,8 @@ export class UsersService {
     askingForFriend.friendWith.push(target.id);
     target.friendWith.push(askingForFriend.id);
 
-    this.usersRepository.save(target);
-    this.usersRepository.save(askingForFriend);
+    await this.usersRepository.save(target);
+    await this.usersRepository.save(askingForFriend);
 
     console.log(askingForFriend.displayName, " and ", target.displayName, "are friends now");
   }
@@ -250,8 +251,9 @@ export class UsersService {
     removingFriend.friendWith = newFriendWithList;
     target.friendWith = newFriendOfList;
 
-    this.usersRepository.save(target);
-    this.usersRepository.save(removingFriend);
+    await this.usersRepository.save(target);
+    await this.usersRepository.save(removingFriend);
+
     return console.log(removingFriend.displayName, "and", target.displayName, "are no longer friends");
   }
 
