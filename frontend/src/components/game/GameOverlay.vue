@@ -169,6 +169,18 @@ function hideChat() {
   console.log("hide chat");
 }
 
+socket.on("score_update", (data: any) => {
+  console.log("score:", data);
+  scores.value[0] = data.left;
+  scores.value[1] = data.right;
+});
+
+socket.on("quit_game", () => {
+  window.alert("Player has left game, return to game menu...");
+  force_quit.value = true;
+  router.push({ name: "play" });
+});
+
 onBeforeRouteLeave(() => {
   if (force_quit.value) return true;
   const answer = window.confirm(
@@ -195,18 +207,6 @@ onBeforeMount(async () => {
   if (user.id === props.playerL_id) user_role.value = "left";
   else if (user.id === props.playerR_id) user_role.value = "right";
   else user_role.value = "watch";
-
-  socket.on("score_update", (data: any) => {
-    console.log("score:", data);
-    scores.value[0] = data.left;
-    scores.value[1] = data.right;
-  });
-
-  socket.on("quit_game", () => {
-    window.alert("Player has left game, return to game menu...");
-    force_quit.value = true;
-    router.push({ name: "play" });
-  });
 });
 
 defineExpose(
