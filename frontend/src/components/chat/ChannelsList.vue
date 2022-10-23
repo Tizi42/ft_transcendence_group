@@ -16,8 +16,9 @@
     <h3>All channels</h3>
   </div>
   <PendingChannelReq
-    @hideReq="hideReq"
-    :channelToJoin="channelToJoin"
+    v-for="req in user.channelInvitePending"
+    :key="req"
+    :channelToJoin="req"
   />
   <ul class="list-my-channels">
     <li
@@ -54,7 +55,7 @@ import {
 import ChannelBoxModal from "./ChannelBox/ChannelBoxModal.vue";
 import AddChannelBox from "./ChannelBox/AddChannelBox.vue";
 import socket from "@/socket";
-import { userInfoStore } from "@/stores/user";
+import { userInfoStore, useUserStore } from "@/stores/user";
 import PendingChannelReq from "@/components/chat/PendingChannelReq.vue";
 import { getUrlOf } from "@/router";
 
@@ -64,15 +65,15 @@ interface Props {
   myChannels: any;
 }
 
+const user = useUserStore();
 const props: Readonly<Props> = defineProps<Props>();
 const selectedChannel: Ref<number> = ref(props.selectedChannel);
 const addWindow: Ref<boolean> = ref(false);
 const history: Ref<any> = ref([]);
-const channelToJoin: Ref<number> = ref(-1);
 const comingReq: Ref<boolean> = ref(false);
 
-socket.on("receive_pending_request", (channelId: number) => {
-  channelToJoin.value = channelId;
+socket.on("update_channel_invite", async () => {
+  user.doFetch();
 });
 
 socket.on("receive_channel_created", () => {
