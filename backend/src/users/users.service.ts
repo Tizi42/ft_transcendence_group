@@ -529,8 +529,7 @@ export class UsersService {
   async changeSettingNotification(id: number, value: boolean) {
     let user = await this.usersRepository.findOneBy({ id: id });
     user.allowNotifications = value;
-    console.log("allow?", user.allowNotifications);
-    this.usersRepository.save(user);
+    await this.usersRepository.save(user);
   }
 
   /*
