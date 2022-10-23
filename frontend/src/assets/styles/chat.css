@@ -27,6 +27,7 @@
     margin-top: 40px;
     height: 86%;
     border-radius: 2em;
+    /* overflow: auto; */
 }
 
 .container-channels {
@@ -269,8 +270,36 @@
 .manage-channel #leave-img:hover,
 .manage-channel #see-members:hover,
 .messages-invite-game img:hover,
-.manage-channel #settings-img:hover {
+.manage-channel #settings-img:hover,
+.manage-channel #add-member-button:hover {
     transform: scale(1.1, 1.1);
+}
+
+#create-new-channel {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.5s ease;
+    background-color: #ffcb00;
+    border: none;
+    border-radius: 13px;
+}
+
+#create-new-channel:hover {
+    transform: scale(1.02, 1.02);
+    cursor: pointer;
+}
+
+#create-new-channel h3 {
+    margin: 0;
+}
+
+#create-new-channel img {
+    margin-right: 0;
+    margin-left: 5px;
+    height: 20px;
+    width: 20px;
 }
 
 .container-messages {
@@ -298,10 +327,19 @@
     background: #555;
 }
 
+#add-member-button {
+    width: 30px;
+    height: 30px;
+    margin-top: 10px;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: transform 0.5s ease;
+}
+
 .messages {
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     padding: 1em;
     text-align: left;
 }
@@ -346,18 +384,6 @@
     flex-direction: row;
     justify-content: space-evenly;
     align-items: center;
-}
-
-.options-channel img {
-    height: 20px;
-    width: 20px;
-    transition: transform 0.5s ease;
-    margin-right: 10px;
-}
-
-.options-channel img:hover {
-    transform: scale(1.25, 1.25);
-    cursor: pointer;
 }
 
 .search-in-my-channels #div-search-my-channels {
@@ -421,6 +447,11 @@
     transform: scale(1.1, 1.1);
 }
 
+.list-my-channels {
+    height: 75%;
+    overflow: auto;
+}
+
 .list-my-channels li {
     padding: 0.6em;
     cursor: pointer;
@@ -460,7 +491,9 @@
 }
 
 .all-channels {
-    margin-top: 14px;
+    margin-top: 25px;
+    overflow: auto;
+    margin-bottom: 27px;
 }
 
 .channel-attributes {
@@ -472,10 +505,6 @@
     padding: 1.3em;
     cursor: pointer;
     border-bottom: 1px solid #9396943f;
-}
-
-.channel-attributes:first-child {
-    border-top: 1px solid #9396943f;
 }
 
 .channel-attributes > h3 {

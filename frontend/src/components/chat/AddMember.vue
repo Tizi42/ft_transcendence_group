@@ -2,7 +2,7 @@
   <form id="search-form-friend" @submit.prevent="onClickSearch">
     <input
       id="search-input"
-      v-model="input"
+      v-model="searchInput"
       type="text"
       placeholder="Search by user id"
       required="true"
@@ -29,7 +29,7 @@
       id="send-button"
       class="buttons"
       @click="onSend"
-      :disabled="friendWith"
+      :disabled="alreadyMember"
     >
       Send
     </button>
@@ -37,98 +37,131 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineComponent, defineExpose } from "vue";
+import { ref, defineComponent, defineExpose, defineProps, Ref } from "vue";
 import { useUserStore } from "@/stores/user";
 import socket from "@/socket";
 import axios from "axios";
 import { getUrlOf } from "@/router";
 
 const user = useUserStore();
-let input = ref("");
-let targetUser = ref();
-let pending = ref(false);
-let friendWith = ref(false);
-let inputBorder = ref("none");
+const searchInput: Ref<string> = ref("");
+const targetUser = ref();
+const pending = ref(false);
+const alreadyMember = ref(false);
+const inputBorder = ref("none");
+
+interface Props {
+  channel: any;
+}
+
+const props: Readonly<Props> = defineProps<Props>();
 
 function onClickSearch() {
   targetUser.value = null;
   pending.value = false;
-  friendWith.value = false;
+  alreadyMember.value = false;
   inputBorder.value = "none";
 
-  console.log(input.value);
+  console.log(searchInput.value);
   axios
-    .get("http://localhost:3000/api/users/info/" + input.value)
+    .get("http://localhost:3000/api/users/info/" + searchInput.value)
     .then((response) => {
-      console.log(response);
       if (response.data) {
         targetUser.value = response.data;
-        if (
-          Number(targetUser.value.id) === user.id ||
-          targetUser.value.friendWith.includes(user.id)
-        )
-          friendWith.value = true;
-        else if (targetUser.value.friendPendingReqFrom.includes(user.id))
+        console.log("data =", targetUser.value);
+        for (let i = 0; i < props.channel.members.length; i++) {
+          if (props.channel.members[i].id === targetUser.value.id) {
+            alreadyMember.value = true;
+          }
+        }
+        if (Number(targetUser.value.id) === user.id) {
+          alreadyMember.value = true;
+        } else if (
+          targetUser.value.memberPendingReqFrom.includes(props.channel.id)
+        ) {
           pending.value = true;
+        } else if (props.channel.banned.includes(targetUser.value.id)) {
+          alreadyMember.value = true;
+          inputBorder.value = "4px solid red";
+          searchInput.value = "";
+        }
       } else {
         inputBorder.value = "4px solid red";
-        input.value = "";
+        searchInput.value = "";
       }
     })
     .catch((error) => {
       console.log(error);
       inputBorder.value = "4px solid red";
-      input.value = "";
+      searchInput.value = "";
     });
 }
 
 async function onSend() {
-  const data = {
-    from: user.id,
+  const dataToEmit = {
+    from: props.channel.id,
     to: targetUser.value.id,
   };
-  axios
-    .post("http://localhost:3000/api/users/friends/add", {
-      id1: user.id,
-      id2: targetUser.value.id,
+  await fetch(getUrlOf("api/channel/addMember"), {
+    credentials: "include",
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      channelId: props.channel.id,
+      targetId: targetUser.value.id,
+    }),
+  })
+    .then((response) => {
+      return response.json();
     })
-    .then(function (response) {
-      console.log("response = ", response);
-      if (response.data != "") {
+    .then((data) => {
+      console.log("onSend data = ", data);
+      if (data != "") {
         pending.value = true;
-        socket.emit("request_friendship", data);
-      } else {
-        alert("You've been blocked by this user !");
+        socket.emit("update_join_request", dataToEmit);
       }
     })
-    .catch(function (error) {
-      console.log(error);
+    .catch((error) => {
+      console.log("error : ", error);
     });
 }
 
 async function onCancel() {
-  const data = {
-    from: user.id,
+  const dataToEmit = {
+    from: props.channel.id,
     to: targetUser.value.id,
   };
-  axios
-    .post("http://localhost:3000/api/users/friends/ignore", {
-      id1: user.id,
-      id2: targetUser.value.id,
+  await fetch(getUrlOf("api/channel/ignoreMember"), {
+    credentials: "include",
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      channelId: props.channel.id,
+      targetId: targetUser.value.id,
+    }),
+  })
+    .then((response) => {
+      return response.json();
     })
-    .then(function (response) {
-      console.log(response);
-      pending.value = false;
-      socket.emit("request_friendship", data);
+    .then((data) => {
+      console.log("onCancel data = ", data);
+      if (data != "") {
+        pending.value = false;
+        socket.emit("update_join_request", dataToEmit);
+      }
     })
-    .catch(function (error) {
-      console.log(error);
+    .catch((error) => {
+      console.log("error : ", error);
     });
 }
 
 defineExpose(
   defineComponent({
-    name: "AddFriend",
+    name: "AddMember",
   })
 );
 </script>

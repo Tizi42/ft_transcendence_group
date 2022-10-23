@@ -81,4 +81,7 @@ export class ChatGateway extends AppGateway {
   ) {
     this.server.sockets.to(data.dest).to(data.author).emit('receive_emoji_ingame', data);
   }
+  
+  @SubscribeMessage("logout_all")
+  async handleLogout() {}
 }

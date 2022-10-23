@@ -102,6 +102,7 @@ onBeforeMount(() => {
     hideAfterTime();
   });
   socket.on("go_play", (roomName: string) => {
+    console.log(roomName);
     router.push({ name: "pong", params: { room_name: roomName } });
   });
   socket.on("unavailable", () => {
