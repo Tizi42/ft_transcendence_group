@@ -90,7 +90,7 @@ import { User } from "@backend/users/users.entity";
 import { getUrlOf } from "@/router";
 import socket from "@/socket";
 import { StoreGeneric } from "pinia";
-import InvitationModal from "@/components/game/invitation/InvitationModal.vue";
+import InvitationModal from "@/components/game_components/invitation/InvitationModal.vue";
 
 interface Props {
   target: User;
@@ -195,8 +195,13 @@ defineExpose(
 
 <style scoped>
 .return {
+  position: fixed;
+  top: 25px;
+  left: 25px;
   cursor: pointer;
   width: 35vw;
+  max-width: 700px;
+  min-width: 500px;
   transition: transform 0.5s ease;
   display: flex;
   flex-direction: row;
@@ -323,6 +328,8 @@ tr:last-child {
   flex-direction: column;
   align-items: center;
   width: 35vw;
+  max-width: 700px;
+  min-width: 500px;
   gap: 5px;
 }
 

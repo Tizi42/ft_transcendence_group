@@ -1,4 +1,4 @@
-import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
+import { ConnectedSocket, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 import { ChannelService } from "./channel/channel.service";
 import { ChatService } from "./chat/chat.service";
@@ -30,7 +30,11 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (socket.data) {
       socket.join(socket.data.id);
       await this.channelService.joinChannelsRooms(socket);
-      this.usersService.updateUserStatus(socket.data.id, "online");
+      await this.usersService.updateUserStatus(socket.data.id, "online");
+      for (let i = 0; i < socket.data.friendWith.length; i++) {
+        let friend: any = socket.data.friendWith[i];
+        this.server.sockets.to(friend).emit('friend_login_logout');
+      }
       // console log the room for this user //
       const rooms = this.server.of("/").adapter.rooms;
       console.log("room users id :", socket.data.id, " = ", rooms.get(socket.data.id));
@@ -49,7 +53,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // ////////////////////////////////////////////////// //
   }
 
-  handleDisconnect(socket: Socket) {
+  async handleDisconnect(socket: Socket) {
     const users = [];
     if (socket.data) {
       socket.leave(socket.data.id);
@@ -62,7 +66,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
       // //////////////////////////////////////////////////// //
       if (!rooms.get(socket.data.id)) {
-        this.usersService.updateUserStatus(socket.data.id, "offline");
+        await this.usersService.updateUserStatus(socket.data.id, "offline");
       }
     }
 
@@ -75,5 +79,19 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
     console.log("users = ", users);
     // ////////////////////////////////////////////////// //
+  }
+
+  @SubscribeMessage("logout_all")
+  async handleLogout(@ConnectedSocket() socket: Socket) {
+    const user = await this.chatService.getUserFromSocket(socket);
+    if (!user) {
+      return ;
+    }
+    this.server.sockets.to(socket.data.id).emit('force_logout');
+    await this.usersService.updateUserStatus(user.id, "offline");
+    for (let i = 0; i < user.friendWith.length; i++) {
+      let friend: any = user.friendWith[i];
+      this.server.sockets.to(friend).emit('friend_login_logout');
+    }
   }
 }

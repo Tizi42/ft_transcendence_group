@@ -16,7 +16,9 @@ export interface userInfoStore {
   pending: Ref<Array<User>>;
   totalGames: Ref<number>;
   totalVictories: Ref<number>;
+  totalDraws: Ref<number>;
   winRate: Ref<number>;
+  channelInvitePending: Ref<Array<number>>;
   doFetch: voidFunction;
   doFetchFriends: voidFunction;
   doFetchPending: voidFunction;
@@ -33,8 +35,10 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
   const pending = ref([]);
   const totalGames = ref(0);
   const totalVictories = ref(0);
+  const totalDraws = ref(0);
   const winRate = ref(-1);
   const allowNotifications = ref(true);
+  const channelInvitePending: Ref<Array<number>> = ref([]);
 
   doFetch();
   doFetchFriends();
@@ -56,8 +60,10 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
         enabled2FA.value = user.isTwoFactorAuthenticationEnabled;
         totalGames.value = user.totalGames;
         totalVictories.value = user.totalVictories;
+        totalDraws.value = user.totalDraws;
         winRate.value = user.winRate;
         allowNotifications.value = user.allowNotifications;
+        channelInvitePending.value = user.memberPendingReqFrom;
       })
       .catch((error) => {
         console.log(error);
@@ -106,7 +112,9 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
     pending,
     totalGames,
     totalVictories,
+    totalDraws,
     winRate,
+    channelInvitePending,
     doFetch,
     doFetchFriends,
     doFetchPending,

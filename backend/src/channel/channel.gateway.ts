@@ -5,6 +5,7 @@ import { ChatService } from 'src/chat/chat.service';
 import { AppGateway } from 'src/gateway';
 import { UsersService } from 'src/users/users.service';
 import { BattlesService } from '../battles/battles.service';
+import { CreatChannelDto } from './utils/createChannel.dto';
 import { banMember, leavingChannel, makingAdmin, muteMember } from './utils/types';
 import { UpdatePasswordDto } from './utils/UpdatePassword.dto';
 import { UpdatePrivacyDto } from './utils/updatePrivacy.dto';
@@ -22,18 +23,24 @@ export class ChannelGateway extends AppGateway {
 
   async handleConnection(socket: Socket) {}
 
-  handleDisconnect(client: any) {}
+  async handleDisconnect(client: any) {}
 
   @SubscribeMessage('create_channel')
   async handleCreateChannel(
-    @MessageBody() data: any,
+    @MessageBody() data: CreatChannelDto,
     @ConnectedSocket() socket: Socket,
   ) {
     const newChannel = await this.channelService.createChannel(data);
   
-    if (newChannel) {
+    if (newChannel != null && newChannel != "password_error" && newChannel != "channel_name_error") {
       socket.join(newChannel.name);
-      this.server.sockets.to(socket.data.id).emit('receive_channel_created', newChannel);
+      this.server.sockets.to(socket.data.id).emit('receive_channel_created');
+      this.server.sockets.to(newChannel.name).emit('channel_updated', newChannel.id);
+      this.server.sockets.emit('new_channel_created');
+    } else if (newChannel === "password_error") {
+      this.server.sockets.to(socket.data.id).emit('password_error');
+    } else if (newChannel === "channel_name_error") {
+      this.server.sockets.to(socket.data.id).emit('channel_name_error');
     }
     return newChannel;
   }
@@ -43,19 +50,42 @@ export class ChannelGateway extends AppGateway {
     @ConnectedSocket() socket: Socket,
   ) {
     const channel = await this.channelService.getAllMyChannels(socket.data.id);
-
+    
     this.server.sockets.to(socket.data.id).emit('receive_all_my_channels', channel);
     return channel;
   }
+  
+  @SubscribeMessage('get_all_channels')
+  async handleAllChannels(
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const allChannelsButPrivate = await this.channelService.findAllChannelsAndMembersButPrivate();
+    this.server.sockets.to(socket.data.id).emit('receive_all_channels', allChannelsButPrivate);
+    this.server.sockets.to(socket.data.id).emit('channel_updated', -1);
+    return allChannelsButPrivate;
+  }
 
   @SubscribeMessage('join_channel')
-  async joinChannel(
+  async handleJoinChannel(
     @MessageBody() data: any,
     @ConnectedSocket() socket: Socket,
   ){
-    await this.channelService.joinChannel(data.user, data.channel);
+    const user = await this.chatService.getUserFromSocket(socket);
 
-    this.server.sockets.to(socket.data.id).emit('joined_channel');
+    if (!user) {
+      return ;
+    }
+    const channelName = await this.channelService.joinChannel(user, data.channelId, data.password);
+    
+    if (channelName === "password_error") {
+      this.server.sockets.to(socket.data.id).emit('password_error');
+    } else if (channelName === "ban_error") {
+      this.server.sockets.to(socket.data.id).emit('ban_error');
+    } else if (channelName != null) {
+      socket.join(channelName);
+      this.server.sockets.to(socket.data.id).emit('joined_channel', data.channelId);
+      this.server.sockets.to(channelName).emit('channel_updated', data.channelId);
+    }
   }
 
   @SubscribeMessage('leave_channel')
@@ -72,8 +102,10 @@ export class ChannelGateway extends AppGateway {
 
       if (channelName != null) {
         this.server.sockets.to(socket.data.id).emit('exited_channel_list');
-        this.server.sockets.to(channelName).emit('channel_updated', data.channelId);
+        this.server.sockets.emit('channel_updated', data.channelId);
         socket.leave(channelName);
+        const allChannelsButPrivate = await this.channelService.findAllChannelsAndMembersButPrivate();
+        this.server.sockets.to(socket.data.id).emit('receive_all_channels', allChannelsButPrivate);
       }
     }
   }
@@ -148,16 +180,18 @@ export class ChannelGateway extends AppGateway {
   ) {
     const user = await this.chatService.getUserFromSocket(socket);
     if (!user) {
-      this.server.sockets.to(socket.data.id).emit('password_error');
       return ;
     }
 
     if (data.channel.owner === user.id) {
-      if (await this.channelService.updateChannelPrivacy(data) === null) {
+      const channelUpdated = await this.channelService.updateChannelPrivacy(data);
+      if (channelUpdated === "password_error") {
         this.server.sockets.to(socket.data.id).emit('password_error');
-        return ;
+      } else if (channelUpdated != null) {
+        this.server.sockets.to(socket.data.id).emit('channel_updated', data.channel.id);
+        const allChannelsButPrivate = await this.channelService.findAllChannelsAndMembersButPrivate();
+        this.server.sockets.emit('receive_all_channels', allChannelsButPrivate);
       }
-      this.server.sockets.to(socket.data.id).emit('channel_updated', data.channel.id);
     }
   }
 
@@ -168,16 +202,41 @@ export class ChannelGateway extends AppGateway {
   ) {
     const user = await this.chatService.getUserFromSocket(socket);
     if (!user) {
-      this.server.sockets.to(socket.data.id).emit('password_error');
       return ;
     }
 
     if (data.channel.owner === user.id) {
-      if (await this.channelService.updateChannelPassword(data) === null) {
+      const channelUpdated = await this.channelService.updateChannelPassword(data);
+      if (channelUpdated === "password_error") {
         this.server.sockets.to(socket.data.id).emit('password_error');
-        return ;
+      } else if (channelUpdated != null) {
+        this.server.sockets.to(socket.data.id).emit('channel_updated', data.channel.id);
       }
-      this.server.sockets.to(socket.data.id).emit('channel_updated', data.channel.id);
     }
   }
+
+  @SubscribeMessage('update_join_request')
+  async handleJoinRequest(
+    @MessageBody() data: any,
+  ) {
+    this.server.sockets.to(data.to).emit('update_channel_invite', data);
+  }
+
+  @SubscribeMessage('accept_join_request')
+  async handleAcceptingRequest(
+    @MessageBody() data: any,
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const user = await this.chatService.getUserFromSocket(socket);
+    const channel = await this.channelService.findChannelAndMembers(data.from);
+    if (!user || !channel) {
+      return ;
+    }
+    socket.join(channel[0].name);
+    this.server.sockets.to(socket.data.id).emit('joined_channel', data.from);
+    this.server.sockets.to(channel[0].name).emit('channel_updated', data.from);
+  }
+
+  @SubscribeMessage("logout_all")
+  async handleLogout() {}
 }

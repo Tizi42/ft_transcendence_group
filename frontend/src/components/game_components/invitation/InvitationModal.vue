@@ -15,7 +15,7 @@
 import { defineComponent, defineExpose, defineProps, defineEmits } from "vue";
 import { Ref, ref } from "vue";
 import { useClickOutside } from "@/composables/useClickOutside";
-import InvitationContent from "../../game/invitation/InvitationContent.vue";
+import InvitationContent from "../../game_components/invitation/InvitationContent.vue";
 import { User } from "@backend/users/users.entity";
 
 interface Props {
@@ -37,7 +37,7 @@ useClickOutside(modal, () => {
 
 defineExpose(
   defineComponent({
-    name: "SimpleModal",
+    name: "InvitationModal",
   })
 );
 </script>

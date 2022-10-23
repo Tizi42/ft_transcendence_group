@@ -71,6 +71,8 @@ defineExpose(
   padding-top: 2em;
   padding-bottom: 2em;
   width: 35vw;
+  max-width: 700px;
+  min-width: 500px;
   background: rgba(30, 42, 2, 1);
   box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.75);
   border-radius: 58px;
