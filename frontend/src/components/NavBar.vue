@@ -40,7 +40,7 @@ user.doFetch();
 onBeforeMount(async () => {
   user.doFetchPending();
   if (user.pending.length > 0) pendingReq.value = true;
-  socket.on("update_friendship", async () => {
+  socket.on("receive_friendship", async () => {
     pendingReq.value = true;
   });
   socket.on("ignore_notification", async () => {
