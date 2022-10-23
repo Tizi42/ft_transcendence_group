@@ -215,21 +215,21 @@ export class GameGateway extends AppGateway {
     }
 
     // start game
-    const roomName = this.createGameRoom(
+    const roomName = await this.createGameRoom(
       invitation.sender_id,
       invitation.sender_sid,
       invitation.invitee_id,
       socket.id,
       invitation.mode
-      );
+    );
 
-      // emit go play signal
-      this.server.to(invitation.sender_sid).to(socket.id).emit("go_play", roomName);
+    // emit go play signal
+    this.server.to(invitation.sender_sid).to(socket.id).emit("go_play", roomName);
 
-      // clean invitaion
-      this.server.to(data.user_id).emit("invitation_expired");
-      GameGateway.invitations.delete(data.sender);
-    }
+    // clean invitaion
+    this.server.to(data.user_id).emit("invitation_expired");
+    GameGateway.invitations.delete(data.sender);
+  }
 
   /*
   **    GAME
@@ -339,4 +339,7 @@ export class GameGateway extends AppGateway {
   async updateRooms(@ConnectedSocket() socket: Socket) {
     this.server.to(socket.id).emit("updated_rooms", await this.transformRooms());
   }
+
+  @SubscribeMessage("logout_all")
+  async handleLogout() {}
 }

@@ -1,24 +1,9 @@
 <template>
   <div class="options-channel">
-    <form class="search-in-my-channels" @submit.prevent="onSubmit">
-      <div id="div-search-my-channels">
-        <input
-          class="input-search-channels"
-          id="input-search-my-channels"
-          type="text"
-          placeholder="Search..."
-          v-model="inputSearch"
-        />
-        <button type="submit">
-          <img src="@/assets/icons/search.svg" />
-        </button>
-      </div>
-    </form>
-    <img
-      src="@/assets/icons/icon-add.png"
-      alt="Create new channel"
-      @click="addNewChannel"
-    />
+    <button id="create-new-channel" type="submit" @click="addNewChannel">
+      <h3>create a new channel</h3>
+      <img src="@/assets/icons/icon-add.png" alt="Create new channel" />
+    </button>
   </div>
   <div
     id="list-all-channels"
@@ -30,6 +15,11 @@
   >
     <h3>All channels</h3>
   </div>
+  <PendingChannelReq
+    v-for="req in user.channelInvitePending"
+    :key="req"
+    :channelToJoin="req"
+  />
   <ul class="list-my-channels">
     <li
       v-for="channel in myChannels"
@@ -65,38 +55,38 @@ import {
 import ChannelBoxModal from "./ChannelBox/ChannelBoxModal.vue";
 import AddChannelBox from "./ChannelBox/AddChannelBox.vue";
 import socket from "@/socket";
-import { userInfoStore } from "@/stores/user";
+import { userInfoStore, useUserStore } from "@/stores/user";
+import PendingChannelReq from "@/components/chat/PendingChannelReq.vue";
 import { getUrlOf } from "@/router";
 
 interface Props {
   selectedChannel: number;
   user: userInfoStore;
+  myChannels: any;
 }
 
+const user = useUserStore();
 const props: Readonly<Props> = defineProps<Props>();
-const inputSearch: Ref<string> = ref("");
 const selectedChannel: Ref<number> = ref(props.selectedChannel);
 const addWindow: Ref<boolean> = ref(false);
-const myChannels: Ref<any> = ref([]);
 const history: Ref<any> = ref([]);
+const comingReq: Ref<boolean> = ref(false);
 
-socket.on("receive_channel_created", (newChannel: any) => {
-  console.log("new = ", newChannel);
-  console.log("my channelssss = ", myChannels.value);
+socket.on("update_channel_invite", async () => {
+  user.doFetch();
+});
+
+socket.on("receive_channel_created", () => {
+  hide();
 });
 
 socket.on("exited_channel_list", () => {
-  myChannels.value = [];
   socket.emit("get_all_my_channels");
   getAllChannels();
 });
 
 onBeforeMount(async () => {
   socket.emit("get_all_my_channels");
-  socket.on("receive_all_my_channels", (channel: any) => {
-    myChannels.value = channel;
-    console.log("my channels :", myChannels.value);
-  });
 });
 
 watch(
@@ -135,12 +125,12 @@ const addNewChannel = () => {
   addWindow.value = true;
 };
 
-const onSubmit = () => {
-  console.log("inputSearch = ", inputSearch);
-};
-
 function hide() {
   addWindow.value = false;
+}
+
+function hideReq() {
+  comingReq.value = false;
 }
 
 socket.on("receive_channel_message", () => {

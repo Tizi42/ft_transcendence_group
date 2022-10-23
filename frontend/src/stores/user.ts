@@ -18,6 +18,7 @@ export interface userInfoStore {
   totalVictories: Ref<number>;
   totalDraws: Ref<number>;
   winRate: Ref<number>;
+  channelInvitePending: Ref<Array<number>>;
   doFetch: voidFunction;
   doFetchFriends: voidFunction;
   doFetchPending: voidFunction;
@@ -37,6 +38,7 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
   const totalDraws = ref(0);
   const winRate = ref(-1);
   const allowNotifications = ref(true);
+  const channelInvitePending: Ref<Array<number>> = ref([]);
 
   doFetch();
   doFetchFriends();
@@ -61,6 +63,7 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
         totalDraws.value = user.totalDraws;
         winRate.value = user.winRate;
         allowNotifications.value = user.allowNotifications;
+        channelInvitePending.value = user.memberPendingReqFrom;
       })
       .catch((error) => {
         console.log(error);
@@ -111,6 +114,7 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
     totalVictories,
     totalDraws,
     winRate,
+    channelInvitePending,
     doFetch,
     doFetchFriends,
     doFetchPending,

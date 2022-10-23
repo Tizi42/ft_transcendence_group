@@ -12,9 +12,7 @@ export class Channel {
     @Column()
     name: string;
 
-    @ManyToMany(() => User, (user) => user.channels, {
-        cascade:true,
-    })
+    @ManyToMany(() => User, (user) => user.channels)
     @JoinTable()
     members: User[];
 
@@ -32,4 +30,7 @@ export class Channel {
 
     @Column({ nullable: true })
     password: string;
+    
+    @Column("int", { array: true, default: {} })
+    memberPendingReqTo: number[];                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 }

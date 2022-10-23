@@ -37,7 +37,7 @@ useClickOutside(modal, () => {
 
 defineExpose(
   defineComponent({
-    name: "SimpleModal",
+    name: "InvitationModal",
   })
 );
 </script>
