@@ -22,21 +22,22 @@ import MatchList from "@/components/WatchGame/MatchList.vue";
 const rooms: Array<GameRoomNS> = [];
 const show: Ref<boolean> = ref(false);
 
-function fillRooms(data: GameRoomNS[]) {
-  show.value = false;
+async function fillRooms(data: GameRoomNS[]) {
   rooms.splice(0);
-  data.forEach((value: GameRoomNS) => {
+  for await (const value of data) {
     rooms.push(value);
-    // rooms.push(value);
-    // rooms.push(value);
-  });
-  show.value = true;
+  }
 }
 
 onBeforeMount(() => {
   socket.emit("get_updated_rooms");
-  socket.on("updated_rooms", (data: GameRoomNS[]) => {
-    fillRooms(data);
+  socket.on("updated_rooms", async (data: GameRoomNS[]) => {
+    show.value = false;
+    await fillRooms(data);
+    show.value = true;
+  });
+  socket.on("game_update", () => {
+    socket.emit("get_updated_rooms");
   });
 });
 

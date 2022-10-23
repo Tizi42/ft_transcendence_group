@@ -88,7 +88,6 @@ import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
 import { User } from "@backend/users/users.entity";
 import { BattleShow } from "@backend/battles/utils/battle-show";
 import LoadingRing from "../utils/LoadingRing.vue";
-import "@/assets/styles/historyAndLeaderboard.css";
 
 //  variables
 interface Props {

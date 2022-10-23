@@ -31,6 +31,7 @@
 import { defineComponent, defineExpose, defineProps } from "vue";
 import { useUserStore } from "@/stores/user";
 import axios from "axios";
+import socket from "@/socket";
 
 const user = useUserStore();
 const props = defineProps(["sender"]);
@@ -44,6 +45,10 @@ function onHandleFriendRequest(action: string) {
     .then((response) => {
       user.doFetchPending();
       user.doFetchFriends();
+      socket.emit("update_friend", {
+        from: props.sender.id,
+        to: user.id,
+      });
       console.log(response);
     })
     .catch((error) => {

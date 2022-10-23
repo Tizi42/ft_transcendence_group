@@ -24,6 +24,7 @@ import { useUserStore } from "@/stores/user";
 import { useClickOutside } from "@/composables/useClickOutside";
 import axios from "axios";
 import { User } from "@backend/users/users.entity";
+import socket from "@/socket";
 
 interface Props {
   friend: User;
@@ -48,6 +49,10 @@ function onRemoveFriend() {
     })
     .then((response) => {
       user.doFetchFriends();
+      socket.emit("update_friend", {
+        from: props.friend.id,
+        to: user.id,
+      });
       console.log(response);
     })
     .catch((error) => {
@@ -65,6 +70,10 @@ function onBlockUser() {
     })
     .then((response) => {
       user.doFetchFriends();
+      socket.emit("update_friend", {
+        from: props.friend.id,
+        to: user.id,
+      });
       console.log(response);
     })
     .catch((error) => {

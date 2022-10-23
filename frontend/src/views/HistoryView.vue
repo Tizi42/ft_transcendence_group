@@ -25,7 +25,6 @@
 </template>
 
 <script lang="ts" setup>
-import "@/assets/styles/historyAndLeaderboard.css";
 import { defineComponent, defineExpose } from "vue";
 import { onBeforeMount } from "vue";
 import { Ref, ref } from "vue";
