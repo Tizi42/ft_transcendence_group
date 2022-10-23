@@ -47,6 +47,7 @@ import FriendItem from "./FriendItem.vue";
 import FriendReqItem from "./FriendReqItem.vue";
 import AddFriend from "./AddFriend.vue";
 import MyModal from "./MyModal.vue";
+import socket from "@/socket";
 
 const user = useUserStore();
 const addWindow = ref(false);
@@ -62,6 +63,14 @@ function hide() {
 onBeforeMount(() => {
   user.doFetchFriends();
   user.doFetchPending();
+  socket.on("receive_friendship", () => {
+    user.doFetchPending();
+    user.doFetchFriends();
+  });
+  socket.on("friend_update", () => {
+    user.doFetchFriends();
+    user.doFetchPending();
+  });
 });
 
 defineExpose(
@@ -78,6 +87,9 @@ defineExpose(
   width: 86%;
   margin-left: 7%;
   margin-right: 7%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .friends-buttons {
@@ -107,11 +119,9 @@ defineExpose(
 .friends-grid {
   max-height: 500px;
   overflow-y: scroll;
-  overflow-x: hidden;
   display: grid;
-  grid-template-columns: repeat(4, minmax(350px, 1fr));
-  width: 99%;
   grid-gap: 15px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   margin-bottom: 50px;
   scrollbar-width: 0px;
 }

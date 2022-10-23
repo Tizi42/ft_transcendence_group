@@ -12,7 +12,7 @@
           />
           <img
             :src="playerL.picture"
-            class="profile"
+            class="profilePP"
             v-bind:style="
               onLeftSide
                 ? 'outline: 5px solid #ffcb00;'
@@ -25,6 +25,7 @@
           :message="messageL"
           transition="fadeGroup"
           align="flex-start"
+          class="userChat"
         />
       </div>
       <div class="scores">
@@ -38,6 +39,7 @@
           :message="messageR"
           transition="fadeGroupR"
           align="flex-end"
+          class="userChat"
         />
         <div class="profileBox">
           <EmoteBox
@@ -48,7 +50,7 @@
           />
           <img
             :src="playerR.picture"
-            class="profile"
+            class="profilePP"
             v-bind:style="
               onRightSide
                 ? 'outline: 5px solid #ffcb00;'
@@ -133,6 +135,7 @@ defineExpose(
 
 .scoreNb {
   width: 40%;
+  min-width: 70px;
   text-align: center;
 }
 
@@ -163,7 +166,7 @@ defineExpose(
   width: auto;
 }
 
-.profile {
+.profilePP {
   display: block;
   width: 80px;
   min-width: 80px;
@@ -173,9 +176,12 @@ defineExpose(
   border-radius: 100%;
   opacity: 1;
   transition: all 0.3s ease-out;
+  border-radius: 100%;
 }
 
-.profile:hover {
-  transform: scale(1.2);
+@media screen and (max-width: 1050px) {
+  .userChat {
+    display: none;
+  }
 }
 </style>

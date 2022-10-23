@@ -14,7 +14,6 @@ import { defineComponent } from "vue";
 import GenerateTwoFactorVue from "./TwoFactorComponents/GenerateTwoFactor.vue";
 import TurnOnTwoFactorVue from "./TwoFactorComponents/TurnOnTwoFactor.vue";
 import AuthenticateTwoFactorVue from "./TwoFactorComponents/AuthenticateTwoFactor.vue";
-import "@/assets/styles/authentication.css";
 
 export default defineComponent({
   name: "TwoFactorPage",

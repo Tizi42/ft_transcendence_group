@@ -21,7 +21,7 @@ docker-compose up --build
 
 Once running, to connect to the database with CLI :
 ```bash
-psql -h localhost -p 9876 -d ft-transcendence-db -U user-admin
+psql -h localhost -p 5432 -d ft-transcendence-db -U user-admin
 ```
 
 # Backend

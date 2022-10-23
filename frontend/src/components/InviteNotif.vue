@@ -66,6 +66,7 @@ onBeforeMount(() => {
     pendingReq.value = false;
   });
   socket.on("go_play", (roomName: string) => {
+    console.log(roomName);
     pendingReq.value = false;
     router.push({ name: "pong", params: { room_name: roomName } });
   });

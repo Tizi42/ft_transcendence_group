@@ -2,6 +2,23 @@
   <div class="message-input">
     <form
       @submit.prevent="onSubmit(receiver, selectedChannel)"
+      v-if="receiver != -1"
+    >
+      <div class="div-message-input">
+        <input
+          v-model="messageText"
+          type="text"
+          placeholder="Your message.."
+          class="message-text"
+        />
+        <button type="submit">
+          <img src="@/assets/icons/send-icon.png" alt="send-message" />
+        </button>
+      </div>
+    </form>
+    <form
+      v-if="selectedChannel != -1"
+      @submit.prevent="onSubmit(receiver, selectedChannel)"
       :class="{
         userMuted: channel.muted.includes(user.id, 0),
         userNotMuted: !channel.muted.includes(user.id, 0),
@@ -19,7 +36,7 @@
           v-else
           v-model="messageText"
           type="text"
-          placeholder="Your message.."
+          placeholder="You've been muted for 5 minutes.."
           class="message-text"
           disabled
         />
@@ -72,6 +89,10 @@ const onSubmit = (receiver: number, selectedChannel: number) => {
     });
   }
 };
+
+socket.on("muted_by", (channelId: number, userId: number) => {
+  console.log("You've been muted by", userId, "in channel id", channelId);
+});
 
 defineExpose(
   defineComponent({

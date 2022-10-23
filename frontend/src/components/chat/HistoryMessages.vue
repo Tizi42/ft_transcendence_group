@@ -15,8 +15,12 @@
         @click="showInfoBox"
       />
     </div>
-    <img src="@/assets/icons/watchGame.svg" alt="watch his game" />
-    <img src="@/assets/icons/inviteInGame.png" alt="invite in game" />
+    <!-- <img src="@/assets/icons/watchGame.svg" alt="watch his game" /> -->
+    <img
+      src="@/assets/icons/inviteInGame.png"
+      alt="invite in game"
+      @click="inviteInGame"
+    />
   </div>
   <div class="manage-channel" v-if="selectedChannel != -1">
     <div>
@@ -24,9 +28,16 @@
         id="see-members"
         src="@/assets/icons/groupUser.svg"
         alt="See members"
-        @click="showMembers()"
+        @click="showMembers"
       />
     </div>
+    <img
+      id="add-member-button"
+      src="@/assets/icons/icon-add.png"
+      alt="add member"
+      @click="addMember"
+      v-if="channel.owner === user.id"
+    />
     <img
       id="leave-img"
       src="@/assets/icons/leave.png"
@@ -37,7 +48,7 @@
       id="settings-img"
       src="@/assets/icons/settings.svg"
       alt="see settings"
-      @click="showSettings()"
+      @click="showSettings"
       v-if="channel.owner === user.id"
     />
   </div>
@@ -84,6 +95,14 @@
         @closeUserBox="hideUserBox"
       />
     </ChannelBoxModal>
+    <InvitationModal
+      @hideInvitation="hideInvitation"
+      v-if="inviteWindow"
+      :friend="userTarget"
+    />
+    <MyModal v-if="addMemberWindow" @hide="hide">
+      <AddMember :channel="channel" />
+    </MyModal>
   </teleport>
 </template>
 
@@ -105,6 +124,9 @@ import MembersListBox from "./ChannelBox/MembersListBox.vue";
 import { getUrlOf } from "@/router";
 import socket from "@/socket";
 import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
+import InvitationModal from "../game_components/invitation/InvitationModal.vue";
+import AddMember from "./AddMember.vue";
+import MyModal from "../users/UserFriends/MyModal.vue";
 
 interface Props {
   history: Array<any>;
@@ -119,8 +141,14 @@ const user: any = useUserStore();
 const userProfileWindow: Ref<boolean> = ref(false);
 const settingsWindow: Ref<boolean> = ref(false);
 const membersWindow: Ref<boolean> = ref(false);
+const inviteWindow: Ref<boolean> = ref(false);
+const addMemberWindow: Ref<boolean> = ref(false);
 const isShowUserProfile: Ref<boolean> = ref(false);
 const userTarget: Ref<User> = ref(props.target);
+
+function inviteInGame() {
+  inviteWindow.value = true;
+}
 
 function showInfoBox() {
   userProfileWindow.value = true;
@@ -134,15 +162,24 @@ function showMembers() {
   membersWindow.value = true;
 }
 
+function addMember() {
+  addMemberWindow.value = true;
+}
+
 function hide() {
   userProfileWindow.value = false;
   settingsWindow.value = false;
   membersWindow.value = false;
   isShowUserProfile.value = false;
+  addMemberWindow.value = false;
 }
 
 function hideUserBox() {
   isShowUserProfile.value = false;
+}
+
+function hideInvitation() {
+  inviteWindow.value = false;
 }
 
 function leaveChannel(selectedChannel: number) {
@@ -181,10 +218,14 @@ socket.on("hide_window", (userToBanId: number) => {
 });
 
 watch(
-  () => props.target,
+  () => props.history,
   () => {
-    const element = document.getElementsByClassName("container-messages")[0];
-    element.scrollTop = element.scrollHeight;
+    setTimeout(() => {
+      const element = document.getElementsByClassName("container-messages")[0];
+      if (element) {
+        element.scrollTop = element.scrollHeight;
+      }
+    }, 1);
   }
 );
 

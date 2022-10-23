@@ -27,7 +27,15 @@ interface Props {
 }
 
 const props: Readonly<Props> = defineProps<Props>();
-const items: Ref<Array<string>> = ref([props.user.displayName]);
+const items: Ref<Array<string>> = ref([
+  smallDisplayName(props.user.displayName),
+]);
+
+function smallDisplayName(displayName: string): string {
+  let small = displayName.split(" ")[0].slice(0, 10);
+  if (small.length > 10) return small + ".";
+  return small;
+}
 
 onBeforeMount(() => {
   if (props.message == null) return;

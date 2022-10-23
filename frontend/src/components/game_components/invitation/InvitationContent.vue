@@ -28,13 +28,12 @@
 <script lang="ts" setup>
 import { defineComponent, defineExpose, defineProps, defineEmits } from "vue";
 import { ref, Ref, onBeforeMount } from "vue";
-import "@/assets/styles/gameOverlay.css";
-import LoadingRing from "@/components/utils/LoadingRing.vue";
-import socket from "@/socket";
 import { useUserStore } from "@/stores/user";
 import { StoreGeneric } from "pinia";
 import { User } from "@backend/users/users.entity";
 import router from "@/router";
+import socket from "@/socket";
+import LoadingRing from "@/components/utils/LoadingRing.vue";
 
 interface Props {
   friend: User;
@@ -103,6 +102,7 @@ onBeforeMount(() => {
     hideAfterTime();
   });
   socket.on("go_play", (roomName: string) => {
+    console.log(roomName);
     router.push({ name: "pong", params: { room_name: roomName } });
   });
   socket.on("unavailable", () => {

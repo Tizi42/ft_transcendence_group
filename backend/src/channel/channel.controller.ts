@@ -2,7 +2,9 @@ import { Controller, Get, Post, Body, Param, UseGuards, Req } from '@nestjs/comm
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import RequestWithUser from 'src/users/utils/requestWithUser.interface';
 import { ChannelService } from './channel.service';
+import { channelMember } from './utils/channelMember.dto';
 import { CreatChannelDto } from './utils/createChannel.dto';
+import { ManageMemberDto } from './utils/manageMembers.dto';
 import { UpdatePrivacyDto } from './utils/updatePrivacy.dto';
 
 @Controller('channel')
@@ -22,16 +24,25 @@ export class ChannelController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  getChannel(
+  async getChannel(
     @Param('id') id: number
   ) {
-    return this.channelService.findOne(id);
+    return await this.channelService.findChannelAndMembers(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getAllChannelsAndMembers(@Req() req: RequestWithUser) {
-    return this.channelService.findAllChannelsAndMembers();
+  async getAllMyChannelsAndMembers(@Req() req: RequestWithUser) {
+    const allChannels = await this.channelService.findAllChannelsAndMembers();
+    let myChannels = [];
+    for (let i = 0; i < allChannels.length; i++) {
+      for (let j = 0; j < allChannels[i].members.length; j++) {
+        if (allChannels[i].members[j].id === req.user.id) {
+          myChannels.push(allChannels[i]);
+        }
+      }
+    }
+    return myChannels;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -40,5 +51,43 @@ export class ChannelController {
     @Param('id') id: number
   ) {
     return await this.channelService.findChannelAndMembers(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('addMember')
+  async addMemberPrivateChannel(
+    @Body() manageMemberDto: ManageMemberDto,
+    @Req() req: RequestWithUser
+  ) {
+    return await this.channelService.sendJoinRequest(req.user.id, manageMemberDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('ignoreMember')
+  async ignoreMemberPrivateChannel(
+    @Body() manageMemberDto: ManageMemberDto,
+    @Req() req: RequestWithUser
+  ) {
+    return await this.channelService.removeJoinRequest(req.user.id, manageMemberDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('acceptJoin')
+  async acceptJoinPrivateChannel(
+    @Body() manageMemberDto: ManageMemberDto,
+    @Req() req: RequestWithUser
+  ) {
+    const channelName = await this.channelService.joinChannel(req.user, manageMemberDto.channelId);    
+    return { channelName };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('refuseJoin')
+  async refuseJoinPrivateChannel(
+    @Body() manageMemberDto: ManageMemberDto,
+    @Req() req: RequestWithUser
+  ) {
+    const channelName = await this.channelService.refuseJoinChannel(req.user, manageMemberDto.channelId);    
+    return { channelName };
   }
 }

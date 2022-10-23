@@ -3,8 +3,9 @@
     <li v-for="battle in items" :key="battle.id">
       <MatchResult
         :match="battle"
-        :pp1="getPictureUrl(battle.opponent1)"
-        :pp2="getPictureUrl(battle.opponent2)"
+        :pp1="battle.picture1"
+        :pp2="battle.picture2"
+        :modeIcon="modeIcons[getModeIndex(battle.mode)]"
       />
     </li>
   </TransitionGroup>
@@ -18,20 +19,27 @@
 import { defineComponent, defineExpose, defineProps } from "vue";
 import { onMounted, ref, Ref } from "vue";
 import MatchResult from "./MatchResult.vue";
-import { Battle } from "@backend/battles/battle.entity";
+import { BattleShow } from "@backend/battles/utils/battle-show";
 
 //  variable
 interface Props {
-  battles: Array<Battle>;
+  battles: Array<BattleShow>;
   noMatch: boolean;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
-const items: Ref<Array<Battle>> = ref([]);
+const items: Ref<Array<BattleShow>> = ref([]);
 const show: Ref<boolean> = ref(false);
+const modeIcons: Array<URL> = [
+  new URL("../../assets/icons/gameMode/modeNormal.svg", import.meta.url),
+  new URL("../../assets/icons/gameMode/modeMagic.svg", import.meta.url),
+  new URL("../../assets/icons/gameMode/modeSpeed.svg", import.meta.url),
+];
 
-function getPictureUrl(id: number): string {
-  return "http://localhost:3000/api/users/avatar/" + id.toString();
+function getModeIndex(mode: string): number {
+  if (mode == "normal") return 0;
+  else if (mode == "magic") return 1;
+  return 2;
 }
 
 //  usefull functions
