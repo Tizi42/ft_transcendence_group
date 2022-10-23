@@ -137,7 +137,7 @@ export class GameRoom {
     console.log("on ball launch");
     // intial ball's launch position and velocity
     this.ball_velocity = this.ball_velocity_init[this.mode];
-    const randomHeight = this.getRandomNumberBetween(80, 511); // height 591 - 80 
+    const randomHeight = this.getRandomNumberBetween(20, 571); // height 591 - 20 
     const randVelocity = this.getRandomVelocity(direction);
     this.ball_x = this.width / 2;
     this.ball_y = randomHeight;
@@ -222,7 +222,7 @@ export class GameRoom {
       else this.R_speed_ball += 1;
     } else if (effect == 4) {
       if (target == "left") this.L_reverse_effect = -1;
-      else if (target == "right") this.R_reverse_effect = -1;  
+      else if (target == "right") this.R_reverse_effect = -1;
       setTimeout(() => {
         if (target == "left" && this.L_reverse_effect == -1) this.L_reverse_effect = 1;
         else if (target == "right" && this.R_reverse_effect == -1) this.R_reverse_effect = 1;
@@ -422,6 +422,8 @@ export class GameRoom {
     this.score_left = 0;
     this.score_right = 0;
     this.winner = -1;
+    this.paddle.left.y = this.height * 0.5;
+    this.paddle.right.y = this.height * 0.5;
   }
 
   // if quit game in the middle
