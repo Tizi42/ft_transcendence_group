@@ -40,7 +40,6 @@
 <script lang="ts" setup>
 import { defineComponent, defineExpose, onMounted, Ref } from "vue";
 import { ref } from "vue";
-import "@/assets/styles/gameOverlay.css";
 import LoadingRing from "../utils/LoadingRing.vue";
 import router from "@/router/index";
 import socket from "@/socket";

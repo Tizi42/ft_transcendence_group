@@ -47,6 +47,7 @@ import FriendItem from "./FriendItem.vue";
 import FriendReqItem from "./FriendReqItem.vue";
 import AddFriend from "./AddFriend.vue";
 import MyModal from "./MyModal.vue";
+import socket from "@/socket";
 
 const user = useUserStore();
 const addWindow = ref(false);
@@ -62,6 +63,12 @@ function hide() {
 onBeforeMount(() => {
   user.doFetchFriends();
   user.doFetchPending();
+  socket.on("receive_friendship", () => {
+    user.doFetchPending();
+  });
+  socket.on("friend_update", () => {
+    user.doFetchFriends();
+  });
 });
 
 defineExpose(
