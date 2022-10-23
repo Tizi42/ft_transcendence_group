@@ -79,7 +79,6 @@
 
 <script lang="ts" setup>
 import socket from "@/socket";
-import { useUserStore } from "@/stores/user";
 import { ref, defineComponent, defineExpose, Ref, defineProps } from "vue";
 
 interface Props {
@@ -87,7 +86,6 @@ interface Props {
   channel: any;
 }
 
-const user = useUserStore();
 const props: Readonly<Props> = defineProps<Props>();
 const channelType: Ref<string> = ref("");
 const newPassword: Ref<any> = ref(null);

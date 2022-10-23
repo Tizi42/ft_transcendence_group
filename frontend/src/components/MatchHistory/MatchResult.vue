@@ -100,13 +100,13 @@ function getDate(fullDate: Date): string {
   return splitted[1] + "/" + splitted[2] + "/" + splitted[0];
 }
 
-async function getName(id: number): Promise<string> {
-  let response: Response;
-  response = await fetch(getUrlOf("api/users/name/" + id), {
-    credentials: "include",
-  });
-  return await response.text();
-}
+// async function getName(id: number): Promise<string> {
+//   let response: Response;
+//   response = await fetch(getUrlOf("api/users/name/" + id), {
+//     credentials: "include",
+//   });
+//   return await response.text();
+// }
 
 async function getPlayer(id: number): Promise<User> {
   let response: Response;
