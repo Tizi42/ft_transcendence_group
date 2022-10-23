@@ -36,7 +36,7 @@ onBeforeMount(() => {
     await fillRooms(data);
     show.value = true;
   });
-  socket.on("games_update", () => {
+  socket.on("games_update_list", () => {
     socket.emit("get_updated_rooms");
   });
 });
