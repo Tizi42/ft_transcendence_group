@@ -90,4 +90,13 @@ export class ChannelController {
     const channelName = await this.channelService.refuseJoinChannel(req.user, manageMemberDto.channelId);    
     return { channelName };
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('one/:id')
+  async getOneWithoutMembers(
+    @Req() req: RequestWithUser,
+    @Param('id') id: number,
+  ) {
+    return await this.channelService.findOne(id);
+  }
 }
