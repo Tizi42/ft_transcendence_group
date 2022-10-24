@@ -6,6 +6,7 @@ export class GameRoom {
 
   //current game info
   current_game_id: number;
+  current_game_start_time: Date;
   score_left = 0;
   score_right = 0;
   winner: number;
@@ -120,8 +121,9 @@ export class GameRoom {
   async start_game() {
     this.server.to(this.room_name).emit("game_start");
     if (this.mode == "speed") {
-      setTimeout(this.speed_game_end.bind(this), 180000);
+      setTimeout(this.game_end.bind(this), 180000);
     }
+    this.current_game_start_time = new Date();
     this.current_game_id = await this.battlesService.addOne({
       opponent1: this.playerL,
       opponent2: this.playerR,
@@ -136,7 +138,7 @@ export class GameRoom {
     console.log("on ball launch");
     // intial ball's launch position and velocity
     this.ball_velocity = this.ball_velocity_init[this.mode];
-    const randomHeight = this.getRandomNumberBetween(80, 511); // height 591 - 80 
+    const randomHeight = this.getRandomNumberBetween(20, 571); // height 591 - 20 
     const randVelocity = this.getRandomVelocity(direction);
     this.ball_x = this.width / 2;
     this.ball_y = randomHeight;
@@ -221,7 +223,7 @@ export class GameRoom {
       else this.R_speed_ball += 1;
     } else if (effect == 4) {
       if (target == "left") this.L_reverse_effect = -1;
-      else if (target == "right") this.R_reverse_effect = -1;  
+      else if (target == "right") this.R_reverse_effect = -1;
       setTimeout(() => {
         if (target == "left" && this.L_reverse_effect == -1) this.L_reverse_effect = 1;
         else if (target == "right" && this.R_reverse_effect == -1) this.R_reverse_effect = 1;
@@ -385,21 +387,15 @@ export class GameRoom {
       (this.score_left >= 11 || this.score_right >= 11) &&
       Math.abs(this.score_left - this.score_right) >= 2
     ){
-      this.winner = this.score_left > this.score_right ? this.playerL : this.playerR;
-      let winner_side = this.score_left > this.score_right ? "left" : "right";
-      this.server.to(this.room_name).emit("end", {
-        winner: winner_side,
-      });
-      this.game_status = "ended";
-      this.save_game();
-      this.reset_game();
+      this.game_end();
       return true;
     }
     return false;
   }
 
-  speed_game_end(){
-    clearInterval(this.interval);
+  game_end(){
+    if (this.mode === "speed")
+      clearInterval(this.interval);
     this.winner = this.score_left > this.score_right ? this.playerL : this.playerR;
     let winner_side = this.score_left > this.score_right ? "left" : "right";
     if (this.score_left === this.score_right) {
@@ -427,11 +423,16 @@ export class GameRoom {
     this.score_left = 0;
     this.score_right = 0;
     this.winner = -1;
+    this.paddle.left.y = this.height * 0.5;
+    this.paddle.right.y = this.height * 0.5;
   }
 
+  // if quit game in the middle
   stop_game() {
     this.game_status = "ended";
     clearInterval(this.interval);
+    if (this.mode === "magic")
+      clearInterval(this.spell_interval);
   }
 
   /*

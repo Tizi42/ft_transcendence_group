@@ -90,7 +90,7 @@ import { User } from "@backend/users/users.entity";
 import { getUrlOf } from "@/router";
 import socket from "@/socket";
 import { StoreGeneric } from "pinia";
-import InvitationModal from "@/components/game/invitation/InvitationModal.vue";
+import InvitationModal from "@/components/Game/invitation/InvitationModal.vue";
 
 interface Props {
   target: User;

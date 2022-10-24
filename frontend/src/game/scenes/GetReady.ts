@@ -1,7 +1,6 @@
 import Phaser from "phaser";
 import socket from "@/socket";
 import gameInfo from "../gameInfo";
-import { createHistogram } from "perf_hooks";
 
 export default class GetReadyScene extends Phaser.Scene {
   readyButton: Phaser.GameObjects.Sprite;
@@ -27,10 +26,10 @@ export default class GetReadyScene extends Phaser.Scene {
     this.load.image("spellboard", "spellboard.png");
     this.load.spritesheet({
       key: "spell",
-      url: "spell.png",
+      url: "spritesheet_small_with_transparent.png",
       frameConfig: {
-        frameWidth: 64,
-        frameHeight: 64,
+        frameWidth: 320,
+        frameHeight: 320,
       },
     });
     this.load.image("paddle", "paddle.png");
@@ -85,6 +84,7 @@ export default class GetReadyScene extends Phaser.Scene {
 
     // listen for server instruction to start game
     socket.on("game_start", () => {
+      console.log("game_start rand", Math.random());
       this.start_game_scene();
     });
   }

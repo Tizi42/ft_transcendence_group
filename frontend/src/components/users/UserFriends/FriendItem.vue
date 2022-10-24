@@ -43,7 +43,7 @@
 <script lang="ts" setup>
 import { defineComponent, defineExpose, defineProps, ref, computed } from "vue";
 import FriendItemMenu from "./FriendItemMenu.vue";
-import InvitationModal from "../../game/invitation/InvitationModal.vue";
+import InvitationModal from "../../Game/invitation/InvitationModal.vue";
 import { User } from "@backend/users/users.entity";
 
 interface Props {
