@@ -26,11 +26,6 @@ export class AuthController {
     handle42Redirect(@Req() request: RequestWithUser, @Res({ passthrough: true }) res: Response) {
         const { accessToken } = this.authService.login(request.user, false);
         res.cookie('jwt', accessToken);
-        ////console.log(request.user);
-        //console.log("jwt 1 = ", accessToken);
-        // if (!request.user.isTwoFactorAuthenticationEnabled) {
-        //   this.usersService.updateUserStatus(request.user.id, true);
-        // }
         res.redirect('http://localhost:8080/2FA');
     }
 
@@ -43,11 +38,6 @@ export class AuthController {
       }
       const { accessToken } = this.authService.login(user, false);
       res.cookie('jwt', accessToken);
-    //   console.log(user);
-    //   console.log("jwt 1 = ", accessToken);
-    //   if (!user.isTwoFactorAuthenticationEnabled) {
-        // this.usersService.updateUserStatus(user.id, "online");
-    //   }
       res.redirect('http://localhost:8080/2FA');
     }
 
@@ -106,7 +96,6 @@ export class AuthController {
         }
         const { accessToken } = this.authService.login(request.user, true);
         request.res.cookie('jwt', accessToken);
-        // this.usersService.updateUserStatus(request.user.id, "online");
         return request.user;
     }
 }
