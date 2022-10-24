@@ -15,7 +15,7 @@
 import { defineComponent, defineExpose, defineProps, defineEmits } from "vue";
 import { Ref, ref } from "vue";
 import { useClickOutside } from "@/composables/useClickOutside";
-import InvitationContent from "../../game_components/invitation/InvitationContent.vue";
+import InvitationContent from "../../Game/invitation/InvitationContent.vue";
 import { User } from "@backend/users/users.entity";
 
 interface Props {
