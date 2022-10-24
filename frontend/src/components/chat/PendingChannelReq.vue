@@ -1,6 +1,10 @@
 <template>
   <div class="notification">
-    <div>The channel id {{ channelToJoin }} wants to invite you!</div>
+    <div class="notif-name">
+      The channel
+      <span>{{ channelToJoin.name }}</span>
+      wants to invite you!
+    </div>
     <div class="handle-notif">
       <button>
         <img
@@ -35,7 +39,7 @@ const props: Readonly<Props> = defineProps<Props>();
 
 const handleInvitationRequest = async (action: string) => {
   const dataToEmit = {
-    from: props.channelToJoin,
+    from: props.channelToJoin.id,
     to: user.id,
   };
   await fetch(getUrlOf("api/channel/" + action), {
@@ -45,7 +49,7 @@ const handleInvitationRequest = async (action: string) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      channelId: props.channelToJoin,
+      channelId: props.channelToJoin.id,
       targetId: user.id,
     }),
   })
@@ -82,6 +86,10 @@ defineExpose(
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.notif-name span {
+  font-weight: bold;
 }
 
 .handle-notif {
