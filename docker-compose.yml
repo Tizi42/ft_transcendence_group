@@ -16,20 +16,20 @@ services:
       - ./backend:/usr/src/app
       - /usr/src/app/node_modules
 
-  frontend:
-    container_name: ${CONTAINER_NAME_FRONTEND}
-    build:
-      context: ./frontend
-      target: dev
-      dockerfile: Dockerfile
-    image: vuejs:1.0
-    networks:
-      - transcendence
-    ports:
-      - 8080:8080
-    volumes:
-      - ./frontend:/usr/src/app
-      - /usr/src/app/node_modules
+  # frontend:
+  #   container_name: ${CONTAINER_NAME_FRONTEND}
+  #   build:
+  #     context: ./frontend
+  #     target: production
+  #     dockerfile: Dockerfile
+  #   image: vuejs:1.0
+  #   networks:
+  #     - transcendence
+  #   ports:
+  #     - 8080:8080
+  #   volumes:
+  #     - ./frontend:/usr/src/app
+  #     - /usr/src/app/node_modules
 
   database:
     container_name: ${CONTAINER_NAME_DATABASE}

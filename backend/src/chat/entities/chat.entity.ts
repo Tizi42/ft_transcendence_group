@@ -1,4 +1,4 @@
-import { User } from "src/users/users.entity";
+import { User } from "../../users/users.entity";
 import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn } from "typeorm";
 
 @Entity({ name: 'chat' })
@@ -9,10 +9,10 @@ export class Chat {
     @Column()
     content: string;
 
-    @ManyToOne( () => User, (author) => author.messages )
+    @ManyToOne( () => User, (author: User) => author.messages )
     dest: User;
 
-    @ManyToOne( () => User, (author) => author.messages )
+    @ManyToOne( () => User, (author: User) => author.messages )
     author: User;
 
     @Column( { default: -1 })
