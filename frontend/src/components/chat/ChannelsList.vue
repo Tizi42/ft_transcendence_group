@@ -30,8 +30,13 @@
         channelNotSelected: selectedChannel != channel.id,
       }"
     >
-      <img src="@/assets/icons/groupe.png" />
+      <img class="groupe-img" src="@/assets/icons/groupe.png" />
       <h3>{{ channel.name }}</h3>
+      <img
+        v-if="channel.type === 'private'"
+        class="hided_channel"
+        src="@/assets/icons/hide_channel.svg"
+      />
     </li>
   </ul>
   <Teleport to="body">

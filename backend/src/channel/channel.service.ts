@@ -24,6 +24,13 @@ export class ChannelService {
   async nameAlreadyExist(channelName: string) {
     const allChannels = await this.findAllChannelsAndMembers();
 
+    if (
+      channelName === "password_error" ||
+      channelName === "ban_error" ||
+      channelName === "channel_name_error"
+    ) {
+      return true;
+    }
     for(let i = 0; i < allChannels.length; i++) {
       if (allChannels[i].name === channelName) {
         return true;

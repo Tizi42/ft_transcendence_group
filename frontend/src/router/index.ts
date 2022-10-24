@@ -148,7 +148,7 @@ router.beforeEach(async (to: any, from: any, next: any) => {
       if (from.fullPath === "/user/settings") {
         next();
       } else {
-        next({ name: "settings" });
+        next({ name: "game" });
       }
     }
   } else if (

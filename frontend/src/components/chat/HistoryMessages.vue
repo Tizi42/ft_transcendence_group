@@ -15,7 +15,6 @@
         @click="showInfoBox"
       />
     </div>
-    <!-- <img src="@/assets/icons/watchGame.svg" alt="watch his game" /> -->
     <img
       src="@/assets/icons/inviteInGame.png"
       alt="invite in game"
