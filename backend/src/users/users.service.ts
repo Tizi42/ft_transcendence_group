@@ -40,15 +40,29 @@ export class UsersService {
   */
 
   async updateUserAvatar(id: number, filename: string, pictureUrl: string): Promise<any> {
-    return  await this.usersRepository.update(id, {picture: pictureUrl, pictureLocalFilename: filename});
+    return await this.usersRepository.update(id, {picture: pictureUrl, pictureLocalFilename: filename});
+  }
+
+  async displayNameAlreadyExist(newName: string) {
+    const allUsers = await this.findAll();
+
+    for (let i = 0; i < allUsers.length; i++) {
+      if (allUsers[i].displayName === newName) {
+        return true;
+      }
+    }
+    return false;
   }
 
   async updateUserDisplayName(id: number, name: string): Promise<any> {
-    return  this.usersRepository.update(id, {displayName: name});
+    if (await this.displayNameAlreadyExist(name)) {
+      return { msg: "bad_name" };
+    }
+    return await this.usersRepository.update(id, {displayName: name});
   }
 
   async updateUserEmail(id: number, email: string): Promise<any> {
-    return  this.usersRepository.update(id, {email: email});
+    return await this.usersRepository.update(id, {email: email});
   }
 
 
@@ -58,6 +72,14 @@ export class UsersService {
 
   async createNewUser(userDetails: UserDetails): Promise<User> {
     const newUser = this.usersRepository.create(userDetails);
+    let nbr = 1;
+    let displayNameTmp = "";
+    while (await this.displayNameAlreadyExist(newUser.displayName)) {
+      displayNameTmp = newUser.displayName;
+      displayNameTmp += nbr.toString();
+      nbr++;
+    }
+    newUser.displayName = displayNameTmp;
     return await this.usersRepository.save(newUser);
   }
 

@@ -99,6 +99,14 @@ export class ChannelService {
     });
   }
 
+  async findAllPrivatesChannels(): Promise<Channel[]> {
+    return await this.channelRepository.find({
+      where: {
+        type: "private",
+      }
+    });
+  }
+
   async getAllMyChannels(id: number): Promise<Channel[]> {
     const channels = await this.channelRepository.find({
       relations: ['members'],
