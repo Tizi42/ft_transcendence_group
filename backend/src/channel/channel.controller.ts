@@ -2,10 +2,8 @@ import { Controller, Get, Post, Body, Param, UseGuards, Req } from '@nestjs/comm
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import RequestWithUser from 'src/users/utils/requestWithUser.interface';
 import { ChannelService } from './channel.service';
-import { channelMember } from './utils/channelMember.dto';
 import { CreatChannelDto } from './utils/createChannel.dto';
 import { ManageMemberDto } from './utils/manageMembers.dto';
-import { UpdatePrivacyDto } from './utils/updatePrivacy.dto';
 
 @Controller('channel')
 export class ChannelController {
@@ -98,5 +96,20 @@ export class ChannelController {
     @Param('id') id: number,
   ) {
     return await this.channelService.findOne(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('getAll/privates')
+  async getAllPrivatesChannels(@Req() req: RequestWithUser) {
+    const privatesChannels = await this.channelService.findAllPrivatesChannels();
+    let myPrivatesChannels = [];
+    for (let i = 0; i < privatesChannels.length; i++) {
+      for (let j = 0; j < req.user.memberPendingReqFrom.length; j++) {
+        if (privatesChannels[i].id  === req.user.memberPendingReqFrom[j]) {
+          myPrivatesChannels.push(privatesChannels[i]);
+        }
+      }
+    }
+    return myPrivatesChannels;
   }
 }
