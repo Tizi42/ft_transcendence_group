@@ -16,9 +16,6 @@ import { createPinia } from "pinia";
 const store = createPinia();
 const app = createApp(App);
 
-app.config.compilerOptions.isCustomElement = (tag) => {
-  return tag.startsWith("ion-");
-};
 defineIonPhaser(window);
 
 app.use(router);

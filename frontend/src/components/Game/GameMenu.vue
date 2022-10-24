@@ -57,9 +57,9 @@ const modeTitle: Ref<Array<string>> = ref([
 ]);
 const mode: Ref<Array<string>> = ref(["normal", "magic", "speed"]);
 const modeDescription: Ref<Array<string>> = ref([
-  "Classic pong : no magic power, just a simple ball and 10 points until victory.",
-  "Pong with some magic powers : fireball, windball, super paddle, ...",
-  "Classic pong except speed\nhas been increased.",
+  "Classic pong : no magic power, just a simple ball and at least 11 points until victory.",
+  "Pong with 6 magic powers to be discovered: fireball, shield wall, ying yang keys... Press shift to use a power when it shows up.",
+  "Double speed, double fun! \nPlayer who misses less balls within 3 minutes will win the game.",
 ]);
 const modeIcons: Array<URL> = [
   new URL("../../assets/icons/gameMode/modeNormal.svg", import.meta.url),

@@ -21,11 +21,6 @@
           <AddFriend />
         </MyModal>
       </teleport>
-      <img
-        class="icon-button"
-        src="@/assets/icons/icon-filter.png"
-        alt="filter button"
-      />
     </div>
     <div v-if="user.friends.length">
       <div class="friends-grid">
@@ -36,6 +31,7 @@
         />
       </div>
     </div>
+    <div v-else>Add some friends with the button (+) 🐻‍❄️</div>
   </div>
 </template>
 
