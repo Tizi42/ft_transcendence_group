@@ -98,6 +98,7 @@ function cancel() {
 }
 
 async function startGame() {
+  waiting.value = true;
   socket.emit(
     "queue_register",
     {
@@ -106,8 +107,10 @@ async function startGame() {
     },
     (data: any) => {
       console.log(data);
-      if (data.alreadyInQueue) window.alert("You are already in queue!");
-      else waiting.value = true;
+      if (data.alreadyInQueue) {
+        window.alert("You are already in queue!");
+        waiting.value = false;
+      }
     }
   );
 }
