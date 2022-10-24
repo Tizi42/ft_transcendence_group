@@ -1,9 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Channel } from "src/channel/entities/channel.entity";
-import { Chat } from "src/chat/entities/chat.entity";
-import { AppGateway } from "src/gateway";
-import { Any, DataSource, In, Not, QueryRunner, Repository } from "typeorm";
+import { Channel } from "../channel/entities/channel.entity";
+import { Chat } from "../chat/entities/chat.entity";
+import { Any, DataSource, In, Not, Repository } from "typeorm";
 import { User } from "./users.entity";
 import { FriendshipDto } from "./utils/friendship.dto";
 import { UserDetails } from "./utils/types";
@@ -159,7 +158,7 @@ export class UsersService {
    return await this.usersRepository.find();
   }
   
-  findOne(id: number): Promise<User> {
+  findOne(id: number): Promise<User | null> {
     return this.usersRepository.findOneBy({ id });
   }
 
@@ -168,14 +167,17 @@ export class UsersService {
   // }
 
   async getUsername(id: number): Promise<String> {
-    return this.findOne(id).then((user) => user.username);
+    return this.findOne(id).then((user) => {
+      if (user == null) return "";
+      return user.username;
+    });
   }
 
-  async findOneById(id: number): Promise<User | undefined> {
+  async findOneById(id: number): Promise<User | null> {
     return this.usersRepository.findOneBy({ id: id });
   }
 
-  async findOneByEmail(email: string): Promise<User | undefined> {
+  async findOneByEmail(email: string): Promise<User | null> {
     return this.usersRepository.findOneBy({ email: email });
   }
 
