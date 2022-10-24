@@ -180,7 +180,7 @@ defineExpose(
   display: block;
   font-family: "Outfit";
   text-align: center;
-  background: rgba(30, 42, 2, 0.7);
+  background: #141d01;
   box-shadow: inset 0px 0px 4px 3px rgba(0, 0, 0, 0.25);
   border-radius: 22px;
   border: none;
@@ -194,8 +194,7 @@ defineExpose(
 #search-button {
   display: block;
   font-family: "Outfit Bold";
-  background: #1e2a02;
-  box-shadow: 0px 0px 4px 3px rgba(0, 0, 0, 0.25);
+  background: #141d01;
   border-radius: 22px;
   line-height: 2.3em;
   border: none;
@@ -204,7 +203,7 @@ defineExpose(
   width: 40%;
   padding: 0em 1em;
   transition: transform 0.5s ease;
-  color: var(--main-color);
+  color: #bebebe;
 }
 
 #search-button:hover {
