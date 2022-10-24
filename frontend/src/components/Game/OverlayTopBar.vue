@@ -29,9 +29,9 @@
         />
       </div>
       <div class="scores">
-        <div class="scoreNb">{{ scores[0] }}</div>
+        <div class="scoreNb leftScore">{{ scores[0] }}</div>
         -
-        <div class="scoreNb">{{ scores[1] }}</div>
+        <div class="scoreNb rightScore">{{ scores[1] }}</div>
       </div>
       <div class="playerInfoRight">
         <UserChat
@@ -131,12 +131,21 @@ defineExpose(
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
+  gap: 10px;
 }
 
 .scoreNb {
   width: 40%;
-  min-width: 70px;
+  min-width: 100px;
   text-align: center;
+}
+
+.leftScore {
+  text-align: right;
+}
+
+.rightScore {
+  text-align: left;
 }
 
 .playerInfoLeft,

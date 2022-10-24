@@ -37,7 +37,7 @@ import { UsersService } from './users.service';
 
 export class UsersModule {
   constructor(private usersService: UsersService) {
-    if (false) {
+    if (true) {
       console.log("creating 10 fake users");
       this.usersService.removeAll();
       setTimeout(() => {

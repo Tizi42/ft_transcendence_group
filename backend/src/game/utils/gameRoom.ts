@@ -30,11 +30,7 @@ export class GameRoom {
   readonly ball_radius = 12.8;
   readonly paddle_width_half = 5;
   readonly max_angle = Math.PI / 4;
-  readonly hit_range = {
-    normal: 5,
-    magic: 5,
-    speed: 8,
-  };
+  readonly hit_range = () : number => { return this.ball_velocity * 0.75 };
   readonly ball_velocity_init = {
     normal: 7.5, // 7.5 pixels per 25ms, 300 pixels per 1000ms
     magic: 7.5,
@@ -319,8 +315,8 @@ export class GameRoom {
     }
     // check if ball collides with paddle
     else if (
-      ball_left < this.paddle.left.x + this.hit_range[this.mode] &&
-      ball_left > this.paddle.left.x - this.hit_range[this.mode]  &&
+      ball_left < this.paddle.left.x + this.hit_range() &&
+      ball_left > this.paddle.left.x - this.hit_range()  &&
       ball_top < this.paddle.left.y + this.paddle.left.height_half &&
       ball_bottom > this.paddle.left.y - this.paddle.left.height_half
     ){
@@ -338,8 +334,8 @@ export class GameRoom {
       this.ball_velocity_y = this.ball_velocity * Math.sin(bounce_angle);
     }
     else if (
-      ball_right < this.paddle.right.x + this.hit_range[this.mode] &&
-      ball_right > this.paddle.right.x - this.hit_range[this.mode] &&
+      ball_right < this.paddle.right.x + this.hit_range() &&
+      ball_right > this.paddle.right.x - this.hit_range() &&
       ball_top < this.paddle.right.y + this.paddle.right.height_half &&
       ball_bottom > this.paddle.right.y - this.paddle.right.height_half
     ){
