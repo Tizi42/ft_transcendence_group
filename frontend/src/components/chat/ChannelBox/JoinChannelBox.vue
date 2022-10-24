@@ -25,7 +25,6 @@ import {
   defineComponent,
   defineExpose,
   defineProps,
-  onBeforeMount,
   defineEmits,
   ref,
   Ref,

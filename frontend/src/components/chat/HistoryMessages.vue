@@ -123,7 +123,7 @@ import MembersListBox from "./ChannelBox/MembersListBox.vue";
 import { getUrlOf } from "@/router";
 import socket from "@/socket";
 import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
-import InvitationModal from "../game/invitation/InvitationModal.vue";
+import InvitationModal from "../game_components/invitation/InvitationModal.vue";
 import AddMember from "./AddMember.vue";
 import MyModal from "../users/UserFriends/MyModal.vue";
 
