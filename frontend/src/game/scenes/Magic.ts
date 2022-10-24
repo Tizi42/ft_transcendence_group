@@ -9,13 +9,18 @@ export default class MagicScene extends Phaser.Scene {
   ball: Phaser.Physics.Arcade.Sprite;
   paddle_left: Phaser.Physics.Arcade.Sprite;
   paddle_right: Phaser.Physics.Arcade.Sprite;
-  spell_left: Phaser.GameObjects.Sprite;
-  spell_right: Phaser.GameObjects.Sprite;
+  spell1_left: Phaser.GameObjects.Sprite;
+  spell2_left: Phaser.GameObjects.Sprite;
+  spell1_right: Phaser.GameObjects.Sprite;
+  spell2_right: Phaser.GameObjects.Sprite;
+  shield_left: Phaser.GameObjects.Sprite;
+  shield_right: Phaser.GameObjects.Sprite;
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
 
+  switch_time = 0;
+  cast_time = 0;
   spell1 = 0;
   spell2 = 0;
-  active_spell = 0;
 
   paddle_left_size = 1;
   paddle_right_size = 1;
@@ -37,20 +42,44 @@ export default class MagicScene extends Phaser.Scene {
     this.add.image(
       this.cameras.main.centerX,
       this.cameras.main.centerY,
-      "background"
+      "magicbackground"
     );
 
     // set up spellboard
-    this.add.image(this.width * 0.45, this.height * 0.1, "spellboard");
-    this.add.image(this.width * 0.56, this.height * 0.1, "spellboard");
+    this.add.image(this.width * 0.4345, this.height * 0.127, "spellboardL");
+    this.add.image(this.width * 0.5755, this.height * 0.127, "spellboardR");
+
+    this.shield_left = this.add.sprite(
+      this.width * 0.025,
+      this.height * 0.5,
+      "shieldL"
+    );
+    this.shield_left.alpha = 0;
+
+    this.shield_right = this.add.sprite(
+      this.width * 0.975, 
+      this.height * 0.5,
+      "shieldR"
+    );
+    this.shield_right.alpha = 0;
 
     // set up spell
-    this.spell_left = this.add.sprite(
+    this.spell2_left = this.add.sprite(
+      this.width * 0.42,
+      this.height * 0.153,
+      "spell"
+    );
+    this.spell1_left = this.add.sprite(
       this.width * 0.45,
       this.height * 0.1,
       "spell"
     );
-    this.spell_right = this.add.sprite(
+    this.spell2_right = this.add.sprite(
+      this.width * 0.59,
+      this.height * 0.153,
+      "spell"
+    );
+    this.spell1_right = this.add.sprite(
       this.width * 0.56,
       this.height * 0.1,
       "spell"
@@ -98,8 +127,10 @@ export default class MagicScene extends Phaser.Scene {
     });
 
     socket.on("refresh_spells", (data: any) => {
-      this.spell_left.setFrame(data.spell1_L);
-      this.spell_right.setFrame(data.spell1_R);
+      this.spell1_left.setFrame(data.spell1_L);
+      this.spell2_left.setFrame(data.spell2_L);
+      this.spell1_right.setFrame(data.spell1_R);
+      this.spell2_right.setFrame(data.spell2_R);
       if (gameInfo.user_role === "left") {
         this.spell1 = data.spell1_L;
         this.spell2 = data.spell2_L;
@@ -127,11 +158,19 @@ export default class MagicScene extends Phaser.Scene {
           this.Rpaddle_alpha = 1;
           this.paddle_right.alpha = 1;
         }
+      } else if (data.effect == 5) {
+        if (data.launcher == "left") this.shield_left.alpha = 1;
+        else this.shield_right.alpha = 1;
+      } else if (data.effect == -5) {
+        if (data.launcher == "left") this.shield_left.alpha = 1;
+        else this.shield_right.alpha = 1;
       }
     });
   }
 
   update(time: number, delta: number) {
+    this.switch_time += delta;
+    this.cast_time += delta;
     if (this.Lpaddle_eye_effect) {
       if (this.Lpaddle_alpha <= 0) this.Lpaddle_alpha = 1;
       else this.Lpaddle_alpha -= 0.05;
@@ -146,12 +185,22 @@ export default class MagicScene extends Phaser.Scene {
       this.update_paddle(-1);
     } else if (this.cursors.down.isDown) {
       this.update_paddle(1);
+    } else if (this.cursors.left.isDown || this.cursors.right.isDown) {
+      if (this.switch_time > 200) {
+        this.switch_time = 0;
+        socket.emit("switch_spell", {
+          user_id: gameInfo.user_id,
+          room_name: gameInfo.room_name,
+        });
+      }
     } else if (this.cursors.shift.isDown) {
-      socket.emit("launch_spell", {
-        user_id: gameInfo.user_id,
-        room_name: gameInfo.room_name,
-        spell_slot: this.active_spell,
-      });
+      if (this.cast_time > 200) {
+        this.cast_time = 0;
+        socket.emit("launch_spell", {
+          user_id: gameInfo.user_id,
+          room_name: gameInfo.room_name,
+        });
+      }
     }
   }
 
