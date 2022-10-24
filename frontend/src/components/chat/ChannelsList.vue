@@ -30,8 +30,13 @@
         channelNotSelected: selectedChannel != channel.id,
       }"
     >
-      <img src="@/assets/icons/groupe.png" />
+      <img class="groupe-img" src="@/assets/icons/groupe.png" />
       <h3>{{ channel.name }}</h3>
+      <img
+        v-if="channel.type === 'private'"
+        class="hided_channel"
+        src="@/assets/icons/hide_channel.svg"
+      />
     </li>
   </ul>
   <Teleport to="body">
@@ -70,10 +75,24 @@ const props: Readonly<Props> = defineProps<Props>();
 const selectedChannel: Ref<number> = ref(props.selectedChannel);
 const addWindow: Ref<boolean> = ref(false);
 const history: Ref<any> = ref([]);
-const comingReq: Ref<boolean> = ref(false);
+const allMyInvite: Ref<Array<any>> = ref([]);
 
 socket.on("update_channel_invite", async () => {
   user.doFetch();
+  for (let i = 0; i < user.channelInvitePending.length; i++) {
+    await fetch(getUrlOf("api/channel/one/" + user.channelInvitePending[i]), {
+      credentials: "include",
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        allMyInvite.value.push(data);
+      })
+      .catch((error) => {
+        console.log("error :", error);
+      });
+  }
 });
 
 socket.on("receive_channel_created", () => {
@@ -127,10 +146,6 @@ const addNewChannel = () => {
 
 function hide() {
   addWindow.value = false;
-}
-
-function hideReq() {
-  comingReq.value = false;
 }
 
 socket.on("receive_channel_message", () => {
