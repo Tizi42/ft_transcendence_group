@@ -74,7 +74,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/pong",
     name: "pong",
-    component: () => import("../components/game_components/PlayGame.vue"),
+    component: () => import("../components/Game/PlayGame.vue"),
     props: true,
   },
 ];
