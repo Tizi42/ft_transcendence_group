@@ -73,7 +73,7 @@ export class UsersService {
   async createNewUser(userDetails: UserDetails): Promise<User> {
     const newUser = this.usersRepository.create(userDetails);
     let nbr = 1;
-    let displayNameTmp = "";
+    let displayNameTmp = newUser.displayName;
     while (await this.displayNameAlreadyExist(newUser.displayName)) {
       displayNameTmp = newUser.displayName;
       displayNameTmp += nbr.toString();
