@@ -1,4 +1,8 @@
 <template>
+  <div v-if="allChannels.length === 0" class="welcome-chat">
+    <img src="@/assets/icons/multiBubble.svg" />
+    <h1>Let's chat</h1>
+  </div>
   <ul class="all-channels">
     <li
       class="channel-attributes"
