@@ -40,15 +40,29 @@ export class UsersService {
   */
 
   async updateUserAvatar(id: number, filename: string, pictureUrl: string): Promise<any> {
-    return  await this.usersRepository.update(id, {picture: pictureUrl, pictureLocalFilename: filename});
+    return await this.usersRepository.update(id, {picture: pictureUrl, pictureLocalFilename: filename});
+  }
+
+  async displayNameAlreadyExist(newName: string) {
+    const allUsers = await this.findAll();
+
+    for (let i = 0; i < allUsers.length; i++) {
+      if (allUsers[i].displayName === newName) {
+        return true;
+      }
+    }
+    return false;
   }
 
   async updateUserDisplayName(id: number, name: string): Promise<any> {
-    return  this.usersRepository.update(id, {displayName: name});
+    if (await this.displayNameAlreadyExist(name)) {
+      return { msg: "bad_name" };
+    }
+    return await this.usersRepository.update(id, {displayName: name});
   }
 
   async updateUserEmail(id: number, email: string): Promise<any> {
-    return  this.usersRepository.update(id, {email: email});
+    return await this.usersRepository.update(id, {email: email});
   }
 
 
@@ -58,6 +72,14 @@ export class UsersService {
 
   async createNewUser(userDetails: UserDetails): Promise<User> {
     const newUser = this.usersRepository.create(userDetails);
+    let nbr = 1;
+    let displayNameTmp = newUser.displayName;
+    while (await this.displayNameAlreadyExist(newUser.displayName)) {
+      displayNameTmp = newUser.displayName;
+      displayNameTmp += nbr.toString();
+      nbr++;
+    }
+    newUser.displayName = displayNameTmp;
     return await this.usersRepository.save(newUser);
   }
 
@@ -74,14 +96,15 @@ export class UsersService {
     return Math.floor(Math.random() * max);
   }
 
-  createFakeUsers(nb: number)
+  async createFakeUsers(nb: number)
   {
     for (var i = 0; i < nb; i++) {
       let newUser = new User();
       newUser.displayName = "User" + i.toString();
       newUser.username = "username" + i.toString();
       newUser.email = "user" + i.toString() + "@student.42.fr";
-	    this.usersRepository.insert(newUser);
+	    await this.usersRepository.insert(newUser);
+      console.log(newUser.displayName, "created");
     }
   }
 
@@ -482,9 +505,7 @@ export class UsersService {
   **    GAME STATS
   */
 
-  async updateResult(id: number, winner: boolean, draw: boolean) {
-    let target = await this.usersRepository.findOneBy({ id });
-    if (target == null) return ;
+  async updateResult(target: User, winner: boolean, draw: boolean): Promise<boolean> {
     target.totalGames++;
     if (winner) target.totalVictories++;
     else if (draw) target.totalDraws++;
@@ -493,7 +514,8 @@ export class UsersService {
     else {
       target.winRate = Math.floor(100 * target.totalVictories / (target.totalGames - target.totalDraws));
     }
-    this.usersRepository.save(target);
+    await this.usersRepository.save(target);
+    return true;
   }
 
   async getLeadByVictories(global: boolean, id: number) : Promise<User[]> {
