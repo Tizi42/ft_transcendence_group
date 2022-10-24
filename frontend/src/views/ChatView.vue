@@ -146,7 +146,7 @@ socket.on("channel_updated", async (channelId: number) => {
     });
   console.log("my channels = ", allMyChannels.value);
   for (let i = 0; i < allMyChannels.value.length; i++) {
-    if (allMyChannels.value[i].id === channelId) {
+    if (allMyChannels.value[i].id === selectedChannel.value) {
       channel.value = allMyChannels.value[i];
     }
   }
