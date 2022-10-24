@@ -1,38 +1,45 @@
 <template>
-  <form id="search-form-friend" @submit.prevent="onClickSearch">
-    <input
-      id="search-input"
-      v-model="searchInput"
-      type="text"
-      placeholder="Search by user id"
-      required="true"
-      autofocus
-      :style="{ border: inputBorder }"
-    />
-    <input id="search-button" type="submit" value="Search" />
-  </form>
-  <div id="search-result" v-if="targetUser">
-    <div class="target-info">
-      <div
-        class="avatar-frame"
-        :style="{
-          'background-image': 'url(' + targetUser.picture + ')',
-        }"
-      ></div>
-      <div class="target-name">{{ targetUser.displayName }}</div>
+  <div class="addMemberContent">
+    <form id="search-form-member" @submit.prevent="onClickSearch">
+      <input
+        id="search-input"
+        v-model="searchInput"
+        type="text"
+        placeholder="Search by user id"
+        required="true"
+        autofocus
+        :style="{ border: inputBorder }"
+      />
+      <input id="search-button" type="submit" value="Search" />
+    </form>
+    <div id="search-result" v-if="targetUser">
+      <div class="target-info">
+        <div
+          class="avatar-frame"
+          :style="{
+            'background-image': 'url(' + targetUser.picture + ')',
+          }"
+        ></div>
+        <div class="target-name">{{ targetUser.displayName }}</div>
+      </div>
+      <button
+        v-if="pending"
+        id="cancel-button"
+        class="buttons"
+        @click="onCancel"
+      >
+        Cancel
+      </button>
+      <button
+        v-if="!pending"
+        id="send-button"
+        class="buttons"
+        @click="onSend"
+        :disabled="alreadyMember"
+      >
+        Send
+      </button>
     </div>
-    <button v-if="pending" id="cancel-button" class="buttons" @click="onCancel">
-      Cancel
-    </button>
-    <button
-      v-if="!pending"
-      id="send-button"
-      class="buttons"
-      @click="onSend"
-      :disabled="alreadyMember"
-    >
-      Send
-    </button>
   </div>
 </template>
 
@@ -167,6 +174,18 @@ defineExpose(
 </script>
 
 <style scoped>
+.addMemberContent {
+  display: flex;
+  height: fit-content;
+  width: fit-content;
+  flex-direction: column;
+  padding: 30px;
+  background-color: #1e2a02;
+  box-shadow: 0px 0px 4px 3px rgba(0, 0, 0, 0.25);
+  border-radius: 22px;
+  gap: 20px;
+}
+
 .avatar-frame {
   display: inline-block;
   border-radius: 20%;
@@ -178,7 +197,7 @@ defineExpose(
   margin: 7%;
 }
 
-#search-form-friend {
+#search-form-member {
   display: flex;
   gap: 20px;
   justify-content: space-between;
@@ -194,7 +213,7 @@ defineExpose(
   display: block;
   font-family: "Outfit";
   text-align: center;
-  background: rgba(30, 42, 2, 0.7);
+  background: #141d01;
   box-shadow: inset 0px 0px 4px 3px rgba(0, 0, 0, 0.25);
   border-radius: 22px;
   border: none;
@@ -208,8 +227,7 @@ defineExpose(
 #search-button {
   display: block;
   font-family: "Outfit Bold";
-  background: #1e2a02;
-  box-shadow: 0px 0px 4px 3px rgba(0, 0, 0, 0.25);
+  background: #141d01;
   border-radius: 22px;
   line-height: 2.3em;
   border: none;
@@ -218,10 +236,12 @@ defineExpose(
   width: 40%;
   padding: 0em 1em;
   transition: transform 0.5s ease;
+  color: #bebebe;
 }
 
 #search-button:hover {
   transform: scale(1.05, 1.05);
+  cursor: pointer;
 }
 
 #search-result {
