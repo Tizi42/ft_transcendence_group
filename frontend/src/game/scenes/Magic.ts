@@ -55,6 +55,8 @@ export default class MagicScene extends Phaser.Scene {
       this.height * 0.1,
       "spell"
     );
+    this.spell_left.setScale(0.2);
+    this.spell_right.setScale(0.2);
 
     // set up world bounds
     this.physics.world.setBounds(-100, 0, this.width + 200, this.height);
@@ -131,7 +133,7 @@ export default class MagicScene extends Phaser.Scene {
     });
   }
 
-  update(time: number, delta: number) {
+  update() {
     if (this.Lpaddle_eye_effect) {
       if (this.Lpaddle_alpha <= 0) this.Lpaddle_alpha = 1;
       else this.Lpaddle_alpha -= 0.05;

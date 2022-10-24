@@ -26,10 +26,10 @@ export default class GetReadyScene extends Phaser.Scene {
     this.load.image("spellboard", "spellboard.png");
     this.load.spritesheet({
       key: "spell",
-      url: "spell.png",
+      url: "spritesheet_small_with_transparent.png",
       frameConfig: {
-        frameWidth: 64,
-        frameHeight: 64,
+        frameWidth: 320,
+        frameHeight: 320,
       },
     });
     this.load.image("paddle", "paddle.png");
