@@ -96,14 +96,15 @@ export class UsersService {
     return Math.floor(Math.random() * max);
   }
 
-  createFakeUsers(nb: number)
+  async createFakeUsers(nb: number)
   {
     for (var i = 0; i < nb; i++) {
       let newUser = new User();
       newUser.displayName = "User" + i.toString();
       newUser.username = "username" + i.toString();
       newUser.email = "user" + i.toString() + "@student.42.fr";
-	    this.usersRepository.insert(newUser);
+	    await this.usersRepository.insert(newUser);
+      console.log(newUser.displayName, "created");
     }
   }
 
@@ -504,9 +505,7 @@ export class UsersService {
   **    GAME STATS
   */
 
-  async updateResult(id: number, winner: boolean, draw: boolean) {
-    let target = await this.usersRepository.findOneBy({ id });
-    if (target == null) return ;
+  async updateResult(target: User, winner: boolean, draw: boolean): Promise<boolean> {
     target.totalGames++;
     if (winner) target.totalVictories++;
     else if (draw) target.totalDraws++;
@@ -515,7 +514,8 @@ export class UsersService {
     else {
       target.winRate = Math.floor(100 * target.totalVictories / (target.totalGames - target.totalDraws));
     }
-    this.usersRepository.save(target);
+    await this.usersRepository.save(target);
+    return true;
   }
 
   async getLeadByVictories(global: boolean, id: number) : Promise<User[]> {
