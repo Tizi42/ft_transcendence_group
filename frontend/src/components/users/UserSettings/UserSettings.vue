@@ -33,7 +33,6 @@ import { Component as ComponentVue } from "vue";
 import AccountOptions from "./AccountOptions.vue";
 import BlockedUsers from "./BlockedUsers.vue";
 import { useRouter } from "vue-router";
-import { useCookie } from "vue-cookie-next";
 import socket from "@/socket";
 import { useCookies } from "vue3-cookies";
 

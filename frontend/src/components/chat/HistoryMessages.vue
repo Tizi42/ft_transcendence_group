@@ -15,7 +15,6 @@
         @click="showInfoBox"
       />
     </div>
-    <!-- <img src="@/assets/icons/watchGame.svg" alt="watch his game" /> -->
     <img
       src="@/assets/icons/inviteInGame.png"
       alt="invite in game"
@@ -36,7 +35,7 @@
       src="@/assets/icons/icon-add.png"
       alt="add member"
       @click="addMember"
-      v-if="channel.owner === user.id"
+      v-if="channel.owner === user.id && channel.type === 'private'"
     />
     <img
       id="leave-img"
@@ -124,7 +123,7 @@ import MembersListBox from "./ChannelBox/MembersListBox.vue";
 import { getUrlOf } from "@/router";
 import socket from "@/socket";
 import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
-import InvitationModal from "../game/invitation/InvitationModal.vue";
+import InvitationModal from "../Game/invitation/InvitationModal.vue";
 import AddMember from "./AddMember.vue";
 import MyModal from "../users/UserFriends/MyModal.vue";
 

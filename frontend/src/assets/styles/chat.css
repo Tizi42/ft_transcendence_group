@@ -172,7 +172,12 @@
 }
 
 .welcome-chat {
-    margin-top: 20px;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .div-message-input {
@@ -461,7 +466,7 @@
     align-items: center;
 }
 
-.list-my-channels li img {
+.groupe-img {
     max-width: 50px;
     border-radius: 100%;
     flex: 1;
@@ -469,6 +474,10 @@
 
 .list-my-channels li h3 {
     flex: 2;
+}
+
+.hided_channel {
+    width: 30px;
 }
 
 #list-all-channels {
