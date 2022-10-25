@@ -1,6 +1,5 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
-import { FriendShip } from 'src/users/utils/types';
 import { ChannelService } from 'src/channel/channel.service';
 import { AppGateway } from '../gateway';
 import { UsersService } from '../users/users.service';
@@ -25,13 +24,11 @@ export class ChatGateway extends AppGateway {
   async handleDisconnect(client: any) {}
 
   @SubscribeMessage('send_message')
-  async handleMessage(
-    @MessageBody() data: any,
-    @ConnectedSocket() socket: Socket,
-  ) {
+  async handleMessage(@MessageBody() data: any) {
     const message = await this.chatService.saveMessage(data);
 
     this.server.sockets.to(data.dest).to(data.author).emit('receive_message');
+    this.server.sockets.to(data.dest).emit('receive_message_notification');
 
     return message;
   }
@@ -50,6 +47,7 @@ export class ChatGateway extends AppGateway {
     const message = await this.chatService.saveChannelMessage(data, user);
 
     this.server.sockets.to(channel.name).emit('receive_channel_message');
+    this.server.sockets.to(channel.name).emit('receive_channel_notification', user.id);
     
     return message;
   }

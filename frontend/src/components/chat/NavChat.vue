@@ -23,7 +23,7 @@ import { defineComponent, ref, Ref, defineEmits, defineExpose } from "vue";
 const isActive: Ref<string> = ref("players");
 const receiver: Ref<number> = ref(-1);
 const history: Ref<any> = ref([]);
-
+const emit = defineEmits(["selectedNav", "resetReceiver", "clearHistory"]);
 const select = (id: string) => {
   isActive.value = id;
   receiver.value = -1;
@@ -32,8 +32,6 @@ const select = (id: string) => {
   emit("resetReceiver", -1);
   emit("clearHistory", []);
 };
-
-const emit = defineEmits(["selectedNav", "resetReceiver", "clearHistory"]);
 
 defineExpose(
   defineComponent({

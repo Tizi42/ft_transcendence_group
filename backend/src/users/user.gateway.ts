@@ -51,6 +51,13 @@ export class UserGateway extends AppGateway {
     this.server.sockets.to(socket.id).emit('ignore_notification');
   }
 
+  @SubscribeMessage('remove_chat_notification')
+  async ignoreChatNotifcation(
+    @ConnectedSocket() socket: Socket
+  ) {
+    this.server.sockets.to(socket.id).emit('ignore_chat_notification');
+  }
+
   @SubscribeMessage('update_friend')
   async onFriendAccept(@MessageBody() data: FriendShip) {
     this.server.sockets.to(data.from).to(data.to).emit('friend_update');

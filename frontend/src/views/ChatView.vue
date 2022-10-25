@@ -36,7 +36,7 @@
         v-if="receiverProfile || selectedChannel != -1"
       />
       <MessageInput
-        v-if="(receiver != -1 || selectedChannel != -1) && receiverProfile"
+        v-if="(receiver != -1 && receiverProfile) || selectedChannel != -1"
         :user="user"
         :receiver="receiver"
         :selectedChannel="selectedChannel"
@@ -194,12 +194,14 @@ socket.on("friend_login_logout", async () => {
 
 onBeforeMount(async () => {
   user.doFetchFriends();
+  socket.emit("remove_chat_notification");
 });
 
 onBeforeUnmount(() => {
   socket.off("channel_updated");
   socket.off("banned_user");
   socket.off("friend_login_logout");
+  socket.emit("remove_chat_notification");
 });
 
 defineExpose(
