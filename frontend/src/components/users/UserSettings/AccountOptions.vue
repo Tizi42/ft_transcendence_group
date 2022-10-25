@@ -61,7 +61,7 @@ async function toggle2FA() {
       name: "2FA",
     });
   } else {
-    await fetch("http://10.13.3.5:3000/api/auth/2fa/turn-off", {
+    await fetch("http://10.11.4.13:3000/api/auth/2fa/turn-off", {
       credentials: "include",
     })
       .then((response) => {

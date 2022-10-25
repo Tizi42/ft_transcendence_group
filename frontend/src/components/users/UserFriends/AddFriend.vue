@@ -64,7 +64,7 @@ function onClickSearch() {
 
   console.log(input.value);
   axios
-    .get("http://10.13.3.5:3000/api/users/info/" + input.value)
+    .get("http://10.11.4.13:3000/api/users/info/" + input.value)
     .then((response) => {
       console.log(response);
       if (response.data) {
@@ -94,7 +94,7 @@ async function onSend() {
     to: targetUser.value.id,
   };
   axios
-    .post("http://10.13.3.5:3000/api/users/friends/add", {
+    .post("http://10.11.4.13:3000/api/users/friends/add", {
       id1: user.id,
       id2: targetUser.value.id,
     })
@@ -119,7 +119,7 @@ async function onCancel() {
     to: targetUser.value.id,
   };
   axios
-    .post("http://10.13.3.5:3000/api/users/friends/ignore", {
+    .post("http://10.11.4.13:3000/api/users/friends/ignore", {
       id1: user.id,
       id2: targetUser.value.id,
     })

@@ -19,7 +19,7 @@ let email = ref("user2@student.42.fr");
 
 function onSubmit() {
   window.location.href =
-    "http://10.13.3.5:3000/api/auth/dev-only" + "?email=" + email.value;
+    "http://10.11.4.13:3000/api/auth/dev-only" + "?email=" + email.value;
 }
 
 defineExpose(

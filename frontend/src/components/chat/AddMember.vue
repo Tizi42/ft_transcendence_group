@@ -71,7 +71,7 @@ function onClickSearch() {
 
   console.log(searchInput.value);
   axios
-    .get("http://10.13.3.5:3000/api/users/info/" + searchInput.value)
+    .get("http://10.11.4.13:3000/api/users/info/" + searchInput.value)
     .then((response) => {
       if (response.data) {
         targetUser.value = response.data;

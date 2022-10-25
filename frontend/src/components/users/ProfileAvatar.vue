@@ -41,7 +41,7 @@ function onChangeAvatar() {
 
   formdata.append("file", image);
   axios
-    .put("http://10.13.3.5:3000/api/users/uploads/avatar/", formdata, {
+    .put("http://10.11.4.13:3000/api/users/uploads/avatar/", formdata, {
       withCredentials: true,
     })
     .then((res) => {

@@ -113,7 +113,7 @@ function onSend() {
   };
   socket.emit("request_friendship", data);
   axios
-    .post("http://10.13.3.5:3000/api/users/friends/add", {
+    .post("http://10.11.4.13:3000/api/users/friends/add", {
       id1: user.id,
       id2: props.target.id,
     })
@@ -131,7 +131,7 @@ function onSend() {
 
 function onCancel() {
   axios
-    .post("http://10.13.3.5:3000/api/users/friends/ignore", {
+    .post("http://10.11.4.13:3000/api/users/friends/ignore", {
       id1: user.id,
       id2: props.target.id,
     })
