@@ -37,13 +37,12 @@
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose, ref } from "vue";
-import { onBeforeMount } from "vue";
+import { onBeforeMount, onBeforeUnmount } from "vue";
 import { useUserStore } from "@/stores/user";
 import FriendItem from "./FriendItem.vue";
 import FriendReqItem from "./FriendReqItem.vue";
 import AddFriend from "./AddFriend.vue";
 import MyModal from "./MyModal.vue";
-import socket from "@/socket";
 
 const user = useUserStore();
 const addWindow = ref(false);
@@ -59,14 +58,6 @@ function hide() {
 onBeforeMount(() => {
   user.doFetchFriends();
   user.doFetchPending();
-  socket.on("receive_friendship", () => {
-    user.doFetchPending();
-    user.doFetchFriends();
-  });
-  socket.on("friend_update", () => {
-    user.doFetchFriends();
-    user.doFetchPending();
-  });
 });
 
 defineExpose(
