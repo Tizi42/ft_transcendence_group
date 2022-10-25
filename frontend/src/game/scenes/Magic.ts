@@ -57,7 +57,7 @@ export default class MagicScene extends Phaser.Scene {
     this.shield_left.alpha = 0;
 
     this.shield_right = this.add.sprite(
-      this.width * 0.975, 
+      this.width * 0.975,
       this.height * 0.5,
       "shieldR"
     );
@@ -84,8 +84,10 @@ export default class MagicScene extends Phaser.Scene {
       this.height * 0.1,
       "spell"
     );
-    this.spell_left.setScale(0.2);
-    this.spell_right.setScale(0.2);
+    this.spell1_left.setScale(0.2);
+    this.spell2_left.setScale(0.2);
+    this.spell1_right.setScale(0.2);
+    this.spell2_right.setScale(0.2);
 
     // set up world bounds
     this.physics.world.setBounds(-100, 0, this.width + 200, this.height);
@@ -164,8 +166,8 @@ export default class MagicScene extends Phaser.Scene {
         if (data.launcher == "left") this.shield_left.alpha = 1;
         else this.shield_right.alpha = 1;
       } else if (data.effect == -5) {
-        if (data.launcher == "left") this.shield_left.alpha = 1;
-        else this.shield_right.alpha = 1;
+        if (data.launcher == "left") this.shield_left.alpha = 0;
+        else this.shield_right.alpha = 0;
       }
     });
   }
