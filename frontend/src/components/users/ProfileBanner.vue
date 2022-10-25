@@ -5,7 +5,11 @@
       <p v-if="!editingMode" id="info-name">
         {{ user.displayName }}
       </p>
-      <form v-if="editingMode" id="info-form" @submit.prevent="onSubmit">
+      <form
+        v-if="editingMode"
+        id="info-form"
+        @submit.prevent="onSubmitDisplayName"
+      >
         <input
           v-model="newname"
           class="input-textarea"
@@ -13,7 +17,6 @@
           required="true"
           autofocus
           maxlength="16"
-          :style="{ border: inputBorder }"
         />
       </form>
       <p id="info-id">&nbsp;user_id: {{ user.id }}</p>
@@ -21,12 +24,7 @@
       <button v-if="!editingMode" class="edit-button" @click="onClickEdit">
         edit
       </button>
-      <button
-        v-if="editingMode"
-        class="edit-button"
-        form="info-form"
-        @click="onSubmit"
-      >
+      <button v-if="editingMode" class="edit-button" form="info-form">
         save
       </button>
     </div>
@@ -42,14 +40,13 @@ import { getUrlOf } from "@/router";
 const user = useUserStore();
 const editingMode: Ref<boolean> = ref(false);
 const newname: Ref<string> = ref("");
-const inputBorder: Ref<string> = ref("none");
 
 function onClickEdit() {
   newname.value = user.displayName;
   editingMode.value = !editingMode.value;
 }
 
-async function onSubmit() {
+async function onSubmitDisplayName() {
   if (newname.value === "") {
     return;
   }
@@ -70,7 +67,6 @@ async function onSubmit() {
       .then((data) => {
         console.log("data = ", data);
         if (data.msg && data.msg === "bad_name") {
-          inputBorder.value = "4px solid red";
           alert("This name is already picked !");
         } else {
           user.doFetch();
@@ -80,7 +76,7 @@ async function onSubmit() {
       .catch((error) => {
         console.log("error :", error);
       });
-  }
+  } else editingMode.value = false;
 }
 
 defineExpose(

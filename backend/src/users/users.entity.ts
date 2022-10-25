@@ -1,6 +1,5 @@
-import { channel } from "diagnostics_channel";
-import { Channel } from "src/channel/entities/channel.entity";
-import { Chat } from "src/chat/entities/chat.entity";
+import { Channel } from "../channel/entities/channel.entity";
+import { Chat } from "../chat/entities/chat.entity";
 import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'users' })
@@ -65,10 +64,10 @@ export class User {
   @Column({ default: "offline" })
   status: string;
 
-  @OneToMany(() => Chat, (messages) => messages.author)
+  @OneToMany(() => Chat, (messages: Chat) => messages.author)
   messages?: Chat[];
 
-  @ManyToMany(() => Channel, (channel) => channel.members)
+  @ManyToMany(() => Channel, (channel: Channel) => channel.members)
   channels: Channel[];
 
   @Column("int", { array: true, default: {} })

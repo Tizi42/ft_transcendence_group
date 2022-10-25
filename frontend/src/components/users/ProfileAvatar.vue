@@ -3,7 +3,7 @@
     class="avatar-frame"
     ref="avatarFrame"
     :style="{
-      'background-image': 'url(' + user.avatarUrl + `?_=${+new Date()}` + ')',
+      'background-image': 'url(' + user.avatarUrl + ')',
     }"
   >
     <div class="upload-overlay" @click="onClickFrame">

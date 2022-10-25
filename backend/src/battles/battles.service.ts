@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "src/users/users.entity";
-import { UsersService } from "src/users/users.service";
+import { User } from "../users/users.entity";
+import { UsersService } from "../users/users.service";
 import { Repository } from "typeorm";
 import { Battle } from "./battle.entity";
 import { BattleShow } from "./utils/battle-show";
@@ -79,7 +79,7 @@ export class BattlesService {
     });
   }
 
-  findOne(id: number): Promise<Battle> {
+  findOne(id: number): Promise<Battle | null> {
     return this.battlesRepository.findOneBy({id});
   }
 
@@ -87,8 +87,9 @@ export class BattlesService {
     await this.battlesRepository.delete(id);
   }
 
-  async end(id: number, winner: number, score1: number, score2: number) {
+  async end(id: number, winner: number, score1: number, score2: number): Promise<boolean> {
     let battle = await this.battlesRepository.findOneBy({id});
+    if (battle == null) return false;
     let draw: boolean = false;
     let winner1: boolean = (winner == battle.opponent1 ? true : false);
     let winner2: boolean = (winner == battle.opponent2 ? true : false);
@@ -97,9 +98,13 @@ export class BattlesService {
     battle.score1 = score1;
     battle.score2 = score2;
     battle.isFinished = true;
-    this.battlesRepository.save(battle);
-    this.usersService.updateResult(battle.opponent1, winner1, draw);
-    this.usersService.updateResult(battle.opponent2, winner2, draw);
+    let player1: User | null = await this.usersService.findOne(battle.opponent1);
+    let player2: User | null = await this.usersService.findOne(battle.opponent2);
+    if (player1 == null || player2 == null) return false;
+    this.usersService.updateResult(player1, winner1, draw);
+    this.usersService.updateResult(player2, winner2, draw);
+    await this.battlesRepository.save(battle);
+    return true;
   }
 
   async addOne(game: BattleDto): Promise<number> {
@@ -118,14 +123,14 @@ export class BattlesService {
 
   getRandomMode(): string {
     let i = this.getRandomInt(3);
-    console.log(i);
     if (i == 0) return "speed";
     if (i == 1) return "magic";
     return "normal";
   }
 
-  async createFakeBattles(nb: number, maxId: number)
+  async createFakeBattles(nb: number, maxId: number): Promise<number>
   {
+    let created = 0;
     for (var i = 0; i < nb; i++) {
       let newBattle = new Battle();
       let newBattleDto = new BattleDto();
@@ -145,12 +150,13 @@ export class BattlesService {
       newBattleDto.opponent2 = newBattle.opponent2;
       newBattle.isFinished = true;
       let battleId = await this.addOne(newBattleDto);
-      await this.end(battleId, newBattle.winner, newBattle.score1, newBattle.score2);
+      if (await this.end(battleId, newBattle.winner, newBattle.score1, newBattle.score2))
+        created++;
     }
 
     // add draw situation
     let newBattle = new Battle();
-    newBattle.opponent1 = 11;
+    newBattle.opponent1 = 1;
     newBattle.opponent2 = 2;
     newBattle.winner = -1;
     newBattle.score1 = 4;
@@ -162,7 +168,9 @@ export class BattlesService {
     newBattleDto.opponent2 = newBattle.opponent2;
     newBattleDto.mode = newBattle.mode;
     let battleId = await this.addOne(newBattleDto);
-    this.end(battleId, newBattle.winner, newBattle.score1, newBattle.score2);
+    if (await this.end(battleId, newBattle.winner, newBattle.score1, newBattle.score2))
+      created++;
+    return created;
   }
 
   removeAll() {

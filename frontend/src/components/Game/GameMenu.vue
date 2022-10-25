@@ -38,8 +38,14 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, onMounted, Ref } from "vue";
-import { ref } from "vue";
+import {
+  defineComponent,
+  defineExpose,
+  onBeforeMount,
+  Ref,
+  ref,
+  onBeforeUnmount,
+} from "vue";
 import LoadingRing from "../utils/LoadingRing.vue";
 import router from "@/router/index";
 import socket from "@/socket";
@@ -57,9 +63,9 @@ const modeTitle: Ref<Array<string>> = ref([
 ]);
 const mode: Ref<Array<string>> = ref(["normal", "magic", "speed"]);
 const modeDescription: Ref<Array<string>> = ref([
-  "Classic pong : no magic power, just a simple ball and 10 points until victory.",
-  "Pong with some magic powers : fireball, windball, super paddle, ...",
-  "Classic pong except speed\nhas been increased.",
+  "Classic pong : no magic power, just a simple ball and at least 11 points until victory.",
+  "Pong with 6 magic powers to be discovered: fireball, shield wall, ying yang keys... Press shift to use a power when it shows up.",
+  "Double speed, double fun! \nPlayer who misses less balls within 3 minutes will win the game.",
 ]);
 const modeIcons: Array<URL> = [
   new URL("../../assets/icons/gameMode/modeNormal.svg", import.meta.url),
@@ -115,29 +121,34 @@ async function startGame() {
   );
 }
 
-socket.on("game_found", (data: any) => {
-  console.log("Entering game room! ", data);
-  router.push({ name: "pong", params: { room_name: data } });
+function handleMenu(event: KeyboardEvent) {
+  if (router.currentRoute.value.fullPath == "/play") {
+    if (event.key == "Enter") {
+      startGame();
+    }
+    if (event.key == "Escape") {
+      cancel();
+    }
+    if (event.key == "ArrowLeft" && !waiting.value) {
+      changeMode(false);
+    }
+    if (event.key == "ArrowRight" && !waiting.value) {
+      changeMode(true);
+    }
+  }
+}
+
+onBeforeMount(() => {
+  socket.on("game_found", (data: any) => {
+    router.push({ name: "pong", params: { room_name: data } });
+  });
+  show.value = true;
+  window.addEventListener("keyup", handleMenu);
 });
 
-onMounted(() => {
-  show.value = true;
-  window.addEventListener("keyup", (event) => {
-    if (router.currentRoute.value.fullPath == "/play") {
-      if (event.key == "Enter") {
-        startGame();
-      }
-      if (event.key == "Escape") {
-        cancel();
-      }
-      if (event.key == "ArrowLeft" && !waiting.value) {
-        changeMode(false);
-      }
-      if (event.key == "ArrowRight" && !waiting.value) {
-        changeMode(true);
-      }
-    }
-  });
+onBeforeUnmount(() => {
+  socket.off("game_found");
+  window.removeEventListener("keyup", handleMenu);
 });
 
 defineExpose(

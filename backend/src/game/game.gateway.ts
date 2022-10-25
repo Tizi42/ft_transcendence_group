@@ -298,7 +298,14 @@ export class GameGateway extends AppGateway {
   async onLaunchSPell(@MessageBody() data: any) {
     const room = GameGateway.rooms.get(data.room_name);
     if (!room) return;
-    room.on_spell_lauched(data.user_id, data.spell_slot);
+    room.on_spell_lauched(data.user_id);
+  }
+
+  @SubscribeMessage('switch_spell')
+  async onSwitchPell(@MessageBody() data: any) {
+    const room = GameGateway.rooms.get(data.room_name);
+    if (!room) return;
+    room.on_switch_spell(data.user_id);
   }
 
   getRandomInt(max: number = 100) : number {

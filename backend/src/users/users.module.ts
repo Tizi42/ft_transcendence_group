@@ -36,15 +36,23 @@ import { UsersService } from './users.service';
 })
 
 export class UsersModule {
-  constructor(private usersService: UsersService) {
-    if (false) {
-      console.log("creating 10 fake users");
+  constructor(private usersService: UsersService,
+    private readonly battlesService: BattlesService) {
+    if (true) {
       this.usersService.removeAll();
+      this.battlesService.removeAll();
       setTimeout(() => {
-      this.usersService.createFakeUsers(10);
+        console.log("creating 10 fake users");
+        this.usersService.createFakeUsers(10);
       }, 1000);
+      setTimeout(() => {
+        console.log("creating fake battles");
+        this.battlesService.createFakeBattles(20, 9).then((res) => {
+          console.log(res, "battles created");
+        })
+      }, 2000);
     } else {
-      console.log("don't create fake users");
+      console.log("don't create fake users and battles");
     }
   }
 }

@@ -1,6 +1,7 @@
 import { ref, Ref } from "vue";
 import { defineStore } from "pinia";
 import { User } from "@backend/users/users.entity";
+import socket from "@/socket";
 import { getUrlOf } from "@/router";
 
 type voidFunction = () => void;
@@ -100,6 +101,18 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
         console.log(error);
       });
   }
+
+  let i = 0;
+  socket.on("receive_friendship", () => {
+    console.log("received friend", i++);
+    doFetchPending();
+    doFetchFriends();
+  });
+
+  socket.on("friend_update", () => {
+    doFetchFriends();
+    doFetchPending();
+  });
 
   return {
     id,

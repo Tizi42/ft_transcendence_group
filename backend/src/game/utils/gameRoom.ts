@@ -1,6 +1,25 @@
 import { Server } from 'socket.io';
+import { clearInterval } from 'timers';
 import { BattlesService } from '../../battles/battles.service';
 import GameStatus from "./type";
+
+interface velocityInit {
+  normal: number,
+  magic: number,
+  speed: number,
+};
+
+interface paddlePosition {
+  x: number,
+  y: number,
+  height_half: number,
+  velocity: velocityInit,
+};
+
+interface paddleObject {
+  left: paddlePosition,
+  right: paddlePosition
+};
 
 export class GameRoom {
 
@@ -30,18 +49,18 @@ export class GameRoom {
   readonly ball_radius = 12.8;
   readonly paddle_width_half = 5;
   readonly max_angle = Math.PI / 4;
-  readonly hit_range = () : number => { return this.ball_velocity * 0.75 };
-  readonly ball_velocity_init = {
+  readonly hit_range = () : number => { return this.ball_velocity * 0.5 + 1.5 };
+  readonly ball_velocity_init: velocityInit = {
     normal: 7.5, // 7.5 pixels per 25ms, 300 pixels per 1000ms
     magic: 7.5,
     speed: 15,
   };
-  readonly paddle_velocity_init = {
+  readonly paddle_velocity_init: velocityInit = {
     normal: 10,
     magic: 10,
     speed: 20,
   };
-  readonly acceleration = {
+  readonly acceleration: velocityInit = {
     normal: 1.15,
     magic: 1.15,
     speed: 1.05,
@@ -55,7 +74,7 @@ export class GameRoom {
   ball_x: number;
   ball_y: number;
   ball_velocity: number;
-  paddle = {
+  paddle: paddleObject = {
     left: {
       x: this.width * 0.02,
       y: this.height * 0.5,
@@ -79,14 +98,16 @@ export class GameRoom {
   spell_spawn_frequencey = 5000;
 
   paddle_sized_duration = 5000;
+  paddle_resize = 15;
 
   reverse_duration = 5000;
   L_reverse_effect = 1;
   R_reverse_effect = 1;
-
+  
   L_speed_ball = 0;
   R_speed_ball = 0;
   previous_ball_speed = 0;
+  speed_ball_factor = 1.5;
 
   L_shield = 0;
   R_shield = 0;
@@ -110,7 +131,7 @@ export class GameRoom {
     this.mode = mode;
     this.room_name = l + " vs " + r;
     this.server = server;
-    this.ball_velocity = this.ball_velocity_init[mode];
+    this.ball_velocity = this.ball_velocity_init[mode as keyof velocityInit];
     this.game_status = "not_ready";
   }
 
@@ -125,15 +146,21 @@ export class GameRoom {
       opponent2: this.playerR,
       mode: this.mode,
     });
-    this.getRandomInt(1) === 1 ? this.on_launch("toRight") : this.on_launch("toLeft");
     this.game_status = "running";
+    this.getRandomInt(1) === 1 ? this.on_launch("toRight") : this.on_launch("toLeft");
   }
 
   on_launch(direction: string)
   {
     console.log("on ball launch");
+    if (this.game_status === "ended")
+    {
+      console.log("nope, game is ended");
+      clearInterval(this.interval);
+      return;
+    }
     // intial ball's launch position and velocity
-    this.ball_velocity = this.ball_velocity_init[this.mode];
+    this.ball_velocity = this.ball_velocity_init[this.mode as keyof velocityInit];
     const randomHeight = this.getRandomNumberBetween(20, 571); // height 591 - 20 
     const randVelocity = this.getRandomVelocity(direction);
     this.ball_x = this.width / 2;
@@ -164,11 +191,31 @@ export class GameRoom {
     });
   }
 
-  on_spell_lauched(user_id: number, spell_slot: number)
+  on_switch_spell(user_id: number) {
+    let tmp: number;
+  
+    if (this.playerL === user_id) {
+      tmp = this.spell2_L;
+      this.spell2_L = this.spell1_L;
+      this.spell1_L = tmp;
+    } else {
+      tmp = this.spell2_R;
+      this.spell2_R = this.spell1_R;
+      this.spell1_R = tmp;
+    }
+    this.server.to(this.room_name).emit("refresh_spells", {
+      spell1_L: this.spell1_L,
+      spell2_L: this.spell2_L,
+      spell1_R: this.spell1_R,
+      spell2_R: this.spell2_R,
+    });
+  }
+
+  on_spell_lauched(user_id: number)
   {
-    let effect;
-    let side: string;
-    let target: string;
+    let effect: number = 0;
+    let side: string = "";
+    let target: string = "";
 
     if (this.playerL === user_id) {
       side = "left";
@@ -179,7 +226,7 @@ export class GameRoom {
     }
 
     if (side == "left") {
-      if (!spell_slot) {
+      if (this.spell1_L) {
         effect = this.spell1_L;
         this.spell1_L = 0;
       } else {
@@ -187,7 +234,7 @@ export class GameRoom {
         this.spell2_L = 0;
       }
     } else {
-      if (!spell_slot) {
+      if (this.spell1_R) {
         effect = this.spell1_R;
         this.spell1_R = 0;
       } else {
@@ -197,21 +244,21 @@ export class GameRoom {
     }
 
     if (effect == 1) {
-      this.paddle[side].height_half += 10;
+      this.paddle[side as keyof paddleObject].height_half += this.paddle_resize;
       setTimeout(() => {
-        this.paddle[side].height_half -= 10;
+        this.paddle[side as keyof paddleObject].height_half -= this.paddle_resize;
         this.server.to(this.room_name).emit("update_paddle_size", {
-          left: this.paddle["left"].height_half,
-          right: this.paddle["right"].height_half,
+          left: this.paddle["left" as keyof paddleObject].height_half,
+          right: this.paddle["right" as keyof paddleObject].height_half,
         });
       }, this.paddle_sized_duration);
-    } else if (effect == 2) {
-      this.paddle[target].height_half -= 10;
+    } else if (effect == 2 && this.paddle[target as keyof paddleObject].height_half > this.paddle_resize) {
+      this.paddle[target as keyof paddleObject].height_half -= this.paddle_resize;
       setTimeout(() => {
-        this.paddle[target].height_half += 10;
+        this.paddle[target as keyof paddleObject].height_half += this.paddle_resize;
         this.server.to(this.room_name).emit("update_paddle_size", {
-          left: this.paddle["left"].height_half,
-          right: this.paddle["right"].height_half,
+          left: this.paddle["left" as keyof paddleObject].height_half,
+          right: this.paddle["right" as keyof paddleObject].height_half,
         });
       }, this.paddle_sized_duration);
     } else if (effect == 3) {
@@ -280,12 +327,12 @@ export class GameRoom {
     if (side == "left") dir *= this.L_reverse_effect;
     else dir *= this.R_reverse_effect;
 
-    this.paddle[side].y += this.paddle[side].velocity[this.mode] * dir;
+    this.paddle[side as keyof paddleObject].y += this.paddle[side as keyof paddleObject].velocity[this.mode as keyof velocityInit] * dir;
 
-    if (this.paddle[side].y < this.paddle[side].height_half)
-      this.paddle[side].y = this.paddle[side].height_half;
-    else if (this.paddle[side].y > this.height - this.paddle[side].height_half) 
-      this.paddle[side].y = this.height - this.paddle[side].height_half;
+    if (this.paddle[side as keyof paddleObject].y < this.paddle[side as keyof paddleObject].height_half)
+      this.paddle[side as keyof paddleObject].y = this.paddle[side as keyof paddleObject].height_half;
+    else if (this.paddle[side as keyof paddleObject].y > this.height - this.paddle[side as keyof paddleObject].height_half) 
+      this.paddle[side as keyof paddleObject].y = this.height - this.paddle[side as keyof paddleObject].height_half;
   }
 
   next_ball_pos() {
@@ -303,9 +350,19 @@ export class GameRoom {
     if (ball_left < this.leftBounds && this.L_shield) {
         this.ball_velocity_x *= -1;
         this.L_shield = 0;
+        this.server.to(this.room_name).emit("apply_effect", {
+          launcher: "left",
+          target: "right",
+          effect: -5,
+        });
     } else if (ball_right > this.rightBounds && this.R_shield) {
         this.ball_velocity_x *= -1;
         this.R_shield = 0;
+        this.server.to(this.room_name).emit("apply_effect", {
+          launcher: "right",
+          target: "left",
+          effect: -5,
+        });
     }
 
     // check if ball collides with world bound
@@ -320,10 +377,10 @@ export class GameRoom {
       ball_top < this.paddle.left.y + this.paddle.left.height_half &&
       ball_bottom > this.paddle.left.y - this.paddle.left.height_half
     ){
-      this.ball_velocity *= this.acceleration[this.mode];
+      this.ball_velocity *= this.acceleration[this.mode as keyof velocityInit];
       if (this.L_speed_ball) {
         if (!this.previous_ball_speed) this.previous_ball_speed = this.ball_velocity;
-        this.ball_velocity *= 1.5;
+        this.ball_velocity *= this.speed_ball_factor;
         this.L_speed_ball -= 1;
       } else if (this.previous_ball_speed) {
         this.ball_velocity = this.previous_ball_speed;
@@ -339,10 +396,10 @@ export class GameRoom {
       ball_top < this.paddle.right.y + this.paddle.right.height_half &&
       ball_bottom > this.paddle.right.y - this.paddle.right.height_half
     ){
-      this.ball_velocity *= this.acceleration[this.mode];
+      this.ball_velocity *= this.acceleration[this.mode as keyof velocityInit];
       if (this.R_speed_ball) {
         if (!this.previous_ball_speed) this.previous_ball_speed = this.ball_velocity;
-        this.ball_velocity *= 1.5;
+        this.ball_velocity *= this.speed_ball_factor;
         this.R_speed_ball -= 1;
       } else if (this.previous_ball_speed) {
         this.ball_velocity = this.previous_ball_speed;
@@ -390,6 +447,7 @@ export class GameRoom {
   }
 
   game_end(){
+    this.game_status = "ended";
     if (this.mode === "speed")
       clearInterval(this.interval);
     this.winner = this.score_left > this.score_right ? this.playerL : this.playerR;
@@ -401,7 +459,6 @@ export class GameRoom {
     this.server.to(this.room_name).emit("end", {
       winner: winner_side,
     });
-    this.game_status = "ended";
     this.save_game();
     this.reset_game();
   }

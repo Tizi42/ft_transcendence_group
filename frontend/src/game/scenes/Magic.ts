@@ -5,17 +5,25 @@ import gameInfo from "../gameInfo";
 export default class MagicScene extends Phaser.Scene {
   width: number;
   height: number;
-
   ball: Phaser.Physics.Arcade.Sprite;
   paddle_left: Phaser.Physics.Arcade.Sprite;
   paddle_right: Phaser.Physics.Arcade.Sprite;
-  spell_left: Phaser.GameObjects.Sprite;
-  spell_right: Phaser.GameObjects.Sprite;
-  cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+  spell1_left: Phaser.GameObjects.Sprite;
+  spell2_left: Phaser.GameObjects.Sprite;
+  spell1_right: Phaser.GameObjects.Sprite;
+  spell2_right: Phaser.GameObjects.Sprite;
+  shield_left: Phaser.GameObjects.Sprite;
+  shield_right: Phaser.GameObjects.Sprite;
+  keyLeft: Phaser.Input.Keyboard.Key;
+  keyUp: Phaser.Input.Keyboard.Key;
+  keyRight: Phaser.Input.Keyboard.Key;
+  keyDown: Phaser.Input.Keyboard.Key;
+  keyShift: Phaser.Input.Keyboard.Key;
 
+  switch_time = 0;
+  cast_time = 0;
   spell1 = 0;
   spell2 = 0;
-  active_spell = 0;
 
   paddle_left_size = 1;
   paddle_right_size = 1;
@@ -37,26 +45,52 @@ export default class MagicScene extends Phaser.Scene {
     this.add.image(
       this.cameras.main.centerX,
       this.cameras.main.centerY,
-      "background"
+      "magicbackground"
     );
 
     // set up spellboard
-    this.add.image(this.width * 0.45, this.height * 0.1, "spellboard");
-    this.add.image(this.width * 0.56, this.height * 0.1, "spellboard");
+    this.add.image(this.width * 0.4345, this.height * 0.127, "spellboardL");
+    this.add.image(this.width * 0.5755, this.height * 0.127, "spellboardR");
+
+    this.shield_left = this.add.sprite(
+      this.width * 0.025,
+      this.height * 0.5,
+      "shieldL"
+    );
+    this.shield_left.alpha = 0;
+
+    this.shield_right = this.add.sprite(
+      this.width * 0.975,
+      this.height * 0.5,
+      "shieldR"
+    );
+    this.shield_right.alpha = 0;
 
     // set up spell
-    this.spell_left = this.add.sprite(
+    this.spell2_left = this.add.sprite(
+      this.width * 0.42,
+      this.height * 0.153,
+      "spell"
+    );
+    this.spell1_left = this.add.sprite(
       this.width * 0.45,
       this.height * 0.1,
       "spell"
     );
-    this.spell_right = this.add.sprite(
+    this.spell2_right = this.add.sprite(
+      this.width * 0.59,
+      this.height * 0.153,
+      "spell"
+    );
+    this.spell1_right = this.add.sprite(
       this.width * 0.56,
       this.height * 0.1,
       "spell"
     );
-    this.spell_left.setScale(0.2);
-    this.spell_right.setScale(0.2);
+    this.spell1_left.setScale(0.2);
+    this.spell2_left.setScale(0.2);
+    this.spell1_right.setScale(0.2);
+    this.spell2_right.setScale(0.2);
 
     // set up world bounds
     this.physics.world.setBounds(-100, 0, this.width + 200, this.height);
@@ -80,7 +114,11 @@ export default class MagicScene extends Phaser.Scene {
     );
 
     //  set up input event
-    this.cursors = this.input.keyboard.createCursorKeys();
+    this.keyLeft = this.input.keyboard.addKey(37);
+    this.keyUp = this.input.keyboard.addKey(38);
+    this.keyRight = this.input.keyboard.addKey(39);
+    this.keyDown = this.input.keyboard.addKey(40);
+    this.keyShift = this.input.keyboard.addKey(16);
 
     // collide ball with paddle
     this.physics.add.collider(this.ball, this.paddle_left);
@@ -96,12 +134,15 @@ export default class MagicScene extends Phaser.Scene {
 
     // listen for game end
     socket.on("end", (data: any) => {
+      this.before_change_scene();
       this.scene.start("GameOverScene", { winner: data.winner });
     });
 
     socket.on("refresh_spells", (data: any) => {
-      this.spell_left.setFrame(data.spell1_L);
-      this.spell_right.setFrame(data.spell1_R);
+      this.spell1_left.setFrame(data.spell1_L);
+      this.spell2_left.setFrame(data.spell2_L);
+      this.spell1_right.setFrame(data.spell1_R);
+      this.spell2_right.setFrame(data.spell2_R);
       if (gameInfo.user_role === "left") {
         this.spell1 = data.spell1_L;
         this.spell2 = data.spell2_L;
@@ -129,30 +170,42 @@ export default class MagicScene extends Phaser.Scene {
           this.Rpaddle_alpha = 1;
           this.paddle_right.alpha = 1;
         }
+      } else if (data.effect == 5) {
+        if (data.launcher == "left") this.shield_left.alpha = 1;
+        else this.shield_right.alpha = 1;
+      } else if (data.effect == -5) {
+        if (data.launcher == "left") this.shield_left.alpha = 0;
+        else this.shield_right.alpha = 0;
       }
     });
   }
 
-  update() {
+  update(time: number, delta: number) {
+    this.switch_time += delta;
+    this.cast_time += delta;
     if (this.Lpaddle_eye_effect) {
-      if (this.Lpaddle_alpha <= 0) this.Lpaddle_alpha = 1;
+      if (this.Lpaddle_alpha <= -0.8) this.Lpaddle_alpha = 1;
       else this.Lpaddle_alpha -= 0.05;
-      this.paddle_left.alpha = this.Lpaddle_alpha;
+      if (this.Lpaddle_alpha >= 0) this.paddle_left.alpha = this.Lpaddle_alpha;
     } else if (this.Rpaddle_eye_effect) {
-      if (this.Rpaddle_alpha <= 0) this.Rpaddle_alpha = 1;
+      if (this.Rpaddle_alpha <= -0.8) this.Rpaddle_alpha = 1;
       else this.Rpaddle_alpha -= 0.05;
-      this.paddle_right.alpha = this.Rpaddle_alpha;
+      if (this.Rpaddle_alpha >= 0) this.paddle_right.alpha = this.Rpaddle_alpha;
     }
 
-    if (this.cursors.up.isDown) {
+    if (this.keyUp.isDown) {
       this.update_paddle(-1);
-    } else if (this.cursors.down.isDown) {
+    } else if (this.keyDown.isDown) {
       this.update_paddle(1);
-    } else if (this.cursors.shift.isDown) {
+    } else if (this.keyLeft.isDown || this.keyRight.isDown) {
+      socket.emit("switch_spell", {
+        user_id: gameInfo.user_id,
+        room_name: gameInfo.room_name,
+      });
+    } else if (this.keyShift.isDown) {
       socket.emit("launch_spell", {
         user_id: gameInfo.user_id,
         room_name: gameInfo.room_name,
-        spell_slot: this.active_spell,
       });
     }
   }
@@ -172,5 +225,13 @@ export default class MagicScene extends Phaser.Scene {
         paddle_move_direction: dir,
       });
     }
+  }
+
+  before_change_scene() {
+    socket.off("game_update");
+    socket.off("end");
+    socket.off("refresh_spells");
+    socket.off("update_paddle_size");
+    socket.off("apply_effect");
   }
 }

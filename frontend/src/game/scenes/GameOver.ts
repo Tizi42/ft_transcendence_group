@@ -11,8 +11,9 @@ export default class GameOverScene extends Phaser.Scene {
   button: Phaser.GameObjects.Sprite;
   text: Phaser.GameObjects.Text;
 
+  i = 0;
   init(data: any) {
-    console.log("init", data);
+    console.log("init", this.i++, data);
     this.winner = data.winner;
   }
 
@@ -34,6 +35,7 @@ export default class GameOverScene extends Phaser.Scene {
         socket.emit("reset_score", {
           user_id: gameInfo.user_id,
         });
+        this.before_change_scene();
         if (gameInfo.mode === "magic") this.scene.start("MagicScene");
         else if (gameInfo.mode === "speed") this.scene.start("SpeedScene");
         else this.scene.start("GameScene");
@@ -68,5 +70,9 @@ export default class GameOverScene extends Phaser.Scene {
     this.button.on("pointerdown", () => {
       this.scene.start("GetReadyScene");
     });
+  }
+
+  before_change_scene() {
+    socket.off("game_start");
   }
 }

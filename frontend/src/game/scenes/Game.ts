@@ -5,19 +5,23 @@ import gameInfo from "../gameInfo";
 export default class GameScene extends Phaser.Scene {
   width: number;
   height: number;
-
   ball: Phaser.Physics.Arcade.Sprite;
   paddle_left: Phaser.Physics.Arcade.Sprite;
   paddle_right: Phaser.Physics.Arcade.Sprite;
-  cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   paddle_pos: number;
   paddle_velocity_max = 10;
+  keyDown: Phaser.Input.Keyboard.Key;
+  keyUp: Phaser.Input.Keyboard.Key;
+
+  i = 0;
 
   constructor() {
     super("GameScene");
+    console.log("construct game scene", this.i++);
   }
 
   create() {
+    console.log("create game scene", this.i++);
     this.width = this.cameras.main.width;
     this.height = this.cameras.main.height;
 
@@ -52,7 +56,8 @@ export default class GameScene extends Phaser.Scene {
     this.paddle_pos = this.height * 0.5;
 
     //  set up input event
-    this.cursors = this.input.keyboard.createCursorKeys();
+    this.keyDown = this.input.keyboard.addKey(40);
+    this.keyUp = this.input.keyboard.addKey(38);
 
     // collide ball with paddle
     this.physics.add.collider(this.ball, this.paddle_left);
@@ -68,14 +73,15 @@ export default class GameScene extends Phaser.Scene {
 
     // listen for game end
     socket.on("end", (data: any) => {
+      this.before_change_scene();
       this.scene.start("GameOverScene", { winner: data.winner });
     });
   }
 
   update() {
-    if (this.cursors.up.isDown) {
+    if (this.keyUp.isDown) {
       this.update_paddle(-1);
-    } else if (this.cursors.down.isDown) {
+    } else if (this.keyDown.isDown) {
       this.update_paddle(1);
     }
   }
@@ -95,5 +101,10 @@ export default class GameScene extends Phaser.Scene {
         paddle_move_direction: dir,
       });
     }
+  }
+
+  before_change_scene() {
+    socket.off("game_update");
+    socket.off("end");
   }
 }

@@ -5,7 +5,7 @@ import { ChatService } from 'src/chat/chat.service';
 import { AppGateway } from 'src/gateway';
 import { UsersService } from 'src/users/users.service';
 import { BattlesService } from '../battles/battles.service';
-import { CreatChannelDto } from './utils/createChannel.dto';
+import { smallDataChannel } from './utils/smallDataChannel.dto';
 import { banMember, leavingChannel, makingAdmin, muteMember } from './utils/types';
 import { UpdatePasswordDto } from './utils/UpdatePassword.dto';
 import { UpdatePrivacyDto } from './utils/updatePrivacy.dto';
@@ -27,9 +27,14 @@ export class ChannelGateway extends AppGateway {
 
   @SubscribeMessage('create_channel')
   async handleCreateChannel(
-    @MessageBody() data: CreatChannelDto,
+    @MessageBody() data: smallDataChannel,
     @ConnectedSocket() socket: Socket,
   ) {
+    const user = await this.chatService.getUserFromSocket(socket);
+
+    if (!user) {
+      return ;
+    }
     const newChannel = await this.channelService.createChannel(data);
   
     if (newChannel != null && newChannel != "password_error" && newChannel != "channel_name_error") {
@@ -49,6 +54,11 @@ export class ChannelGateway extends AppGateway {
   async handleAllMyChannels(
     @ConnectedSocket() socket: Socket,
   ) {
+    const user = await this.chatService.getUserFromSocket(socket);
+
+    if (!user) {
+      return ;
+    }
     const channel = await this.channelService.getAllMyChannels(socket.data.id);
     
     this.server.sockets.to(socket.data.id).emit('receive_all_my_channels', channel);
@@ -59,6 +69,12 @@ export class ChannelGateway extends AppGateway {
   async handleAllChannels(
     @ConnectedSocket() socket: Socket,
   ) {
+    const user = await this.chatService.getUserFromSocket(socket);
+
+    if (!user) {
+      return ;
+    }
+    
     const allChannelsButPrivate = await this.channelService.findAllChannelsAndMembersButPrivate();
     this.server.sockets.to(socket.data.id).emit('receive_all_channels', allChannelsButPrivate);
     this.server.sockets.to(socket.data.id).emit('channel_updated', -1);

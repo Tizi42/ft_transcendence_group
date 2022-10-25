@@ -47,7 +47,12 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeMount, defineComponent, defineExpose } from "vue";
+import {
+  onBeforeMount,
+  defineComponent,
+  defineExpose,
+  onBeforeUnmount,
+} from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import socket from "@/socket";
@@ -87,6 +92,10 @@ onBeforeMount(() => {
   socket.on("notification_settings_changed", () => {
     user.doFetch();
   });
+});
+
+onBeforeUnmount(() => {
+  socket.off("notification_settings_changed");
 });
 
 defineExpose(

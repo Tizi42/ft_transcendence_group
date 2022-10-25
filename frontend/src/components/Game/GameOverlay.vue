@@ -35,7 +35,7 @@
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose, onBeforeMount, defineProps } from "vue";
-import { Ref, ref } from "vue";
+import { Ref, ref, onBeforeUnmount, onMounted } from "vue";
 import OverlayTopBar from "./OverlayTopBar.vue";
 import OverlayBottomBar from "./OverlayBottomBar.vue";
 import GameBox from "./GameBox.vue";
@@ -173,40 +173,25 @@ function quitGame() {
   router.push({ name: "game" });
 }
 
-function changeBackground() {
-  console.log("user wants to change background");
-}
-
 function hideChat() {
   console.log("hide chat");
 }
 
-socket.on("score_update", (data: any) => {
-  console.log("score:", data);
-  scores.value[0] = data.left;
-  scores.value[1] = data.right;
-});
-
-socket.on("quit_game", () => {
-  window.alert("Player has left game, return to game menu...");
-  force_quit.value = true;
-  router.push({ name: "game" });
-});
-
-onBeforeRouteLeave(() => {
-  if (force_quit.value) return true;
-  const answer = window.confirm(
-    "Do you really want to leave? You will quit the game room"
-  );
-  if (!answer) return false;
-  socket.emit("leave_game", {
-    room_name: props.room_name,
-    user_id: user.id,
+onMounted(() => {
+  onBeforeRouteLeave(() => {
+    if (force_quit.value) return true;
+    const answer = window.confirm(
+      "Do you really want to leave? You will quit the game room"
+    );
+    if (!answer) return false;
+    socket.emit("leave_game", {
+      room_name: props.room_name,
+      user_id: user.id,
+    });
   });
 });
 
 onBeforeMount(async () => {
-  console.log("on before mount in game overlay...");
   await getPlayersInfo();
   loadEmojis();
   socket.on("receive_message_ingame", async (data: any) => {
@@ -216,9 +201,28 @@ onBeforeMount(async () => {
     updateEmoji(data);
   });
 
+  socket.on("score_update", (data: any) => {
+    scores.value[0] = data.left;
+    scores.value[1] = data.right;
+  });
+
+  socket.on("quit_game", () => {
+    window.alert("Player has left game, return to game menu...");
+    console.log("force quit !!");
+    force_quit.value = true;
+    router.push({ name: "game" });
+  });
+
   if (user.id === props.playerL_id) user_role.value = "left";
   else if (user.id === props.playerR_id) user_role.value = "right";
   else user_role.value = "watch";
+});
+
+onBeforeUnmount(() => {
+  socket.off("receive_message_ingame");
+  socket.off("receive_emoji_ingame");
+  socket.off("score_update");
+  socket.off("quit_game");
 });
 
 defineExpose(

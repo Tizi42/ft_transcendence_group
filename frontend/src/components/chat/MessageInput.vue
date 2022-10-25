@@ -50,7 +50,16 @@
 
 <script lang="ts" setup>
 import socket from "@/socket";
-import { defineComponent, ref, Ref, defineProps, defineExpose } from "vue";
+import {
+  defineComponent,
+  ref,
+  Ref,
+  defineProps,
+  defineExpose,
+  onBeforeMount,
+  onBeforeUnmount,
+  onUnmounted,
+} from "vue";
 
 interface Props {
   user: any;
@@ -90,8 +99,18 @@ const onSubmit = (receiver: number, selectedChannel: number) => {
   }
 };
 
-socket.on("muted_by", (channelId: number, userId: number) => {
-  console.log("You've been muted by", userId, "in channel id", channelId);
+onBeforeMount(() => {
+  socket.on("muted_by", (channelId: number, userId: number) => {
+    console.log("You've been muted by", userId, "in channel id", channelId);
+  });
+});
+
+onBeforeUnmount(() => {
+  socket.off("muted_by");
+});
+
+onUnmounted(() => {
+  socket.off("muted_by");
 });
 
 defineExpose(
