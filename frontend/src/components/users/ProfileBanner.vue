@@ -13,6 +13,7 @@
           required="true"
           autofocus
           maxlength="16"
+          :style="{ border: inputBorder }"
         />
       </form>
       <p id="info-id">&nbsp;user_id: {{ user.id }}</p>
@@ -33,33 +34,51 @@
 </template>
 
 <script lang="ts" setup defer>
-import { ref, defineComponent, defineExpose } from "vue";
-import axios from "axios";
+import { ref, defineComponent, defineExpose, Ref } from "vue";
 import { useUserStore } from "@/stores/user";
 import ProfileAvatar from "./ProfileAvatar.vue";
+import { getUrlOf } from "@/router";
 
 const user = useUserStore();
-const editingMode = ref(false);
-let newname = ref("");
+const editingMode: Ref<boolean> = ref(false);
+const newname: Ref<string> = ref("");
+const inputBorder: Ref<string> = ref("none");
 
 function onClickEdit() {
   newname.value = user.displayName;
   editingMode.value = !editingMode.value;
 }
 
-function onSubmit() {
-  if (newname.value === "") return;
-  editingMode.value = false;
+async function onSubmit() {
+  if (newname.value === "") {
+    return;
+  }
   if (newname.value !== user.displayName) {
-    axios
-      .post(
-        "http://localhost:3000/api/users/info/" +
-          user.id +
-          "?displayname=" +
-          newname.value
-      )
-      .then(() => {
-        user.doFetch();
+    await fetch(getUrlOf("api/users/info"), {
+      credentials: "include",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        displayname: newname.value,
+      }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        console.log("data = ", data);
+        if (data.msg && data.msg === "bad_name") {
+          inputBorder.value = "4px solid red";
+          alert("This name is already picked !");
+        } else {
+          user.doFetch();
+          editingMode.value = false;
+        }
+      })
+      .catch((error) => {
+        console.log("error :", error);
       });
   }
 }
