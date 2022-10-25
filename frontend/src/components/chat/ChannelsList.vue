@@ -16,7 +16,7 @@
     <h3>All channels</h3>
   </div>
   <PendingChannelReq
-    v-for="req in user.channelInvitePending"
+    v-for="req in allMyInvite"
     :key="req"
     :channelToJoin="req"
   />
@@ -77,22 +77,8 @@ const addWindow: Ref<boolean> = ref(false);
 const history: Ref<any> = ref([]);
 const allMyInvite: Ref<Array<any>> = ref([]);
 
-socket.on("update_channel_invite", async () => {
+socket.on("update_channel_invite", () => {
   user.doFetch();
-  for (let i = 0; i < user.channelInvitePending.length; i++) {
-    await fetch(getUrlOf("api/channel/one/" + user.channelInvitePending[i]), {
-      credentials: "include",
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        allMyInvite.value.push(data);
-      })
-      .catch((error) => {
-        console.log("error :", error);
-      });
-  }
 });
 
 socket.on("receive_channel_created", () => {
@@ -112,6 +98,27 @@ watch(
   () => props.selectedChannel,
   (newSelectedChannel) => {
     selectedChannel.value = newSelectedChannel;
+  }
+);
+
+watch(
+  () => user.channelInvitePending,
+  async (newChannelInvitePending) => {
+    console.log("newChannelInvitePending =", newChannelInvitePending);
+    await fetch(getUrlOf("api/channel/getAll/privates"), {
+      credentials: "include",
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        allMyInvite.value = [];
+        console.log("data =", data);
+        allMyInvite.value = data;
+      })
+      .catch((error) => {
+        console.log("error :", error);
+      });
   }
 );
 
