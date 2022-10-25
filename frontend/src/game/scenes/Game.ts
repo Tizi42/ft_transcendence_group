@@ -13,11 +13,15 @@ export default class GameScene extends Phaser.Scene {
   paddle_pos: number;
   paddle_velocity_max = 10;
 
+  i = 0;
+
   constructor() {
     super("GameScene");
+    console.log("construct game scene", this.i++);
   }
 
   create() {
+    console.log("create game scene", this.i++);
     this.width = this.cameras.main.width;
     this.height = this.cameras.main.height;
 
