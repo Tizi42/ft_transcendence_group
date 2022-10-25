@@ -34,14 +34,14 @@ import {
   defineEmits,
   defineProps,
   defineExpose,
-  watch,
+  onBeforeUnmount,
 } from "vue";
 
 interface Props {
   user: any;
 }
 
-const props: Readonly<Props> = defineProps<Props>();
+defineProps<Props>();
 const receiver: Ref<number> = ref(-1);
 const history: Ref<Chat[]> = ref([]);
 const selectedFriend: Ref<number> = ref(-1);
@@ -70,6 +70,10 @@ onBeforeMount(() => {
   socket.on("receive_message", () => {
     getMessages(receiver.value);
   });
+});
+
+onBeforeUnmount(() => {
+  socket.off("receive_message");
 });
 
 const emit = defineEmits(["selectReceiver", "getHistory"]);

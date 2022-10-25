@@ -43,7 +43,8 @@ import {
   defineExpose,
   Ref,
   defineProps,
-  defineEmits,
+  onBeforeMount,
+  onBeforeUnmount,
 } from "vue";
 import socket from "@/socket";
 import { userInfoStore } from "@/stores/user";
@@ -81,12 +82,18 @@ const createNewChannel = async () => {
   socket.emit("create_channel", data);
 };
 
-socket.on("password_error", () => {
-  inputBorderPassword.value = "4px solid red";
+onBeforeMount(() => {
+  socket.on("password_error", () => {
+    inputBorderPassword.value = "4px solid red";
+  });
+  socket.on("channel_name_error", () => {
+    inputBorder.value = "4px solid red";
+  });
 });
 
-socket.on("channel_name_error", () => {
-  inputBorder.value = "4px solid red";
+onBeforeUnmount(() => {
+  socket.off("password_error");
+  socket.off("channel_name_error");
 });
 
 defineExpose(

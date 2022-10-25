@@ -47,7 +47,14 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref, ref, onBeforeMount, defineComponent, defineExpose } from "vue";
+import {
+  Ref,
+  ref,
+  onBeforeMount,
+  defineComponent,
+  defineExpose,
+  onBeforeUnmount,
+} from "vue";
 import { useUserStore } from "@/stores/user";
 import NavChat from "@/components/chat/NavChat.vue";
 import FriendsList from "@/components/chat/FriendsList.vue";
@@ -58,7 +65,6 @@ import { getUrlOf } from "@/router";
 import AllChannelsSelected from "@/components/chat/AllChannelsSelected.vue";
 import socket from "@/socket";
 import { Chat } from "@backend/chat/entities/chat.entity";
-import { User } from "@backend/users/users.entity";
 
 const user: any = useUserStore();
 const isActive: Ref<string> = ref("players");
@@ -187,6 +193,12 @@ socket.on("friend_login_logout", async () => {
 
 onBeforeMount(async () => {
   user.doFetchFriends();
+});
+
+onBeforeUnmount(() => {
+  socket.off("channel_updated");
+  socket.off("banned_user");
+  socket.off("friend_login_logout");
 });
 
 defineExpose(

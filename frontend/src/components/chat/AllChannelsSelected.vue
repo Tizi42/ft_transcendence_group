@@ -52,6 +52,7 @@ import {
   defineEmits,
   onBeforeMount,
   defineProps,
+  onBeforeUnmount,
 } from "vue";
 
 interface Props {
@@ -63,15 +64,6 @@ const selectedChannel: Ref<number> = ref(-1);
 const allChannels: Ref<any> = ref([]);
 const props: Readonly<Props> = defineProps<Props>();
 const channelJoined: Ref<any> = ref();
-
-socket.on("receive_all_channels", (channels: any) => {
-  allChannels.value = [];
-  allChannels.value = channels;
-});
-
-socket.on("new_channel_created", () => {
-  socket.emit("get_all_channels");
-});
 
 const setSelectedChannel = (channelId: number) => {
   selectedChannel.value = channelId;
@@ -98,6 +90,18 @@ function hide() {
 
 onBeforeMount(() => {
   socket.emit("get_all_channels");
+  socket.on("receive_all_channels", (channels: any) => {
+    allChannels.value = [];
+    allChannels.value = channels;
+  });
+  socket.on("new_channel_created", () => {
+    socket.emit("get_all_channels");
+  });
+});
+
+onBeforeUnmount(() => {
+  socket.off("receive_all_channels");
+  socket.off("new_channel_created");
 });
 
 const emit = defineEmits(["getChannelSelected", "addChannelToList"]);
