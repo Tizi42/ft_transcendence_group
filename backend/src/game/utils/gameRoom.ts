@@ -98,14 +98,16 @@ export class GameRoom {
   spell_spawn_frequencey = 5000;
 
   paddle_sized_duration = 5000;
+  paddle_resize = 15;
 
   reverse_duration = 5000;
   L_reverse_effect = 1;
   R_reverse_effect = 1;
-
+  
   L_speed_ball = 0;
   R_speed_ball = 0;
   previous_ball_speed = 0;
+  speed_ball_factor = 1.5;
 
   L_shield = 0;
   R_shield = 0;
@@ -189,9 +191,29 @@ export class GameRoom {
     });
   }
 
-  on_spell_lauched(user_id: number, spell_slot: number)
+  on_switch_spell(user_id: number) {
+    let tmp: number;
+  
+    if (this.playerL === user_id) {
+      tmp = this.spell2_L;
+      this.spell2_L = this.spell1_L;
+      this.spell1_L = tmp;
+    } else {
+      tmp = this.spell2_R;
+      this.spell2_R = this.spell1_R;
+      this.spell1_R = tmp;
+    }
+    this.server.to(this.room_name).emit("refresh_spells", {
+      spell1_L: this.spell1_L,
+      spell2_L: this.spell2_L,
+      spell1_R: this.spell1_R,
+      spell2_R: this.spell2_R,
+    });
+  }
+
+  on_spell_lauched(user_id: number)
   {
-    let effect: number;
+    let effect: number = 0;
     let side: string = "";
     let target: string = "";
 
@@ -204,7 +226,7 @@ export class GameRoom {
     }
 
     if (side == "left") {
-      if (!spell_slot) {
+      if (this.spell1_L) {
         effect = this.spell1_L;
         this.spell1_L = 0;
       } else {
@@ -212,7 +234,7 @@ export class GameRoom {
         this.spell2_L = 0;
       }
     } else {
-      if (!spell_slot) {
+      if (this.spell1_R) {
         effect = this.spell1_R;
         this.spell1_R = 0;
       } else {
@@ -222,18 +244,18 @@ export class GameRoom {
     }
 
     if (effect == 1) {
-      this.paddle[side as keyof paddleObject].height_half += 10;
+      this.paddle[side as keyof paddleObject].height_half += this.paddle_resize;
       setTimeout(() => {
-        this.paddle[side as keyof paddleObject].height_half -= 10;
+        this.paddle[side as keyof paddleObject].height_half -= this.paddle_resize;
         this.server.to(this.room_name).emit("update_paddle_size", {
           left: this.paddle["left" as keyof paddleObject].height_half,
           right: this.paddle["right" as keyof paddleObject].height_half,
         });
       }, this.paddle_sized_duration);
-    } else if (effect == 2) {
-      this.paddle[target as keyof paddleObject].height_half -= 10;
+    } else if (effect == 2 && this.paddle[target as keyof paddleObject].height_half > this.paddle_resize) {
+      this.paddle[target as keyof paddleObject].height_half -= this.paddle_resize;
       setTimeout(() => {
-        this.paddle[target as keyof paddleObject].height_half += 10;
+        this.paddle[target as keyof paddleObject].height_half += this.paddle_resize;
         this.server.to(this.room_name).emit("update_paddle_size", {
           left: this.paddle["left" as keyof paddleObject].height_half,
           right: this.paddle["right" as keyof paddleObject].height_half,
@@ -328,9 +350,19 @@ export class GameRoom {
     if (ball_left < this.leftBounds && this.L_shield) {
         this.ball_velocity_x *= -1;
         this.L_shield = 0;
+        this.server.to(this.room_name).emit("apply_effect", {
+          launcher: "left",
+          target: "right",
+          effect: -5,
+        });
     } else if (ball_right > this.rightBounds && this.R_shield) {
         this.ball_velocity_x *= -1;
         this.R_shield = 0;
+        this.server.to(this.room_name).emit("apply_effect", {
+          launcher: "right",
+          target: "left",
+          effect: -5,
+        });
     }
 
     // check if ball collides with world bound
@@ -348,7 +380,7 @@ export class GameRoom {
       this.ball_velocity *= this.acceleration[this.mode as keyof velocityInit];
       if (this.L_speed_ball) {
         if (!this.previous_ball_speed) this.previous_ball_speed = this.ball_velocity;
-        this.ball_velocity *= 1.5;
+        this.ball_velocity *= this.speed_ball_factor;
         this.L_speed_ball -= 1;
       } else if (this.previous_ball_speed) {
         this.ball_velocity = this.previous_ball_speed;
@@ -367,7 +399,7 @@ export class GameRoom {
       this.ball_velocity *= this.acceleration[this.mode as keyof velocityInit];
       if (this.R_speed_ball) {
         if (!this.previous_ball_speed) this.previous_ball_speed = this.ball_velocity;
-        this.ball_velocity *= 1.5;
+        this.ball_velocity *= this.speed_ball_factor;
         this.R_speed_ball -= 1;
       } else if (this.previous_ball_speed) {
         this.ball_velocity = this.previous_ball_speed;
