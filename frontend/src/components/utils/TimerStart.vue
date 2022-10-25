@@ -7,7 +7,7 @@
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose, onBeforeMount } from "vue";
-import { Ref, ref, defineProps } from "vue";
+import { Ref, ref, defineProps, onBeforeUnmount } from "vue";
 import socket from "@/socket";
 
 interface Props {
@@ -39,6 +39,13 @@ function updateTimer() {
     }, 100);
   }
 }
+
+onBeforeUnmount(() => {
+  socket.off("game_start");
+  socket.off("end");
+  socket.off("time_reset");
+  socket.off("current_game_time");
+});
 
 onBeforeMount(() => {
   if (props.mode == "speed") {

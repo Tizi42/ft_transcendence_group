@@ -99,6 +99,7 @@ export default class MagicScene extends Phaser.Scene {
 
     // listen for game end
     socket.on("end", (data: any) => {
+      this.before_change_scene();
       this.scene.start("GameOverScene", { winner: data.winner });
     });
 
@@ -175,5 +176,13 @@ export default class MagicScene extends Phaser.Scene {
         paddle_move_direction: dir,
       });
     }
+  }
+
+  before_change_scene() {
+    socket.off("game_update");
+    socket.off("end");
+    socket.off("refresh_spells");
+    socket.off("update_paddle_size");
+    socket.off("apply_effect");
   }
 }
