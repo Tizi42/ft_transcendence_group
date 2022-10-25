@@ -198,15 +198,21 @@ export default class MagicScene extends Phaser.Scene {
     } else if (this.keyDown.isDown) {
       this.update_paddle(1);
     } else if (this.keyLeft.isDown || this.keyRight.isDown) {
-      socket.emit("switch_spell", {
-        user_id: gameInfo.user_id,
-        room_name: gameInfo.room_name,
-      });
+      if (this.switch_time > 200) {
+        this.switch_time = 0;
+        socket.emit("switch_spell", {
+          user_id: gameInfo.user_id,
+          room_name: gameInfo.room_name,
+        });
+      }
     } else if (this.keyShift.isDown) {
-      socket.emit("launch_spell", {
-        user_id: gameInfo.user_id,
-        room_name: gameInfo.room_name,
-      });
+      if (this.cast_time > 200) {
+        this.cast_time = 0;
+        socket.emit("launch_spell", {
+          user_id: gameInfo.user_id,
+          room_name: gameInfo.room_name,
+        });
+      }
     }
   }
 
