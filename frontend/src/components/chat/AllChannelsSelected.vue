@@ -7,7 +7,7 @@
     <li
       class="channel-attributes"
       v-for="channel in allChannels"
-      :key="channel"
+      :key="channel.id"
     >
       <h3>{{ channel.name }}</h3>
       <div class="buttons-channel">
@@ -31,6 +31,7 @@
   <Teleport to="body">
     <JoinChannelBoxModal v-if="addWindow" @hide="hide">
       <JoinChannelBox
+        v-if="channelJoined"
         :user="user"
         :channel="channelJoined"
         @hideAddChannel="hide"
@@ -54,6 +55,7 @@ import {
   onBeforeUnmount,
 } from "vue";
 import { StoreGeneric } from "pinia";
+import { Channel } from "@backend/channel/entities/channel.entity";
 
 interface Props {
   user: StoreGeneric;
@@ -61,16 +63,16 @@ interface Props {
 
 const addWindow: Ref<boolean> = ref(false);
 const selectedChannel: Ref<number> = ref(-1);
-const allChannels: Ref<any> = ref([]);
+const allChannels: Ref<Channel[]> = ref([]);
 const props: Readonly<Props> = defineProps<Props>();
-const channelJoined: Ref<any> = ref();
+const channelJoined: Ref<Channel | null> = ref(null);
 
 const setSelectedChannel = (channelId: number) => {
   selectedChannel.value = channelId;
   emit("getChannelSelected", selectedChannel.value);
 };
 
-function isMember(channel: any) {
+function isMember(channel: Channel) {
   for (let i = 0; i < channel.members.length; i++) {
     if (channel.members[i].id === props.user.id) {
       return true;
@@ -79,7 +81,7 @@ function isMember(channel: any) {
   return false;
 }
 
-const toJoin = (channel: any) => {
+const toJoin = (channel: Channel) => {
   channelJoined.value = channel;
   addWindow.value = true;
 };
@@ -90,7 +92,7 @@ function hide() {
 
 onBeforeMount(() => {
   socket.emit("get_all_channels");
-  socket.on("receive_all_channels", (channels: any) => {
+  socket.on("receive_all_channels", (channels: Channel[]) => {
     allChannels.value = [];
     allChannels.value = channels;
   });

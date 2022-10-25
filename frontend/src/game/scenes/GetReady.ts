@@ -52,7 +52,7 @@ export default class GetReadyScene extends Phaser.Scene {
         {
           room_name: gameInfo.room_name,
         },
-        (data: any) => {
+        (data: { game_status: string }) => {
           if (data.game_status === "running") this.start_game_scene();
         }
       );

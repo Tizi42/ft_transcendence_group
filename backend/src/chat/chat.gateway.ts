@@ -7,6 +7,7 @@ import { ChatService } from './chat.service';
 import { emojiInfo, messageInGame } from './utils/types';
 import { BattlesService } from '../battles/battles.service';
 import { ChannelMessage } from './utils/types';
+import { Chat } from './entities/chat.entity';
 
 export class ChatGateway extends AppGateway {
 
@@ -24,7 +25,7 @@ export class ChatGateway extends AppGateway {
   async handleDisconnect(client: any) {}
 
   @SubscribeMessage('send_message')
-  async handleMessage(@MessageBody() data: any) {
+  async handleMessage(@MessageBody() data: any): Promise<Chat> {
     const message = await this.chatService.saveMessage(data);
 
     this.server.sockets.to(data.dest).to(data.author).emit('receive_message');
@@ -37,7 +38,7 @@ export class ChatGateway extends AppGateway {
   async handleChannelMessage(
     @MessageBody() data: ChannelMessage,
     @ConnectedSocket() socket: Socket,
-  ) {
+  ): Promise<Chat> {
     const user = await this.chatService.getUserFromSocket(socket);
     const channel = await this.channelService.findOne(data.channelId);
 

@@ -49,6 +49,7 @@ import { useUserStore } from "@/stores/user";
 import socket from "@/socket";
 import axios from "axios";
 import { getUrlOf } from "@/router";
+import { Channel } from "@backend/channel/entities/channel.entity";
 
 const user = useUserStore();
 const searchInput: Ref<string> = ref("");
@@ -58,7 +59,7 @@ const alreadyMember = ref(false);
 const inputBorder = ref("none");
 
 interface Props {
-  channel: any;
+  channel: Channel;
 }
 
 const props: Readonly<Props> = defineProps<Props>();

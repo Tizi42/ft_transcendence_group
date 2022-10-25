@@ -192,14 +192,14 @@ onBeforeRouteLeave(() => {
 onBeforeMount(async () => {
   await getPlayersInfo();
   loadEmojis();
-  socket.on("receive_message_ingame", async (data: any) => {
+  socket.on("receive_message_ingame", async (data: messageInGame) => {
     updateMessage(data);
   });
-  socket.on("receive_emoji_ingame", async (data: any) => {
+  socket.on("receive_emoji_ingame", async (data: emojiInfo) => {
     updateEmoji(data);
   });
 
-  socket.on("score_update", (data: any) => {
+  socket.on("score_update", (data: { left: number; right: number }) => {
     scores.value[0] = data.left;
     scores.value[1] = data.right;
   });

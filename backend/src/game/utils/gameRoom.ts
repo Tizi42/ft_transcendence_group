@@ -1,7 +1,7 @@
 import { Server } from 'socket.io';
 import { clearInterval } from 'timers';
 import { BattlesService } from '../../battles/battles.service';
-import GameStatus from "./type";
+import { GameStatus } from "./type";
 
 interface velocityInit {
   normal: number,

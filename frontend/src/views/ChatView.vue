@@ -66,15 +66,17 @@ import AllChannelsSelected from "@/components/chat/AllChannelsSelected.vue";
 import socket from "@/socket";
 import { Chat } from "@backend/chat/entities/chat.entity";
 import { StoreGeneric } from "pinia";
+import { Channel } from "@backend/channel/entities/channel.entity";
+import { User } from "@backend/users/users.entity";
 
 const user: StoreGeneric = useUserStore();
 const isActive: Ref<string> = ref("players");
 const receiver: Ref<number> = ref(-1);
 const history: Ref<Array<Chat>> = ref([]);
-const receiverProfile: Ref<any> = ref(null);
+const receiverProfile: Ref<User | null> = ref(null);
 const selectedChannel: Ref<number> = ref(-1);
-const allMyChannels: Ref<Array<any>> = ref([]);
-const channel: Ref<any> = ref(null);
+const allMyChannels: Ref<Array<Channel>> = ref([]);
+const channel: Ref<Channel | null> = ref(null);
 
 const handleSelectedNav = async (event: string) => {
   isActive.value = event;
@@ -115,7 +117,7 @@ const handleSelectedReceiver = async (event: number) => {
   }
 };
 
-const handleHistory = (event: Array<any>) => {
+const handleHistory = (event: Array<Chat>) => {
   history.value = event;
 };
 
@@ -130,7 +132,7 @@ const handleChannelSelected = async (event: number) => {
   }
 };
 
-socket.on("channel_updated", async (channelId: number) => {
+socket.on("channel_updated", async () => {
   user.doFetch();
   await fetch(getUrlOf("api/channel/"), {
     credentials: "include",

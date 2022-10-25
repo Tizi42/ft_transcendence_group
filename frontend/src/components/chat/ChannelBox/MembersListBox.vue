@@ -5,7 +5,7 @@
       <ul>
         <li
           v-for="member in channel.members"
-          :key="member"
+          :key="member.id"
           class="members-list"
         >
           <div class="avatar-frame">
@@ -72,10 +72,11 @@
 <script lang="ts" setup>
 import socket from "@/socket";
 import { useUserStore } from "@/stores/user";
+import { Channel } from "@backend/channel/entities/channel.entity";
 import { defineComponent, defineExpose, defineProps, defineEmits } from "vue";
 
 interface Props {
-  channel: any;
+  channel: Channel;
 }
 
 const user = useUserStore();

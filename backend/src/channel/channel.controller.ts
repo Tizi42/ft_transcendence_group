@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Body, Param, UseGuards, Req } from '@nestjs/common';
+import { Channel } from 'diagnostics_channel';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import RequestWithUser from 'src/users/utils/requestWithUser.interface';
 import { ChannelService } from './channel.service';
@@ -20,7 +21,7 @@ export class ChannelController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getAllMyChannelsAndMembers(@Req() req: RequestWithUser) {
+  async getAllMyChannelsAndMembers(@Req() req: RequestWithUser): Promise<Channel[]> {
     const allChannels = await this.channelService.findAllChannelsAndMembers();
     let myChannels = [];
     for (let i = 0; i < allChannels.length; i++) {

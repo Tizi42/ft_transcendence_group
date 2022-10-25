@@ -21,7 +21,7 @@
       @click="inviteInGame"
     />
   </div>
-  <div class="manage-channel" v-if="selectedChannel != -1">
+  <div class="manage-channel" v-if="selectedChannel != -1 && channel">
     <div>
       <img
         id="see-members"
@@ -55,7 +55,7 @@
     class="container-messages"
     v-if="isActive === 'players' || selectedChannel != -1"
   >
-    <div v-for="message in history" :key="message">
+    <div v-for="message in history" :key="message.id">
       <div
         v-if="message.author.id != user.id"
         class="messages"
@@ -72,11 +72,14 @@
   </div>
   <teleport to="body">
     <UserBoxModal
-      v-if="userProfileWindow"
+      v-if="userProfileWindow && target"
       @hideUserBox="hide"
       :target="target"
     />
-    <ChannelBoxModal v-if="settingsWindow || membersWindow" @hide="hide">
+    <ChannelBoxModal
+      v-if="(settingsWindow || membersWindow) && channel"
+      @hide="hide"
+    >
       <SettingsChannelBox
         :selectedChannel="selectedChannel"
         :channel="channel"
@@ -88,7 +91,7 @@
         @getUserProfile="showUserProfile"
       />
       <UserBox
-        v-if="isShowUserProfile"
+        v-if="isShowUserProfile && userTarget"
         :target="userTarget"
         :context="'channel'"
         @closeUserBox="hideUserBox"
@@ -96,10 +99,10 @@
     </ChannelBoxModal>
     <InvitationModal
       @hideInvitation="hideInvitation"
-      v-if="inviteWindow"
+      v-if="inviteWindow && userTarget"
       :friend="userTarget"
     />
-    <MyModal v-if="addMemberWindow" @hide="hide">
+    <MyModal v-if="addMemberWindow && channel" @hide="hide">
       <AddMember :channel="channel" />
     </MyModal>
   </teleport>
@@ -128,24 +131,27 @@ import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
 import InvitationModal from "../Game/invitation/InvitationModal.vue";
 import AddMember from "./AddMember.vue";
 import MyModal from "../users/UserFriends/MyModal.vue";
+import { Channel } from "@backend/channel/entities/channel.entity";
+import { Chat } from "@backend/chat/entities/chat.entity";
+import { StoreGeneric } from "pinia";
 
 interface Props {
-  history: Array<any>;
-  target: User;
+  history: Array<Chat>;
+  target: User | null;
   isActive: string;
   selectedChannel: number;
-  channel: any;
+  channel: Channel | null;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
-const user: any = useUserStore();
+const user: StoreGeneric = useUserStore();
 const userProfileWindow: Ref<boolean> = ref(false);
 const settingsWindow: Ref<boolean> = ref(false);
 const membersWindow: Ref<boolean> = ref(false);
 const inviteWindow: Ref<boolean> = ref(false);
 const addMemberWindow: Ref<boolean> = ref(false);
 const isShowUserProfile: Ref<boolean> = ref(false);
-const userTarget: Ref<User> = ref(props.target);
+const userTarget: Ref<User | null> = ref(props.target);
 
 function inviteInGame() {
   inviteWindow.value = true;
