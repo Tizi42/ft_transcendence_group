@@ -15,13 +15,14 @@
 import { ref, defineComponent, defineExpose, onBeforeMount } from "vue";
 import BlockedUserItem from "./BlockedUserItem.vue";
 import { useUserStore } from "@/stores/user";
+import { getUrlOf } from "@/router";
 
 const user = useUserStore();
 const blocked = ref([]);
 
 function doFetchBlocked() {
   console.log("Fetching blocked...");
-  fetch("http://10.11.4.13:3000/api/users/block/" + user.id, {
+  fetch(getUrlOf("api/users/block/") + user.id, {
     credentials: "include",
   })
     .then((response) => {
