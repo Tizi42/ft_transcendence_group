@@ -20,6 +20,7 @@ import { useUserStore } from "@/stores/user";
 import { Ref, ref } from "vue";
 import axios from "axios";
 import socket from "@/socket";
+import { getUrlOf } from "@/router";
 
 const user = useUserStore();
 const props = defineProps(["blocked"]);
@@ -33,7 +34,7 @@ async function onRemoveBlock() {
     to: props.blocked.id,
   };
   axios
-    .post("http://localhost:3000/api/users/block/rm/", {
+    .post(getUrlOf("api/users/block/rm/"), {
       id1: user.id,
       id2: props.blocked.id,
     })

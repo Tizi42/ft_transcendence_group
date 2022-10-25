@@ -32,6 +32,7 @@ import { defineComponent, defineExpose, defineProps } from "vue";
 import { useUserStore } from "@/stores/user";
 import axios from "axios";
 import socket from "@/socket";
+import { getUrlOf } from "@/router";
 
 const user = useUserStore();
 const props = defineProps(["sender"]);
@@ -42,7 +43,7 @@ async function onHandleFriendRequest(action: string) {
     to: props.sender.id,
   };
   axios
-    .post("http://localhost:3000/api/users/friends/" + action, {
+    .post(getUrlOf("api/users/friends/") + action, {
       id1: props.sender.id,
       id2: user.id,
     })
