@@ -27,7 +27,7 @@
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose, defineProps, defineEmits } from "vue";
-import { ref, Ref, onBeforeMount } from "vue";
+import { ref, Ref, onBeforeMount, onBeforeUnmount } from "vue";
 import { useUserStore } from "@/stores/user";
 import { StoreGeneric } from "pinia";
 import { User } from "@backend/users/users.entity";
@@ -116,6 +116,13 @@ onBeforeMount(() => {
       "Your opponent did not allow invitations from all players";
     hideAfterTime();
   });
+});
+
+onBeforeUnmount(() => {
+  socket.off("decline_invitation");
+  socket.off("go_play");
+  socket.off("unavailable");
+  socket.off("not_allowed");
 });
 
 defineExpose(

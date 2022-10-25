@@ -15,8 +15,16 @@
 
 <script lang="ts" setup>
 import { useClickOutside } from "@/composables/useClickOutside";
-import { defineComponent, onMounted, Ref, ref } from "vue";
-import { defineExpose, defineProps, withDefaults } from "vue";
+import {
+  defineComponent,
+  onBeforeMount,
+  onBeforeUnmount,
+  Ref,
+  ref,
+  defineExpose,
+  defineProps,
+  withDefaults,
+} from "vue";
 
 interface Props {
   height?: string;
@@ -67,12 +75,18 @@ useClickOutside(menuRef, () => {
   closeMenu();
 });
 
-onMounted(() => {
-  window.addEventListener("keyup", (event) => {
-    if (event.key == "Escape") {
-      closeMenu();
-    }
-  });
+function handleEscape(event: KeyboardEvent) {
+  if (event.key == "Escape") {
+    closeMenu();
+  }
+}
+
+onBeforeMount(() => {
+  window.addEventListener("keyup", handleEscape);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("keyup", handleEscape);
 });
 
 defineExpose(

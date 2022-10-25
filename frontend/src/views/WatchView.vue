@@ -14,8 +14,14 @@
 
 <script lang="ts" setup>
 import socket from "@/socket";
-import { defineComponent, defineExpose, onBeforeMount } from "vue";
-import { Ref, ref } from "vue";
+import {
+  defineComponent,
+  defineExpose,
+  onBeforeMount,
+  onBeforeUnmount,
+  Ref,
+  ref,
+} from "vue";
 import { GameRoomNS } from "@backend/game/utils/gameNS";
 import MatchList from "@/components/WatchGame/MatchList.vue";
 
@@ -39,6 +45,11 @@ onBeforeMount(() => {
   socket.on("games_update_list", () => {
     socket.emit("get_updated_rooms");
   });
+});
+
+onBeforeUnmount(() => {
+  socket.off("updated_rooms");
+  socket.off("games_update_list");
 });
 
 defineExpose(
