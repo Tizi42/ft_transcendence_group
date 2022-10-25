@@ -190,7 +190,6 @@ onBeforeRouteLeave(() => {
 });
 
 onBeforeMount(async () => {
-  console.log("on before mount in game overlay...");
   await getPlayersInfo();
   loadEmojis();
   socket.on("receive_message_ingame", async (data: any) => {
