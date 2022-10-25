@@ -35,7 +35,7 @@
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose, onBeforeMount, defineProps } from "vue";
-import { Ref, ref, onBeforeUnmount } from "vue";
+import { Ref, ref, onBeforeUnmount, onMounted } from "vue";
 import OverlayTopBar from "./OverlayTopBar.vue";
 import OverlayBottomBar from "./OverlayBottomBar.vue";
 import GameBox from "./GameBox.vue";
@@ -181,15 +181,17 @@ function hideChat() {
   console.log("hide chat");
 }
 
-onBeforeRouteLeave(() => {
-  if (force_quit.value) return true;
-  const answer = window.confirm(
-    "Do you really want to leave? You will quit the game room"
-  );
-  if (!answer) return false;
-  socket.emit("leave_game", {
-    room_name: props.room_name,
-    user_id: user.id,
+onMounted(() => {
+  onBeforeRouteLeave(() => {
+    if (force_quit.value) return true;
+    const answer = window.confirm(
+      "Do you really want to leave? You will quit the game room"
+    );
+    if (!answer) return false;
+    socket.emit("leave_game", {
+      room_name: props.room_name,
+      user_id: user.id,
+    });
   });
 });
 
@@ -218,6 +220,7 @@ onBeforeMount(async () => {
 
   socket.on("quit_game", () => {
     window.alert("Player has left game, return to game menu...");
+    console.log("force quit !!");
     force_quit.value = true;
     router.push({ name: "game" });
   });
