@@ -9,6 +9,7 @@ import { diskStorage } from "multer";
 import { extname } from "path";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import RequestWithUser from "./utils/requestWithUser.interface";
+import { SetDisplayNameDto } from "./utils/setDisplayName.dto";
 
 export const storage = {
   storage : diskStorage ({
@@ -33,41 +34,40 @@ export class UsersController {
   @Put('uploads/avatar')
   @UseInterceptors(FileInterceptor('file', storage))
   async uploadAvatar(@Req() req: RequestWithUser, @UploadedFile() file: Express.Multer.File) : Promise<any> {
-    console.log("File received, saved as " + file.filename);
-    return await this.usersService.updateUserAvatar(req.user.id, file.filename, "http://localhost:3000/api/users/avatar/"); //`${this.SERVER_URL}${file.path}`
+    return await this.usersService.updateUserAvatar(
+      req.user.id, file.filename, "http://localhost:3000/api/users/avatar/" + req.user.id
+    ); //`${this.SERVER_URL}${file.path}`
   }
 
   @Get('avatar/:id')
   async getAvatar(@Param('id') id: number, @Res() res: Response): Promise<any> {
     let user = await this.usersService.findOne(id);
     if (user.pictureLocalFilename === "")
-    {
-      console.log("Using default avatar...");
       return res.sendFile("default.png", { root: 'src/uploads/avatar'});
-    }
     return res.sendFile(user.pictureLocalFilename, { root: 'src/uploads/avatar'});
   }
 
   @Get('avatar')
   async getMyAvatar(@Req() req: RequestWithUser, @Res() res: Response): Promise<any> {
+    console.log(req.user);
     let user = await this.usersService.findOne(req.user.id);
     if (user.pictureLocalFilename === "")
-    {
-      console.log("Using default avatar...");
       return res.sendFile("default.png", { root: 'src/uploads/avatar'});
-    }
     return res.sendFile(user.pictureLocalFilename, { root: 'src/uploads/avatar'});
   }
 
   @Get('avatar_default')
   getDefaultAvatar(@Res() res: Response) {
-    console.log("send default");
     return res.sendFile("default.png", { root: 'src/uploads/avatar'});
   }
 
-  @Post('info/:id')
-  setDisplayName(@Param('id') id: number, @Query('displayname') name: string) {
-      return this.usersService.updateUserDisplayName(id, name);
+  @UseGuards(JwtAuthGuard)
+  @Post('info/')
+  async setDisplayName(
+    @Req() req: RequestWithUser,
+    @Body() setDisplayNameDto: SetDisplayNameDto
+  ) {
+    return await this.usersService.updateUserDisplayName(req.user.id, setDisplayNameDto.displayname);
   }
 
   @Get('info/:id')
@@ -84,22 +84,10 @@ export class UsersController {
   getUsername(@Param('id') id: number): Promise<String> {
     return this.usersService.getUsername(id);
   };
-  
-
-  // @Post('/add')
-  // create(@Body() user: UserDto) {
-  //   return this.usersService.addOne(user);
-  // }
 
   @Post('/add')
   create(@Body() user: UserDto) {
     return this.usersService.createNewUser(user);
-  }
-
-  // to delete 
-  @Get('/rm')
-  removeAll() {
-    return this.usersService.removeAll();
   }
   
   /*

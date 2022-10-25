@@ -31,7 +31,7 @@ defineExpose(
   display: flex;
   align-items: center;
   flex-direction: column;
-  z-index: 999;
+  z-index: 997;
   width: 100vw;
   height: 100vh;
   top: 0%;
@@ -42,6 +42,7 @@ defineExpose(
   gap: 15px;
   color: #ffffff;
 }
+
 .modalContainer {
   display: flex;
   align-items: center;

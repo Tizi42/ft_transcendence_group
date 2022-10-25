@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "vite build",
     "serve": "vite preview --port 8080",
+    "prod": "vite build && vite preview --port 8080",
     "lint": "eslint --ext .js,.vue,.ts --ignore-path .gitignore --fix src"
   },
   "dependencies": {
@@ -28,6 +29,7 @@
     "vue-spinner": "^1.0.4",
     "vue-tsc": "^1.0.8",
     "vue3-chart-v2": "^0.8.3",
+    "vue3-cookies": "^1.0.6",
     "vue3-lazyload": "^0.3.6"
   },
   "devDependencies": {

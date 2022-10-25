@@ -1,7 +1,7 @@
 import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersService } from 'src/users/users.service';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Channel } from './entities/channel.entity';
 import { CreatChannelDto } from './utils/createChannel.dto';
 import * as bcrypt from 'bcrypt';
@@ -9,6 +9,7 @@ import { User } from 'src/users/users.entity';
 import { Socket } from 'socket.io';
 import { UpdatePrivacyDto } from './utils/updatePrivacy.dto';
 import { UpdatePasswordDto } from './utils/UpdatePassword.dto';
+import { ManageMemberDto } from './utils/manageMembers.dto';
 
 @Injectable()
 export class ChannelService {
@@ -20,10 +21,35 @@ export class ChannelService {
     private readonly userRepository: Repository<User>,
   ) {}
 
+  async nameAlreadyExist(channelName: string) {
+    const allChannels = await this.findAllChannelsAndMembers();
+
+    if (
+      channelName === "password_error" ||
+      channelName === "ban_error" ||
+      channelName === "channel_name_error"
+    ) {
+      return true;
+    }
+    for(let i = 0; i < allChannels.length; i++) {
+      if (allChannels[i].name === channelName) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   async createChannel(channelDto: CreatChannelDto) {
     const newChannel = new Channel();
 
+    if (await this.nameAlreadyExist(channelDto.name)) {
+      console.log("name already exist");
+      return "channel_name_error";
+    }
     newChannel.type = channelDto.type;
+    if (channelDto.name.length < 3 || channelDto.name.length > 30) {
+      return "channel_name_error";
+    }
     newChannel.name = channelDto.name;
     newChannel.members = channelDto.members;
     newChannel.owner = channelDto.owner;
@@ -51,6 +77,19 @@ export class ChannelService {
     });
   }
 
+  async findAllChannelsAndMembersButPrivate(): Promise<Channel[]> {
+    const allChannels = await this.channelRepository.find({
+      relations: ["members"],
+    });
+    let allChannelsButPrivate = [];
+    for (let i = 0; i < allChannels.length; i++) {
+      if (allChannels[i].type != "private") {
+        allChannelsButPrivate.push(allChannels[i]);
+      }
+    }
+    return allChannelsButPrivate; 
+  }
+
   async findChannelAndMembers(id: number): Promise<Channel[]> {
     return await this.channelRepository.find({
       relations: ['members'],
@@ -60,33 +99,21 @@ export class ChannelService {
     });
   }
 
+  async findAllPrivatesChannels(): Promise<Channel[]> {
+    return await this.channelRepository.find({
+      where: {
+        type: "private",
+      }
+    });
+  }
+
   async getAllMyChannels(id: number): Promise<Channel[]> {
     const channels = await this.channelRepository.find({
       relations: ['members'],
       where: [{
         members: {
-              id: id,
+              id: In([id]),
           },
-      }]
-    });
-    return channels;
-  }
-
-  async getMyOwnedChannels(id: number): Promise<Channel[]> {
-    const channels = await this.channelRepository.find({
-      relations: ['members'],
-      where: [{
-        owner: id,
-      }]
-    });
-    return channels;
-  }
-
-  async getPendingReq(id: number): Promise<Channel[]>{
-    const channels = await this.channelRepository.find({
-      relations: ['members'],
-      where: [{
-        pendingReqTo: id,
       }]
     });
     return channels;
@@ -122,6 +149,14 @@ export class ChannelService {
 
     if (channel[0].owner === userId) {
       if (channel[0].members.length === 0) {
+        const allUsers = await this.userService.findAll();
+        let index = -1;
+        for (let i = 0; i < allUsers.length; i++) {
+          if ((index = allUsers[i].memberPendingReqFrom.indexOf(channel[0].id)) > -1) {
+            allUsers[i].memberPendingReqFrom.splice(index, 1);
+            await this.userRepository.save(allUsers[i]);
+          }
+        }
         await this.channelRepository.remove(channel)
         return channel[0].name;
       } else if (channel[0].admins.length === 0) {
@@ -285,10 +320,14 @@ export class ChannelService {
     if (!channel) {
       return null;
     }
-    if (this.isChannelMember(user.id, channel[0]) || this.isMemberBan(user.id, channel[0])) {
-      console.log("unauthorized");
+    if (this.isChannelMember(user.id, channel[0])) {
+      console.log("error already member");
       return null;
     }
+    if (this.isMemberBan(user.id, channel[0])) {
+      return "ban_error";
+    }
+
     if (channel[0].type === "protected") {
       if (!this.validPassword(password)) {
         return "password_error";
@@ -298,43 +337,104 @@ export class ChannelService {
         return "password_error";
       }
     }
-    for (let i = 0; i < channel[0].pendingReqTo.length; i++) {
-      if (channel[0].pendingReqTo[i] === user.id)
-        channel[0].pendingReqTo.splice(i, 1);
+
+    if (channel[0].type === "private") {
+      let index = channel[0].memberPendingReqTo.indexOf(user.id);
+      if (index == -1) {
+        console.log("the channel did not invite this user");
+        return null;
+      }
+      channel[0].memberPendingReqTo.splice(index, 1);
+
+      index = user.memberPendingReqFrom.indexOf(channel[0].id);
+      if (index == -1) {
+        console.log("the channel did not invite this user");
+        return null;
+      }
+      user.memberPendingReqFrom.splice(index, 1);
+      await this.userRepository.save(user);
     }
+
     channel[0].members.push(user);
     await this.channelRepository.save(channel);
     
     return channel[0].name;
   }
 
-  async refuseJoining(userId: number, channelId: number) {
-    const channel = await this.findChannelAndMembers(channelId);
+  async sendJoinRequest(userId: number, manageMemberDto: ManageMemberDto) {
+    const channel = await this.findChannelAndMembers(manageMemberDto.channelId);
+    const target = await this.userRepository.findOneBy({ id: manageMemberDto.targetId });
 
-    if (!channel) {
+    if (!channel || !target) {
       return null;
     }
-    for (let i = 0; i < channel[0].pendingReqTo.length; i++) {
-      if (channel[0].pendingReqTo[i] === userId)
-        channel[0].pendingReqTo.splice(i, 1);
+    if (channel[0].owner != userId) {
+      return null;
     }
-    this.channelRepository.save(channel);
-    return true;
+    if (
+      this.isChannelMember(target.id, channel[0]) ||
+      this.isMemberBan(target.id, channel[0])
+    ) {
+      console.log("unauthorized");
+      return null;
+    }
+    channel[0].memberPendingReqTo.push(target.id);
+    target.memberPendingReqFrom.push(channel[0].id);
+
+    await this.channelRepository.save(channel);
+    await this.userRepository.save(target);
+    
+    return channel[0];
   }
 
-  async joinRequest(userId: number, channelId: number) {
-    const channel = await this.findChannelAndMembers(channelId);
+  async removeJoinRequest(userId: number, manageMemberDto: ManageMemberDto) {
+    const channel = await this.findChannelAndMembers(manageMemberDto.channelId);
+    const target = await this.userRepository.findOneBy({ id: manageMemberDto.targetId });
 
-    if (!channel) {
+    if (!channel || !target) {
       return null;
     }
-    if (this.isChannelMember(userId, channel[0]) || this.isMemberBan(userId, channel[0])) {
-      console.log("unauthorized");
-      return false;
+    if (channel[0].owner != userId) {
+      return null;
     }
-    channel[0].pendingReqTo.push(userId);
-    console.log("chann ?", channel[0]);
-    this.channelRepository.save(channel);
-    return true;
+    
+    let index = channel[0].memberPendingReqTo.indexOf(target.id);
+    if (index > -1) {
+      channel[0].memberPendingReqTo.splice(index, 1);
+    }
+
+    index = target.memberPendingReqFrom.indexOf(channel[0].id);
+    if (index > -1) {
+      target.memberPendingReqFrom.splice(index, 1);
+    }
+
+    await this.channelRepository.save(channel[0]);
+    await this.userRepository.save(target);
+    
+    return channel[0];
+  }
+
+  async refuseJoinChannel(target: User, channelId: number) {
+    const channel = await this.findChannelAndMembers(channelId);
+
+    if (!channel || !target) {
+      return null;
+    }
+    
+    let index = channel[0].memberPendingReqTo.indexOf(target.id);
+    if (index > -1) {
+      channel[0].memberPendingReqTo.splice(index, 1);
+    }
+
+    index = target.memberPendingReqFrom.indexOf(channel[0].id);
+    if (index > -1) {
+      target.memberPendingReqFrom.splice(index, 1);
+    }
+
+    await this.channelRepository.save(channel[0]);
+    await this.userRepository.save(target);
+    
+    console.log("endding");
+    return channel[0].name;
   }
 }

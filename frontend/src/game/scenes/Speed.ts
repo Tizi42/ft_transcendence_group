@@ -1,34 +1,18 @@
 import Phaser from "phaser";
 import socket from "@/socket";
-import GameStatus from "@/game/type";
 import gameInfo from "../gameInfo";
 
 export default class SpeedScene extends Phaser.Scene {
   width: number;
   height: number;
-
   ball: Phaser.Physics.Arcade.Sprite;
   paddle_left: Phaser.Physics.Arcade.Sprite;
   paddle_right: Phaser.Physics.Arcade.Sprite;
-  cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-  paddle_pos: number;
-  paddle_velocity_max = 30;
-
-  winner: string;
-  score_left: number;
-  score_right: number;
-  game_status: GameStatus;
-  countdown = 10000;
+  keyDown: Phaser.Input.Keyboard.Key;
+  keyUp: Phaser.Input.Keyboard.Key;
 
   constructor() {
     super("SpeedScene");
-  }
-
-  init() {
-    this.game_status = "ready";
-    this.score_left = 0;
-    this.score_right = 0;
-    this.winner = "";
   }
 
   create() {
@@ -63,10 +47,9 @@ export default class SpeedScene extends Phaser.Scene {
       this.height * 0.5
     );
 
-    this.paddle_pos = this.height * 0.5;
-
     //  set up input event
-    this.cursors = this.input.keyboard.createCursorKeys();
+    this.keyDown = this.input.keyboard.addKey(40);
+    this.keyUp = this.input.keyboard.addKey(38);
 
     // collide ball with paddle
     this.physics.add.collider(this.ball, this.paddle_left);
@@ -76,44 +59,22 @@ export default class SpeedScene extends Phaser.Scene {
     socket.on("game_update", (data: any) => {
       this.paddle_left.y = data.paddle_left_posY;
       this.paddle_right.y = data.paddle_right_posY;
-    });
-
-    socket.on("ball_update", (data: any) => {
       this.ball.x = data.ball_x;
       this.ball.y = data.ball_y;
-      // this.ball.setVelocity(data.vx, data.vy);
     });
 
-    socket.on("score_update", (data) => {
-      this.score_left = data.left;
-      this.score_right = data.right;
-    });
-
+    // listen for game end
     socket.on("end", (data: any) => {
-      if (this.score_right > this.score_left) this.winner = "right";
-      else if (this.score_right < this.score_left) this.winner = "left";
-      else this.winner = "none";
-      this.scene.start("GameOverScene", { winner: this.winner });
+      this.before_change_scene();
+      this.scene.start("GameOverScene", { winner: data.winner });
     });
   }
 
-  // timer = 0;
   update() {
-    // this.timer += delta;
-    if (gameInfo.user_role === "left") {
-      if (this.game_status === "ready") {
-        this.launch_ball("toRight");
-        this.game_status = "running";
-      }
-
-      this.check_score(); // move logic to backend
-      this.update_ball();
-    }
-
-    if (this.cursors.up.isDown) {
-      this.update_paddle(-this.paddle_velocity_max);
-    } else if (this.cursors.down.isDown) {
-      this.update_paddle(this.paddle_velocity_max);
+    if (this.keyUp.isDown) {
+      this.update_paddle(-1);
+    } else if (this.keyDown.isDown) {
+      this.update_paddle(1);
     }
   }
 
@@ -124,68 +85,18 @@ export default class SpeedScene extends Phaser.Scene {
     return paddle;
   }
 
-  update_paddle(velocity: number) {
-    this.paddle_pos += velocity;
-    if (this.paddle_pos <= 40) {
-      this.paddle_pos = 40;
-    } else if (this.paddle_pos >= this.height - 40) {
-      this.paddle_pos = this.height - 40;
-    }
-    socket.emit("update_paddle", {
-      user_id: gameInfo.user_id,
-      room_name: gameInfo.room_name,
-      paddle_pos: this.paddle_pos,
-    });
-  }
-
-  launch_ball(direction: string) {
-    const randomHeight = Phaser.Math.Between(80, this.cameras.main.height - 80);
-    const randVx = Phaser.Math.Between(500, 600);
-    const randVy = Phaser.Math.Between(500, 600);
-
-    this.ball.disableBody(true, true);
-    // add: emit to back and get three random numbers
-    this.ball.enableBody(
-      true,
-      this.cameras.main.centerX,
-      randomHeight,
-      true,
-      true
-    );
-    if (direction === "toLeft") this.ball.setVelocity(-randVx, randVy);
-    else this.ball.setVelocity(randVx, randVy);
-  }
-
-  check_score() {
-    const leftBounds = -30;
-    const rightBounds = this.cameras.main.width + 30;
-
-    if (this.ball.x < leftBounds) {
-      this.score_right += 1;
-      this.update_score();
-      this.launch_ball("toLeft");
-    } else if (this.ball.x > rightBounds) {
-      this.score_left += 1;
-      this.update_score();
-      this.launch_ball("toRight");
+  update_paddle(dir: number) {
+    if (gameInfo.user_role !== "watch") {
+      socket.emit("update_paddle", {
+        user_id: gameInfo.user_id,
+        room_name: gameInfo.room_name,
+        paddle_move_direction: dir,
+      });
     }
   }
 
-  update_ball() {
-    socket.emit("ball_pos", {
-      room_name: gameInfo.room_name,
-      ball_x: this.ball.x,
-      ball_y: this.ball.y,
-      vx: this.ball.body.velocity.x,
-      vy: this.ball.body.velocity.y,
-    });
-  }
-
-  update_score() {
-    socket.emit("update_score", {
-      room_name: gameInfo.room_name,
-      left: this.score_left,
-      right: this.score_right,
-    });
+  before_change_scene() {
+    socket.off("game_update");
+    socket.off("end");
   }
 }

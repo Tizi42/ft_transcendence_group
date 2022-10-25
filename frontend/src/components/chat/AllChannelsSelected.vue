@@ -1,18 +1,8 @@
 <template>
-  <form class="search-in-my-channels" @submit.prevent="onSubmit">
-    <div id="div-search-all-channels">
-      <input
-        class="input-search-channels"
-        id="input-search-all-channels"
-        type="text"
-        placeholder="Search all channels..."
-        v-model="inputSearch"
-      />
-      <button type="submit">
-        <img src="@/assets/icons/search.svg" />
-      </button>
-    </div>
-  </form>
+  <div v-if="allChannels.length === 0" class="welcome-chat">
+    <img src="@/assets/icons/multiBubble.svg" />
+    <h1>Let's chat</h1>
+  </div>
   <ul class="all-channels">
     <li
       class="channel-attributes"
@@ -39,18 +29,18 @@
     </li>
   </ul>
   <Teleport to="body">
-    <ChannelBoxModal v-if="addWindow" @hide="hide">
+    <JoinChannelBoxModal v-if="addWindow" @hide="hide">
       <JoinChannelBox
         :user="user"
         :channel="channelJoined"
         @hideAddChannel="hide"
       />
-    </ChannelBoxModal>
+    </JoinChannelBoxModal>
   </Teleport>
 </template>
 
 <script lang="ts" setup>
-import ChannelBoxModal from "./ChannelBox/ChannelBoxModal.vue";
+import JoinChannelBoxModal from "./ChannelBox/JoinChannelBoxModal.vue";
 import JoinChannelBox from "./ChannelBox/JoinChannelBox.vue";
 import socket from "@/socket";
 import { userInfoStore } from "@/stores/user";
@@ -70,7 +60,6 @@ interface Props {
 
 const addWindow: Ref<boolean> = ref(false);
 const selectedChannel: Ref<number> = ref(-1);
-const inputSearch: Ref<string> = ref("");
 const allChannels: Ref<any> = ref([]);
 const props: Readonly<Props> = defineProps<Props>();
 const channelJoined: Ref<any> = ref();
@@ -99,16 +88,9 @@ function isMember(channel: any) {
 }
 
 const toJoin = (channel: any) => {
-  console.log("to join :", channel.id);
   channelJoined.value = channel;
   addWindow.value = true;
-  socket.emit("join_channel", channel.id);
 };
-
-socket.on("joined_channel", (channel: any) => {
-  emit("addChannelToList", channel);
-  console.log("joined :", channel);
-});
 
 function hide() {
   addWindow.value = false;

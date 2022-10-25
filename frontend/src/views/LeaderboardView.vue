@@ -27,7 +27,6 @@
 </template>
 
 <script lang="ts" setup>
-import "@/assets/styles/historyAndLeaderboard.css";
 import { defineComponent, defineExpose, Ref, ref } from "vue";
 import { onBeforeMount } from "vue";
 import { getUrlOf } from "@/router";

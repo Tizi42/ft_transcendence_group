@@ -15,11 +15,5 @@ import { User } from "src/users/users.entity";
     TypeOrmModule.forFeature([Battle]),
   ],
 })
-export class BattlesModule {
-  constructor(private readonly battlesService: BattlesService) {
-    this.battlesService.removeAll();
-    setTimeout(() => {
-      this.battlesService.createFakeBattles(20, 9);
-    }, 1000);
-  }
-}
+
+export class BattlesModule {};

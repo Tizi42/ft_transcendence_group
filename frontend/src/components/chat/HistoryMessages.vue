@@ -15,7 +15,6 @@
         @click="showInfoBox"
       />
     </div>
-    <!-- <img src="@/assets/icons/watchGame.svg" alt="watch his game" /> -->
     <img
       src="@/assets/icons/inviteInGame.png"
       alt="invite in game"
@@ -32,7 +31,14 @@
       />
     </div>
     <img
-      class="leave-img"
+      id="add-member-button"
+      src="@/assets/icons/icon-add.png"
+      alt="add member"
+      @click="addMember"
+      v-if="channel.owner === user.id && channel.type === 'private'"
+    />
+    <img
+      id="leave-img"
       src="@/assets/icons/leave.png"
       alt="leave channel"
       @click="leaveChannel(selectedChannel)"
@@ -44,7 +50,6 @@
       @click="showSettings"
       v-if="channel.owner === user.id"
     />
-    <AddMember :channel="channel" />
   </div>
   <div
     class="container-messages"
@@ -66,9 +71,11 @@
     </div>
   </div>
   <teleport to="body">
-    <UserBoxModal v-if="userProfileWindow" @hide="hide">
-      <UserBox :target="target" />
-    </UserBoxModal>
+    <UserBoxModal
+      v-if="userProfileWindow"
+      @hideUserBox="hide"
+      :target="target"
+    />
     <ChannelBoxModal v-if="settingsWindow || membersWindow" @hide="hide">
       <SettingsChannelBox
         :selectedChannel="selectedChannel"
@@ -87,7 +94,14 @@
         @closeUserBox="hideUserBox"
       />
     </ChannelBoxModal>
-    <InvitationModal @hideInvitation="hideInvitation" v-if="inviteWindow" />
+    <InvitationModal
+      @hideInvitation="hideInvitation"
+      v-if="inviteWindow"
+      :friend="userTarget"
+    />
+    <MyModal v-if="addMemberWindow" @hide="hide">
+      <AddMember :channel="channel" />
+    </MyModal>
   </teleport>
 </template>
 
@@ -101,7 +115,6 @@ import {
   ref,
   watch,
 } from "vue";
-import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
 import UserBox from "../users/UserBox/UserBox.vue";
 import { User } from "@backend/users/users.entity";
 import SettingsChannelBox from "./ChannelBox/SettingsChannelBox.vue";
@@ -109,8 +122,10 @@ import ChannelBoxModal from "./ChannelBox/ChannelBoxModal.vue";
 import MembersListBox from "./ChannelBox/MembersListBox.vue";
 import { getUrlOf } from "@/router";
 import socket from "@/socket";
-import InvitationModal from "../game/invitation/InvitationModal.vue";
-import AddMember from "@/components/chat/AddMember.vue";
+import UserBoxModal from "../users/UserBox/UserBoxModal.vue";
+import InvitationModal from "../Game/invitation/InvitationModal.vue";
+import AddMember from "./AddMember.vue";
+import MyModal from "../users/UserFriends/MyModal.vue";
 
 interface Props {
   history: Array<any>;
@@ -126,6 +141,7 @@ const userProfileWindow: Ref<boolean> = ref(false);
 const settingsWindow: Ref<boolean> = ref(false);
 const membersWindow: Ref<boolean> = ref(false);
 const inviteWindow: Ref<boolean> = ref(false);
+const addMemberWindow: Ref<boolean> = ref(false);
 const isShowUserProfile: Ref<boolean> = ref(false);
 const userTarget: Ref<User> = ref(props.target);
 
@@ -145,11 +161,16 @@ function showMembers() {
   membersWindow.value = true;
 }
 
+function addMember() {
+  addMemberWindow.value = true;
+}
+
 function hide() {
   userProfileWindow.value = false;
   settingsWindow.value = false;
   membersWindow.value = false;
   isShowUserProfile.value = false;
+  addMemberWindow.value = false;
 }
 
 function hideUserBox() {

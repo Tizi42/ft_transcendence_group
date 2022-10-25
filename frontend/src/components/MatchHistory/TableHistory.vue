@@ -13,14 +13,14 @@
 </template>
 
 <script lang="ts" setup>
-import { Battle } from "@backend/battles/battle.entity";
 import { defineComponent, defineExpose, defineProps } from "vue";
 import ContentHistory from "./ContentHistory.vue";
 import LoadingRing from "../utils/LoadingRing.vue";
+import { BattleShow } from "@backend/battles/utils/battle-show";
 
 interface Props {
   title: string;
-  battles: Array<Battle>;
+  battles: Array<BattleShow>;
   ready: boolean;
   noMatch: boolean;
 }

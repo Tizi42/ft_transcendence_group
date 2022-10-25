@@ -16,19 +16,26 @@
 import { defineComponent, defineExpose, defineProps } from "vue";
 import { onBeforeMount, onUpdated } from "vue";
 import { Ref, ref } from "vue";
-import { User } from "@backend/users/users.entity";
-import { Chat } from "@backend/chat/entities/chat.entity";
+import { UserMinimal } from "@/components/utils/UserMinimal";
+import { messageInGame } from "@backend/chat/utils/types";
 
 interface Props {
-  user: User;
-  message: Chat | null;
+  user: UserMinimal;
+  message: messageInGame | null;
   transition: string;
-  mine: boolean;
   align: string;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
-const items: Ref<Array<string>> = ref([props.user.displayName]);
+const items: Ref<Array<string>> = ref([
+  smallDisplayName(props.user.displayName),
+]);
+
+function smallDisplayName(displayName: string): string {
+  let small = displayName.split(" ")[0].slice(0, 10);
+  if (small.length > 10) return small + ".";
+  return small;
+}
 
 onBeforeMount(() => {
   if (props.message == null) return;

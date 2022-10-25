@@ -1,5 +1,7 @@
 import { ref, Ref } from "vue";
 import { defineStore } from "pinia";
+import { User } from "@backend/users/users.entity";
+import socket from "@/socket";
 
 type voidFunction = () => void;
 
@@ -10,11 +12,14 @@ export interface userInfoStore {
   email: Ref<string>;
   avatarUrl: Ref<string>;
   enabled2FA: Ref<boolean>;
-  friends: Ref<Array<number>>;
-  pending: Ref<Array<number>>;
+  allowNotifications: Ref<boolean>;
+  friends: Ref<Array<User>>;
+  pending: Ref<Array<User>>;
   totalGames: Ref<number>;
   totalVictories: Ref<number>;
+  totalDraws: Ref<number>;
   winRate: Ref<number>;
+  channelInvitePending: Ref<Array<number>>;
   doFetch: voidFunction;
   doFetchFriends: voidFunction;
   doFetchPending: voidFunction;
@@ -31,7 +36,10 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
   const pending = ref([]);
   const totalGames = ref(0);
   const totalVictories = ref(0);
+  const totalDraws = ref(0);
   const winRate = ref(-1);
+  const allowNotifications = ref(true);
+  const channelInvitePending: Ref<Array<number>> = ref([]);
 
   doFetch();
   doFetchFriends();
@@ -44,7 +52,7 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
       .then((response) => {
         return response.json();
       })
-      .then((user) => {
+      .then((user: User) => {
         id.value = user.id;
         displayName.value = user.displayName;
         status.value = user.status;
@@ -53,7 +61,10 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
         enabled2FA.value = user.isTwoFactorAuthenticationEnabled;
         totalGames.value = user.totalGames;
         totalVictories.value = user.totalVictories;
+        totalDraws.value = user.totalDraws;
         winRate.value = user.winRate;
+        allowNotifications.value = user.allowNotifications;
+        channelInvitePending.value = user.memberPendingReqFrom;
       })
       .catch((error) => {
         console.log(error);
@@ -90,6 +101,18 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
       });
   }
 
+  let i = 0;
+  socket.on("receive_friendship", () => {
+    console.log("received friend", i++);
+    doFetchPending();
+    doFetchFriends();
+  });
+
+  socket.on("friend_update", () => {
+    doFetchFriends();
+    doFetchPending();
+  });
+
   return {
     id,
     displayName,
@@ -97,11 +120,14 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
     email,
     avatarUrl,
     enabled2FA,
+    allowNotifications,
     friends,
     pending,
     totalGames,
     totalVictories,
+    totalDraws,
     winRate,
+    channelInvitePending,
     doFetch,
     doFetchFriends,
     doFetchPending,

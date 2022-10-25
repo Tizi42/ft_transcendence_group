@@ -5,6 +5,7 @@ import gameInfo from "../gameInfo";
 export default class GetReadyScene extends Phaser.Scene {
   readyButton: Phaser.GameObjects.Sprite;
   ready = false;
+  i = 0;
 
   constructor() {
     console.log("construct get ready scene");
@@ -12,7 +13,7 @@ export default class GetReadyScene extends Phaser.Scene {
   }
 
   init() {
-    console.log("init get ready scene");
+    console.log("init get ready scene", this.i++);
     this.ready = false;
     socket.emit("reset_score", {
       user_id: gameInfo.user_id,
@@ -26,10 +27,10 @@ export default class GetReadyScene extends Phaser.Scene {
     this.load.image("spellboard", "spellboard.png");
     this.load.spritesheet({
       key: "spell",
-      url: "spell.png",
+      url: "spritesheet_small_with_transparent.png",
       frameConfig: {
-        frameWidth: 64,
-        frameHeight: 64,
+        frameWidth: 320,
+        frameHeight: 320,
       },
     });
     this.load.image("paddle", "paddle.png");
@@ -45,6 +46,15 @@ export default class GetReadyScene extends Phaser.Scene {
         this.cameras.main.centerX,
         this.cameras.main.centerY,
         "not_ready_grey"
+      );
+      socket.emit(
+        "get_game_status",
+        {
+          room_name: gameInfo.room_name,
+        },
+        (data: any) => {
+          if (data.game_status === "running") this.start_game_scene();
+        }
       );
     } else {
       this.readyButton = this.add.sprite(
@@ -75,12 +85,20 @@ export default class GetReadyScene extends Phaser.Scene {
 
     // listen for server instruction to start game
     socket.on("game_start", () => {
-      console.log("Game start !!!", this.scene);
-      if (gameInfo.mode === "magic") this.scene.start("MagicScene");
-      else if (gameInfo.mode === "speed") this.scene.start("SpeedScene");
-      else this.scene.start("GameScene");
+      console.log("game_start rand", Math.random());
+      this.start_game_scene();
     });
+  }
 
-    console.log("this: ", this);
+  start_game_scene() {
+    console.log("Game start !!!", this.scene);
+    this.before_change_scene();
+    if (gameInfo.mode === "magic") this.scene.start("MagicScene");
+    else if (gameInfo.mode === "speed") this.scene.start("SpeedScene");
+    else this.scene.start("GameScene");
+  }
+
+  before_change_scene() {
+    socket.off("game_start");
   }
 }

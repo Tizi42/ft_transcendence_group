@@ -9,7 +9,6 @@
 import { defineComponent, onBeforeMount } from "vue";
 import { Ref, ref } from "vue";
 import { getUrlOf } from "@/router";
-import "@/assets/styles/authentication.css";
 
 export default defineComponent({
   name: "GenerateTwoFactor",

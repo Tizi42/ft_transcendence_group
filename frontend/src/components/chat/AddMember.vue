@@ -1,50 +1,61 @@
 <template>
-  <form id="search-form-friend" @submit.prevent="onClickSearch">
-    <input
-      id="search-input"
-      v-model="input"
-      type="text"
-      placeholder="Search by user id"
-      required="true"
-      autofocus
-      :style="{ border: inputBorder }"
-    />
-    <input id="search-button" type="submit" value="Search" />
-  </form>
-  <div id="search-result" v-if="targetUser">
-    <div class="target-info">
-      <div
-        class="avatar-frame"
-        :style="{
-          'background-image': 'url(' + targetUser.picture + ')',
-        }"
-      ></div>
-      <div class="target-name">{{ targetUser.displayName }}</div>
+  <div class="addMemberContent">
+    <form id="search-form-member" @submit.prevent="onClickSearch">
+      <input
+        id="search-input"
+        v-model="searchInput"
+        type="text"
+        placeholder="Search by user id"
+        required="true"
+        autofocus
+        :style="{ border: inputBorder }"
+      />
+      <input id="search-button" type="submit" value="Search" />
+    </form>
+    <div id="search-result" v-if="targetUser">
+      <div class="target-info">
+        <div
+          class="avatar-frame"
+          :style="{
+            'background-image': 'url(' + targetUser.picture + ')',
+          }"
+        ></div>
+        <div class="target-name">{{ targetUser.displayName }}</div>
+      </div>
+      <button
+        v-if="pending"
+        id="cancel-button"
+        class="buttons"
+        @click="onCancel"
+      >
+        Cancel
+      </button>
+      <button
+        v-if="!pending"
+        id="send-button"
+        class="buttons"
+        @click="onSend"
+        :disabled="alreadyMember"
+      >
+        Send
+      </button>
     </div>
-    <button
-      v-if="!pending"
-      id="send-button"
-      class="buttons"
-      @click="onSend"
-      :disabled="alreadyMember"
-    >
-      Send
-    </button>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, defineComponent, defineExpose, defineProps } from "vue";
+import { ref, defineComponent, defineExpose, defineProps, Ref } from "vue";
 import { useUserStore } from "@/stores/user";
 import socket from "@/socket";
 import axios from "axios";
+import { getUrlOf } from "@/router";
 
 const user = useUserStore();
-let input = ref("");
-let targetUser = ref();
-let pending = ref(false);
-let alreadyMember = ref(false);
-let inputBorder = ref("none");
+const searchInput: Ref<string> = ref("");
+const targetUser = ref();
+const pending = ref(false);
+const alreadyMember = ref(false);
+const inputBorder = ref("none");
 
 interface Props {
   channel: any;
@@ -58,36 +69,101 @@ function onClickSearch() {
   alreadyMember.value = false;
   inputBorder.value = "none";
 
-  console.log(input.value);
+  console.log(searchInput.value);
   axios
-    .get("http://localhost:3000/api/users/info/" + input.value)
+    .get("http://localhost:3000/api/users/info/" + searchInput.value)
     .then((response) => {
-      console.log(response);
       if (response.data) {
         targetUser.value = response.data;
-        for (let i = 0; i < props.channel.members.lenght; i++) {
-          if (props.channel.members[i] === targetUser.value.id) {
+        console.log("data =", targetUser.value);
+        for (let i = 0; i < props.channel.members.length; i++) {
+          if (props.channel.members[i].id === targetUser.value.id) {
             alreadyMember.value = true;
-            inputBorder.value = "4px solid red";
-            input.value = "";
           }
         }
+        if (Number(targetUser.value.id) === user.id) {
+          alreadyMember.value = true;
+        } else if (
+          targetUser.value.memberPendingReqFrom.includes(props.channel.id)
+        ) {
+          pending.value = true;
+        } else if (props.channel.banned.includes(targetUser.value.id)) {
+          alreadyMember.value = true;
+          inputBorder.value = "4px solid red";
+          searchInput.value = "";
+        }
+      } else {
+        inputBorder.value = "4px solid red";
+        searchInput.value = "";
       }
     })
     .catch((error) => {
       console.log(error);
       inputBorder.value = "4px solid red";
-      input.value = "";
+      searchInput.value = "";
     });
 }
 
 async function onSend() {
-  const data = {
-    user: targetUser.value,
-    channel: props.channel.id,
+  const dataToEmit = {
+    from: props.channel.id,
+    to: targetUser.value.id,
   };
-  socket.emit("send_join_request", data);
-  pending.value = true;
+  await fetch(getUrlOf("api/channel/addMember"), {
+    credentials: "include",
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      channelId: props.channel.id,
+      targetId: targetUser.value.id,
+    }),
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      console.log("onSend data = ", data);
+      if (data != "") {
+        pending.value = true;
+        socket.emit("update_join_request", dataToEmit);
+      }
+    })
+    .catch((error) => {
+      console.log("error : ", error);
+    });
+}
+
+async function onCancel() {
+  const dataToEmit = {
+    from: props.channel.id,
+    to: targetUser.value.id,
+  };
+  await fetch(getUrlOf("api/channel/ignoreMember"), {
+    credentials: "include",
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      channelId: props.channel.id,
+      targetId: targetUser.value.id,
+    }),
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      console.log("onCancel data = ", data);
+      if (data != "") {
+        pending.value = false;
+        socket.emit("update_join_request", dataToEmit);
+      }
+    })
+    .catch((error) => {
+      console.log("error : ", error);
+    });
 }
 
 defineExpose(
@@ -98,6 +174,18 @@ defineExpose(
 </script>
 
 <style scoped>
+.addMemberContent {
+  display: flex;
+  height: fit-content;
+  width: fit-content;
+  flex-direction: column;
+  padding: 30px;
+  background-color: #1e2a02;
+  box-shadow: 0px 0px 4px 3px rgba(0, 0, 0, 0.25);
+  border-radius: 22px;
+  gap: 20px;
+}
+
 .avatar-frame {
   display: inline-block;
   border-radius: 20%;
@@ -109,7 +197,7 @@ defineExpose(
   margin: 7%;
 }
 
-#search-form-friend {
+#search-form-member {
   display: flex;
   gap: 20px;
   justify-content: space-between;
@@ -125,7 +213,7 @@ defineExpose(
   display: block;
   font-family: "Outfit";
   text-align: center;
-  background: rgba(30, 42, 2, 0.7);
+  background: #141d01;
   box-shadow: inset 0px 0px 4px 3px rgba(0, 0, 0, 0.25);
   border-radius: 22px;
   border: none;
@@ -139,8 +227,7 @@ defineExpose(
 #search-button {
   display: block;
   font-family: "Outfit Bold";
-  background: #1e2a02;
-  box-shadow: 0px 0px 4px 3px rgba(0, 0, 0, 0.25);
+  background: #141d01;
   border-radius: 22px;
   line-height: 2.3em;
   border: none;
@@ -149,10 +236,12 @@ defineExpose(
   width: 40%;
   padding: 0em 1em;
   transition: transform 0.5s ease;
+  color: #bebebe;
 }
 
 #search-button:hover {
   transform: scale(1.05, 1.05);
+  cursor: pointer;
 }
 
 #search-result {

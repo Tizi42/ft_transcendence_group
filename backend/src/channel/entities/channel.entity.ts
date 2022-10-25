@@ -1,4 +1,4 @@
-import { User } from "src/users/users.entity";
+import { User } from "../../users/users.entity";
 import { Column, Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable } from "typeorm";
 
 @Entity({ name: 'channel' })
@@ -12,7 +12,7 @@ export class Channel {
     @Column()
     name: string;
 
-    @ManyToMany(() => User, (user) => user.channels)
+    @ManyToMany(() => User, (user: User) => user.channels)
     @JoinTable()
     members: User[];
 
@@ -32,5 +32,5 @@ export class Channel {
     password: string;
     
     @Column("int", { array: true, default: {} })
-    pendingReqTo: number[];
+    memberPendingReqTo: number[];                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 }

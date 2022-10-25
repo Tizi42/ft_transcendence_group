@@ -14,6 +14,7 @@
           <div class="friend-frame">
             <div v-if="member.status === 'offline'" class="grey-point"></div>
             <div v-if="member.status === 'online'" class="green-point"></div>
+            <div v-if="member.status === 'in game'" class="red-point"></div>
             <h3>{{ member.displayName }}</h3>
           </div>
           <div>
@@ -160,6 +161,7 @@ h2 {
 
 .members-list {
   width: 40vw;
+  max-width: 800px;
   margin: 0;
   display: flex;
   flex-direction: row;

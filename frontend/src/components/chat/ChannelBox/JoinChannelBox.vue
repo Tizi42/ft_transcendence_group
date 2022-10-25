@@ -2,19 +2,21 @@
   <div class="box-create-channel">
     <h2 v-if="channel.type === 'private'">Send a request ?</h2>
     <h2 v-else>Join this channel ?</h2>
-    <div class="fields" v-if="channel.type === 'protected'">
-      <label for="channel-password">Enter the password :</label>
+    <div class="fields-join" v-if="channel.type === 'protected'">
+      <label for="channel-password-join">The password is required :</label>
       <input
         v-model="password"
-        id="channel-password"
+        id="channel-password-join"
         type="password"
-        placeholder="Password.."
+        placeholder="Channel password.."
         required="true"
         autofocus
         :style="{ border: inputBorder }"
       />
     </div>
-    <button type="submit" id="add-channel-button" @click="toJoin()"></button>
+    <button type="submit" class="join-channel" @click="toJoin()">
+      <h3>Join</h3>
+    </button>
   </div>
 </template>
 
@@ -23,7 +25,6 @@ import {
   defineComponent,
   defineExpose,
   defineProps,
-  onBeforeMount,
   defineEmits,
   ref,
   Ref,
@@ -38,7 +39,6 @@ interface Props {
 
 const props: Readonly<Props> = defineProps<Props>();
 const password: Ref<string> = ref("");
-const authorized: Ref<boolean> = ref(true);
 let inputBorder = ref("none");
 
 const toJoin = () => {
@@ -55,11 +55,17 @@ const toJoin = () => {
 
 socket.on("joined_channel", (channelId: number) => {
   console.log("joined channel id ", channelId);
+  socket.emit("get_all_channels");
   emit("hideAddChannel");
 });
 
 socket.on("password_error", () => {
   inputBorder.value = "4px solid red";
+});
+
+socket.on("ban_error", () => {
+  emit("hideAddChannel");
+  alert("You've been ban in this channel, you can't join it !");
 });
 
 // if (props.channel.value.type === "private") {
@@ -77,7 +83,12 @@ defineExpose(
 
 <style scoped>
 .box-create-channel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
   text-align: center;
+  height: 100%;
 }
 
 h2 {
@@ -86,24 +97,19 @@ h2 {
   margin-top: 20px;
 }
 
-#create-channel {
+h3 {
+  margin: 0;
+}
+
+.fields-join {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
-  height: 30vh;
 }
 
-.fields {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  align-items: center;
-}
-
-.fields input,
-#channel-type {
-  margin-left: 5px;
+.fields-join input {
+  margin-top: 10px;
   font-size: 0.8em;
   border: none;
   border-radius: 10px;
@@ -112,38 +118,24 @@ h2 {
   transition: transform 0.5s ease;
 }
 
-#channel-type {
-  color: #ffcb00;
-  cursor: pointer;
-}
-
-.fields input {
+.fields-join input {
   color: white;
 }
 
-.fields input:hover,
-#channel-type:hover {
+.fields-join input:hover {
   transform: scale(1.03, 1.03);
 }
 
-.fields input:focus,
-#channel-type:focus {
+.fields-join input:focus {
   outline: none;
 }
 
-#add-channel-button {
-  width: 30px;
-  height: 30px;
-  border: none;
-  background-color: #1e2b02;
-  background-size: 30px 30px;
-  background-repeat: no-repeat;
-  background-image: url("@/assets/icons/icon-add.png");
+.join-channel {
   cursor: pointer;
   transition: transform 0.5s ease;
 }
 
-#add-channel-button:hover {
+.join-channel:hover {
   transform: scale(1.1, 1.1);
 }
 </style>

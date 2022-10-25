@@ -1,14 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Channel } from "src/channel/entities/channel.entity";
-import { Chat } from "src/chat/entities/chat.entity";
-import { Any, DataSource, In, Not, QueryRunner, Repository } from "typeorm";
+import { Channel } from "../channel/entities/channel.entity";
+import { Chat } from "../chat/entities/chat.entity";
+import { Any, DataSource, In, Not, Repository } from "typeorm";
 import { User } from "./users.entity";
 import { FriendshipDto } from "./utils/friendship.dto";
 import { UserDetails } from "./utils/types";
 import { UserDto } from "./utils/user.dto";
-import * as fs from "fs";
-// import { HttpService } from "@nestjs/axios";
 
 @Injectable()
 export class UsersService {
@@ -24,6 +22,9 @@ export class UsersService {
       @InjectRepository(Chat)
       private readonly chatRepository: Repository<Chat>,
 
+      @InjectRepository(Channel)
+      private readonly channelRepository: Repository<Channel>,
+
       private readonly dataSource: DataSource,
 
       // private readonly httpService: HttpService,
@@ -38,16 +39,31 @@ export class UsersService {
   */
 
   async updateUserAvatar(id: number, filename: string, pictureUrl: string): Promise<any> {
-    return  await this.usersRepository.update(id, {picture: pictureUrl, pictureLocalFilename: filename});
+    return await this.usersRepository.update(id, {picture: pictureUrl, pictureLocalFilename: filename});
+  }
+
+  async displayNameAlreadyExist(newName: string) {
+    const allUsers = await this.findAll();
+
+    for (let i = 0; i < allUsers.length; i++) {
+      if (allUsers[i].displayName === newName) {
+        return true;
+      }
+    }
+    return false;
   }
 
   async updateUserDisplayName(id: number, name: string): Promise<any> {
-    return  this.usersRepository.update(id, {displayName: name});
+    if (await this.displayNameAlreadyExist(name)) {
+      return { msg: "bad_name" };
+    }
+    return await this.usersRepository.update(id, {displayName: name});
   }
 
   async updateUserEmail(id: number, email: string): Promise<any> {
-    return  this.usersRepository.update(id, {email: email});
+    return await this.usersRepository.update(id, {email: email});
   }
+
 
   /*
   **    CREATE/DELETE
@@ -55,6 +71,14 @@ export class UsersService {
 
   async createNewUser(userDetails: UserDetails): Promise<User> {
     const newUser = this.usersRepository.create(userDetails);
+    let nbr = 1;
+    let displayNameTmp = newUser.displayName;
+    while (await this.displayNameAlreadyExist(newUser.displayName)) {
+      displayNameTmp = newUser.displayName;
+      displayNameTmp += nbr.toString();
+      nbr++;
+    }
+    newUser.displayName = displayNameTmp;
     return await this.usersRepository.save(newUser);
   }
 
@@ -71,19 +95,15 @@ export class UsersService {
     return Math.floor(Math.random() * max);
   }
 
-  createFakeUsers(nb: number)
+  async createFakeUsers(nb: number)
   {
     for (var i = 0; i < nb; i++) {
       let newUser = new User();
       newUser.displayName = "User" + i.toString();
       newUser.username = "username" + i.toString();
       newUser.email = "user" + i.toString() + "@student.42.fr";
-	    this.usersRepository.insert(newUser);
-      let id = this.usersRepository.getId(newUser);
-      newUser.picture = id;
-      newUser.totalGames = this.getRandomInt() + 1;
-      newUser.totalVictories = this.getRandomInt(newUser.totalGames);
-      newUser.winRate = Math.floor((newUser.totalVictories / newUser.totalGames * 100));
+	    await this.usersRepository.insert(newUser);
+      console.log(newUser.displayName, "created");
     }
   }
 
@@ -93,6 +113,7 @@ export class UsersService {
 
   async removeAll(): Promise<void> {
     await this.chatRepository.delete({});
+    await this.channelRepository.delete({});
     await this.usersRepository.delete({});
     await this.restartIdSeq();
   }
@@ -107,6 +128,7 @@ export class UsersService {
   /*
   **    GET USER INFORMATIONS
   */
+
   async getDisplayname(id: number) : Promise<string> {
     let user = await this.usersRepository.findOneBy({id});
     if (user == null)
@@ -132,11 +154,11 @@ export class UsersService {
   **    FIND USER
   */
  
-  findAll(): Promise<User[]> {
-   return this.usersRepository.find();
+  async findAll(): Promise<User[]> {
+   return await this.usersRepository.find();
   }
   
-  findOne(id: number): Promise<User> {
+  findOne(id: number): Promise<User | null> {
     return this.usersRepository.findOneBy({ id });
   }
 
@@ -145,14 +167,17 @@ export class UsersService {
   // }
 
   async getUsername(id: number): Promise<String> {
-    return this.findOne(id).then((user) => user.username);
+    return this.findOne(id).then((user) => {
+      if (user == null) return "";
+      return user.username;
+    });
   }
 
-  async findOneById(id: number): Promise<User | undefined> {
+  async findOneById(id: number): Promise<User | null> {
     return this.usersRepository.findOneBy({ id: id });
   }
 
-  async findOneByEmail(email: string): Promise<User | undefined> {
+  async findOneByEmail(email: string): Promise<User | null> {
     return this.usersRepository.findOneBy({ email: email });
   }
 
@@ -197,7 +222,7 @@ export class UsersService {
     let target = await this.usersRepository.findOneBy({ id: param.id2 });
 
     if (askingForFriend == null || target == null) {
-      console.log("cancel friend reques aborted");
+      console.log("cancel friend request aborted");
       return null;
     }
 
@@ -222,7 +247,7 @@ export class UsersService {
     let target = await this.usersRepository.findOneBy({ id: param.id2 });
 
     if (askingForFriend == null || target == null) {
-      console.log("cancel friend reques aborted");
+      console.log("accept friend request aborted");
       return null;
     }
 
@@ -259,8 +284,8 @@ export class UsersService {
   }
 
   async removeFriendship(param: FriendshipDto) {
-    let removingFriend = await this.usersRepository.findOneBy({ id: param.id1 });
-    let target = await this.usersRepository.findOneBy({ id: param.id2 });
+    let removingFriend: User | null = await this.usersRepository.findOneBy({ id: param.id1 });
+    let target: User | null = await this.usersRepository.findOneBy({ id: param.id2 });
 
     if (removingFriend == null || target == null) {
       console.log("friendship deletion aborted");
@@ -272,8 +297,14 @@ export class UsersService {
       return null;
     }
     
-    let newFriendWithList = removingFriend.friendWith.filter(function(ele){ return ele != target.id });
-    let newFriendOfList = target.friendWith.filter(function(ele){ return ele != removingFriend.id });
+    let newFriendWithList = removingFriend.friendWith.filter(function(ele) {
+      if (target == null) return true;
+      return ele != target.id;
+    });
+    let newFriendOfList = target.friendWith.filter(function(ele){
+      if (removingFriend == null) return true;
+      return ele != removingFriend.id;
+    });
     
     removingFriend.friendWith = newFriendWithList;
     target.friendWith = newFriendOfList;
@@ -286,7 +317,7 @@ export class UsersService {
   }
 
   async showFriendWith(id: number) : Promise<User[]> {
-    const user: User = await this.usersRepository.findOneBy({ id });
+    const user: User | null = await this.usersRepository.findOneBy({ id });
     if (user == null)
     {
       console.log("no user matches this id");
@@ -298,7 +329,7 @@ export class UsersService {
   }
 
   async showFriendPendingReqTo(id: number) : Promise<User[]> {
-    const user: User = await this.usersRepository.findOneBy({ id });
+    const user: User | null = await this.usersRepository.findOneBy({ id });
     if (user == null)
     {
       console.log("no user matches this id");
@@ -310,7 +341,7 @@ export class UsersService {
   }
 
   async showFriendPendingReqFrom(id: number) : Promise<User[]> {
-    const user: User = await this.usersRepository.findOneBy({ id });
+    const user: User | null = await this.usersRepository.findOneBy({ id });
     if (user == null)
     {
       console.log("no user matches this id");
@@ -324,8 +355,8 @@ export class UsersService {
   async getFriendLevel(id: number, target: number): Promise<number> {
     if (id == target)
       return this.LVL_FRIENDS;
-    const user1: User = await this.usersRepository.findOneBy({ id: id });
-    const user2: User = await this.usersRepository.findOneBy({ id: target });
+    const user1: User | null = await this.usersRepository.findOneBy({ id: id });
+    const user2: User | null = await this.usersRepository.findOneBy({ id: target });
     if (user1 == null || user2 == null)
       return this.LVL_NO_RELATION;
     if (user1.friendWith.includes(user2.id))
@@ -359,8 +390,14 @@ export class UsersService {
     // remove friendship if they are friends
     if (wantToBlock.friendWith.includes(target.id))
     {
-      let newFriendWithList = wantToBlock.friendWith.filter(function(ele){ return ele != target.id });
-      let newFriendOfList = target.friendWith.filter(function(ele){ return ele != wantToBlock.id });
+      let newFriendWithList = wantToBlock.friendWith.filter(function(ele) {
+        if (target == null) return;
+        return ele != target.id;
+      });
+      let newFriendOfList = target.friendWith.filter(function(ele) {
+        if (wantToBlock == null) return;
+        return ele != wantToBlock.id;
+      });
       
       wantToBlock.friendWith = newFriendWithList;
       target.friendWith = newFriendOfList;
@@ -392,8 +429,14 @@ export class UsersService {
       return null;
     }
 
-    let newBlockedList = wantToUnblock.blocked.filter(function(ele){ return ele != target.id });
-    let newBlockedByList = target.blockedBy.filter(function(ele){ return ele != wantToUnblock.id });
+    let newBlockedList = wantToUnblock.blocked.filter(function(ele) {
+      if (target == null) return;
+      return ele != target.id;
+    });
+    let newBlockedByList = target.blockedBy.filter(function(ele) {
+      if (wantToUnblock == null) return;
+      return ele != wantToUnblock.id;
+    });
     
     wantToUnblock.blocked = newBlockedList;
     target.blockedBy = newBlockedByList;
@@ -410,7 +453,7 @@ export class UsersService {
     if (user == null)
     {
       console.log("no user matches this id");
-      return null;
+      return [];
     }
     return this.usersRepository.find({
         where: { id: Any(user.blocked) }
@@ -422,7 +465,7 @@ export class UsersService {
     if (user == null)
     {
       console.log("no user matches this id");
-      return null;
+      return [];
     }
     return this.usersRepository.find({
         where: { id: Any(user.blockedBy) }
@@ -462,14 +505,20 @@ export class UsersService {
 
     // Make sure offline user won't get online status on shutting down game room
     let newStatus = value;
+    let user = await this.findOne(userId);
+    if (user == null) return;
+    let oldStatus = user.status;
+    
+    if (newStatus === "online" && oldStatus !== "offline")
+      return;
+
     if (newStatus === "leave game") {
-      let oldStatus = (await this.findOne(userId)).status;
       if (oldStatus === "offline")
         return;
       newStatus = "online";
     }
 
-    return this.usersRepository.update(userId, {
+    return await this.usersRepository.update(userId, {
         status: newStatus,
     });
   }
@@ -478,16 +527,22 @@ export class UsersService {
   **    GAME STATS
   */
 
-  async updateResult(id: number, winner: boolean) {
-    let target = await this.usersRepository.findOneBy({ id });
+  async updateResult(target: User, winner: boolean, draw: boolean): Promise<boolean> {
     target.totalGames++;
-    if (winner)
-      target.totalVictories++;
-    target.winRate = Math.floor((target.totalVictories / target.totalGames) * 100);
-    this.usersRepository.save(target);
+    if (winner) target.totalVictories++;
+    else if (draw) target.totalDraws++;
+    if (target.totalDraws == target.totalGames)
+      target.winRate = -1;
+    else {
+      target.winRate = Math.floor(100 * target.totalVictories / (target.totalGames - target.totalDraws));
+    }
+    await this.usersRepository.save(target);
+    return true;
   }
 
   async getLeadByVictories(global: boolean, id: number) : Promise<User[]> {
+    let user = await this.findOne(id);
+    if (user == null) return [];
     if (global)
       return this.usersRepository.find(
         {order: {totalVictories: "DESC"},
@@ -497,7 +552,7 @@ export class UsersService {
       order: {totalVictories: "DESC"},
       where: [
         {
-          id: In((await this.findOne(id)).friendWith),
+          id: In(user.friendWith),
         },
         {
           id: id,
@@ -507,6 +562,8 @@ export class UsersService {
   }
 
   async getLeadByWinRate(global: boolean, id: number) : Promise<User[]> {
+    let user = await this.findOne(id);
+    if (user == null) return [];
     if (global)
       return this.usersRepository.find({
         order: {winRate: "DESC"},
@@ -516,7 +573,7 @@ export class UsersService {
       order: {winRate: "DESC"},
       where: [
         {
-          id: In((await this.findOne(id)).friendWith),
+          id: In(user.friendWith),
         },
         {
           id: id,
@@ -526,6 +583,8 @@ export class UsersService {
   }
 
   async getLeadByGames(global: boolean, id: number) : Promise<User[]> {
+    let user = await this.findOne(id);
+    if (user == null) return [];
     if (global)
       return this.usersRepository.find({
         order: {totalGames: "DESC"},
@@ -535,7 +594,7 @@ export class UsersService {
       order: {totalGames: "DESC"},
       where: [
         {
-          id: In((await this.findOne(id)).friendWith),
+          id: In(user.friendWith),
         },
         {
           id: id,
@@ -553,6 +612,17 @@ export class UsersService {
       default:
         return this.getLeadByGames(global, id);
     }
+  }
+
+  /*
+  **    CHANGE USER SETTINGS
+  */
+
+  async changeSettingNotification(id: number, value: boolean) {
+    let user = await this.usersRepository.findOneBy({ id: id });
+    if (user == null) return ;
+    user.allowNotifications = value;
+    await this.usersRepository.save(user);
   }
 
   /*

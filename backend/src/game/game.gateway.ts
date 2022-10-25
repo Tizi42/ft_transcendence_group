@@ -5,7 +5,6 @@ import { GameRoom } from "./utils/gameRoom";
 import { Invitation } from "./utils/invitation";
 import { AppGateway } from '../gateway';
 import { UsersService } from '../users/users.service';
-import { GameService } from './game.service';
 import { ChatService } from '../chat/chat.service';
 import { ChannelService } from 'src/channel/channel.service';
 import { BattlesService } from '../battles/battles.service';
@@ -41,6 +40,10 @@ export class GameGateway extends AppGateway {
   private static inGameUsers: Map<number, string> = new Map(); //userId, roomName
   private static inGameSockets: Map<string, string> = new Map(); //socketId, roomName
 
+  /*
+  **    CONNECTIONS AND CREATION
+  */
+
   async handleConnection(socket: Socket) {}
 
   async handleDisconnect(@ConnectedSocket() socket: Socket) {
@@ -63,69 +66,61 @@ export class GameGateway extends AppGateway {
     }
   }
 
-  createGameRoom(
+  informEveryoneGameUpdate() {
+    this.server.emit("games_update_list");
+  }
+
+  async createGameRoom(
     l_id: number,
     l_sid: string,
     r_id: number,
     r_sid:string,
     mode: string
-  ) {
+  ): Promise<string> {
     const room_name = l_id + " vs " + r_id;
-    GameGateway.rooms.set(room_name, new GameRoom(l_id, l_sid, r_id, r_sid, mode));
+    GameGateway.rooms.set(room_name, new GameRoom(
+      l_id, l_sid, r_id, r_sid, mode, this.server, this.battlesService));
+    
     // update user status
-    this.usersService.updateUserStatus(l_id, "in game");
-    this.usersService.updateUserStatus(r_id, "in game");
+    await this.usersService.updateUserStatus(l_id, "in game");
+    await this.usersService.updateUserStatus(r_id, "in game");
+
     // annonce to given socket
     this.server.in(l_sid).in(r_sid).socketsJoin(room_name);
     this.server.to(l_sid).to(r_sid).emit("game_found", room_name);
+
     // update register
     GameGateway.inGameUsers.set(l_id, room_name);
     GameGateway.inGameUsers.set(r_id, room_name);
     GameGateway.inGameSockets.set(l_sid, room_name);
     GameGateway.inGameSockets.set(r_sid, room_name);
+
+    // inform everyone
+    this.informEveryoneGameUpdate();
+
+    return room_name;
   }
 
-  closeRoom(room: GameRoom) {
+  async closeRoom(room: GameRoom) {
     if (!room)
       return;
+    room.stop_game();
     this.server.in(room.room_name).socketsLeave(room.room_name);
-    this.usersService.updateUserStatus(room.playerL, "leave game");
-    this.usersService.updateUserStatus(room.playerR, "leave game");
+    await this.usersService.updateUserStatus(room.playerL, "leave game");
+    await this.usersService.updateUserStatus(room.playerR, "leave game");
     GameGateway.inGameUsers.delete(room.playerL);
     GameGateway.inGameUsers.delete(room.playerR);
     GameGateway.inGameSockets.delete(room.sidL);
     GameGateway.inGameSockets.delete(room.sidR);
     GameGateway.rooms.delete(room.room_name);
+
+    // inform everyone
+    this.informEveryoneGameUpdate();
   }
 
   cleanQueue(mode: string) {
     GameGateway.queues[mode].id = -1;
     GameGateway.queues[mode].sid = "";
-  }
-
-  async start_game(room: GameRoom) {
-    this.server.to(room.room_name).emit("game_start");
-    if (room.mode == "speed") {
-      setTimeout(() => {
-        this.server.to(room.room_name).emit("end", {
-          winner: "",
-        });
-      },
-      180000);
-    }
-    room.current_game_id = await this.battlesService.addOne({
-      opponent1: room.playerL,
-      opponent2: room.playerR,
-    });
-  }
-
-  save_game(room: GameRoom) {
-    this.battlesService.end(
-      room.current_game_id,
-      room.winner,
-      room.score_left,
-      room.score_right
-    );
   }
 
   @SubscribeMessage('queue_register')
@@ -134,7 +129,9 @@ export class GameGateway extends AppGateway {
     if (GameGateway.queues.normal.id === data.user_id
         || GameGateway.queues.magic.id === data.user_id
         || GameGateway.queues.speed.id === data.user_id) {
-      return "You are already in a queue!"; // need to show an alert in front
+      return {
+        alreadyInQueue: true,
+      };
     }
 
     // if already in game, return
@@ -158,7 +155,11 @@ export class GameGateway extends AppGateway {
     return "You are no longer in queue";
   }
 
-  @SubscribeMessage('send_invitaton')
+  /*
+  **    HANDLE INVITATIONS
+  */
+
+  @SubscribeMessage('send_invitation')
   async onInviteToPlay(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
     // Delete old pending invitation of user
     GameGateway.invitations.delete(data.user_id);
@@ -167,56 +168,85 @@ export class GameGateway extends AppGateway {
     let sender = await this.usersService.findOne(data.user_id);
     let invitee = await this.usersService.findOne(data.invitee);
     if (sender.status !== "online" || invitee.status !== "online")
-      return "You or your invitee is not available";
+      return this.server.to(socket.id).emit("unavailable");
+    
+    // check if they are friends or if invitee allow invites from anyone
+    if (!(invitee.id in sender.friendWith) && invitee.allowNotifications == false)
+      return this.server.to(socket.id).emit("not_allowed");
 
     // create invitation
-    GameGateway.invitations.set(
-      sender.id,
-      new Invitation(sender.id, socket.id, invitee.id, data.mode)
-    );
+    let invitation = new Invitation(sender.id, socket.id, invitee.id, data.mode);
+    GameGateway.invitations.set(sender.id, invitation);
 
     // emit invitation
-    this.server.to(data.invitee).emit("game_invitaion");
+    this.server.to(data.invitee).emit("game_invitation", invitation);
   }
 
-  @SubscribeMessage('cancel_invitaton')
+  @SubscribeMessage('cancel_invitation')
   onCancelInvite(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+    console.log("cancel invitation from", data.user_id, "to", data.invitee);
     GameGateway.invitations.delete(data.user_id);
-    this.server.to(data.invitee).emit("invitaion_expired");
+    this.server.to(data.invitee).emit("invitation_expired");
   }
 
-  @SubscribeMessage('accept_invitaton')
+  @SubscribeMessage('refuse_invitation')
+  onRefuseInvite(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+    const invitation = GameGateway.invitations.get(data.sender);
+    if (!invitation || invitation.invitee_id != data.user_id)
+      return "invitation no longer exist...";
+    
+    GameGateway.invitations.delete(data.sender);
+    this.server.to(invitation.sender_sid).emit("decline_invitation");
+    this.server.to(data.user_id).emit("invitation_expired");
+  }
+
+  @SubscribeMessage('accept_invitation')
   async onAcceptInvite(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
     const invitation = GameGateway.invitations.get(data.sender);
     if (!invitation || invitation.invitee_id != data.user_id)
-      return "invitaion no longer exist...";
+      return "invitation no longer exist...";
 
     // check if sender or receiver is available
     let sender = await this.usersService.findOne(data.sender);
     let invitee = await this.usersService.findOne(data.user_id);
     if (sender.status !== "online" || invitee.status !== "online") {
       GameGateway.invitations.delete(data.sender);
-      return "You or your inviter is not available";
+      return "You or your inviter is no longer available";
     }
 
     // start game
-    this.createGameRoom(
+    const roomName = await this.createGameRoom(
       invitation.sender_id,
       invitation.sender_sid,
       invitation.invitee_id,
       socket.id,
       invitation.mode
     );
+
+    // emit go play signal
+    this.server.to(invitation.sender_sid).to(socket.id).emit("go_play", roomName);
+
+    // clean invitaion
+    this.server.to(data.user_id).emit("invitation_expired");
+    GameGateway.invitations.delete(data.sender);
   }
 
+  /*
+  **    GAME
+  */
+
   @SubscribeMessage('init_room')
-  async sendRoomInfo(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+  sendRoomInfo(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
     const room = GameGateway.rooms.get(data.room_name);
     if (!room)
       return null;
     if (data.user_id !== room.playerL && data.user_id !== room.playerR)
       this.server.in(socket.id).socketsJoin(data.room_name);
-    return room;
+    return {
+      playerL: room.playerL,
+      playerR: room.playerR,
+      mode: room.mode,
+    };
   }
 
   @SubscribeMessage('leave_game')
@@ -243,7 +273,7 @@ export class GameGateway extends AppGateway {
       room.ready = data.user_id;
     else {
       room.ready = 0;
-      this.start_game(room);
+      room.start_game();
     }
   }
 
@@ -261,107 +291,18 @@ export class GameGateway extends AppGateway {
     const room = GameGateway.rooms.get(data.room_name);
     if (!room)
       return null;
-    if (room.playerL === data.user_id) {
-      room.paddle_left_pos_y = data.paddle_pos;
-    } else if (room.playerR === data.user_id) {
-      room.paddle_right_pos_y = data.paddle_pos;
-    }
-    this.server.to(data.room_name).emit("game_update", {
-      paddle_left_posY: room.paddle_left_pos_y,
-      paddle_right_posY: room.paddle_right_pos_y,
-    });
-  }
-
-  @SubscribeMessage('create_spell')
-  async onUpdateSPell(@MessageBody() data: any) {
-    const room = GameGateway.rooms.get(data.room_name);
-    if (!room)
-      return null;
-    room.spell_L = data.spell_L;
-    room.spell_R = data.spell_R;
-    this.server.to(data.room_name).emit("new_spell", {
-      spell_L: data.spell_L,
-      spell_R: data.spell_R,
-    });
+    room.on_paddle_move(data.user_id, data.paddle_move_direction);
   }
 
   @SubscribeMessage('launch_spell')
   async onLaunchSPell(@MessageBody() data: any) {
     const room = GameGateway.rooms.get(data.room_name);
-    let target;
-    let effect;
-    let side = 0;
-  
-    if (!room)
-      return null;
-    if (room.playerL === data.user_id) {
-      effect = room.spell_L;
-      room.spell_L = 0;
-      target = room.playerR;
-      side = 1;
-    } else if (room.playerR === data.user_id) {
-      effect = room.spell_R;
-      room.spell_R = 0;
-      target = room.playerL;
-      side = -1;
-    }
-    this.server.to(data.room_name).emit("apply_effect", {
-      to: target,
-      side: side,
-      effect: effect,
-      spell_L: room.spell_L,
-      spell_R: room.spell_R,
-    });
-  }
-
-  @SubscribeMessage('ball_pos')
-  async updateBallPos(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
-    // const room = GameGateway.rooms.get(data.room_name);
-    // if (!room)
-    //   return null;
-    // room.ball_pos_x = data.ball_x;
-    // room.ball_pos_y = data.ball_y;
-    socket.to(data.room_name).emit("ball_update", {
-      ball_x: data.ball_x,
-      ball_y: data.ball_y,
-      vx: data.vx,
-      vy: data.vy,
-    });
-  }
-
-  @SubscribeMessage('update_score')
-  async onUpdateScore(@MessageBody() data: any) {
-    console.log(GameGateway.rooms);
-    console.log("score:", data);
-    this.server.to(data.room_name).emit("score_update", {
-      left: data.left,
-      right: data.right,
-    });
+    if (!room) return;
+    room.on_spell_lauched(data.user_id, data.spell_slot);
   }
 
   getRandomInt(max: number = 100) : number {
     return Math.floor(Math.random() * max);
-  }
-
-  transformRooms(): Array<GameRoomNS> {
-    let data: Array<GameRoomNS> = [];
-    GameGateway.rooms.forEach((value: GameRoom, key: string) => {
-      data.push(new GameRoomNS(value, key));
-    });
-    return data;
-  }
-
-  @SubscribeMessage('get_updated_rooms')
-  updateRooms(@ConnectedSocket() socket: Socket) {
-    if (GameGateway.rooms.size == 0) { // to delete when everything is good
-      let room_name = 2 + " vs " + 3;
-      GameGateway.rooms.set(room_name, new GameRoom(2, "", 3, "", "normal",));
-      room_name = 4 + " vs " + 5;
-      GameGateway.rooms.set(room_name, new GameRoom(4, "", 5, "", "magic"));
-      room_name = 6 + " vs " + 7;
-      GameGateway.rooms.set(room_name, new GameRoom(6, "", 7, "", "speed"));
-    }
-    this.server.to(socket.id).emit("updated_rooms", this.transformRooms());
   }
 
   @SubscribeMessage('reset_score')
@@ -370,81 +311,43 @@ export class GameGateway extends AppGateway {
       left: 0,
       right: 0,
     });
+    this.server.to(socket.id).emit("time_reset");
   }
 
-  getRandomIntBetween(min: number, max: number) {
-    return Math.floor(Math.random() * (max - min + 1) + min)
-  }
-
-  getRandomVelocity(mode: string, direction: string) {
-    let minVelocity = 200;
-    let maxVelocity = 300;
-    if (mode === "speed") {
-      minVelocity = 500;
-      maxVelocity = 600;
-    }
-    let vx = this.getRandomIntBetween(minVelocity, maxVelocity);
-    let vy = this.getRandomIntBetween(minVelocity, maxVelocity);
-    if (direction === "toLeft")
-      vx = -vx;
-    if (this.getRandomIntBetween(0, 1) === 0)
-      vy = -vy;
-    return ([
-      vx,
-      vy
-    ]);
-  }
-
-  @SubscribeMessage('launch_ball')
-  async onLaunchBall(
+  @SubscribeMessage('get_game_status')
+  async onGetGameStatus(
     @ConnectedSocket() socket: Socket,
     @MessageBody() data: any
-  ){
-    const randomHeight = this.getRandomIntBetween(80, 511); // height 591 - 80 
-    const randVelocity = this.getRandomVelocity(data.mode, data.direction);
-    this.server.to(data.room_name).emit("launch_ball", {
-      randomHeight: randomHeight,
-      randVx: randVelocity[0],
-      randVy: randVelocity[1],
-    });
-  }
-
-  @SubscribeMessage('game_end')
-  async onGameEnd(
-    @ConnectedSocket() socket: Socket,
-    @MessageBody() data: any
-  ){
-    console.log("game end, winner is player ", data.winner);
+  ) {
     const room = GameGateway.rooms.get(data.room_name);
     if (!room)
       return null;
-
-    // save game data
-    room.score_left = data.left;
-    room.score_right = data.right;
-    if (data.winner === "left")
-      room.winner = room.playerL;
-    else if (data.winner === "right")
-      room.winner = room.playerR;
-    else
-      room.winner = -1;
-
-    //update battle history database
-    this.save_game(room);
-
-    // inform other users in game room
-    this.server.to(data.room_name).emit("end", {
-      winner: data.winner,
-    });
+    if (room.game_status === "running") {
+      let time_diff = (new Date()).getTime() - room.current_game_start_time.getTime() ;
+      this.server.to(socket.id).emit("current_game_time", time_diff);
+    }
+    return {
+      game_status: room.game_status,
+    };
   }
 
-  // @SubscribeMessage('update_pos')
-  // async updatePaddle(socket: Socket, data: any) {
-  //     const socketId = socket.id;
-  //     console.log(socketId);
-  //     console.log(data[0]);
-  //     console.log(data[1]);
-  //     console.log(data);
-  //     GameGateway.rooms.get(data[0]).update_gamestate(socketId, data[1]);
-  // }
+  /*
+  **    WATCH LIST
+  */
+
+  async transformRooms(): Promise<Array<GameRoomNS>> {
+    let data: Array<GameRoomNS> = [];
+    for await (const value of GameGateway.rooms) {
+      data.push(new GameRoomNS(value[1], value[0]));
+    }
+    return data;
+  }
+
+  @SubscribeMessage('get_updated_rooms')
+  async updateRooms(@ConnectedSocket() socket: Socket) {
+    this.server.to(socket.id).emit("updated_rooms", await this.transformRooms());
+  }
+
+  @SubscribeMessage("logout_all")
+  async handleLogout() {}
 }

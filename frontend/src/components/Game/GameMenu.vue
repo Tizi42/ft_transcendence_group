@@ -1,47 +1,52 @@
 <template>
-  <div class="page2FA">
-    <div class="box boxMenu">
-      <div class="gameMode">
-        <div class="previousChoice" @click="changeMode(false)" />
-        <Transition name="bounce">
-          <div class="titleGame" v-if="show">
-            {{ modeTitle[choosenMode] }}
-          </div>
-        </Transition>
-        <div class="nextChoice" @click="changeMode(true)" />
+  <div>
+    <div class="page2FA">
+      <div class="box boxMenu">
+        <div class="gameMode">
+          <div class="previousChoice" @click="changeMode(false)" />
+          <Transition name="bounce">
+            <div class="titleGame" v-if="show">
+              <img :src="modeIcons[choosenMode].toString()" class="modeIcon" />
+              {{ modeTitle[choosenMode] }}
+            </div>
+          </Transition>
+          <div class="nextChoice" @click="changeMode(true)" />
+        </div>
+        <div class="description">
+          <Transition name="fade">
+            <div v-if="show">
+              {{ modeDescription[choosenMode] }}
+            </div>
+          </Transition>
+        </div>
+        <div class="startBtn" @click="startGame" v-if="!waiting">
+          Start game
+        </div>
+        <div v-else>
+          <Transition name="bounce" appear>
+            <div class="popUpContent">
+              <div class="cancelBtn" @click="cancel">
+                <LoadingRing color="#ffcb00" size="30px" height="30px" />
+                Cancel
+              </div>
+            </div>
+          </Transition>
+        </div>
       </div>
-      <div class="description">
-        <Transition name="fade">
-          <div v-if="show">
-            {{ modeDescription[choosenMode] }}
-          </div>
-        </Transition>
-      </div>
-      <div class="startBtn" @click="startGame">Start game</div>
     </div>
   </div>
-  <teleport to="body" v-if="addWindow">
-    <SimpleModal @hide="hide">
-      <Transition name="bounce" appear>
-        <div class="popUpContent" v-if="addWindow">
-          <div class="popUpTxt">Finding your opponent...</div>
-          <LoadingRing color="#ffcb00" size="50px" height="50px" />
-          <div class="cancelBtn" @click="hide">Cancel</div>
-        </div>
-      </Transition>
-    </SimpleModal>
-  </teleport>
 </template>
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose, onMounted, Ref } from "vue";
-import { ref } from "vue";
-import SimpleModal from "./SimpleModal.vue";
-import "@/assets/styles/gameOverlay.css";
+import { ref, onBeforeUnmount } from "vue";
 import LoadingRing from "../utils/LoadingRing.vue";
-import router from "@/router";
+import router from "@/router/index";
+import socket from "@/socket";
+import { useUserStore } from "@/stores/user";
 
-const addWindow: Ref<boolean> = ref(false);
+const waiting: Ref<boolean> = ref(false);
+const user = useUserStore();
 const show: Ref<boolean> = ref(false);
 const choosenMode: Ref<number> = ref(0);
 const numberModes = 3;
@@ -50,14 +55,21 @@ const modeTitle: Ref<Array<string>> = ref([
   "Magic mode",
   "Speed mode",
 ]);
+const mode: Ref<Array<string>> = ref(["normal", "magic", "speed"]);
 const modeDescription: Ref<Array<string>> = ref([
-  "Classic pong : no magic power, just a simple ball and 10 points until victory.",
-  "Pong with some magic powers : fireball, windball, super paddle, ...",
-  "Classic pong except speed\nhas been increased.",
+  "Classic pong : no magic power, just a simple ball and at least 11 points until victory.",
+  "Pong with 6 magic powers to be discovered: fireball, shield wall, ying yang keys... Press shift to use a power when it shows up.",
+  "Double speed, double fun! \nPlayer who misses less balls within 3 minutes will win the game.",
 ]);
+const modeIcons: Array<URL> = [
+  new URL("../../assets/icons/gameMode/modeNormal.svg", import.meta.url),
+  new URL("../../assets/icons/gameMode/modeMagic.svg", import.meta.url),
+  new URL("../../assets/icons/gameMode/modeSpeed.svg", import.meta.url),
+];
 
 //  change mode
 async function changeMode(next: boolean) {
+  if (waiting.value) return;
   show.value = false;
   if (next) {
     choosenMode.value = (choosenMode.value + 1) % numberModes;
@@ -69,34 +81,64 @@ async function changeMode(next: boolean) {
   }, 500);
 }
 
-//  pop-up functions
-function hide() {
-  addWindow.value = false;
+//  game init/cancel
+function cancel() {
+  waiting.value = false;
   console.log("cancel game");
+  socket.emit(
+    "quit_queue",
+    {
+      mode: mode.value[choosenMode.value],
+      user_id: user.id,
+    },
+    (data: any) => {
+      console.log(data);
+    }
+  );
 }
 
 async function startGame() {
-  addWindow.value = true;
-  console.log("start game");
-  setTimeout(() => {
-    router.push("pong");
-  }, 4000);
+  waiting.value = true;
+  socket.emit(
+    "queue_register",
+    {
+      mode: mode.value[choosenMode.value],
+      user_id: user.id,
+    },
+    (data: any) => {
+      console.log(data);
+      if (data.alreadyInQueue) {
+        window.alert("You are already in queue!");
+        waiting.value = false;
+      }
+    }
+  );
 }
 
+onBeforeUnmount(() => {
+  socket.off("game_found");
+});
+
 onMounted(() => {
+  socket.on("game_found", (data: any) => {
+    console.log("Entering game room! ", data);
+    router.push({ name: "pong", params: { room_name: data } });
+  });
   show.value = true;
   window.addEventListener("keyup", (event) => {
-    if (event.key == "Enter") {
-      startGame();
-    }
-    if (event.key == "Escape") {
-      hide();
-    }
-    if (event.key == "ArrowLeft" && !addWindow.value) {
-      changeMode(false);
-    }
-    if (event.key == "ArrowRight" && !addWindow.value) {
-      changeMode(true);
+    if (router.currentRoute.value.fullPath == "/play") {
+      if (event.key == "Enter") {
+        startGame();
+      }
+      if (event.key == "Escape") {
+        cancel();
+      }
+      if (event.key == "ArrowLeft" && !waiting.value) {
+        changeMode(false);
+      }
+      if (event.key == "ArrowRight" && !waiting.value) {
+        changeMode(true);
+      }
     }
   });
 });
@@ -107,3 +149,10 @@ defineExpose(
   })
 );
 </script>
+
+<style scoped>
+.modeIcon {
+  height: 50px;
+  width: 50px;
+}
+</style>

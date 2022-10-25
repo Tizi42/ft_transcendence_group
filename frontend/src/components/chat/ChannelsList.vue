@@ -1,24 +1,9 @@
 <template>
   <div class="options-channel">
-    <form class="search-in-my-channels" @submit.prevent="onSubmit">
-      <div id="div-search-my-channels">
-        <input
-          class="input-search-channels"
-          id="input-search-my-channels"
-          type="text"
-          placeholder="Search..."
-          v-model="inputSearch"
-        />
-        <button type="submit">
-          <img src="@/assets/icons/search.svg" />
-        </button>
-      </div>
-    </form>
-    <img
-      src="@/assets/icons/icon-add.png"
-      alt="Create new channel"
-      @click="addNewChannel"
-    />
+    <button id="create-new-channel" type="submit" @click="addNewChannel">
+      <h3>create a new channel</h3>
+      <img src="@/assets/icons/icon-add.png" alt="Create new channel" />
+    </button>
   </div>
   <div
     id="list-all-channels"
@@ -31,10 +16,9 @@
     <h3>All channels</h3>
   </div>
   <PendingChannelReq
-    v-if="true"
-    @hide="hideReq"
-    :channelToJoin="channelToJoin"
-    :reqFrom="1"
+    v-for="req in allMyInvite"
+    :key="req"
+    :channelToJoin="req"
   />
   <ul class="list-my-channels">
     <li
@@ -46,8 +30,13 @@
         channelNotSelected: selectedChannel != channel.id,
       }"
     >
-      <img src="@/assets/icons/groupe.png" />
+      <img class="groupe-img" src="@/assets/icons/groupe.png" />
       <h3>{{ channel.name }}</h3>
+      <img
+        v-if="channel.type === 'private'"
+        class="hided_channel"
+        src="@/assets/icons/hide_channel.svg"
+      />
     </li>
   </ul>
   <Teleport to="body">
@@ -71,10 +60,9 @@ import {
 import ChannelBoxModal from "./ChannelBox/ChannelBoxModal.vue";
 import AddChannelBox from "./ChannelBox/AddChannelBox.vue";
 import socket from "@/socket";
-import { userInfoStore } from "@/stores/user";
+import { userInfoStore, useUserStore } from "@/stores/user";
 import PendingChannelReq from "@/components/chat/PendingChannelReq.vue";
 import { getUrlOf } from "@/router";
-import AddMember from "./AddMember.vue";
 
 interface Props {
   selectedChannel: number;
@@ -82,20 +70,18 @@ interface Props {
   myChannels: any;
 }
 
+const user = useUserStore();
 const props: Readonly<Props> = defineProps<Props>();
-const inputSearch: Ref<string> = ref("");
 const selectedChannel: Ref<number> = ref(props.selectedChannel);
 const addWindow: Ref<boolean> = ref(false);
 const history: Ref<any> = ref([]);
-const channelToJoin: Ref<any> = ref();
-const comingReq: Ref<boolean> = ref(true);
+const allMyInvite: Ref<Array<any>> = ref([]);
 
-socket.emit("joining_request");
-socket.on("receive_pending_request", (channel: any) => {
-  channelToJoin.value = channel;
+socket.on("update_channel_invite", () => {
+  user.doFetch();
 });
 
-socket.on("receive_channel_created", (newChannel: any) => {
+socket.on("receive_channel_created", () => {
   hide();
 });
 
@@ -112,6 +98,27 @@ watch(
   () => props.selectedChannel,
   (newSelectedChannel) => {
     selectedChannel.value = newSelectedChannel;
+  }
+);
+
+watch(
+  () => user.channelInvitePending,
+  async (newChannelInvitePending) => {
+    console.log("newChannelInvitePending =", newChannelInvitePending);
+    await fetch(getUrlOf("api/channel/getAll/privates"), {
+      credentials: "include",
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        allMyInvite.value = [];
+        console.log("data =", data);
+        allMyInvite.value = data;
+      })
+      .catch((error) => {
+        console.log("error :", error);
+      });
   }
 );
 
@@ -144,16 +151,8 @@ const addNewChannel = () => {
   addWindow.value = true;
 };
 
-const onSubmit = () => {
-  console.log("inputSearch = ", inputSearch);
-};
-
 function hide() {
   addWindow.value = false;
-}
-
-function hideReq() {
-  comingReq.value = false;
 }
 
 socket.on("receive_channel_message", () => {
