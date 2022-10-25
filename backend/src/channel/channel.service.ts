@@ -3,13 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UsersService } from 'src/users/users.service';
 import { In, Repository } from 'typeorm';
 import { Channel } from './entities/channel.entity';
-import { CreatChannelDto } from './utils/createChannel.dto';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/users.entity';
 import { Socket } from 'socket.io';
 import { UpdatePrivacyDto } from './utils/updatePrivacy.dto';
 import { UpdatePasswordDto } from './utils/UpdatePassword.dto';
 import { ManageMemberDto } from './utils/manageMembers.dto';
+import { smallDataChannel } from './utils/smallDataChannel.dto';
 
 @Injectable()
 export class ChannelService {
@@ -39,8 +39,11 @@ export class ChannelService {
     return false;
   }
 
-  async createChannel(channelDto: CreatChannelDto) {
+  async createChannel(channelDto: smallDataChannel) {
     const newChannel = new Channel();
+    let user = await this.userService.findOne(channelDto.owner);
+
+    if (user == null) return null;
 
     if (await this.nameAlreadyExist(channelDto.name)) {
       console.log("name already exist");
@@ -51,9 +54,9 @@ export class ChannelService {
       return "channel_name_error";
     }
     newChannel.name = channelDto.name;
-    newChannel.members = channelDto.members;
+    newChannel.members = [user];
     newChannel.owner = channelDto.owner;
-    newChannel.admins = channelDto.admins;
+    newChannel.admins = [channelDto.owner];
     if (channelDto.type === "protected") {
       if (!channelDto.password || !this.validPassword(channelDto.password)) {
         return "password_error";
@@ -63,7 +66,7 @@ export class ChannelService {
     } else {
       newChannel.password = null;
     }
-
+    console.log(newChannel);
     return await this.channelRepository.save(newChannel);
   }
 

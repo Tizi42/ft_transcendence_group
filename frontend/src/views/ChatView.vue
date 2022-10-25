@@ -33,7 +33,7 @@
         :isActive="isActive"
         :selectedChannel="selectedChannel"
         :channel="channel"
-        v-if="receiverProfile"
+        v-if="receiverProfile || selectedChannel != -1"
       />
       <MessageInput
         v-if="(receiver != -1 || selectedChannel != -1) && receiverProfile"
@@ -65,8 +65,9 @@ import { getUrlOf } from "@/router";
 import AllChannelsSelected from "@/components/chat/AllChannelsSelected.vue";
 import socket from "@/socket";
 import { Chat } from "@backend/chat/entities/chat.entity";
+import { StoreGeneric } from "pinia";
 
-const user: any = useUserStore();
+const user: StoreGeneric = useUserStore();
 const isActive: Ref<string> = ref("players");
 const receiver: Ref<number> = ref(-1);
 const history: Ref<Array<Chat>> = ref([]);

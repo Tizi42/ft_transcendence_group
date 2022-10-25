@@ -32,10 +32,10 @@ import {
   onBeforeUnmount,
 } from "vue";
 import socket from "@/socket";
-import { userInfoStore } from "@/stores/user";
+import { StoreGeneric } from "pinia";
 
 interface Props {
-  user: userInfoStore;
+  user: StoreGeneric;
   channel: any;
 }
 
