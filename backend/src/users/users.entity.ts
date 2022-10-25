@@ -17,7 +17,7 @@ export class User {
   @Column({default: "nobody@42.intra.fr"})
   email: string;
 
-  @Column({default: "http://10.13.3.5:3000/api/users/avatar_default"})
+  @Column({default: "http://10.11.4.13:3000/api/users/avatar_default"})
   picture: string;
 
   @Column({default: ""})

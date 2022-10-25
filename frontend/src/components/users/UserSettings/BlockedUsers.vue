@@ -21,7 +21,7 @@ const blocked = ref([]);
 
 function doFetchBlocked() {
   console.log("Fetching blocked...");
-  fetch("http://10.13.3.5:3000/api/users/block/" + user.id, {
+  fetch("http://10.11.4.13:3000/api/users/block/" + user.id, {
     credentials: "include",
   })
     .then((response) => {

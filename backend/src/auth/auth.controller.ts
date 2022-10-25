@@ -26,7 +26,7 @@ export class AuthController {
     handle42Redirect(@Req() request: RequestWithUser, @Res({ passthrough: true }) res: Response) {
         const { accessToken } = this.authService.login(request.user, false);
         res.cookie('jwt', accessToken);
-        res.redirect('http://10.13.3.5:8080/2FA');
+        res.redirect('http://10.11.4.13:8080/2FA');
     }
 
     // for development only: allow to log in with an existing email in db
@@ -38,7 +38,7 @@ export class AuthController {
       }
       const { accessToken } = this.authService.login(user, false);
       res.cookie('jwt', accessToken);
-      res.redirect('http://10.13.3.5:8080/2FA');
+      res.redirect('http://10.11.4.13:8080/2FA');
     }
 
     @Post('2fa/generate')

@@ -33,7 +33,7 @@ async function onRemoveBlock() {
     to: props.blocked.id,
   };
   axios
-    .post("http://10.13.3.5:3000/api/users/block/rm/", {
+    .post("http://10.11.4.13:3000/api/users/block/rm/", {
       id1: user.id,
       id2: props.blocked.id,
     })
