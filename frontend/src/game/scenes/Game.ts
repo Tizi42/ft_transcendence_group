@@ -13,11 +13,15 @@ export default class GameScene extends Phaser.Scene {
   keyDown: Phaser.Input.Keyboard.Key;
   keyUp: Phaser.Input.Keyboard.Key;
 
+  i = 0;
+
   constructor() {
     super("GameScene");
+    console.log("construct game scene", this.i++);
   }
 
   create() {
+    console.log("create game scene", this.i++);
     this.width = this.cameras.main.width;
     this.height = this.cameras.main.height;
 
@@ -69,6 +73,7 @@ export default class GameScene extends Phaser.Scene {
 
     // listen for game end
     socket.on("end", (data: any) => {
+      this.before_change_scene();
       this.scene.start("GameOverScene", { winner: data.winner });
     });
   }
@@ -96,5 +101,10 @@ export default class GameScene extends Phaser.Scene {
         paddle_move_direction: dir,
       });
     }
+  }
+
+  before_change_scene() {
+    socket.off("game_update");
+    socket.off("end");
   }
 }
