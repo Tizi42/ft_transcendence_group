@@ -189,13 +189,6 @@ onBeforeRouteLeave(() => {
   });
 });
 
-onBeforeUnmount(() => {
-  socket.off("receive_message_ingame");
-  socket.off("receive_emoji_ingame");
-  socket.off("score_update");
-  socket.off("quit_game");
-});
-
 onBeforeMount(async () => {
   console.log("on before mount in game overlay...");
   await getPlayersInfo();
