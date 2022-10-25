@@ -5,13 +5,13 @@ import gameInfo from "../gameInfo";
 export default class GameScene extends Phaser.Scene {
   width: number;
   height: number;
-
   ball: Phaser.Physics.Arcade.Sprite;
   paddle_left: Phaser.Physics.Arcade.Sprite;
   paddle_right: Phaser.Physics.Arcade.Sprite;
-  cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   paddle_pos: number;
   paddle_velocity_max = 10;
+  keyDown: Phaser.Input.Keyboard.Key;
+  keyUp: Phaser.Input.Keyboard.Key;
 
   i = 0;
 
@@ -56,7 +56,8 @@ export default class GameScene extends Phaser.Scene {
     this.paddle_pos = this.height * 0.5;
 
     //  set up input event
-    this.cursors = this.input.keyboard.createCursorKeys();
+    this.keyDown = this.input.keyboard.addKey(40);
+    this.keyUp = this.input.keyboard.addKey(38);
 
     // collide ball with paddle
     this.physics.add.collider(this.ball, this.paddle_left);
@@ -78,9 +79,9 @@ export default class GameScene extends Phaser.Scene {
   }
 
   update() {
-    if (this.cursors.up.isDown) {
+    if (this.keyUp.isDown) {
       this.update_paddle(-1);
-    } else if (this.cursors.down.isDown) {
+    } else if (this.keyDown.isDown) {
       this.update_paddle(1);
     }
   }

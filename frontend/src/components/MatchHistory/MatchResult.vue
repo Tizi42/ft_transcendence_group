@@ -2,41 +2,41 @@
   <div class="match" v-if="show">
     <div class="matchResults" v-if="match.winner == match.opponent1">
       <div class="opponentLeft winner">
-        <div class="score">{{ match.score1 }}pts</div>
         <div class="name">{{ match.name1 }}</div>
+        <div class="score">{{ match.score1 }}pts</div>
         <img class="profile" :src="pp1" @click="showInfoBox(0)" />
       </div>
       <img :src="modeIcon.toString()" class="smallModeIcon" />
       <div class="opponentRight looser">
         <img class="profile" :src="pp2" @click="showInfoBox(1)" />
-        <div class="name">{{ match.name2 }}</div>
         <div class="score">{{ match.score2 }}pts</div>
+        <div class="name">{{ match.name2 }}</div>
       </div>
     </div>
     <div class="matchResults" v-else-if="match.winner == match.opponent2">
       <div class="opponentLeft looser">
-        <div class="score">{{ match.score1 }}pts</div>
         <div class="name">{{ match.name1 }}</div>
+        <div class="score">{{ match.score1 }}pts</div>
         <img class="profile" :src="pp1" @click="showInfoBox(0)" />
       </div>
       <img :src="modeIcon.toString()" class="smallModeIcon" />
       <div class="opponentRight winner">
         <img class="profile" :src="pp2" @click="showInfoBox(1)" />
-        <div class="name">{{ match.name2 }}</div>
         <div class="score">{{ match.score2 }}pts</div>
+        <div class="name">{{ match.name2 }}</div>
       </div>
     </div>
     <div class="matchResults" v-else>
       <div class="opponentLeft looser">
-        <div class="score">{{ match.score1 }}pts</div>
         <div class="name">{{ match.name1 }}</div>
+        <div class="score">{{ match.score1 }}pts</div>
         <img class="profile" :src="pp1" @click="showInfoBox(0)" />
       </div>
       <img :src="modeIcon.toString()" class="smallModeIcon" />
       <div class="opponentRight looser">
         <img class="profile" :src="pp2" @click="showInfoBox(1)" />
-        <div class="name">{{ match.name2 }}</div>
         <div class="score">{{ match.score2 }}pts</div>
+        <div class="name">{{ match.name2 }}</div>
       </div>
     </div>
     <div class="matchDate">
@@ -99,14 +99,6 @@ function getDate(fullDate: Date): string {
   let splitted = fullDate.toString().split("T")[0].split("-");
   return splitted[1] + "/" + splitted[2] + "/" + splitted[0];
 }
-
-// async function getName(id: number): Promise<string> {
-//   let response: Response;
-//   response = await fetch(getUrlOf("api/users/name/" + id), {
-//     credentials: "include",
-//   });
-//   return await response.text();
-// }
 
 async function getPlayer(id: number): Promise<User> {
   let response: Response;

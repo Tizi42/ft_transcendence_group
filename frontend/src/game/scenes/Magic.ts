@@ -5,7 +5,6 @@ import gameInfo from "../gameInfo";
 export default class MagicScene extends Phaser.Scene {
   width: number;
   height: number;
-
   ball: Phaser.Physics.Arcade.Sprite;
   paddle_left: Phaser.Physics.Arcade.Sprite;
   paddle_right: Phaser.Physics.Arcade.Sprite;
@@ -15,7 +14,11 @@ export default class MagicScene extends Phaser.Scene {
   spell2_right: Phaser.GameObjects.Sprite;
   shield_left: Phaser.GameObjects.Sprite;
   shield_right: Phaser.GameObjects.Sprite;
-  cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+  keyLeft: Phaser.Input.Keyboard.Key;
+  keyUp: Phaser.Input.Keyboard.Key;
+  keyRight: Phaser.Input.Keyboard.Key;
+  keyDown: Phaser.Input.Keyboard.Key;
+  keyShift: Phaser.Input.Keyboard.Key;
 
   switch_time = 0;
   cast_time = 0;
@@ -111,7 +114,11 @@ export default class MagicScene extends Phaser.Scene {
     );
 
     //  set up input event
-    this.cursors = this.input.keyboard.createCursorKeys();
+    this.keyLeft = this.input.keyboard.addKey(37);
+    this.keyUp = this.input.keyboard.addKey(38);
+    this.keyRight = this.input.keyboard.addKey(39);
+    this.keyDown = this.input.keyboard.addKey(40);
+    this.keyShift = this.input.keyboard.addKey(16);
 
     // collide ball with paddle
     this.physics.add.collider(this.ball, this.paddle_left);
@@ -186,28 +193,22 @@ export default class MagicScene extends Phaser.Scene {
       if (this.Rpaddle_alpha >= 0) this.paddle_right.alpha = this.Rpaddle_alpha;
     }
 
-    if (this.cursors.up.isDown) {
+    if (this.keyUp.isDown) {
       this.update_paddle(-1);
-    } else if (this.cursors.down.isDown) {
+    } else if (this.keyDown.isDown) {
       this.update_paddle(1);
-    } else if (this.cursors.left.isDown || this.cursors.right.isDown) {
-      if (this.switch_time > 200) {
-        this.switch_time = 0;
+    } else if (this.keyLeft.isDown || this.keyRight.isDown) {
         socket.emit("switch_spell", {
           user_id: gameInfo.user_id,
           room_name: gameInfo.room_name,
         });
-      }
-    } else if (this.cursors.shift.isDown) {
-      if (this.cast_time > 200) {
-        this.cast_time = 0;
-        socket.emit("launch_spell", {
-          user_id: gameInfo.user_id,
-          room_name: gameInfo.room_name,
-        });
-      }
+    } else if (this.keyShift.isDown) {
+      socket.emit("launch_spell", {
+        user_id: gameInfo.user_id,
+        room_name: gameInfo.room_name,
+      });
     }
-  }
+}
 
   create_paddle(x: number, y: number) {
     const paddle = this.physics.add.sprite(x, y, "paddle");

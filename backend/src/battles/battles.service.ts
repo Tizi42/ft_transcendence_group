@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "src/users/users.entity";
-import { UsersService } from "src/users/users.service";
+import { User } from "../users/users.entity";
+import { UsersService } from "../users/users.service";
 import { Repository } from "typeorm";
 import { Battle } from "./battle.entity";
 import { BattleShow } from "./utils/battle-show";
@@ -79,7 +79,7 @@ export class BattlesService {
     });
   }
 
-  findOne(id: number): Promise<Battle> {
+  findOne(id: number): Promise<Battle | null> {
     return this.battlesRepository.findOneBy({id});
   }
 
@@ -87,8 +87,9 @@ export class BattlesService {
     await this.battlesRepository.delete(id);
   }
 
-  async end(id: number, winner: number, score1: number, score2: number) {
+  async end(id: number, winner: number, score1: number, score2: number): Promise<boolean> {
     let battle = await this.battlesRepository.findOneBy({id});
+    if (battle == null) return false;
     let draw: boolean = false;
     let winner1: boolean = (winner == battle.opponent1 ? true : false);
     let winner2: boolean = (winner == battle.opponent2 ? true : false);
@@ -97,8 +98,8 @@ export class BattlesService {
     battle.score1 = score1;
     battle.score2 = score2;
     battle.isFinished = true;
-    let player1: User = await this.usersService.findOne(battle.opponent1);
-    let player2: User = await this.usersService.findOne(battle.opponent2);
+    let player1: User | null = await this.usersService.findOne(battle.opponent1);
+    let player2: User | null = await this.usersService.findOne(battle.opponent2);
     if (player1 == null || player2 == null) return false;
     this.usersService.updateResult(player1, winner1, draw);
     this.usersService.updateResult(player2, winner2, draw);

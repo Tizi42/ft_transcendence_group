@@ -21,7 +21,7 @@
 
 <script lang="ts" setup>
 import { useUserStore } from "@/stores/user";
-import { onBeforeMount, Ref, ref } from "vue";
+import { onBeforeMount, onBeforeUnmount, Ref, ref } from "vue";
 import { Invitation } from "@backend/game/utils/invitation";
 import socket from "@/socket";
 import { StoreGeneric } from "pinia";
@@ -70,6 +70,12 @@ onBeforeMount(() => {
     pendingReq.value = false;
     router.push({ name: "pong", params: { room_name: roomName } });
   });
+});
+
+onBeforeUnmount(() => {
+  socket.off("game_invitation");
+  socket.off("invitation_expired");
+  socket.off("go_play");
 });
 </script>
 
