@@ -56,17 +56,19 @@ import {
   defineProps,
   watch,
   onBeforeMount,
+  onBeforeUnmount,
 } from "vue";
 import ChannelBoxModal from "./ChannelBox/ChannelBoxModal.vue";
 import AddChannelBox from "./ChannelBox/AddChannelBox.vue";
 import socket from "@/socket";
-import { userInfoStore, useUserStore } from "@/stores/user";
+import { useUserStore } from "@/stores/user";
 import PendingChannelReq from "@/components/chat/PendingChannelReq.vue";
 import { getUrlOf } from "@/router";
+import { StoreGeneric } from "pinia";
 
 interface Props {
   selectedChannel: number;
-  user: userInfoStore;
+  user: StoreGeneric;
   myChannels: any;
 }
 
@@ -76,23 +78,7 @@ const selectedChannel: Ref<number> = ref(props.selectedChannel);
 const addWindow: Ref<boolean> = ref(false);
 const history: Ref<any> = ref([]);
 const allMyInvite: Ref<Array<any>> = ref([]);
-
-socket.on("update_channel_invite", () => {
-  user.doFetch();
-});
-
-socket.on("receive_channel_created", () => {
-  hide();
-});
-
-socket.on("exited_channel_list", () => {
-  socket.emit("get_all_my_channels");
-  getAllChannels();
-});
-
-onBeforeMount(async () => {
-  socket.emit("get_all_my_channels");
-});
+const emit = defineEmits(["getChannelSelected", "getHistory"]);
 
 watch(
   () => props.selectedChannel,
@@ -155,11 +141,29 @@ function hide() {
   addWindow.value = false;
 }
 
-socket.on("receive_channel_message", () => {
-  getChannelMessages(selectedChannel.value);
+onBeforeMount(() => {
+  socket.emit("get_all_my_channels");
+  socket.on("update_channel_invite", () => {
+    user.doFetch();
+  });
+  socket.on("receive_channel_created", () => {
+    hide();
+  });
+  socket.on("exited_channel_list", () => {
+    socket.emit("get_all_my_channels");
+    getAllChannels();
+  });
+  socket.on("receive_channel_message", () => {
+    getChannelMessages(selectedChannel.value);
+  });
 });
 
-const emit = defineEmits(["getChannelSelected", "getHistory"]);
+onBeforeUnmount(() => {
+  socket.off("update_channel_invite");
+  socket.off("receive_channel_created");
+  socket.off("exited_channel_list");
+  socket.off("receive_channel_message");
+});
 
 defineExpose(
   defineComponent({

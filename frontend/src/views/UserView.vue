@@ -26,7 +26,7 @@
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose, ref, Ref } from "vue";
-import { onBeforeMount } from "vue";
+import { onBeforeMount, onMounted, onBeforeUnmount } from "vue";
 import ProfileBanner from "@/components/users/ProfileBanner.vue";
 import socket from "@/socket";
 import { onBeforeRouteLeave, onBeforeRouteUpdate } from "vue-router";
@@ -47,20 +47,26 @@ function removeNotification() {
   socket.emit("remove_notification");
 }
 
-onBeforeRouteUpdate(() => {
-  removeNotification();
-  scrollTop();
-});
+onMounted(() => {
+  onBeforeRouteUpdate(() => {
+    removeNotification();
+    scrollTop();
+  });
 
-onBeforeRouteLeave(() => {
-  removeNotification();
-  scrollTop();
+  onBeforeRouteLeave(() => {
+    removeNotification();
+    scrollTop();
+  });
 });
 
 onBeforeMount(() => {
   socket.on("new_connection", () => {
     console.log("on user page");
   });
+});
+
+onBeforeUnmount(() => {
+  socket.off("new_connection");
 });
 </script>
 

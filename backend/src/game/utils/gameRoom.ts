@@ -3,6 +3,24 @@ import { clearInterval } from 'timers';
 import { BattlesService } from '../../battles/battles.service';
 import GameStatus from "./type";
 
+interface velocityInit {
+  normal: number,
+  magic: number,
+  speed: number,
+};
+
+interface paddlePosition {
+  x: number,
+  y: number,
+  height_half: number,
+  velocity: velocityInit,
+};
+
+interface paddleObject {
+  left: paddlePosition,
+  right: paddlePosition
+};
+
 export class GameRoom {
 
   //current game info
@@ -32,17 +50,17 @@ export class GameRoom {
   readonly paddle_width_half = 5;
   readonly max_angle = Math.PI / 4;
   readonly hit_range = () : number => { return this.ball_velocity * 0.5 + 1.5 };
-  readonly ball_velocity_init = {
-    normal: 3.5, // 7.5 pixels per 25ms, 300 pixels per 1000ms
-    magic: 3.5,
+  readonly ball_velocity_init: velocityInit = {
+    normal: 7.5, // 7.5 pixels per 25ms, 300 pixels per 1000ms
+    magic: 7.5,
     speed: 15,
   };
-  readonly paddle_velocity_init = {
+  readonly paddle_velocity_init: velocityInit = {
     normal: 10,
     magic: 10,
     speed: 20,
   };
-  readonly acceleration = {
+  readonly acceleration: velocityInit = {
     normal: 1.15,
     magic: 1.15,
     speed: 1.05,
@@ -56,7 +74,7 @@ export class GameRoom {
   ball_x: number;
   ball_y: number;
   ball_velocity: number;
-  paddle = {
+  paddle: paddleObject = {
     left: {
       x: this.width * 0.02,
       y: this.height * 0.5,
@@ -113,7 +131,7 @@ export class GameRoom {
     this.mode = mode;
     this.room_name = l + " vs " + r;
     this.server = server;
-    this.ball_velocity = this.ball_velocity_init[mode];
+    this.ball_velocity = this.ball_velocity_init[mode as keyof velocityInit];
     this.game_status = "not_ready";
   }
 
@@ -142,7 +160,7 @@ export class GameRoom {
       return;
     }
     // intial ball's launch position and velocity
-    this.ball_velocity = this.ball_velocity_init[this.mode];
+    this.ball_velocity = this.ball_velocity_init[this.mode as keyof velocityInit];
     const randomHeight = this.getRandomNumberBetween(20, 571); // height 591 - 20 
     const randVelocity = this.getRandomVelocity(direction);
     this.ball_x = this.width / 2;
@@ -195,9 +213,9 @@ export class GameRoom {
 
   on_spell_lauched(user_id: number)
   {
-    let effect = 0;
-    let side: string;
-    let target: string;
+    let effect: number = 0;
+    let side: string = "";
+    let target: string = "";
 
     if (this.playerL === user_id) {
       side = "left";
@@ -226,21 +244,21 @@ export class GameRoom {
     }
 
     if (effect == 1) {
-      this.paddle[side].height_half += this.paddle_resize;
+      this.paddle[side as keyof paddleObject].height_half += this.paddle_resize;
       setTimeout(() => {
-        this.paddle[side].height_half -= this.paddle_resize;
+        this.paddle[side as keyof paddleObject].height_half -= this.paddle_resize;
         this.server.to(this.room_name).emit("update_paddle_size", {
-          left: this.paddle["left"].height_half,
-          right: this.paddle["right"].height_half,
+          left: this.paddle["left" as keyof paddleObject].height_half,
+          right: this.paddle["right" as keyof paddleObject].height_half,
         });
       }, this.paddle_sized_duration);
-    } else if (effect == 2 && this.paddle[target].height_half > this.paddle_resize) {
-      this.paddle[target].height_half -= this.paddle_resize;
+    } else if (effect == 2 && this.paddle[target as keyof paddleObject].height_half > this.paddle_resize) {
+      this.paddle[target as keyof paddleObject].height_half -= this.paddle_resize;
       setTimeout(() => {
-        this.paddle[target].height_half += this.paddle_resize;
+        this.paddle[target as keyof paddleObject].height_half += this.paddle_resize;
         this.server.to(this.room_name).emit("update_paddle_size", {
-          left: this.paddle["left"].height_half,
-          right: this.paddle["right"].height_half,
+          left: this.paddle["left" as keyof paddleObject].height_half,
+          right: this.paddle["right" as keyof paddleObject].height_half,
         });
       }, this.paddle_sized_duration);
     } else if (effect == 3) {
@@ -309,12 +327,12 @@ export class GameRoom {
     if (side == "left") dir *= this.L_reverse_effect;
     else dir *= this.R_reverse_effect;
 
-    this.paddle[side].y += this.paddle[side].velocity[this.mode] * dir;
+    this.paddle[side as keyof paddleObject].y += this.paddle[side as keyof paddleObject].velocity[this.mode as keyof velocityInit] * dir;
 
-    if (this.paddle[side].y < this.paddle[side].height_half)
-      this.paddle[side].y = this.paddle[side].height_half;
-    else if (this.paddle[side].y > this.height - this.paddle[side].height_half) 
-      this.paddle[side].y = this.height - this.paddle[side].height_half;
+    if (this.paddle[side as keyof paddleObject].y < this.paddle[side as keyof paddleObject].height_half)
+      this.paddle[side as keyof paddleObject].y = this.paddle[side as keyof paddleObject].height_half;
+    else if (this.paddle[side as keyof paddleObject].y > this.height - this.paddle[side as keyof paddleObject].height_half) 
+      this.paddle[side as keyof paddleObject].y = this.height - this.paddle[side as keyof paddleObject].height_half;
   }
 
   next_ball_pos() {
@@ -359,7 +377,7 @@ export class GameRoom {
       ball_top < this.paddle.left.y + this.paddle.left.height_half &&
       ball_bottom > this.paddle.left.y - this.paddle.left.height_half
     ){
-      this.ball_velocity *= this.acceleration[this.mode];
+      this.ball_velocity *= this.acceleration[this.mode as keyof velocityInit];
       if (this.L_speed_ball) {
         if (!this.previous_ball_speed) this.previous_ball_speed = this.ball_velocity;
         this.ball_velocity *= this.speed_ball_factor;
@@ -378,7 +396,7 @@ export class GameRoom {
       ball_top < this.paddle.right.y + this.paddle.right.height_half &&
       ball_bottom > this.paddle.right.y - this.paddle.right.height_half
     ){
-      this.ball_velocity *= this.acceleration[this.mode];
+      this.ball_velocity *= this.acceleration[this.mode as keyof velocityInit];
       if (this.R_speed_ball) {
         if (!this.previous_ball_speed) this.previous_ball_speed = this.ball_velocity;
         this.ball_velocity *= this.speed_ball_factor;
