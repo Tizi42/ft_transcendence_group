@@ -19,7 +19,6 @@
 
 <script lang="ts" setup>
 import { defineComponent, ref, Ref, defineEmits, defineExpose } from "vue";
-import "@/assets/styles/chat.css";
 
 const isActive: Ref<string> = ref("players");
 const receiver: Ref<number> = ref(-1);

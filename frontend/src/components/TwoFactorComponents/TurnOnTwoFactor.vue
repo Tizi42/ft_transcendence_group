@@ -17,7 +17,6 @@
 <script lang="ts" setup>
 import { defineComponent, defineExpose, ref, Ref } from "vue";
 import router from "@/router";
-import "@/assets/styles/authentication.css";
 import { getUrlOf } from "@/router";
 
 const authenticationCode: Ref<string> = ref("");

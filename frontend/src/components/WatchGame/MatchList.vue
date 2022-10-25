@@ -1,7 +1,7 @@
 <template>
   <div class="groupMatch">
     <TransitionGroup name="fadeGroup">
-      <div v-for="room in items" :key="room.room_name">
+      <div v-for="room in items" :key="items.indexOf(room)">
         <MatchItem
           :room="room"
           :modeIcon="modeIcons[getModeIndex(room.mode)]"
@@ -17,7 +17,6 @@ import { defineComponent, defineExpose, defineProps } from "vue";
 import { onMounted, onUpdated } from "vue";
 import { Ref, ref } from "vue";
 import MatchItem from "./MatchItem.vue";
-
 interface Props {
   rooms: Array<GameRoomNS>;
 }
@@ -42,7 +41,7 @@ async function reshowData() {
   for await (const [key, item] of props.rooms.entries()) {
     setTimeout(() => {
       items.value.push(item);
-    }, 100 * (key + 1));
+    }, 500 * (key + 1));
   }
 }
 

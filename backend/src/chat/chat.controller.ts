@@ -42,7 +42,7 @@ export class ChatController {
     @Res() res: Response,
     @Param('id') id: number
   ) {
-    return res.json(await this.chatService.getChannelMessagesById(id, req.user.id));
+    return res.json(await this.chatService.getChannelMessagesById(id, req.user.id, req.user.blocked));
   }
 
   @Get('dest')

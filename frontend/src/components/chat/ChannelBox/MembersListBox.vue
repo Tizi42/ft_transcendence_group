@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>Members list</h2>
+    <h2 @click="test">Members list</h2>
     <div class="manage-members-list">
       <ul>
         <li
@@ -14,6 +14,7 @@
           <div class="friend-frame">
             <div v-if="member.status === 'offline'" class="grey-point"></div>
             <div v-if="member.status === 'online'" class="green-point"></div>
+            <div v-if="member.status === 'in game'" class="red-point"></div>
             <h3>{{ member.displayName }}</h3>
           </div>
           <div>
@@ -79,6 +80,10 @@ interface Props {
 
 const user = useUserStore();
 const props: Readonly<Props> = defineProps<Props>();
+
+const test = () => {
+  console.log("channel members = ", props.channel.members);
+};
 
 const banUser = (id: number, displayName: string) => {
   if (confirm(`Are you sure you want to ban ${displayName} ?`)) {
@@ -156,6 +161,7 @@ h2 {
 
 .members-list {
   width: 40vw;
+  max-width: 800px;
   margin: 0;
   display: flex;
   flex-direction: row;
