@@ -48,6 +48,7 @@ import { ref, defineComponent, defineExpose } from "vue";
 import { useUserStore } from "@/stores/user";
 import socket from "@/socket";
 import axios from "axios";
+import { getUrlOf } from "@/router";
 
 const user = useUserStore();
 let input = ref("");
@@ -64,7 +65,7 @@ function onClickSearch() {
 
   console.log(input.value);
   axios
-    .get("http://localhost:3000/api/users/info/" + input.value)
+    .get(getUrlOf("api/users/info/") + input.value)
     .then((response) => {
       console.log(response);
       if (response.data) {
@@ -94,7 +95,7 @@ async function onSend() {
     to: targetUser.value.id,
   };
   axios
-    .post("http://localhost:3000/api/users/friends/add", {
+    .post(getUrlOf("api/users/friends/add"), {
       id1: user.id,
       id2: targetUser.value.id,
     })
@@ -119,7 +120,7 @@ async function onCancel() {
     to: targetUser.value.id,
   };
   axios
-    .post("http://localhost:3000/api/users/friends/ignore", {
+    .post(getUrlOf("api/users/friends/ignore"), {
       id1: user.id,
       id2: targetUser.value.id,
     })

@@ -56,6 +56,7 @@ import {
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import socket from "@/socket";
+import { getUrlOf } from "@/router";
 
 const user = useUserStore();
 const router = useRouter();
@@ -66,7 +67,7 @@ async function toggle2FA() {
       name: "2FA",
     });
   } else {
-    await fetch("http://localhost:3000/api/auth/2fa/turn-off", {
+    await fetch(getUrlOf("api/auth/2fa/turn-off"), {
       credentials: "include",
     })
       .then((response) => {

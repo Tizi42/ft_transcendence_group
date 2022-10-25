@@ -72,7 +72,7 @@ function onClickSearch() {
 
   console.log(searchInput.value);
   axios
-    .get("http://localhost:3000/api/users/info/" + searchInput.value)
+    .get(getUrlOf("api/users/info/") + searchInput.value)
     .then((response) => {
       if (response.data) {
         targetUser.value = response.data;

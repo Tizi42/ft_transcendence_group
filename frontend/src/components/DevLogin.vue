@@ -13,13 +13,14 @@
 </template>
 
 <script lang="ts" setup defer>
+import { getUrlOf } from "@/router";
 import { ref, defineComponent, defineExpose } from "vue";
 
 let email = ref("user2@student.42.fr");
 
 function onSubmit() {
   window.location.href =
-    "http://localhost:3000/api/auth/dev-only" + "?email=" + email.value;
+    getUrlOf("api/auth/dev-only") + "?email=" + email.value;
 }
 
 defineExpose(
