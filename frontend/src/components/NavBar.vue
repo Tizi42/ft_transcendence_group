@@ -30,7 +30,7 @@
 
 <script lang="ts" setup>
 import { useUserStore } from "@/stores/user";
-import { onBeforeMount, Ref, ref } from "vue";
+import { onBeforeMount, onBeforeUnmount, Ref, ref } from "vue";
 import socket from "@/socket";
 
 const user = useUserStore();
@@ -46,6 +46,11 @@ onBeforeMount(async () => {
   socket.on("ignore_notification", async () => {
     pendingReq.value = false;
   });
+});
+
+onBeforeUnmount(() => {
+  socket.off("receive_friendship");
+  socket.off("ignore_notification");
 });
 </script>
 

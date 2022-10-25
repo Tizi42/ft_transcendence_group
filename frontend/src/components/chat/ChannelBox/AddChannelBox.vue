@@ -43,13 +43,15 @@ import {
   defineExpose,
   Ref,
   defineProps,
-  defineEmits,
+  onBeforeMount,
+  onBeforeUnmount,
 } from "vue";
 import socket from "@/socket";
-import { userInfoStore } from "@/stores/user";
+import { smallDataChannel } from "@backend/channel/utils/smallDataChannel.dto";
+import { StoreGeneric } from "pinia";
 
 interface Props {
-  user: userInfoStore;
+  user: StoreGeneric;
 }
 
 const channelName: Ref<string> = ref("");
@@ -70,23 +72,28 @@ const createNewChannel = async () => {
     return;
   }
   inputBorder.value = "none";
-  const data = {
+  const data: smallDataChannel = {
     type: channelType.value,
     name: channelName.value,
-    members: [props.user],
     owner: props.user.id,
-    admins: [props.user.id],
     password: channelPassword.value,
   };
+  console.log(data);
   socket.emit("create_channel", data);
 };
 
-socket.on("password_error", () => {
-  inputBorderPassword.value = "4px solid red";
+onBeforeMount(() => {
+  socket.on("password_error", () => {
+    inputBorderPassword.value = "4px solid red";
+  });
+  socket.on("channel_name_error", () => {
+    inputBorder.value = "4px solid red";
+  });
 });
 
-socket.on("channel_name_error", () => {
-  inputBorder.value = "4px solid red";
+onBeforeUnmount(() => {
+  socket.off("password_error");
+  socket.off("channel_name_error");
 });
 
 defineExpose(

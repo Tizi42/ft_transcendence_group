@@ -33,9 +33,10 @@
         :isActive="isActive"
         :selectedChannel="selectedChannel"
         :channel="channel"
+        v-if="receiverProfile || selectedChannel != -1"
       />
       <MessageInput
-        v-if="receiver != -1 || selectedChannel != -1"
+        v-if="(receiver != -1 || selectedChannel != -1) && receiverProfile"
         :user="user"
         :receiver="receiver"
         :selectedChannel="selectedChannel"
@@ -46,7 +47,14 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref, ref, onBeforeMount, defineComponent, defineExpose } from "vue";
+import {
+  Ref,
+  ref,
+  onBeforeMount,
+  defineComponent,
+  defineExpose,
+  onBeforeUnmount,
+} from "vue";
 import { useUserStore } from "@/stores/user";
 import NavChat from "@/components/chat/NavChat.vue";
 import FriendsList from "@/components/chat/FriendsList.vue";
@@ -57,9 +65,9 @@ import { getUrlOf } from "@/router";
 import AllChannelsSelected from "@/components/chat/AllChannelsSelected.vue";
 import socket from "@/socket";
 import { Chat } from "@backend/chat/entities/chat.entity";
-import { User } from "@backend/users/users.entity";
+import { StoreGeneric } from "pinia";
 
-const user: any = useUserStore();
+const user: StoreGeneric = useUserStore();
 const isActive: Ref<string> = ref("players");
 const receiver: Ref<number> = ref(-1);
 const history: Ref<Array<Chat>> = ref([]);
@@ -186,6 +194,12 @@ socket.on("friend_login_logout", async () => {
 
 onBeforeMount(async () => {
   user.doFetchFriends();
+});
+
+onBeforeUnmount(() => {
+  socket.off("channel_updated");
+  socket.off("banned_user");
+  socket.off("friend_login_logout");
 });
 
 defineExpose(

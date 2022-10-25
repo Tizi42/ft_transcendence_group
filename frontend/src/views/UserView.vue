@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, ref, Ref } from "vue";
+import { defineComponent, defineExpose, onBeforeUnmount, ref, Ref } from "vue";
 import { onBeforeMount } from "vue";
 import ProfileBanner from "@/components/users/ProfileBanner.vue";
 import socket from "@/socket";
@@ -61,6 +61,10 @@ onBeforeMount(() => {
   socket.on("new_connection", () => {
     console.log("on user page");
   });
+});
+
+onBeforeUnmount(() => {
+  socket.off("new_connection");
 });
 </script>
 
