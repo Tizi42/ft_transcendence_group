@@ -8,6 +8,7 @@ import { UsersService } from '../users/users.service';
 import { ChatService } from '../chat/chat.service';
 import { ChannelService } from 'src/channel/channel.service';
 import { BattlesService } from '../battles/battles.service';
+import { inviteInfo, queueInfo, roomInfo } from './utils/type';
 
 export class GameGateway extends AppGateway {
 
@@ -124,14 +125,12 @@ export class GameGateway extends AppGateway {
   }
 
   @SubscribeMessage('queue_register')
-  queueRegister(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+  queueRegister(@ConnectedSocket() socket: Socket, @MessageBody() data: queueInfo) {
     console.log("Queue register received: ", data);
     if (GameGateway.queues.normal.id === data.user_id
         || GameGateway.queues.magic.id === data.user_id
         || GameGateway.queues.speed.id === data.user_id) {
-      return {
-        alreadyInQueue: true,
-      };
+      return true;
     }
 
     // if already in game, return
@@ -140,15 +139,16 @@ export class GameGateway extends AppGateway {
     if (playerL.id === -1) {
       GameGateway.queues[data.mode].id = data.user_id;
       GameGateway.queues[data.mode].sid = socket.id;
-      return "Waiting for another player...";
+      return false;
     } else {
       this.createGameRoom(playerL.id, playerL.sid, data.user_id, socket.id, data.mode);
       this.cleanQueue(data.mode);
+      return false;
     }
   }
 
   @SubscribeMessage('quit_queue')
-  quitQueue(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+  quitQueue(@ConnectedSocket() socket: Socket, @MessageBody() data: queueInfo): string {
     console.log("Quit queue received: ", data);
     if (GameGateway.queues[data.mode].sid === socket.id)
       this.cleanQueue(data.mode);
@@ -160,7 +160,7 @@ export class GameGateway extends AppGateway {
   */
 
   @SubscribeMessage('send_invitation')
-  async onInviteToPlay(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+  async onInviteToPlay(@ConnectedSocket() socket: Socket, @MessageBody() data: inviteInfo) {
     // Delete old pending invitation of user
     GameGateway.invitations.delete(data.user_id);
 
@@ -179,14 +179,14 @@ export class GameGateway extends AppGateway {
     GameGateway.invitations.set(sender.id, invitation);
 
     // emit invitation
-    this.server.to(data.invitee).emit("game_invitation", invitation);
+    this.server.to(data.invitee.toString()).emit("game_invitation", invitation);
   }
 
   @SubscribeMessage('cancel_invitation')
-  onCancelInvite(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+  onCancelInvite(@ConnectedSocket() socket: Socket, @MessageBody() data: inviteInfo) {
     console.log("cancel invitation from", data.user_id, "to", data.invitee);
     GameGateway.invitations.delete(data.user_id);
-    this.server.to(data.invitee).emit("invitation_expired");
+    this.server.to(data.invitee.toString()).emit("invitation_expired");
   }
 
   @SubscribeMessage('refuse_invitation')
@@ -236,7 +236,7 @@ export class GameGateway extends AppGateway {
   */
 
   @SubscribeMessage('init_room')
-  sendRoomInfo(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+  sendRoomInfo(@ConnectedSocket() socket: Socket, @MessageBody() data: any): roomInfo {
     const room = GameGateway.rooms.get(data.room_name);
     if (!room)
       return null;

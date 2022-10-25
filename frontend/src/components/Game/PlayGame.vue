@@ -20,6 +20,7 @@ import {
 import GameOverlay from "./GameOverlay.vue";
 import { useUserStore } from "@/stores/user";
 import router from "@/router";
+import { roomInfo } from "@backend/game/utils/type";
 
 const user = useUserStore();
 
@@ -40,7 +41,7 @@ onBeforeMount(() => {
       room_name: props.room_name,
       user_id: user.id,
     },
-    (data: any) => {
+    (data: roomInfo) => {
       room_info.value = data;
       console.log("room_info: ", data);
     }

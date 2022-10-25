@@ -42,10 +42,6 @@ function onInvitePlay() {
 
 async function onRemoveFriend() {
   console.log("remove ", props.friend.id);
-  const data = {
-    from: user.id,
-    to: props.friend.id,
-  };
   axios
     .post("http://localhost:3000/api/users/friends/rm/", {
       id1: user.id,
@@ -67,10 +63,6 @@ async function onRemoveFriend() {
 
 function onBlockUser() {
   console.log("block ", props.friend.id);
-  const data = {
-    from: user.id,
-    to: props.friend.id,
-  };
   axios
     .post("http://localhost:3000/api/users/block/add/", {
       id1: user.id,

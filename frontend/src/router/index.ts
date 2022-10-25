@@ -1,4 +1,10 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
+import {
+  createRouter,
+  createWebHistory,
+  NavigationGuardNext,
+  RouteLocationNormalized,
+  RouteRecordRaw,
+} from "vue-router";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -135,32 +141,38 @@ function isKnownRoute(to: string): boolean {
   return false;
 }
 
-router.beforeEach(async (to: any, from: any, next: any) => {
-  const isAuthenticated = await getStatus();
-  const isPreAuth = await getPreAuth();
+router.beforeEach(
+  async (
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized,
+    next: NavigationGuardNext
+  ) => {
+    const isAuthenticated = await getStatus();
+    const isPreAuth = await getPreAuth();
 
-  if (to.name === "2FA") {
-    if (!isPreAuth && !isAuthenticated) {
-      next({ name: "login" });
-    } else if (isPreAuth && !isAuthenticated) {
-      next();
-    } else if (isAuthenticated) {
-      if (from.fullPath === "/user/settings") {
+    if (to.name === "2FA") {
+      if (!isPreAuth && !isAuthenticated) {
+        next({ name: "login" });
+      } else if (isPreAuth && !isAuthenticated) {
         next();
-      } else {
-        next({ name: "user" });
+      } else if (isAuthenticated) {
+        if (from.fullPath === "/user/settings") {
+          next();
+        } else {
+          next({ name: "user" });
+        }
       }
+    } else if (
+      !(to.name === "login" || to.name === "dev-login") &&
+      !isAuthenticated
+    ) {
+      next({ name: "login" });
+    } else if (isKnownRoute(to.path)) {
+      next();
+    } else {
+      next({ name: "game" }); // ! change to a custom 404 page !
     }
-  } else if (
-    !(to.name === "login" || to.name === "dev-login") &&
-    !isAuthenticated
-  ) {
-    next({ name: "login" });
-  } else if (isKnownRoute(to.path)) {
-    next();
-  } else {
-    next({ name: "game" }); // ! change to a custom 404 page !
   }
-});
+);
 
 export default router;

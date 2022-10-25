@@ -1,6 +1,12 @@
 import Phaser from "phaser";
 import socket from "@/socket";
 import gameInfo from "../gameInfo";
+import {
+  objectPos,
+  paddleSizes,
+  spellInfo,
+  spellUpdate,
+} from "@backend/game/utils/type";
 
 export default class MagicScene extends Phaser.Scene {
   width: number;
@@ -90,7 +96,7 @@ export default class MagicScene extends Phaser.Scene {
     this.physics.add.collider(this.ball, this.paddle_right);
 
     // listen for update
-    socket.on("game_update", (data: any) => {
+    socket.on("game_update", (data: objectPos) => {
       this.paddle_left.y = data.paddle_left_posY;
       this.paddle_right.y = data.paddle_right_posY;
       this.ball.x = data.ball_x;
@@ -98,12 +104,12 @@ export default class MagicScene extends Phaser.Scene {
     });
 
     // listen for game end
-    socket.on("end", (data: any) => {
+    socket.on("end", (data: { winner: string }) => {
       this.before_change_scene();
       this.scene.start("GameOverScene", { winner: data.winner });
     });
 
-    socket.on("refresh_spells", (data: any) => {
+    socket.on("refresh_spells", (data: spellUpdate) => {
       this.spell_left.setFrame(data.spell1_L);
       this.spell_right.setFrame(data.spell1_R);
       if (gameInfo.user_role === "left") {
@@ -114,12 +120,12 @@ export default class MagicScene extends Phaser.Scene {
         this.spell2 = data.spell2_R;
       }
     });
-    socket.on("update_paddle_size", (data: any) => {
+    socket.on("update_paddle_size", (data: paddleSizes) => {
       this.paddle_left.setScale(1, data.left / 40);
       this.paddle_right.setScale(1, data.right / 40);
     });
 
-    socket.on("apply_effect", (data: any) => {
+    socket.on("apply_effect", (data: spellInfo) => {
       if (data.effect == 6) {
         if (data.target == "left") this.Lpaddle_eye_effect = 1;
         else this.Rpaddle_eye_effect = 1;

@@ -33,10 +33,11 @@ import {
 } from "vue";
 import socket from "@/socket";
 import { StoreGeneric } from "pinia";
+import { Channel } from "@backend/channel/entities/channel.entity";
 
 interface Props {
   user: StoreGeneric;
-  channel: any;
+  channel: Channel;
 }
 
 const props: Readonly<Props> = defineProps<Props>();

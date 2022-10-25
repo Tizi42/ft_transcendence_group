@@ -28,10 +28,11 @@
 import { getUrlOf } from "@/router";
 import socket from "@/socket";
 import { useUserStore } from "@/stores/user";
-import { defineComponent, defineExpose, defineEmits, defineProps } from "vue";
+import { Channel } from "@backend/channel/entities/channel.entity";
+import { defineComponent, defineExpose, defineProps } from "vue";
 
 interface Props {
-  channelToJoin: any;
+  channelToJoin: Channel;
 }
 
 const user = useUserStore();
@@ -57,7 +58,7 @@ const handleInvitationRequest = async (action: string) => {
       return response.json();
     })
     .then((data) => {
-      console.log("hanlde invitation data = ", data);
+      console.log("handle invitation data = ", data);
       if (data === "password_error" || data === "ban_error") {
         console.log("user banned by this channel");
       } else if (action === "acceptJoin") {
@@ -70,8 +71,6 @@ const handleInvitationRequest = async (action: string) => {
       console.log("error : ", error);
     });
 };
-
-const emit = defineEmits(["hideReq"]);
 
 defineExpose(
   defineComponent({

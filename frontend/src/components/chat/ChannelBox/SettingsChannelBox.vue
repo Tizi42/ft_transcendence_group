@@ -79,17 +79,18 @@
 
 <script lang="ts" setup>
 import socket from "@/socket";
+import { Channel } from "@backend/channel/entities/channel.entity";
 import { ref, defineComponent, defineExpose, Ref, onBeforeUnmount } from "vue";
 import { defineProps, onBeforeMount } from "vue";
 
 interface Props {
   selectedChannel: number;
-  channel: any;
+  channel: Channel;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
 const channelType: Ref<string> = ref("");
-const newPassword: Ref<any> = ref(null);
+const newPassword: Ref<string | null> = ref(null);
 let inputBorder = ref("none");
 
 const changePrivacy = async () => {

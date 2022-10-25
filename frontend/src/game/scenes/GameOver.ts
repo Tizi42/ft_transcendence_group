@@ -12,7 +12,7 @@ export default class GameOverScene extends Phaser.Scene {
   text: Phaser.GameObjects.Text;
 
   i = 0;
-  init(data: any) {
+  init(data: { winner: string }) {
     console.log("init", this.i++, data);
     this.winner = data.winner;
   }

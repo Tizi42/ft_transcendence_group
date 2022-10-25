@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import socket from "@/socket";
 import gameInfo from "../gameInfo";
+import { objectPos } from "@backend/game/utils/type";
 
 export default class GameScene extends Phaser.Scene {
   width: number;
@@ -64,7 +65,7 @@ export default class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.ball, this.paddle_right);
 
     // listen for update
-    socket.on("game_update", (data: any) => {
+    socket.on("game_update", (data: objectPos) => {
       this.paddle_left.y = data.paddle_left_posY;
       this.paddle_right.y = data.paddle_right_posY;
       this.ball.x = data.ball_x;
@@ -72,7 +73,7 @@ export default class GameScene extends Phaser.Scene {
     });
 
     // listen for game end
-    socket.on("end", (data: any) => {
+    socket.on("end", (data: { winner: string }) => {
       this.before_change_scene();
       this.scene.start("GameOverScene", { winner: data.winner });
     });

@@ -26,6 +26,7 @@
 import { getUrlOf } from "@/router";
 import socket from "@/socket";
 import { Chat } from "@backend/chat/entities/chat.entity";
+import { StoreGeneric } from "pinia";
 import {
   defineComponent,
   onBeforeMount,
@@ -38,7 +39,7 @@ import {
 } from "vue";
 
 interface Props {
-  user: any;
+  user: StoreGeneric;
 }
 
 defineProps<Props>();

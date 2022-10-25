@@ -17,7 +17,7 @@
       </div>
     </form>
     <form
-      v-if="selectedChannel != -1"
+      v-if="selectedChannel != -1 && channel"
       @submit.prevent="onSubmit(receiver, selectedChannel)"
       :class="{
         userMuted: channel.muted.includes(user.id, 0),
@@ -50,6 +50,8 @@
 
 <script lang="ts" setup>
 import socket from "@/socket";
+import { Channel } from "@backend/channel/entities/channel.entity";
+import { StoreGeneric } from "pinia";
 import {
   defineComponent,
   ref,
@@ -62,10 +64,10 @@ import {
 } from "vue";
 
 interface Props {
-  user: any;
+  user: StoreGeneric;
   receiver: number;
   selectedChannel: number;
-  channel: any;
+  channel: Channel | null;
 }
 
 const props: Readonly<Props> = defineProps<Props>();

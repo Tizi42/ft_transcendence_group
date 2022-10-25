@@ -17,13 +17,13 @@
   </div>
   <PendingChannelReq
     v-for="req in allMyInvite"
-    :key="req"
+    :key="req.id"
     :channelToJoin="req"
   />
   <ul class="list-my-channels">
     <li
       v-for="channel in myChannels"
-      :key="channel"
+      :key="channel.id"
       @click="getChannelMessages(channel.id)"
       :class="{
         channelSelected: selectedChannel == channel.id,
@@ -65,19 +65,21 @@ import { useUserStore } from "@/stores/user";
 import PendingChannelReq from "@/components/chat/PendingChannelReq.vue";
 import { getUrlOf } from "@/router";
 import { StoreGeneric } from "pinia";
+import { Chat } from "@backend/chat/entities/chat.entity";
+import { Channel } from "@backend/channel/entities/channel.entity";
 
 interface Props {
   selectedChannel: number;
   user: StoreGeneric;
-  myChannels: any;
+  myChannels: Channel[];
 }
 
 const user = useUserStore();
 const props: Readonly<Props> = defineProps<Props>();
 const selectedChannel: Ref<number> = ref(props.selectedChannel);
 const addWindow: Ref<boolean> = ref(false);
-const history: Ref<any> = ref([]);
-const allMyInvite: Ref<Array<any>> = ref([]);
+const history: Ref<Chat[]> = ref([]);
+const allMyInvite: Ref<Array<Channel>> = ref([]);
 const emit = defineEmits(["getChannelSelected", "getHistory"]);
 
 watch(

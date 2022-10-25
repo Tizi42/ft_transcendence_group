@@ -19,11 +19,12 @@
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose, onBeforeMount } from "vue";
-import { onBeforeRouteLeave } from "vue-router";
+import { onBeforeRouteLeave, RouteLocationNormalized } from "vue-router";
 import { useUserStore } from "@/stores/user";
 
 const user = useUserStore();
-onBeforeRouteLeave((to: any) => {
+
+onBeforeRouteLeave((to: RouteLocationNormalized) => {
   if (
     user.status === "in game" &&
     (to.name === "play" || to.name === "watch")

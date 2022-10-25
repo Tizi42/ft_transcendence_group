@@ -18,11 +18,12 @@
 </template>
 
 <script lang="ts" setup>
+import { Chat } from "@backend/chat/entities/chat.entity";
 import { defineComponent, ref, Ref, defineEmits, defineExpose } from "vue";
 
 const isActive: Ref<string> = ref("players");
 const receiver: Ref<number> = ref(-1);
-const history: Ref<any> = ref([]);
+const history: Ref<Chat[]> = ref([]);
 const emit = defineEmits(["selectedNav", "resetReceiver", "clearHistory"]);
 const select = (id: string) => {
   isActive.value = id;

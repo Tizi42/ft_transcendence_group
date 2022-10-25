@@ -97,7 +97,7 @@ function cancel() {
       mode: mode.value[choosenMode.value],
       user_id: user.id,
     },
-    (data: any) => {
+    (data: string) => {
       console.log(data);
     }
   );
@@ -111,9 +111,9 @@ async function startGame() {
       mode: mode.value[choosenMode.value],
       user_id: user.id,
     },
-    (data: any) => {
+    (data: boolean) => {
       console.log(data);
-      if (data.alreadyInQueue) {
+      if (data) {
         window.alert("You are already in queue!");
         waiting.value = false;
       }
@@ -139,7 +139,7 @@ function handleMenu(event: KeyboardEvent) {
 }
 
 onBeforeMount(() => {
-  socket.on("game_found", (data: any) => {
+  socket.on("game_found", (data: string) => {
     router.push({ name: "pong", params: { room_name: data } });
   });
   show.value = true;
