@@ -170,13 +170,9 @@ export default class MagicScene extends Phaser.Scene {
     });
   }
 
-<<<<<<< HEAD
   update(time: number, delta: number) {
     this.switch_time += delta;
     this.cast_time += delta;
-=======
-  update() {
->>>>>>> master
     if (this.Lpaddle_eye_effect) {
       if (this.Lpaddle_alpha <= 0) this.Lpaddle_alpha = 1;
       else this.Lpaddle_alpha -= 0.05;
