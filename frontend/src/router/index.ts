@@ -74,7 +74,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/pong",
     name: "pong",
-    component: () => import("../components/game/PlayGame.vue"),
+    component: () => import("../components/Game/PlayGame.vue"),
     props: true,
   },
 ];
@@ -148,7 +148,7 @@ router.beforeEach(async (to: any, from: any, next: any) => {
       if (from.fullPath === "/user/settings") {
         next();
       } else {
-        next({ name: "settings" });
+        next({ name: "game" });
       }
     }
   } else if (

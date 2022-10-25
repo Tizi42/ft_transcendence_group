@@ -17,9 +17,12 @@ import { User } from "src/users/users.entity";
 })
 export class BattlesModule {
   constructor(private readonly battlesService: BattlesService) {
-    this.battlesService.removeAll();
-    setTimeout(() => {
-      this.battlesService.createFakeBattles(20, 9);
-    }, 1000);
+    if (false) {
+      this.battlesService.removeAll();
+      setTimeout(() => {
+        console.log("create fake battles");
+        this.battlesService.createFakeBattles(20, 9);
+      }, 20000);
+    }
   }
 }

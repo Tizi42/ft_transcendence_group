@@ -56,6 +56,9 @@ export class User {
   @Column({default: 0})
   totalVictories: number;
 
+  @Column({default: 0})
+  totalDraws: number;
+
   @Column({default: -1, nullable: true})
   winRate: number;
   
@@ -67,5 +70,8 @@ export class User {
 
   @ManyToMany(() => Channel, (channel) => channel.members)
   channels: Channel[];
+
+  @Column("int", { array: true, default: {} })
+  memberPendingReqFrom: number[];
 }
 

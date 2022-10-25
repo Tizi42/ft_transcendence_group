@@ -15,11 +15,10 @@ function launch(containerId: string) {
     },
     backgroundColor: "#1E2B02",
     scale: {
-      mode: Phaser.Scale.FIT,
+      mode: Phaser.Scale.CENTER_BOTH,
       parent: containerId,
-      autoCenter: Phaser.Scale.CENTER_BOTH,
-      width: 1043,
-      height: 591,
+      autoCenter: Phaser.Scale.CENTER_VERTICALLY,
+      max: { width: 1043, height: 591 },
     },
     scene: [GetReadyScene, GameScene, MagicScene, SpeedScene, GameOverScene],
   });
