@@ -1,4 +1,5 @@
 import { Server } from 'socket.io';
+import { clearInterval } from 'timers';
 import { BattlesService } from '../../battles/battles.service';
 import GameStatus from "./type";
 
@@ -30,7 +31,7 @@ export class GameRoom {
   readonly ball_radius = 12.8;
   readonly paddle_width_half = 5;
   readonly max_angle = Math.PI / 4;
-  readonly hit_range = () : number => { return this.ball_velocity * 0.75 };
+  readonly hit_range = () : number => { return this.ball_velocity * 0.5 + 1.5 };
   readonly ball_velocity_init = {
     normal: 3.5, // 7.5 pixels per 25ms, 300 pixels per 1000ms
     magic: 3.5,
@@ -125,13 +126,19 @@ export class GameRoom {
       opponent2: this.playerR,
       mode: this.mode,
     });
-    this.getRandomInt(1) === 1 ? this.on_launch("toRight") : this.on_launch("toLeft");
     this.game_status = "running";
+    this.getRandomInt(1) === 1 ? this.on_launch("toRight") : this.on_launch("toLeft");
   }
 
   on_launch(direction: string)
   {
     console.log("on ball launch");
+    if (this.game_status === "ended")
+    {
+      console.log("nope, game is ended");
+      clearInterval(this.interval);
+      return;
+    }
     // intial ball's launch position and velocity
     this.ball_velocity = this.ball_velocity_init[this.mode];
     const randomHeight = this.getRandomNumberBetween(20, 571); // height 591 - 20 
@@ -420,6 +427,7 @@ export class GameRoom {
   }
 
   game_end(){
+    this.game_status = "ended";
     if (this.mode === "speed")
       clearInterval(this.interval);
     this.winner = this.score_left > this.score_right ? this.playerL : this.playerR;
@@ -431,7 +439,6 @@ export class GameRoom {
     this.server.to(this.room_name).emit("end", {
       winner: winner_side,
     });
-    this.game_status = "ended";
     this.save_game();
     this.reset_game();
   }
