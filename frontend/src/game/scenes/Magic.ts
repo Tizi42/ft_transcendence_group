@@ -176,13 +176,13 @@ export default class MagicScene extends Phaser.Scene {
     this.switch_time += delta;
     this.cast_time += delta;
     if (this.Lpaddle_eye_effect) {
-      if (this.Lpaddle_alpha <= 0) this.Lpaddle_alpha = 1;
+      if (this.Lpaddle_alpha <= -0.8) this.Lpaddle_alpha = 1;
       else this.Lpaddle_alpha -= 0.05;
-      this.paddle_left.alpha = this.Lpaddle_alpha;
+      if (this.Lpaddle_alpha >= 0) this.paddle_left.alpha = this.Lpaddle_alpha;
     } else if (this.Rpaddle_eye_effect) {
-      if (this.Rpaddle_alpha <= 0) this.Rpaddle_alpha = 1;
+      if (this.Rpaddle_alpha <= -0.8) this.Rpaddle_alpha = 1;
       else this.Rpaddle_alpha -= 0.05;
-      this.paddle_right.alpha = this.Rpaddle_alpha;
+      if (this.Rpaddle_alpha >= 0) this.paddle_right.alpha = this.Rpaddle_alpha;
     }
 
     if (this.cursors.up.isDown) {
