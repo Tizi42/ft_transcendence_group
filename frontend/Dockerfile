@@ -14,6 +14,7 @@ COPY    . /usr/src/app/
 
 CMD     [ "npm", "run", "dev" ]
 
+
 ###############################
 #   target - dev - your pc    #
 ###############################
@@ -34,6 +35,24 @@ USER    node
 
 CMD     [ "npm", "run", "dev" ]
 
+
+###############################
+#   target - prod - 42        #
+###############################
+
+FROM    node:lts-alpine As prod42
+
+WORKDIR /usr/src/app
+
+COPY    package*.json ./
+
+RUN     npm install
+
+COPY    . /usr/src/app/
+
+CMD     [ "npm", "run", "prod" ]
+
+
 ###############################
 #   target - prod - your pc   #
 ###############################
@@ -52,4 +71,4 @@ COPY    --chown=node:node . /usr/src/app/
 
 USER    node
 
-CMD     [ "npm", "run", "serve" ]
+CMD     [ "npm", "run", "prod" ]
