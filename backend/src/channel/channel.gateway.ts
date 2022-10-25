@@ -5,7 +5,7 @@ import { ChatService } from 'src/chat/chat.service';
 import { AppGateway } from 'src/gateway';
 import { UsersService } from 'src/users/users.service';
 import { BattlesService } from '../battles/battles.service';
-import { CreatChannelDto } from './utils/createChannel.dto';
+import { smallDataChannel } from './utils/smallDataChannel.dto';
 import { banMember, leavingChannel, makingAdmin, muteMember } from './utils/types';
 import { UpdatePasswordDto } from './utils/UpdatePassword.dto';
 import { UpdatePrivacyDto } from './utils/updatePrivacy.dto';
@@ -27,7 +27,7 @@ export class ChannelGateway extends AppGateway {
 
   @SubscribeMessage('create_channel')
   async handleCreateChannel(
-    @MessageBody() data: CreatChannelDto,
+    @MessageBody() data: smallDataChannel,
     @ConnectedSocket() socket: Socket,
   ) {
     const newChannel = await this.channelService.createChannel(data);

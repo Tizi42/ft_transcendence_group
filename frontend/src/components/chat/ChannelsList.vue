@@ -61,13 +61,14 @@ import {
 import ChannelBoxModal from "./ChannelBox/ChannelBoxModal.vue";
 import AddChannelBox from "./ChannelBox/AddChannelBox.vue";
 import socket from "@/socket";
-import { userInfoStore, useUserStore } from "@/stores/user";
+import { useUserStore } from "@/stores/user";
 import PendingChannelReq from "@/components/chat/PendingChannelReq.vue";
 import { getUrlOf } from "@/router";
+import { StoreGeneric } from "pinia";
 
 interface Props {
   selectedChannel: number;
-  user: userInfoStore;
+  user: StoreGeneric;
   myChannels: any;
 }
 

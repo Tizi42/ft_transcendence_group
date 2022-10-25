@@ -1,7 +1,6 @@
-import { IsArray, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
-import { User } from "src/users/users.entity";
+import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
 
-export class CreatChannelDto {
+export class smallDataChannel {
     @IsNotEmpty()
     @IsString()
     @IsIn(["public", "private", "protected"])
@@ -14,15 +13,8 @@ export class CreatChannelDto {
     name: string;
 
     @IsNotEmpty()
-    members: User[];
-
-    @IsNotEmpty()
     @IsNumber()
     owner: number;
-
-    @IsNotEmpty()
-    @IsArray()
-    admins: number[];
 
     @IsOptional()
     @IsString()

@@ -43,7 +43,6 @@
 import JoinChannelBoxModal from "./ChannelBox/JoinChannelBoxModal.vue";
 import JoinChannelBox from "./ChannelBox/JoinChannelBox.vue";
 import socket from "@/socket";
-import { userInfoStore } from "@/stores/user";
 import {
   defineComponent,
   defineExpose,
@@ -54,9 +53,10 @@ import {
   defineProps,
   onBeforeUnmount,
 } from "vue";
+import { StoreGeneric } from "pinia";
 
 interface Props {
-  user: userInfoStore;
+  user: StoreGeneric;
 }
 
 const addWindow: Ref<boolean> = ref(false);
