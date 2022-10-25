@@ -80,14 +80,16 @@ export class GameRoom {
   spell_spawn_frequencey = 5000;
 
   paddle_sized_duration = 5000;
+  paddle_resize = 15;
 
   reverse_duration = 5000;
   L_reverse_effect = 1;
   R_reverse_effect = 1;
-
+  
   L_speed_ball = 0;
   R_speed_ball = 0;
   previous_ball_speed = 0;
+  speed_ball_factor = 1.5;
 
   L_shield = 0;
   R_shield = 0;
@@ -224,18 +226,18 @@ export class GameRoom {
     }
 
     if (effect == 1) {
-      this.paddle[side].height_half += 10;
+      this.paddle[side].height_half += this.paddle_resize;
       setTimeout(() => {
-        this.paddle[side].height_half -= 10;
+        this.paddle[side].height_half -= this.paddle_resize;
         this.server.to(this.room_name).emit("update_paddle_size", {
           left: this.paddle["left"].height_half,
           right: this.paddle["right"].height_half,
         });
       }, this.paddle_sized_duration);
-    } else if (effect == 2) {
-      this.paddle[target].height_half -= 10;
+    } else if (effect == 2 && this.paddle[target].height_half > this.paddle_resize) {
+      this.paddle[target].height_half -= this.paddle_resize;
       setTimeout(() => {
-        this.paddle[target].height_half += 10;
+        this.paddle[target].height_half += this.paddle_resize;
         this.server.to(this.room_name).emit("update_paddle_size", {
           left: this.paddle["left"].height_half,
           right: this.paddle["right"].height_half,
@@ -360,7 +362,7 @@ export class GameRoom {
       this.ball_velocity *= this.acceleration[this.mode];
       if (this.L_speed_ball) {
         if (!this.previous_ball_speed) this.previous_ball_speed = this.ball_velocity;
-        this.ball_velocity *= 1.5;
+        this.ball_velocity *= this.speed_ball_factor;
         this.L_speed_ball -= 1;
       } else if (this.previous_ball_speed) {
         this.ball_velocity = this.previous_ball_speed;
@@ -379,7 +381,7 @@ export class GameRoom {
       this.ball_velocity *= this.acceleration[this.mode];
       if (this.R_speed_ball) {
         if (!this.previous_ball_speed) this.previous_ball_speed = this.ball_velocity;
-        this.ball_velocity *= 1.5;
+        this.ball_velocity *= this.speed_ball_factor;
         this.R_speed_ball -= 1;
       } else if (this.previous_ball_speed) {
         this.ball_velocity = this.previous_ball_speed;
