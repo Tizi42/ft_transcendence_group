@@ -42,7 +42,7 @@ async function onHandleFriendRequest(action: string) {
     to: props.sender.id,
   };
   axios
-    .post("http://localhost:3000/api/users/friends/" + action, {
+    .post("http://10.13.3.5:3000/api/users/friends/" + action, {
       id1: props.sender.id,
       id2: user.id,
     })

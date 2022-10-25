@@ -45,7 +45,7 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
   doFetchPending();
 
   function doFetch() {
-    fetch("http://localhost:3000/api/private", {
+    fetch("http://10.13.3.5:3000/api/private", {
       credentials: "include",
     })
       .then((response) => {
@@ -71,7 +71,7 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
   }
 
   function doFetchFriends() {
-    fetch("http://localhost:3000/api/users/friends/" + id.value, {
+    fetch("http://10.13.3.5:3000/api/users/friends/" + id.value, {
       credentials: "include",
     })
       .then((response) => {
@@ -86,7 +86,7 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
   }
 
   function doFetchPending() {
-    fetch("http://localhost:3000/api/users/friends/from/" + id.value, {
+    fetch("http://10.13.3.5:3000/api/users/friends/from/" + id.value, {
       credentials: "include",
     })
       .then((response) => {

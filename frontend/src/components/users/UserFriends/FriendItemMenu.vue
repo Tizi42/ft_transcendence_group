@@ -47,7 +47,7 @@ async function onRemoveFriend() {
     to: props.friend.id,
   };
   axios
-    .post("http://localhost:3000/api/users/friends/rm/", {
+    .post("http://10.13.3.5:3000/api/users/friends/rm/", {
       id1: user.id,
       id2: props.friend.id,
     })
@@ -72,7 +72,7 @@ function onBlockUser() {
     to: props.friend.id,
   };
   axios
-    .post("http://localhost:3000/api/users/block/add/", {
+    .post("http://10.13.3.5:3000/api/users/block/add/", {
       id1: user.id,
       id2: props.friend.id,
     })
