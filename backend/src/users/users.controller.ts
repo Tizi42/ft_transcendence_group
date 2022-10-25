@@ -31,7 +31,7 @@ export class UsersController {
   };
 
   @UseGuards(JwtAuthGuard)
-  @Put('uploads/avatar')
+  @Put('uploads/avatar')  
   @UseInterceptors(FileInterceptor('file', storage))
   async uploadAvatar(@Req() req: RequestWithUser, @UploadedFile() file: Express.Multer.File) : Promise<any> {
     return await this.usersService.updateUserAvatar(
