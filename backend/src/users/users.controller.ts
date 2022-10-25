@@ -9,6 +9,7 @@ import { diskStorage } from "multer";
 import { extname } from "path";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import RequestWithUser from "./utils/requestWithUser.interface";
+import { SetDisplayNameDto } from "./utils/setDisplayName.dto";
 
 export const storage = {
   storage : diskStorage ({
@@ -60,11 +61,13 @@ export class UsersController {
     return res.sendFile("default.png", { root: 'src/uploads/avatar'});
   }
 
-  @Post('info/:id')
-  setDisplayName(@Param('id') id: number, @Query('displayname') name: string) {
-    if (name.length > 16)
-      return "error: Name too long";
-    return this.usersService.updateUserDisplayName(id, name);
+  @UseGuards(JwtAuthGuard)
+  @Post('info/')
+  async setDisplayName(
+    @Req() req: RequestWithUser,
+    @Body() setDisplayNameDto: SetDisplayNameDto
+  ) {
+    return await this.usersService.updateUserDisplayName(req.user.id, setDisplayNameDto.displayname);
   }
 
   @Get('info/:id')
