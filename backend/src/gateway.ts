@@ -7,7 +7,7 @@ import { BattlesService } from "./battles/battles.service";
 
 @WebSocketGateway({
   cors: {
-    origin: 'http://localhost:8080',
+    origin: 'http://10.13.3.5:8080',
     methods: ["GET", "POST"],
     credentials: true,
   },

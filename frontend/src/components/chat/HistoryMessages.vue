@@ -1,7 +1,7 @@
 <template>
   <div v-if="target === null && isActive === 'players'" class="welcome-chat">
     <img src="@/assets/icons/multiBubble.svg" />
-    <h1>Let's chat</h1>
+    <h1>Let's chat {{ test }}</h1>
   </div>
   <div
     class="messages-invite-game"
@@ -144,6 +144,7 @@ const inviteWindow: Ref<boolean> = ref(false);
 const addMemberWindow: Ref<boolean> = ref(false);
 const isShowUserProfile: Ref<boolean> = ref(false);
 const userTarget: Ref<User> = ref(props.target);
+const test = import.meta.env.VITE_IP_NETWORK;
 
 function inviteInGame() {
   inviteWindow.value = true;

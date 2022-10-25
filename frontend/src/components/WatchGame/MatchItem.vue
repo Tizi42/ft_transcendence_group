@@ -70,7 +70,7 @@ function joinGame() {
 }
 
 function getPictureUrl(id: number): string {
-  return "http://localhost:3000/api/users/avatar/" + id.toString();
+  return "http://10.13.3.5:3000/api/users/avatar/" + id.toString();
 }
 
 async function getName(id: number): Promise<string> {
