@@ -39,7 +39,7 @@
 
 <script lang="ts" setup>
 import { defineComponent, defineExpose, onMounted, Ref } from "vue";
-import { ref } from "vue";
+import { ref, onBeforeUnmount } from "vue";
 import LoadingRing from "../utils/LoadingRing.vue";
 import router from "@/router/index";
 import socket from "@/socket";
@@ -115,12 +115,15 @@ async function startGame() {
   );
 }
 
-socket.on("game_found", (data: any) => {
-  console.log("Entering game room! ", data);
-  router.push({ name: "pong", params: { room_name: data } });
+onBeforeUnmount(() => {
+  socket.off("game_found");
 });
 
 onMounted(() => {
+  socket.on("game_found", (data: any) => {
+    console.log("Entering game room! ", data);
+    router.push({ name: "pong", params: { room_name: data } });
+  });
   show.value = true;
   window.addEventListener("keyup", (event) => {
     if (router.currentRoute.value.fullPath == "/play") {
