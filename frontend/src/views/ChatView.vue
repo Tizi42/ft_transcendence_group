@@ -33,9 +33,10 @@
         :isActive="isActive"
         :selectedChannel="selectedChannel"
         :channel="channel"
+        v-if="receiverProfile"
       />
       <MessageInput
-        v-if="receiver != -1 || selectedChannel != -1"
+        v-if="(receiver != -1 || selectedChannel != -1) && receiverProfile"
         :user="user"
         :receiver="receiver"
         :selectedChannel="selectedChannel"
