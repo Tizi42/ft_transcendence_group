@@ -1,6 +1,7 @@
 import { ref, Ref } from "vue";
 import { defineStore } from "pinia";
 import { User } from "@backend/users/users.entity";
+import { getUrlOf } from "@/router";
 
 type voidFunction = () => void;
 
@@ -45,7 +46,7 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
   doFetchPending();
 
   function doFetch() {
-    fetch("http://10.11.4.13:3000/api/private", {
+    fetch(getUrlOf("api/private"), {
       credentials: "include",
     })
       .then((response) => {
@@ -71,7 +72,7 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
   }
 
   function doFetchFriends() {
-    fetch("http://10.11.4.13:3000/api/users/friends/" + id.value, {
+    fetch(getUrlOf("api/users/friends/") + id.value, {
       credentials: "include",
     })
       .then((response) => {
@@ -86,7 +87,7 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
   }
 
   function doFetchPending() {
-    fetch("http://10.11.4.13:3000/api/users/friends/from/" + id.value, {
+    fetch(getUrlOf("api/users/friends/from/") + id.value, {
       credentials: "include",
     })
       .then((response) => {

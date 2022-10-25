@@ -23,6 +23,7 @@
 import { ref, defineComponent, defineExpose } from "vue";
 import axios from "axios";
 import { useUserStore } from "@/stores/user";
+import { getUrlOf } from "@/router";
 
 const user = useUserStore();
 const upload = ref();
@@ -41,7 +42,7 @@ function onChangeAvatar() {
 
   formdata.append("file", image);
   axios
-    .put("http://10.11.4.13:3000/api/users/uploads/avatar/", formdata, {
+    .put(getUrlOf("api/users/uploads/avatar/"), formdata, {
       withCredentials: true,
     })
     .then((res) => {

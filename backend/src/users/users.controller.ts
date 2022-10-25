@@ -35,7 +35,7 @@ export class UsersController {
   @UseInterceptors(FileInterceptor('file', storage))
   async uploadAvatar(@Req() req: RequestWithUser, @UploadedFile() file: Express.Multer.File) : Promise<any> {
     return await this.usersService.updateUserAvatar(
-      req.user.id, file.filename, "http://10.11.4.13:3000/api/users/avatar/" + req.user.id
+      req.user.id, file.filename, "http://localhost:3000/api/users/avatar/" + req.user.id
     ); //`${this.SERVER_URL}${file.path}`
   }
 
