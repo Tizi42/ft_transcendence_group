@@ -108,14 +108,22 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, onMounted, ref, Ref } from "vue";
-import { defineProps, defineEmits } from "vue";
+import {
+  defineComponent,
+  defineExpose,
+  ref,
+  Ref,
+  defineProps,
+  defineEmits,
+  onBeforeUnmount,
+  onBeforeMount,
+} from "vue";
 import { UserMinimal } from "@/components/utils/UserMinimal";
+import { messageInGame } from "@backend/chat/utils/types";
 import FloatingMenu from "../utils/FloatingMenu.vue";
 import SmallChat from "./SmallChat.vue";
 import socket from "@/socket";
 import WatchersChat from "./WatchersChat.vue";
-import { messageInGame } from "@backend/chat/utils/types";
 
 interface Props {
   user: UserMinimal;
@@ -148,27 +156,33 @@ function sendEmoji(id: number) {
   socket.emit("send_emoji_ingame", data);
 }
 
-onMounted(() => {
-  window.addEventListener("keyup", (event) => {
-    if (event.key == "Enter") {
-      if (isChatting.value) {
-        if (chatRef.value) chatRef.value.methods.sendMsg();
-      } else {
-        document.getElementById("inputChat")?.focus();
-        isChatting.value = true;
-      }
+function handleKeys(event: KeyboardEvent) {
+  if (event.key == "Enter") {
+    if (isChatting.value) {
+      if (chatRef.value) chatRef.value.methods.sendMsg();
+    } else {
+      document.getElementById("inputChat")?.focus();
+      isChatting.value = true;
     }
-    if (event.key == "Escape") {
-      if (isChatting.value) {
-        document.getElementById("inputChat")?.blur();
-      } else {
-        menuRef.value.methods.closeMenu();
-      }
+  }
+  if (event.key == "Escape") {
+    if (isChatting.value) {
+      document.getElementById("inputChat")?.blur();
+    } else {
+      menuRef.value.methods.closeMenu();
     }
-    if (event.key == "t" && !isChatting.value) {
-      menuRef.value.methods.toggleMenu();
-    }
-  });
+  }
+  if (event.key == "t" && !isChatting.value) {
+    menuRef.value.methods.toggleMenu();
+  }
+}
+
+onBeforeMount(() => {
+  window.addEventListener("keyup", handleKeys);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("keyup", handleKeys);
 });
 
 function toogleChatW() {

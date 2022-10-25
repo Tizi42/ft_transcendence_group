@@ -28,17 +28,20 @@ import {
   defineEmits,
   ref,
   Ref,
+  onBeforeMount,
+  onBeforeUnmount,
 } from "vue";
 import socket from "@/socket";
-import { userInfoStore } from "@/stores/user";
+import { StoreGeneric } from "pinia";
 
 interface Props {
-  user: userInfoStore;
+  user: StoreGeneric;
   channel: any;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
 const password: Ref<string> = ref("");
+const emit = defineEmits(["hideAddChannel"]);
 let inputBorder = ref("none");
 
 const toJoin = () => {
@@ -53,26 +56,30 @@ const toJoin = () => {
   password.value = "";
 };
 
-socket.on("joined_channel", (channelId: number) => {
-  console.log("joined channel id ", channelId);
-  socket.emit("get_all_channels");
-  emit("hideAddChannel");
+onBeforeMount(() => {
+  socket.on("joined_channel", (channelId: number) => {
+    console.log("joined channel id ", channelId);
+    socket.emit("get_all_channels");
+    emit("hideAddChannel");
+  });
+  socket.on("password_error", () => {
+    inputBorder.value = "4px solid red";
+  });
+  socket.on("ban_error", () => {
+    emit("hideAddChannel");
+    alert("You've been ban in this channel, you can't join it !");
+  });
 });
 
-socket.on("password_error", () => {
-  inputBorder.value = "4px solid red";
-});
-
-socket.on("ban_error", () => {
-  emit("hideAddChannel");
-  alert("You've been ban in this channel, you can't join it !");
+onBeforeUnmount(() => {
+  socket.off("joined_channel");
+  socket.off("password_error");
+  socket.off("ban_error");
 });
 
 // if (props.channel.value.type === "private") {
 //   socket.emit("send_request", props.channel.value);
 // }
-
-const emit = defineEmits(["hideAddChannel"]);
 
 defineExpose(
   defineComponent({

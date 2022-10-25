@@ -114,6 +114,8 @@ import {
   Ref,
   ref,
   watch,
+  onBeforeUnmount,
+  onBeforeMount,
 } from "vue";
 import UserBox from "../users/UserBox/UserBox.vue";
 import { User } from "@backend/users/users.entity";
@@ -209,13 +211,6 @@ async function showUserProfile(event: number) {
     });
   isShowUserProfile.value = true;
 }
-
-socket.on("hide_window", (userToBanId: number) => {
-  if (user.id === userToBanId) {
-    hide();
-  }
-});
-
 watch(
   () => props.history,
   () => {
@@ -227,6 +222,18 @@ watch(
     }, 1);
   }
 );
+
+onBeforeMount(() => {
+  socket.on("hide_window", (userToBanId: number) => {
+    if (user.id === userToBanId) {
+      hide();
+    }
+  });
+});
+
+onBeforeUnmount(() => {
+  socket.off("hide_window");
+});
 
 defineExpose(
   defineComponent({
