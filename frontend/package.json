@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "vite build",
     "serve": "vite preview --port 8080",
+    "prod": "vite build && vite preview --port 8080",
     "lint": "eslint --ext .js,.vue,.ts --ignore-path .gitignore --fix src"
   },
   "dependencies": {

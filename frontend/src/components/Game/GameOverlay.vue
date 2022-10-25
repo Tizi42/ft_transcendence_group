@@ -173,10 +173,6 @@ function quitGame() {
   router.push({ name: "game" });
 }
 
-function changeBackground() {
-  console.log("user wants to change background");
-}
-
 function hideChat() {
   console.log("hide chat");
 }
@@ -195,15 +191,7 @@ onMounted(() => {
   });
 });
 
-onBeforeUnmount(() => {
-  socket.off("receive_message_ingame");
-  socket.off("receive_emoji_ingame");
-  socket.off("score_update");
-  socket.off("quit_game");
-});
-
 onBeforeMount(async () => {
-  console.log("on before mount in game overlay...");
   await getPlayersInfo();
   loadEmojis();
   socket.on("receive_message_ingame", async (data: any) => {
@@ -228,6 +216,13 @@ onBeforeMount(async () => {
   if (user.id === props.playerL_id) user_role.value = "left";
   else if (user.id === props.playerR_id) user_role.value = "right";
   else user_role.value = "watch";
+});
+
+onBeforeUnmount(() => {
+  socket.off("receive_message_ingame");
+  socket.off("receive_emoji_ingame");
+  socket.off("score_update");
+  socket.off("quit_game");
 });
 
 defineExpose(

@@ -5,13 +5,14 @@ import gameInfo from "../gameInfo";
 export default class MagicScene extends Phaser.Scene {
   width: number;
   height: number;
-
   ball: Phaser.Physics.Arcade.Sprite;
   paddle_left: Phaser.Physics.Arcade.Sprite;
   paddle_right: Phaser.Physics.Arcade.Sprite;
   spell_left: Phaser.GameObjects.Sprite;
   spell_right: Phaser.GameObjects.Sprite;
-  cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+  keyDown: Phaser.Input.Keyboard.Key;
+  keyUp: Phaser.Input.Keyboard.Key;
+  keyShift: Phaser.Input.Keyboard.Key;
 
   spell1 = 0;
   spell2 = 0;
@@ -80,7 +81,9 @@ export default class MagicScene extends Phaser.Scene {
     );
 
     //  set up input event
-    this.cursors = this.input.keyboard.createCursorKeys();
+    this.keyDown = this.input.keyboard.addKey(40);
+    this.keyUp = this.input.keyboard.addKey(38);
+    this.keyShift = this.input.keyboard.addKey(16);
 
     // collide ball with paddle
     this.physics.add.collider(this.ball, this.paddle_left);
@@ -145,11 +148,11 @@ export default class MagicScene extends Phaser.Scene {
       this.paddle_right.alpha = this.Rpaddle_alpha;
     }
 
-    if (this.cursors.up.isDown) {
+    if (this.keyUp.isDown) {
       this.update_paddle(-1);
-    } else if (this.cursors.down.isDown) {
+    } else if (this.keyDown.isDown) {
       this.update_paddle(1);
-    } else if (this.cursors.shift.isDown) {
+    } else if (this.keyShift.isDown) {
       socket.emit("launch_spell", {
         user_id: gameInfo.user_id,
         room_name: gameInfo.room_name,

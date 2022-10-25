@@ -79,7 +79,8 @@
 
 <script lang="ts" setup>
 import socket from "@/socket";
-import { ref, defineComponent, defineExpose, Ref, defineProps } from "vue";
+import { ref, defineComponent, defineExpose, Ref, onBeforeUnmount } from "vue";
+import { defineProps, onBeforeMount } from "vue";
 
 interface Props {
   selectedChannel: number;
@@ -119,8 +120,14 @@ const UpdatePassword = () => {
   newPassword.value = null;
 };
 
-socket.on("password_error", () => {
-  inputBorder.value = "4px solid red";
+onBeforeMount(() => {
+  socket.on("password_error", () => {
+    inputBorder.value = "4px solid red";
+  });
+});
+
+onBeforeUnmount(() => {
+  socket.off("password_error");
 });
 
 defineExpose(

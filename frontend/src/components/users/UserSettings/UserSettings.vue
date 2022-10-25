@@ -28,7 +28,13 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, defineExpose, ref } from "vue";
+import {
+  defineComponent,
+  defineExpose,
+  onBeforeMount,
+  onBeforeUnmount,
+  ref,
+} from "vue";
 import { Component as ComponentVue } from "vue";
 import AccountOptions from "./AccountOptions.vue";
 import BlockedUsers from "./BlockedUsers.vue";
@@ -36,7 +42,6 @@ import { useRouter } from "vue-router";
 import socket from "@/socket";
 import { useCookies } from "vue3-cookies";
 
-// const { isCookieAvailable } = useCookie();
 const { cookies } = useCookies();
 
 const router = useRouter();
@@ -54,12 +59,18 @@ async function toLogout() {
   }
 }
 
-socket.on("force_logout", () => {
-  console.log("cookie jwt = ", cookies.get("jwt"));
-  cookies.remove("jwt");
-  router.push({
-    name: "login",
+onBeforeMount(() => {
+  socket.on("force_logout", () => {
+    console.log("cookie jwt = ", cookies.get("jwt"));
+    cookies.remove("jwt");
+    router.push({
+      name: "login",
+    });
   });
+});
+
+onBeforeUnmount(() => {
+  socket.off("force_logout");
 });
 
 defineExpose(
