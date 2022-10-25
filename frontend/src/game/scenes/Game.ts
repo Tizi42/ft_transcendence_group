@@ -72,6 +72,7 @@ export default class GameScene extends Phaser.Scene {
 
     // listen for game end
     socket.on("end", (data: any) => {
+      this.before_change_scene();
       this.scene.start("GameOverScene", { winner: data.winner });
     });
   }
@@ -99,5 +100,10 @@ export default class GameScene extends Phaser.Scene {
         paddle_move_direction: dir,
       });
     }
+  }
+
+  before_change_scene() {
+    socket.off("game_update");
+    socket.off("end");
   }
 }
