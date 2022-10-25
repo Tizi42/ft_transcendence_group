@@ -5,6 +5,7 @@ import gameInfo from "../gameInfo";
 export default class GetReadyScene extends Phaser.Scene {
   readyButton: Phaser.GameObjects.Sprite;
   ready = false;
+  i = 0;
 
   constructor() {
     console.log("construct get ready scene");
@@ -12,7 +13,7 @@ export default class GetReadyScene extends Phaser.Scene {
   }
 
   init() {
-    console.log("init get ready scene");
+    console.log("init get ready scene", this.i++);
     this.ready = false;
     socket.emit("reset_score", {
       user_id: gameInfo.user_id,

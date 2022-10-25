@@ -18,8 +18,8 @@ const app = createApp(App);
 
 defineIonPhaser(window);
 
+app.use(store);
 app.use(router);
 app.use(VueAxios, axios);
 app.use(VueCookieNext);
-app.use(store);
 app.mount("#app");
