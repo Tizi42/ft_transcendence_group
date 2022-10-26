@@ -158,8 +158,8 @@ export class UsersService {
    return await this.usersRepository.find();
   }
   
-  findOne(id: number): Promise<User | null> {
-    return this.usersRepository.findOneBy({ id });
+  async findOne(id: number): Promise<User | null> {
+    return await this.usersRepository.findOneBy({ id });
   }
 
   // getName(id: number): Promise<String> {
