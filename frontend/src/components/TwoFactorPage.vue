@@ -40,13 +40,13 @@ function generateNewQrCode() {
     fetch(getUrlOf("api/auth/2fa/reGenerate"), {
       credentials: "include",
     })
-      .then((response) => {
+      .then((response: Response) => {
         return response.status;
       })
       .then((status) => {
         console.log(status);
       })
-      .catch((error) => {
+      .catch((error: Error) => {
         console.log("ERROR : ", error);
       });
   }
@@ -56,7 +56,7 @@ onBeforeMount(async () => {
   await fetch(getUrlOf("api/private"), {
     credentials: "include",
   })
-    .then((response) => {
+    .then((response: Response) => {
       let p1 = document.querySelector("p");
       p1?.remove();
       if (response.status !== 200) {
@@ -68,7 +68,7 @@ onBeforeMount(async () => {
       profile.value = user;
       firstEnablingTwoFactor.value = user.isFirstEnablingTwoFactor;
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       console.log("ERROR : ", error);
     });
 });

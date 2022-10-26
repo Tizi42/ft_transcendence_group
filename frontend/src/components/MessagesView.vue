@@ -67,7 +67,7 @@ function onSubmit() {
 function getMessages() {
   console.log("profile = ", 7);
   fetch(getUrlOf("api/chat/messages/" + 7))
-    .then((response) => response.json())
+    .then((response: Response) => response.json())
     .then((data) => {
       data.forEach((el: Chat) => {
         console.log("history = ", el);

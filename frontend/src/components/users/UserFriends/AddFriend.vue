@@ -66,7 +66,7 @@ function onClickSearch() {
   console.log(input.value);
   axios
     .get(getUrlOf("api/users/info/") + input.value)
-    .then((response) => {
+    .then((response: Response) => {
       console.log(response);
       if (response.data) {
         targetUser.value = response.data;
@@ -82,7 +82,7 @@ function onClickSearch() {
         input.value = "";
       }
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       console.log(error);
       inputBorder.value = "4px solid red";
       input.value = "";
@@ -99,17 +99,17 @@ async function onSend() {
       id1: user.id,
       id2: targetUser.value.id,
     })
-    .then(function (response) {
+    .then((response: Response) => {
       console.log("response = ", response);
       if (response.data != "") {
         pending.value = true;
         socket.emit("update_friend", data);
         socket.emit("request_friendship", data);
       } else {
-        alert("You've been blocked by this user !");
+        alert("Sorry, but you can't add this user as friend.");
       }
     })
-    .catch(function (error) {
+    .catch(function (error: Error) {
       console.log(error);
     });
 }
@@ -124,12 +124,12 @@ async function onCancel() {
       id1: user.id,
       id2: targetUser.value.id,
     })
-    .then(function (response) {
+    .then((response: Response) => {
       console.log(response);
       pending.value = false;
       socket.emit("update_friend", data);
     })
-    .catch(function (error) {
+    .catch(function (error: Error) {
       console.log(error);
     });
 }

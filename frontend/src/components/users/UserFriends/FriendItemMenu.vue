@@ -48,7 +48,7 @@ async function onRemoveFriend() {
       id1: user.id,
       id2: props.friend.id,
     })
-    .then((response) => {
+    .then((response: Response) => {
       user.doFetchFriends();
       socket.emit("update_friend", {
         from: props.friend.id,
@@ -56,7 +56,7 @@ async function onRemoveFriend() {
       });
       console.log(response);
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       console.log(error);
     });
   emit("hideMenu");
@@ -69,7 +69,7 @@ function onBlockUser() {
       id1: user.id,
       id2: props.friend.id,
     })
-    .then((response) => {
+    .then((response: Response) => {
       user.doFetchFriends();
       socket.emit("update_friend", {
         from: props.friend.id,
@@ -77,7 +77,7 @@ function onBlockUser() {
       });
       console.log(response);
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       console.log(error);
     });
   emit("hideMenu");
