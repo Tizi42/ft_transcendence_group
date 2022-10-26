@@ -68,7 +68,7 @@ onBeforeMount(() => {
   });
   socket.on("ban_error", () => {
     emit("hideAddChannel");
-    alert("You've been ban in this channel, you can't join it !");
+    alert("You've been ban in this channel for 2 hours, you can't join it !");
   });
 });
 

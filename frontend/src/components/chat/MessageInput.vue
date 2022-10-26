@@ -36,7 +36,7 @@
           v-else
           v-model="messageText"
           type="text"
-          placeholder="You've been muted for 5 minutes.."
+          placeholder="You've been muted for 1 minutes.."
           class="message-text"
           disabled
         />
