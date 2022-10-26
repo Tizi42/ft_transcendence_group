@@ -25,7 +25,7 @@ export class ChatService {
         newMessage.dest = await this.usersService.findOne(data.destId);
         newMessage.author = await this.usersService.findOne(data.authorId);
 
-        return await this.chatRepository.save(newMessage);;
+        return await this.chatRepository.save(newMessage);
     }
 
     async saveChannelMessage(data: ChannelMessage, author: User): Promise<Chat> {
