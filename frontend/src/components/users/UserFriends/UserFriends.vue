@@ -44,8 +44,9 @@ import FriendItem from "./FriendItem.vue";
 import FriendReqItem from "./FriendReqItem.vue";
 import AddFriend from "./AddFriend.vue";
 import MyModal from "./MyModal.vue";
+import { StoreGeneric } from "pinia";
 
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 const addWindow = ref(false);
 
 function onAdd() {
