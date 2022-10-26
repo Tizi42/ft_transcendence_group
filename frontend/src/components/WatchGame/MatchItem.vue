@@ -10,7 +10,7 @@
     </div>
     <div class="matchInfo">
       <div class="leftPlayer">
-        <img :src="getPictureUrl(props.room.playerL)" />
+        <img :src="pictureL" />
         <div class="name">
           {{ nameL }}
         </div>
@@ -20,7 +20,7 @@
         <div class="name">
           {{ nameR }}
         </div>
-        <img :src="getPictureUrl(props.room.playerR)" />
+        <img :src="pictureR" />
       </div>
     </div>
     <button @click="joinGame()" class="watchGame">
@@ -35,7 +35,13 @@ import router, { getUrlOf } from "@/router";
 import socket from "@/socket";
 import { useUserStore } from "@/stores/user";
 import { GameRoomNS } from "@backend/game/utils/gameNS";
-import { defineComponent, defineExpose, defineProps, onMounted } from "vue";
+import {
+  defineComponent,
+  defineExpose,
+  defineProps,
+  onBeforeMount,
+  onMounted,
+} from "vue";
 import { Ref, ref } from "vue";
 
 interface Props {
@@ -49,6 +55,8 @@ const props: Readonly<Props> = defineProps<Props>();
 const show: Ref<boolean> = ref(false);
 const nameL: Ref<string> = ref("");
 const nameR: Ref<string> = ref("");
+const pictureL: Ref<string> = ref("");
+const pictureR: Ref<string> = ref("");
 
 function onLoad() {
   show.value = true;
@@ -69,9 +77,22 @@ function joinGame() {
   });
 }
 
-function getPictureUrl(id: number): string {
-  return getUrlOf("api/users/avatar/") + id.toString();
-}
+// async function getPictureUrl(id: number): Promise<string> {
+//   const picture: Ref<string> = ref("");
+// await fetch(getUrlOf("api/users/picture/") + id, {
+//   credentials: "include",
+// })
+//   .then((response) => {
+//     return response.json();
+//   })
+//   .then((data) => {
+//     picture.value = data;
+//   })
+//   .catch((error) => {
+//     console.log("error :", error);
+//   });
+//   return picture.value;
+// }
 
 async function getName(id: number): Promise<string> {
   let response: Response;
@@ -85,6 +106,33 @@ async function getName(id: number): Promise<string> {
 onMounted(async () => {
   nameL.value = await getName(props.room.playerL);
   nameR.value = await getName(props.room.playerR);
+});
+
+onBeforeMount(async () => {
+  await fetch(getUrlOf("api/users/picture/") + props.room.playerR, {
+    credentials: "include",
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      pictureR.value = data;
+    })
+    .catch((error) => {
+      console.log("error :", error);
+    });
+  await fetch(getUrlOf("api/users/picture/") + props.room.playerL, {
+    credentials: "include",
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      pictureL.value = data;
+    })
+    .catch((error) => {
+      console.log("error :", error);
+    });
 });
 
 defineExpose(
