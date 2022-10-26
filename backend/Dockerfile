@@ -23,7 +23,7 @@ RUN     npm ci --only=production \
         && npm cache clean --force \
         && chown -R node /usr/src/app/* \
         && chmod -R 755 /usr/src/app/*
-ENV     NODE_ENV production
+ENV     NODE_ENV development
 USER    node
 CMD     [ "npm", "run", "build" ]
 
