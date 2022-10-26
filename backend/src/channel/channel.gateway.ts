@@ -121,7 +121,7 @@ export class ChannelGateway extends AppGateway {
         this.server.sockets.emit('channel_updated', data.channelId);
         socket.leave(channelName);
         const allChannelsButPrivate = await this.channelService.findAllChannelsAndMembersButPrivate();
-        this.server.sockets.to(socket.data.id.toString()).emit('receive_all_channels', allChannelsButPrivate);
+        this.server.sockets.emit('receive_all_channels', allChannelsButPrivate);
       }
     }
   }
@@ -204,7 +204,7 @@ export class ChannelGateway extends AppGateway {
       if (channelUpdated === "password_error") {
         this.server.sockets.to(socket.data.id.toString()).emit('password_error');
       } else if (channelUpdated != null) {
-        this.server.sockets.to(socket.data.id.toString()).emit('channel_updated', data.channel.id);
+        this.server.sockets.to(channelUpdated.name).emit('channel_updated', data.channel.id);
         const allChannelsButPrivate = await this.channelService.findAllChannelsAndMembersButPrivate();
         this.server.sockets.emit('receive_all_channels', allChannelsButPrivate);
       }

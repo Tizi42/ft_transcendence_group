@@ -8,4 +8,9 @@ RUN     npm ci
 
 COPY    . /usr/src/app/
 
-CMD     [ "npm", "run", "start:prod" ]
+<<<<<<< Updated upstream
+ENV     NODE_ENV development
+
+=======
+>>>>>>> Stashed changes
+CMD     [ "npm", "run", "start:dev" ]

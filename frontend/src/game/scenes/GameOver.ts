@@ -30,12 +30,11 @@ export default class GameOverScene extends Phaser.Scene {
         "restart_grey"
       );
       // listen for server instruction to restart watching a game
-      socket.on("game_start", () => {
+      socket.once("game_start", () => {
         console.log("Game start !!!");
         socket.emit("reset_score", {
           user_id: gameInfo.user_id,
         });
-        this.before_change_scene();
         if (gameInfo.mode === "magic") this.scene.start("MagicScene");
         else if (gameInfo.mode === "speed") this.scene.start("SpeedScene");
         else this.scene.start("GameScene");
@@ -70,9 +69,5 @@ export default class GameOverScene extends Phaser.Scene {
     this.button.on("pointerdown", () => {
       this.scene.start("GetReadyScene");
     });
-  }
-
-  before_change_scene() {
-    socket.off("game_start");
   }
 }
