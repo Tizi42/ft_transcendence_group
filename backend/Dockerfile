@@ -8,4 +8,6 @@ RUN     npm ci
 
 COPY    . /usr/src/app/
 
+ENV     NODE_ENV development
+
 CMD     [ "npm", "run", "start:prod" ]
