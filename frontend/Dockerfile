@@ -40,7 +40,7 @@ CMD     [ "npm", "run", "dev" ]
 #   target - prod - 42        #
 ###############################
 
-FROM    node:lts-alpine As prod42
+FROM    node:lts-alpine As production
 
 WORKDIR /usr/src/app
 
@@ -57,7 +57,7 @@ CMD     [ "npm", "run", "prod" ]
 #   target - prod - your pc   #
 ###############################
 
-FROM    node:lts-alpine As production
+FROM    node:lts-alpine As productionHome
 
 WORKDIR /usr/src/app
 

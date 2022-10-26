@@ -22,7 +22,6 @@ export default defineConfig({
   define: {
     'process.env': {}
   },
-  base: './',
   build: {
     assetsInlineLimit: 0,
     chunkSizeWarningLimit: 1500,

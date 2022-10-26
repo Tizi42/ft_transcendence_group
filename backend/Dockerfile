@@ -32,6 +32,9 @@ CMD     [ "npm", "run", "build" ]
 #######################
 
 FROM    node:lts-alpine As production
-COPY    --chown=node:node --from=development /usr/src/app/node_modules ./node_modules
-COPY    --chown=node:node --from=development /usr/src/app/dist ./dist
+WORKDIR /usr/src/app
+COPY    package*.json ./
+RUN     npm install
+COPY    . /usr/src/app/
+ENV     NODE_ENV development
 CMD     [ "npm", "run", "start:prod" ]
