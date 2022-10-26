@@ -37,6 +37,7 @@ interface Props {
   padding?: string;
   direction: string;
   canClick?: boolean;
+  zindex?: number;
 }
 
 const props: Readonly<Props> = withDefaults(defineProps<Props>(), {
@@ -49,6 +50,7 @@ const props: Readonly<Props> = withDefaults(defineProps<Props>(), {
   padding: "",
   background: "",
   canClick: true,
+  zindex: 980,
 });
 
 // variables
@@ -125,6 +127,7 @@ defineExpose(
   scrollbar-width: none;
   box-shadow: var(--main-shadow);
   background: v-bind(background);
+  z-index: v-bind(zindex);
 }
 
 .menuBox::-webkit-scrollbar {
