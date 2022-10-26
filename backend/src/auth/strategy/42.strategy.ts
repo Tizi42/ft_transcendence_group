@@ -3,6 +3,7 @@ import { PassportStrategy } from "@nestjs/passport";
 import { Profile } from "passport";
 import { Strategy } from "passport-42";
 import { VerifyCallback } from "passport-oauth2";
+import { User } from "src/users/users.entity";
 import { AuthService } from "../auth.service";
 
 @Injectable()
@@ -18,7 +19,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
         });
     }
 
-    async validate(accessToken: string, refreshToken: string, profile: Profile, done: VerifyCallback): Promise<any> {
+    async validate(profile: Profile, done: VerifyCallback) {
         const user = await this.authService.validateUser({
             username: profile.username,
             displayName: profile.displayName,

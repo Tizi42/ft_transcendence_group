@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Channel } from "../channel/entities/channel.entity";
 import { Chat } from "../chat/entities/chat.entity";
-import { Any, DataSource, In, Not, Repository } from "typeorm";
+import { Any, DataSource, In, Not, Repository, UpdateResult } from "typeorm";
 import { User } from "./users.entity";
 import { FriendshipDto } from "./utils/friendship.dto";
 import { UserDetails } from "./utils/types";
@@ -38,11 +38,11 @@ export class UsersService {
   **    UPDATE
   */
 
-  async updateUserAvatar(id: number, filename: string, pictureUrl: string): Promise<any> {
+  async updateUserAvatar(id: number, filename: string, pictureUrl: string): Promise<UpdateResult> {
     return await this.usersRepository.update(id, {picture: pictureUrl, pictureLocalFilename: filename});
   }
 
-  async displayNameAlreadyExist(newName: string) {
+  async displayNameAlreadyExist(newName: string): Promise<boolean> {
     const allUsers = await this.findAll();
 
     for (let i = 0; i < allUsers.length; i++) {
@@ -53,14 +53,14 @@ export class UsersService {
     return false;
   }
 
-  async updateUserDisplayName(id: number, name: string): Promise<any> {
+  async updateUserDisplayName(id: number, name: string) {
     if (await this.displayNameAlreadyExist(name)) {
       return { msg: "bad_name" };
     }
     return await this.usersRepository.update(id, {displayName: name});
   }
 
-  async updateUserEmail(id: number, email: string): Promise<any> {
+  async updateUserEmail(id: number, email: string) {
     return await this.usersRepository.update(id, {email: email});
   }
 
@@ -186,7 +186,7 @@ export class UsersService {
   **    FRIENDS
   */
 
-  async sendFriendRequest(param: FriendshipDto) {
+  async sendFriendRequest(param: FriendshipDto): Promise<User | null> {
     let askingForFriend = await this.usersRepository.findOneBy({ id: param.id1 });
     let target = await this.usersRepository.findOneBy({ id: param.id2 });
 
@@ -217,7 +217,7 @@ export class UsersService {
     return askingForFriend;
   }
 
-  async removeFriendRequest(param: FriendshipDto) {
+  async removeFriendRequest(param: FriendshipDto): Promise<User | null> {
     let askingForFriend = await this.usersRepository.findOneBy({ id: param.id1 });
     let target = await this.usersRepository.findOneBy({ id: param.id2 });
 
@@ -242,7 +242,7 @@ export class UsersService {
     return target;
   }
 
-  async acceptFriendRequest(param: FriendshipDto) {
+  async acceptFriendRequest(param: FriendshipDto): Promise<User | null> {
     let askingForFriend = await this.usersRepository.findOneBy({ id: param.id1 });
     let target = await this.usersRepository.findOneBy({ id: param.id2 });
 
@@ -283,7 +283,7 @@ export class UsersService {
     return target;
   }
 
-  async removeFriendship(param: FriendshipDto) {
+  async removeFriendship(param: FriendshipDto): Promise<User | null> {
     let removingFriend: User | null = await this.usersRepository.findOneBy({ id: param.id1 });
     let target: User | null = await this.usersRepository.findOneBy({ id: param.id2 });
 
@@ -372,7 +372,7 @@ export class UsersService {
   **    BLOCKED
   */
 
-  async blockRelationship(param: FriendshipDto) {
+  async blockRelationship(param: FriendshipDto): Promise<User | null> {
     let wantToBlock = await this.usersRepository.findOneBy({ id: param.id1 });
     let target = await this.usersRepository.findOneBy({ id: param.id2 });
 
@@ -414,7 +414,7 @@ export class UsersService {
     return wantToBlock;
   }
 
-  async unblockRelationship(param: FriendshipDto) {
+  async unblockRelationship(param: FriendshipDto): Promise<User | null> {
     let wantToUnblock = await this.usersRepository.findOneBy({ id: param.id1 });
     let target = await this.usersRepository.findOneBy({ id: param.id2 });
 
@@ -476,31 +476,31 @@ export class UsersService {
   **    AUTHENTICATION
   */
 
-  async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
+  async setTwoFactorAuthenticationSecret(secret: string, userId: number): Promise<UpdateResult> {
       return this.usersRepository.update(userId, {
           twoFactorAuthenticationSecret: secret
       });
   }
 
-  async turnOnTwoFactorAuthentication(userId: number) {
+  async turnOnTwoFactorAuthentication(userId: number): Promise<UpdateResult> {
       return this.usersRepository.update(userId, {
           isTwoFactorAuthenticationEnabled: true,
       });
   }
 
-  async turnOffTwoFactorAuthentication(userId: number) {
+  async turnOffTwoFactorAuthentication(userId: number): Promise<UpdateResult> {
       return this.usersRepository.update(userId, {
           isTwoFactorAuthenticationEnabled: false,
       });
   }
 
-  async updateIsFirstEnablingTwoFactor(userId: number, value: boolean) {
+  async updateIsFirstEnablingTwoFactor(userId: number, value: boolean): Promise<UpdateResult> {
       return this.usersRepository.update(userId, {
           isFirstEnablingTwoFactor: value,
       });
   }
   
-  async updateUserStatus(userId: number, value: string) {
+  async updateUserStatus(userId: number, value: string): Promise<UpdateResult> {
     console.log("update user status: ", userId, value);
 
     // Make sure offline user won't get online status on shutting down game room
@@ -618,32 +618,10 @@ export class UsersService {
   **    CHANGE USER SETTINGS
   */
 
-  async changeSettingNotification(id: number, value: boolean) {
+  async changeSettingNotification(id: number, value: boolean): Promise<User> {
     let user = await this.usersRepository.findOneBy({ id: id });
     if (user == null) return ;
     user.allowNotifications = value;
     await this.usersRepository.save(user);
   }
-
-  /*
-  **    OTHER
-  */
-  
-  // async downloadImage(fromUrl: string, toLocation: string) {
-  //   const writer = fs.createWriteStream(toLocation);
-  
-  //   const response = await this.httpService.axiosRef({
-  //       url: fromUrl,
-  //       method: 'GET',
-  //       responseType: 'stream',
-  //   });
-  
-  //   response.data.pipe(writer);
-  
-  //   return new Promise((resolve, reject) => {
-  //       writer.on('finish', resolve);
-  //       writer.on('error', reject);
-  //   });
-  // }
-
 }

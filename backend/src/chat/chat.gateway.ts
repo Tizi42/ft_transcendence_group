@@ -20,9 +20,9 @@ export class ChatGateway extends AppGateway {
     super(chatService, usersService, channelService, battlesService);
   }
 
-  async handleConnection(socket: Socket) {}
+  async handleConnection() {}
 
-  async handleDisconnect(client: any) {}
+  async handleDisconnect() {}
 
   @SubscribeMessage('send_message')
   async handleMessage(@MessageBody() data: any): Promise<Chat> {

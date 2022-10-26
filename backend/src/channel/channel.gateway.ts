@@ -6,7 +6,7 @@ import { AppGateway } from 'src/gateway';
 import { UsersService } from 'src/users/users.service';
 import { BattlesService } from '../battles/battles.service';
 import { smallDataChannel } from './utils/smallDataChannel.dto';
-import { banMember, leavingChannel, makingAdmin, muteMember } from './utils/types';
+import { banMember, createChannel, joinReq, leavingChannel, makingAdmin, muteMember } from './utils/types';
 import { UpdatePasswordDto } from './utils/UpdatePassword.dto';
 import { UpdatePrivacyDto } from './utils/updatePrivacy.dto';
 
@@ -21,9 +21,9 @@ export class ChannelGateway extends AppGateway {
     super(chatService, usersService, channelService, battlesService);
   }
 
-  async handleConnection(socket: Socket) {}
+  async handleConnection() {}
 
-  async handleDisconnect(client: any) {}
+  async handleDisconnect() {}
 
   @SubscribeMessage('create_channel')
   async handleCreateChannel(
@@ -83,7 +83,7 @@ export class ChannelGateway extends AppGateway {
 
   @SubscribeMessage('join_channel')
   async handleJoinChannel(
-    @MessageBody() data: any,
+    @MessageBody() data: createChannel,
     @ConnectedSocket() socket: Socket,
   ){
     const user = await this.chatService.getUserFromSocket(socket);
@@ -233,14 +233,14 @@ export class ChannelGateway extends AppGateway {
 
   @SubscribeMessage('update_join_request')
   async handleJoinRequest(
-    @MessageBody() data: any,
+    @MessageBody() data: joinReq,
   ) {
-    this.server.sockets.to(data.to).emit('update_channel_invite', data);
+    this.server.sockets.to(data.to.toString()).emit('update_channel_invite', data);
   }
 
   @SubscribeMessage('accept_join_request')
   async handleAcceptingRequest(
-    @MessageBody() data: any,
+    @MessageBody() data: joinReq,
     @ConnectedSocket() socket: Socket,
   ) {
     const user = await this.chatService.getUserFromSocket(socket);

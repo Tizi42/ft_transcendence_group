@@ -27,3 +27,13 @@ export type updatePassword = {
     channel: Channel;
     password?: string;
 }
+
+export type createChannel = {
+    channelId: number,
+    password: string,
+}
+
+export type joinReq = {
+    from: number,
+    to: number,
+}
