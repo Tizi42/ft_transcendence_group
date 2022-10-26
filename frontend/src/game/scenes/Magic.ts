@@ -260,30 +260,32 @@ export default class MagicScene extends Phaser.Scene {
       if (this.Rpaddle_alpha >= 0) this.paddle_right.alpha = this.Rpaddle_alpha;
     }
 
-    if (this.keyUp.isDown) {
-      this.update_paddle(-1);
-    } else if (this.keyDown.isDown) {
-      this.update_paddle(1);
-    }
-    if (this.keyLeft.isDown || this.keyRight.isDown) {
-      if (this.can_switch) {
-        this.can_switch = 0;
-        socket.emit("switch_spell", {
-          user_id: gameInfo.user_id,
-          room_name: gameInfo.room_name,
-        });
+    if (gameInfo.user_role !== "watch") {
+      if (this.keyUp.isDown) {
+        this.update_paddle(-1);
+      } else if (this.keyDown.isDown) {
+        this.update_paddle(1);
       }
-    } else this.can_switch = 1;
+      if (this.keyLeft.isDown || this.keyRight.isDown) {
+        if (this.can_switch) {
+          this.can_switch = 0;
+          socket.emit("switch_spell", {
+            user_id: gameInfo.user_id,
+            room_name: gameInfo.room_name,
+          });
+        }
+      } else this.can_switch = 1;
 
-    if (this.keyShift.isDown) {
-      if (this.can_cast) {
-        this.can_cast = 0;
-        socket.emit("launch_spell", {
-          user_id: gameInfo.user_id,
-          room_name: gameInfo.room_name,
-        });
-      }
-    } else this.can_cast = 1;
+      if (this.keyShift.isDown) {
+        if (this.can_cast) {
+          this.can_cast = 0;
+          socket.emit("launch_spell", {
+            user_id: gameInfo.user_id,
+            room_name: gameInfo.room_name,
+          });
+        }
+      } else this.can_cast = 1;
+    }
   }
 
   create_paddle(x: number, y: number) {

@@ -33,6 +33,7 @@ import { getUrlOf } from "@/router";
 import { User } from "@backend/users/users.entity";
 import LeaderBoard from "@/components/Leaderboard/Leaderboard.vue";
 import { useUserStore } from "@/stores/user";
+import { StoreGeneric } from "pinia";
 
 const user: StoreGeneric = useUserStore();
 const dataReady: Ref<Array<boolean>> = ref([false, false]);

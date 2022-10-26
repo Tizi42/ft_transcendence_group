@@ -103,7 +103,7 @@ export class GameRoom {
 
   reverse_duration = 5000;
   L_reverse_effect = 1;
-  R_reverse_effect = 1
+  R_reverse_effect = 1;
   
   L_speed_ball = 0;
   R_speed_ball = 0;
