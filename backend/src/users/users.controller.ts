@@ -68,16 +68,8 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Get('picture/:id')
-  async getUrlPicture(
-    @Param('id') id: number,
-    @Req() req: RequestWithUser,
-    @Res() res: Response
-  ) {
-    const user = await this.usersService.findOne(id);
-    if (!user) {
-      return;
-    }
-    return user.picture;
+  getUrlPicture(@Param('id') id: number): Promise<String> {
+    return this.usersService.getPicture(id);
   }
 
   @UseGuards(JwtAuthGuard)

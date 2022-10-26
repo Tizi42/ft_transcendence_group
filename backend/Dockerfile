@@ -10,4 +10,4 @@ COPY    . /usr/src/app/
 
 ENV     NODE_ENV development
 
-CMD     [ "npm", "run", "start:dev" ]
+CMD     [ "npm", "run", "start:prod" ]
