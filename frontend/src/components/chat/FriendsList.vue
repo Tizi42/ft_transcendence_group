@@ -35,7 +35,6 @@ import {
   ref,
   Ref,
   defineEmits,
-  defineProps,
   defineExpose,
   onBeforeUnmount,
 } from "vue";
