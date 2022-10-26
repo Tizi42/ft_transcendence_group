@@ -73,7 +73,6 @@ const emojiDateR: Ref<Date> = ref(new Date());
 const dataReady: Ref<boolean> = ref(false);
 const readyStatus: Ref<Array<boolean>> = ref([false, false]);
 const scores: Ref<Array<number>> = ref([0, 0]);
-const emojisURL: Array<URL> = [];
 const force_quit = ref(false);
 const user_role = ref("");
 const playerLMin: Ref<UserMinimal> = ref(createUserMinimal(null));
@@ -82,6 +81,45 @@ const modeIcons: Array<URL> = [
   new URL("../../assets/icons/gameMode/modeNormal.svg", import.meta.url),
   new URL("../../assets/icons/gameMode/modeMagic.svg", import.meta.url),
   new URL("../../assets/icons/gameMode/modeSpeed.svg", import.meta.url),
+];
+const emojisURL: Array<URL> = [
+  new URL("../../assets/icons/emojis/1.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/2.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/3.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/4.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/5.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/6.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/7.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/8.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/9.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/10.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/11.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/12.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/13.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/14.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/15.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/16.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/17.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/18.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/19.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/20.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/21.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/22.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/23.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/24.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/25.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/26.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/27.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/28.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/29.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/30.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/31.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/32.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/33.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/34.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/35.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/36.svg", import.meta.url),
+  new URL("../../assets/icons/emojis/37.svg", import.meta.url),
 ];
 const modeIcon: string = modeIcons[getModeIndex(props.mode)].toString();
 
@@ -111,19 +149,6 @@ function createUserMinimal(user: User | null): UserMinimal {
   newUser.displayName = user.displayName;
   newUser.picture = user.picture;
   return newUser;
-}
-
-function loadEmojis() {
-  for (var i = 1; i < 38; i++) {
-    if (i == 0)
-      emojisURL.push(
-        new URL("../../assets/gameMode/modeNormal.svg", import.meta.url)
-      );
-    else
-      emojisURL.push(
-        new URL("../../assets/icons/emojis/" + i + ".svg", import.meta.url)
-      );
-  }
 }
 
 function updateMessage(msg: messageInGame) {
@@ -198,7 +223,6 @@ onMounted(() => {
 
 onBeforeMount(async () => {
   await getPlayersInfo();
-  loadEmojis();
   socket.on("receive_message_ingame", async (data: messageInGame) => {
     updateMessage(data);
   });
