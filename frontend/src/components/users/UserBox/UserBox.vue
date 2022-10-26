@@ -108,10 +108,9 @@ const emit = defineEmits(["closeUserBox", "statusOn", "statusOff"]);
 
 function onSend() {
   const data = {
-    from: user.id,
-    to: props.target.id,
+    from: user.id.toString(),
+    to: props.target.id.toString(),
   };
-  socket.emit("request_friendship", data);
   axios
     .post(getUrlOf("api/users/friends/add"), {
       id1: user.id,
@@ -119,10 +118,8 @@ function onSend() {
     })
     .then(function () {
       pending.value = true;
-      socket.emit("update_friend", {
-        from: props.target.id.toString(),
-        to: user.id.toString(),
-      });
+      socket.emit("update_friend", data);
+      socket.emit("request_friendship", data);
     })
     .catch(function (error: Error) {
       console.log(error);
@@ -130,6 +127,10 @@ function onSend() {
 }
 
 function onCancel() {
+  const data = {
+    from: user.id.toString(),
+    to: props.target.id.toString(),
+  };
   axios
     .post(getUrlOf("api/users/friends/ignore"), {
       id1: user.id,
@@ -137,10 +138,8 @@ function onCancel() {
     })
     .then(function () {
       pending.value = false;
-      socket.emit("update_friend", {
-        from: props.target.id.toString(),
-        to: user.id.toString(),
-      });
+      socket.emit("update_friend", data);
+      socket.emit("request_friendship", data);
     })
     .catch(function (error: Error) {
       console.log(error);
