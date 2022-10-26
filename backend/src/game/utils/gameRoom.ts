@@ -94,6 +94,7 @@ export class GameRoom {
   spell2_L = 0;
   spell1_R = 0;
   spell2_R = 0;
+  spell_timeout: ReturnType<typeof setTimeout>[] = [];
   spell_interval: ReturnType<typeof setInterval>;
   spell_spawn_frequencey = 5000;
 
@@ -102,7 +103,7 @@ export class GameRoom {
 
   reverse_duration = 5000;
   L_reverse_effect = 1;
-  R_reverse_effect = 1;
+  R_reverse_effect = 1
   
   L_speed_ball = 0;
   R_speed_ball = 0;
@@ -245,43 +246,43 @@ export class GameRoom {
 
     if (effect == 1) {
       this.paddle[side as keyof paddleObject].height_half += this.paddle_resize;
-      setTimeout(() => {
+      this.spell_timeout.push(setTimeout(() => {
         this.paddle[side as keyof paddleObject].height_half -= this.paddle_resize;
         this.server.to(this.room_name).emit("update_paddle_size", {
           left: this.paddle["left" as keyof paddleObject].height_half,
           right: this.paddle["right" as keyof paddleObject].height_half,
         });
-      }, this.paddle_sized_duration);
+      }, this.paddle_sized_duration));
     } else if (effect == 2 && this.paddle[target as keyof paddleObject].height_half > this.paddle_resize) {
       this.paddle[target as keyof paddleObject].height_half -= this.paddle_resize;
-      setTimeout(() => {
+      this.spell_timeout.push(setTimeout(() => {
         this.paddle[target as keyof paddleObject].height_half += this.paddle_resize;
         this.server.to(this.room_name).emit("update_paddle_size", {
           left: this.paddle["left" as keyof paddleObject].height_half,
           right: this.paddle["right" as keyof paddleObject].height_half,
         });
-      }, this.paddle_sized_duration);
+      }, this.paddle_sized_duration));
     } else if (effect == 3) {
       if (side == "left") this.L_speed_ball += 1;
       else this.R_speed_ball += 1;
     } else if (effect == 4) {
       if (target == "left") this.L_reverse_effect = -1;
       else if (target == "right") this.R_reverse_effect = -1;
-      setTimeout(() => {
+      this.spell_timeout.push(setTimeout(() => {
         if (target == "left" && this.L_reverse_effect == -1) this.L_reverse_effect = 1;
         else if (target == "right" && this.R_reverse_effect == -1) this.R_reverse_effect = 1;
-      }, this.reverse_duration);
+      }, this.reverse_duration));
     } else if (effect == 5) {
       if (side == "left") this.L_shield = 1;
       else this.R_shield = 1;
     } else if (effect == 6) {
-      setTimeout(() => {
+        this.spell_timeout.push(setTimeout(() => {
         this.server.to(this.room_name).emit("apply_effect", {
           launcher: side,
           target: target,
           effect: -6,
         });
-      }, this.eye_effect_duration);
+      }, this.eye_effect_duration));
     }
 
     if (effect > 2) {
@@ -450,6 +451,12 @@ export class GameRoom {
     this.game_status = "ended";
     if (this.mode === "speed")
       clearInterval(this.interval);
+    if (this.mode === "magic") {
+      for (let id of this.spell_timeout) {
+        clearTimeout(id);
+      }
+    }
+
     this.winner = this.score_left > this.score_right ? this.playerL : this.playerR;
     let winner_side = this.score_left > this.score_right ? "left" : "right";
     if (this.score_left === this.score_right) {
@@ -478,6 +485,17 @@ export class GameRoom {
     this.winner = -1;
     this.paddle.left.y = this.height * 0.5;
     this.paddle.right.y = this.height * 0.5;
+    if (this.mode == "magic") {
+        this.paddle["left"].height_half = 40;
+        this.paddle["right"].height_half = 40;
+        this.L_reverse_effect = 1;
+        this.R_reverse_effect = 1;
+        this.L_speed_ball = 0;
+        this.R_speed_ball = 0;
+        this.previous_ball_speed = 0;
+        this.L_shield = 0;
+        this.R_shield = 0;
+    }
   }
 
   // if quit game in the middle
