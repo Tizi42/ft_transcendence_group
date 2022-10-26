@@ -86,13 +86,13 @@ const handleSelectedNav = async (event: string) => {
     await fetch(getUrlOf("api/channel/"), {
       credentials: "include",
     })
-      .then((response) => {
+      .then((response: Response) => {
         return response.json();
       })
       .then((data) => {
         allMyChannels.value = data;
       })
-      .catch((error) => {
+      .catch((error: Error) => {
         console.log("error :", error);
       });
   }
@@ -102,13 +102,13 @@ const handleSelectedReceiver = async (event: number) => {
   receiver.value = event;
   if (receiver.value != -1) {
     await fetch(getUrlOf("api/users/info/" + receiver.value))
-      .then((response) => {
+      .then((response: Response) => {
         return response.json();
       })
       .then((data) => {
         receiverProfile.value = data;
       })
-      .catch((error) => {
+      .catch((error: Error) => {
         console.log("ERROR : ", error);
       });
   } else {
@@ -136,7 +136,7 @@ socket.on("channel_updated", async () => {
   await fetch(getUrlOf("api/channel/"), {
     credentials: "include",
   })
-    .then((response) => {
+    .then((response: Response) => {
       return response.json();
     })
     .then((data) => {
@@ -150,7 +150,7 @@ socket.on("channel_updated", async () => {
         }
       }
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       console.log("error :", error);
     });
   console.log("my channels = ", allMyChannels.value);
@@ -172,13 +172,13 @@ socket.on("banned_user", async (userToBanId: number, channelId: number) => {
     await fetch(getUrlOf("api/channel/"), {
       credentials: "include",
     })
-      .then((response) => {
+      .then((response: Response) => {
         return response.json();
       })
       .then((data) => {
         allMyChannels.value = data;
       })
-      .catch((error) => {
+      .catch((error: Error) => {
         console.log("error :", error);
       });
     for (let i = 0; i < allMyChannels.value.length; i++) {

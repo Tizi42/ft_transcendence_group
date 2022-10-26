@@ -37,9 +37,10 @@
         class="hided_channel"
         src="@/assets/icons/hide_channel.svg"
       />
-      <div v-if="user.pendingMsgChannel.includes(channel.id)" class="red-point">
-        x
-      </div>
+      <div
+        v-if="user.pendingMsgChannel.includes(channel.id)"
+        class="redNotify"
+      />
     </li>
   </ul>
   <Teleport to="body">
@@ -99,7 +100,7 @@ watch(
     await fetch(getUrlOf("api/channel/getAll/privates"), {
       credentials: "include",
     })
-      .then((response) => {
+      .then((response: Response) => {
         return response.json();
       })
       .then((data) => {
@@ -107,7 +108,7 @@ watch(
         console.log("data =", data);
         allMyInvite.value = data;
       })
-      .catch((error) => {
+      .catch((error: Error) => {
         console.log("error :", error);
       });
   }
@@ -125,7 +126,7 @@ const getChannelMessages = async (channelId: number) => {
   await fetch(getUrlOf("api/chat/channelMessages/" + channelId), {
     credentials: "include",
   })
-    .then((response) => {
+    .then((response: Response) => {
       return response.json();
     })
     .then((data) => {

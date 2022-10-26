@@ -126,3 +126,23 @@ body {
   left: 102px;
   top: 200px;
 }
+
+.redNotify {
+  display: block;
+  position: absolute;
+  height: 15px;
+  width: 15px;
+  background-image: url("../icons/circle.svg");
+  background-size: 15px 15px;
+  transform: translateX(-5px);
+}
+
+.redNotifyGlobal {
+  display: block;
+  position: absolute;
+  height: 15px;
+  width: 15px;
+  background-image: url("../icons/circle.svg");
+  background-size: 15px 15px;
+  transform: translateY(-30px) translateX(7vw);
+}
