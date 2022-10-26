@@ -14,11 +14,13 @@ export class ChatController {
     private userService: UsersService,
   ) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   saveMessage(@Body() body: messageInfos): Promise<Chat> {
     return this.chatService.saveMessage(body);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async chat(@Res() res: Response) {
     const boxes = await this.chatService.getMessages();
@@ -45,6 +47,7 @@ export class ChatController {
     return res.json(await this.chatService.getChannelMessagesById(id, req.user.id, req.user.blocked));
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('dest')
   async dest(@Res() res: Response) {
     const dest = await this.chatService.getAllDest();

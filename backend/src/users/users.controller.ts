@@ -26,6 +26,7 @@ export const storage = {
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   getAll(): Promise<User[]>  {
     return this.usersService.findAll();
@@ -40,6 +41,7 @@ export class UsersController {
     ); //`${this.SERVER_URL}${file.path}`
   }
 
+  // @UseGuards(JwtAuthGuard)
   @Get('avatar/:id')
   async getAvatar(@Param('id') id: number, @Res() res: Response) {
     let user = await this.usersService.findOne(id);
@@ -48,6 +50,7 @@ export class UsersController {
     return res.sendFile(user.pictureLocalFilename, { root: 'src/uploads/avatar'});
   }
 
+  // @UseGuards(JwtAuthGuard)
   @Get('avatar')
   async getMyAvatar(@Req() req: RequestWithUser, @Res() res: Response) {
     console.log(req.user);
@@ -57,9 +60,24 @@ export class UsersController {
     return res.sendFile(user.pictureLocalFilename, { root: 'src/uploads/avatar'});
   }
 
+  // @UseGuards(JwtAuthGuard)
   @Get('avatar_default')
   getDefaultAvatar(@Res() res: Response) {
     return res.sendFile("default.png", { root: 'src/uploads/avatar'});
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('picture/:id')
+  async getUrlPicture(
+    @Param('id') id: number,
+    @Req() req: RequestWithUser,
+    @Res() res: Response
+  ) {
+    const user = await this.usersService.findOne(id);
+    if (!user) {
+      return;
+    }
+    return user.picture;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -71,21 +89,25 @@ export class UsersController {
     return await this.usersService.updateUserDisplayName(req.user.id, setDisplayNameDto.displayname);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('info/:id')
   getOne(@Param('id') id: number): Promise<User> {
     return this.usersService.findOne(id);
   };
 
+  @UseGuards(JwtAuthGuard)
   @Get('name/:id')
   getName(@Param('id') id: number): Promise<String> {
     return this.usersService.getDisplayname(id);
   };
 
+  @UseGuards(JwtAuthGuard)
   @Get('username/:id')
   getUsername(@Param('id') id: number): Promise<String> {
     return this.usersService.getUsername(id);
   };
 
+  @UseGuards(JwtAuthGuard)
   @Post('/add')
   create(@Body() user: UserDto) {
     return this.usersService.createNewUser(user);
@@ -95,41 +117,49 @@ export class UsersController {
   **    FRIENDS
   */
 
+  @UseGuards(JwtAuthGuard)
   @Post('/friends/add')
   async addFriend(@Body() friendship: FriendshipDto) {
     return await this.usersService.sendFriendRequest(friendship);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('/friends/accept')
   async acceptFriend(@Body() friendship: FriendshipDto) {
     return await this.usersService.acceptFriendRequest(friendship);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('/friends/ignore')
   async ignoreFriendRequest(@Body() friendship: FriendshipDto) {
     return await this.usersService.removeFriendRequest(friendship);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('/friends/rm')
   async removeFriend(@Body() friendship: FriendshipDto) {
     return await this.usersService.removeFriendship(friendship);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('/friends/:id')
   getFriends(@Param('id') id: number) {
 	  return this.usersService.showFriendWith(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('/friends/to/:id')
   getFriendPendingReqTo(@Param('id') id: number) {
 	  return this.usersService.showFriendPendingReqTo(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('/friends/from/:id')
   async getFriendPendingReqFrom(@Param('id') id: number) {
 	  return await this.usersService.showFriendPendingReqFrom(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('/friendship')
   async friendLevelWith(@Query('target') target: number,
     @Query('mine') id: number): Promise<number> {
@@ -140,21 +170,25 @@ export class UsersController {
   **    BLOCKED
   */
 
+  @UseGuards(JwtAuthGuard)
   @Post('/block/add')
   async block(@Body() friendship: FriendshipDto) {
     return await this.usersService.blockRelationship(friendship);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('/block/rm')
   async unblock(@Body() friendship: FriendshipDto) {
     return await this.usersService.unblockRelationship(friendship);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('/block/:id')
   getBlocked(@Param('id') id: number) {
 	  return this.usersService.getBlocked(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('/blockby/:id')
   getBlockedby(@Param('id') id: number) {
 	  return this.usersService.getBlockedBy(id);
@@ -164,6 +198,7 @@ export class UsersController {
   **    LEADERBOARD
   */
 
+  @UseGuards(JwtAuthGuard)
   @Get('/leaderboard')
   getLeaderboard(@Query('order') order: number,
     @Query('global') global: boolean,
