@@ -23,6 +23,7 @@
         :room_name="room_name"
         :emojisURL="emojisURL"
         :message="messageW"
+        :mode="mode"
         @changeSound="changeSound"
         @quitGame="quitGame"
         @hideChat="hideChat"

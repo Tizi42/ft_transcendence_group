@@ -72,14 +72,39 @@
         <button class="settingsBtn help" />
       </template>
       <template #choices>
-        <div class="rulesTxt">
+        <div v-if="mode === 'magic'" class="rulesTxt">
           Use
           <img src="../../assets/icons/upArrow.svg" class="inlineImg" />
           and
           <img src="../../assets/icons/downArrow.svg" class="inlineImg" />
           to move your paddle.<br /><br />
-          Points are earned when one fails to<br />
-          return the ball to the other.<br /><br />
+          Press Left and Right to switch spells<br /><br />
+          Press Shift to send the one spell that's on top<br /><br />
+          Points are earned when your opponent<br />
+          fails to catch the ball<br /><br />
+          You need 11 points to win.<br /><br />
+          GL HF!
+        </div>
+        <div v-if="mode === 'speed'" class="rulesTxt">
+          Use
+          <img src="../../assets/icons/upArrow.svg" class="inlineImg" />
+          and
+          <img src="../../assets/icons/downArrow.svg" class="inlineImg" />
+          to move your paddle.<br /><br />
+          Points are earned when your opponent<br />
+          fails to catch the ball<br /><br />
+          The game will end in 1 min 30<br /><br />
+          You need to miss less balls to win.<br /><br />
+          GL HF!
+        </div>
+        <div v-else class="rulesTxt">
+          Use
+          <img src="../../assets/icons/upArrow.svg" class="inlineImg" />
+          and
+          <img src="../../assets/icons/downArrow.svg" class="inlineImg" />
+          to move your paddle.<br /><br />
+          Points are earned when your opponent<br />
+          fails to catch the ball<br /><br />
           You need 11 points to win.<br /><br />
           GL HF!
         </div>
@@ -132,6 +157,7 @@ interface Props {
   room_name: string;
   message: messageInGame | null;
   emojisURL: Array<URL>;
+  mode: string;
 }
 
 const props: Readonly<Props> = defineProps<Props>();
