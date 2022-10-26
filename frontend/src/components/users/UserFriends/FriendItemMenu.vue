@@ -44,10 +44,16 @@ function onInvitePlay() {
 async function onRemoveFriend() {
   console.log("remove ", props.friend.id);
   axios
-    .post(getUrlOf("api/users/friends/rm/"), {
-      id1: user.id,
-      id2: props.friend.id,
-    })
+    .post(
+      getUrlOf("api/users/friends/rm/"),
+      {
+        id1: user.id,
+        id2: props.friend.id,
+      },
+      {
+        withCredentials: true,
+      }
+    )
     .then((response: Response) => {
       user.doFetchFriends();
       socket.emit("update_friend", {
@@ -65,10 +71,16 @@ async function onRemoveFriend() {
 function onBlockUser() {
   console.log("block ", props.friend.id);
   axios
-    .post(getUrlOf("api/users/block/add/"), {
-      id1: user.id,
-      id2: props.friend.id,
-    })
+    .post(
+      getUrlOf("api/users/block/add/"),
+      {
+        id1: user.id,
+        id2: props.friend.id,
+      },
+      {
+        withCredentials: true,
+      }
+    )
     .then((response: Response) => {
       user.doFetchFriends();
       socket.emit("update_friend", {

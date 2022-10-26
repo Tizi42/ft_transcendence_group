@@ -128,10 +128,16 @@ function onSend() {
     to: props.target.id.toString(),
   };
   axios
-    .post(getUrlOf("api/users/friends/add"), {
-      id1: user.id,
-      id2: props.target.id,
-    })
+    .post(
+      getUrlOf("api/users/friends/add"),
+      {
+        id1: user.id,
+        id2: props.target.id,
+      },
+      {
+        withCredentials: true,
+      }
+    )
     .then(function () {
       pending.value = true;
       socket.emit("update_friend", data);
@@ -148,10 +154,16 @@ function onCancel() {
     to: props.target.id.toString(),
   };
   axios
-    .post(getUrlOf("api/users/friends/ignore"), {
-      id1: user.id,
-      id2: props.target.id,
-    })
+    .post(
+      getUrlOf("api/users/friends/ignore"),
+      {
+        id1: user.id,
+        id2: props.target.id,
+      },
+      {
+        withCredentials: true,
+      }
+    )
     .then(function () {
       pending.value = false;
       socket.emit("update_friend", data);

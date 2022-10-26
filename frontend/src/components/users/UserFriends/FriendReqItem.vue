@@ -43,10 +43,16 @@ async function onHandleFriendRequest(action: string) {
     to: props.sender.id.toString(),
   };
   axios
-    .post(getUrlOf("api/users/friends/") + action, {
-      id1: props.sender.id,
-      id2: user.id,
-    })
+    .post(
+      getUrlOf("api/users/friends/") + action,
+      {
+        id1: props.sender.id,
+        id2: user.id,
+      },
+      {
+        withCredentials: true,
+      }
+    )
     .then((response: Response) => {
       socket.emit("update_friend", data);
       user.doFetchPending();

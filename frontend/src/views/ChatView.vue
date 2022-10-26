@@ -102,7 +102,9 @@ const handleSelectedNav = async (event: string) => {
 const handleSelectedReceiver = async (event: number) => {
   receiver.value = event;
   if (receiver.value != -1) {
-    await fetch(getUrlOf("api/users/info/" + receiver.value))
+    await fetch(getUrlOf("api/users/info/" + receiver.value), {
+      credentials: "include",
+    })
       .then((response: Response) => {
         return response.json();
       })

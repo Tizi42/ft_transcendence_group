@@ -65,7 +65,9 @@ function onClickSearch() {
 
   console.log(input.value);
   axios
-    .get(getUrlOf("api/users/info/") + input.value)
+    .get(getUrlOf("api/users/info/") + input.value, {
+      withCredentials: true,
+    })
     .then((response: Response) => {
       console.log(response);
       if (response.data) {
@@ -95,10 +97,16 @@ async function onSend() {
     to: targetUser.value.id.toString(),
   };
   axios
-    .post(getUrlOf("api/users/friends/add"), {
-      id1: user.id,
-      id2: targetUser.value.id,
-    })
+    .post(
+      getUrlOf("api/users/friends/add"),
+      {
+        id1: user.id,
+        id2: targetUser.value.id,
+      },
+      {
+        withCredentials: true,
+      }
+    )
     .then((response: Response) => {
       console.log("response = ", response);
       if (response.data != "") {
@@ -120,10 +128,16 @@ async function onCancel() {
     to: targetUser.value.id.toString(),
   };
   axios
-    .post(getUrlOf("api/users/friends/ignore"), {
-      id1: user.id,
-      id2: targetUser.value.id,
-    })
+    .post(
+      getUrlOf("api/users/friends/ignore"),
+      {
+        id1: user.id,
+        id2: targetUser.value.id,
+      },
+      {
+        withCredentials: true,
+      }
+    )
     .then((response: Response) => {
       console.log(response);
       pending.value = false;
