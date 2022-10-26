@@ -80,8 +80,8 @@ const onSubmit = (receiver: number, selectedChannel: number) => {
   if (receiver >= 0) {
     const data = {
       content: messageText.value,
-      author: props.user.id,
-      dest: receiver,
+      authorId: props.user.id,
+      destId: receiver,
     };
 
     socket.emit("send_message", data, () => {
