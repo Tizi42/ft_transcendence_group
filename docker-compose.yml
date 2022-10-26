@@ -3,7 +3,7 @@ services:
     container_name: ${CONTAINER_NAME_BACKEND}
     build:
       context: ./backend
-      target: dev
+      target: production
       dockerfile: Dockerfile
     image: nestjs:1.0
     networks:
@@ -19,7 +19,7 @@ services:
     container_name: ${CONTAINER_NAME_FRONTEND}
     build:
       context: ./frontend
-      target: dev
+      target: production
       dockerfile: Dockerfile
     image: vuejs:1.0
     networks:

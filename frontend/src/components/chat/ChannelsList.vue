@@ -37,7 +37,7 @@
         class="hided_channel"
         src="@/assets/icons/hide_channel.svg"
       />
-      <div v-if="user.pendingMsgChannel.includes(channel.id)" class="red-point">
+      <div v-if="user.pendingMsgChannel.includes(channel.id)" class="redNotify">
         x
       </div>
     </li>
