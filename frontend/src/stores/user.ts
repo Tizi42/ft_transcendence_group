@@ -106,9 +106,11 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
       });
   }
 
-  let i = 0;
+  socket.on("friend_login_logout", async () => {
+    doFetchFriends();
+  });
+
   socket.on("receive_friendship", () => {
-    console.log("received friend", i++);
     doFetchPending();
     doFetchFriends();
   });

@@ -192,10 +192,6 @@ socket.on("banned_user", async (userToBanId: number, channelId: number) => {
   }
 });
 
-socket.on("friend_login_logout", async () => {
-  user.doFetchFriends();
-});
-
 onBeforeMount(async () => {
   user.doFetchFriends();
   socket.emit("remove_chat_notification");
@@ -204,7 +200,6 @@ onBeforeMount(async () => {
 onBeforeUnmount(() => {
   socket.off("channel_updated");
   socket.off("banned_user");
-  socket.off("friend_login_logout");
   socket.emit("remove_chat_notification");
 });
 

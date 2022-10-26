@@ -71,6 +71,11 @@ export class GameGateway extends AppGateway {
     this.server.emit("games_update_list");
   }
 
+  status_change_emit() {
+    console.log("game status changed")
+    this.server.emit("friend_login_logout");
+  }
+
   async createGameRoom(
     l_id: number,
     l_sid: string,
@@ -85,6 +90,7 @@ export class GameGateway extends AppGateway {
     // update user status
     await this.usersService.updateUserStatus(l_id, "in game");
     await this.usersService.updateUserStatus(r_id, "in game");
+    this.status_change_emit();
 
     // annonce to given socket
     this.server.in(l_sid).in(r_sid).socketsJoin(room_name);
@@ -109,6 +115,7 @@ export class GameGateway extends AppGateway {
     this.server.in(room.room_name).socketsLeave(room.room_name);
     await this.usersService.updateUserStatus(room.playerL, "leave game");
     await this.usersService.updateUserStatus(room.playerR, "leave game");
+    this.status_change_emit();
     GameGateway.inGameUsers.delete(room.playerL);
     GameGateway.inGameUsers.delete(room.playerR);
     GameGateway.inGameSockets.delete(room.sidL);

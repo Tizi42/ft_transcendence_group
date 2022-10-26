@@ -55,17 +55,20 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleDisconnect(socket: Socket) {
     const users = [];
     if (socket.data) {
+      console.log("handle disconnect");
       socket.leave(socket.data.id.toString());
       const rooms = this.server.of("/").adapter.rooms;
       // console log disconnected and leave room for this user //
-      console.log("disconnected :", socket.data.username);
-      console.log("room users id :", socket.data.id, " = ", rooms.get(socket.data.id.toString()));
-      if (rooms.get(socket.data.id.toString())) {
-        console.log("length room = ", rooms.get(socket.data.id.toString()).size);
-      }
+      // console.log("disconnected :", socket.data.username);
+      // console.log("room users id :", socket.data.id, " = ", rooms.get(socket.data.id.toString()));
+      // if (rooms.get(socket.data.id.toString())) {
+      //   // console.log("length room = ", rooms.get(socket.data.id.toString()).size);
+      // }
       // //////////////////////////////////////////////////// //
       if (!rooms.get(socket.data.id.toString())) {
         await this.usersService.updateUserStatus(socket.data.id, "offline");
+        console.log("go offline, page closed!!!!!!!!!!!!!!");
+        this.server.sockets.emit('friend_login_logout');
       }
     }
 
