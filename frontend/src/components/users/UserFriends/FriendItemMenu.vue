@@ -51,8 +51,8 @@ async function onRemoveFriend() {
     .then((response) => {
       user.doFetchFriends();
       socket.emit("update_friend", {
-        from: props.friend.id,
-        to: user.id,
+        from: props.friend.id.toString(),
+        to: user.id.toString(),
       });
       console.log(response);
     })
@@ -72,8 +72,8 @@ function onBlockUser() {
     .then((response) => {
       user.doFetchFriends();
       socket.emit("update_friend", {
-        from: props.friend.id,
-        to: user.id,
+        from: props.friend.id.toString(),
+        to: user.id.toString(),
       });
       console.log(response);
     })
