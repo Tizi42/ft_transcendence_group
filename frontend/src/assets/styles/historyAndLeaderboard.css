@@ -340,6 +340,11 @@ li {
   color: var(--main-color);
 }
 
+.winner .nameSmall {
+  font-weight: 600;
+  color: var(--main-color);
+}
+
 .looser img {
   opacity: 50%;
 }
