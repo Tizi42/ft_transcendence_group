@@ -4,7 +4,7 @@ import { ChannelService } from 'src/channel/channel.service';
 import { AppGateway } from '../gateway';
 import { UsersService } from '../users/users.service';
 import { ChatService } from './chat.service';
-import { emojiInfo, messageInGame } from './utils/types';
+import { emojiInfo, messageInfos, messageInGame } from './utils/types';
 import { BattlesService } from '../battles/battles.service';
 import { ChannelMessage } from './utils/types';
 import { Chat } from './entities/chat.entity';
@@ -25,11 +25,20 @@ export class ChatGateway extends AppGateway {
   async handleDisconnect(client: any) {}
 
   @SubscribeMessage('send_message')
-  async handleMessage(@MessageBody() data: any): Promise<Chat> {
+  async handleMessage(
+    @MessageBody() data: messageInfos,
+    @ConnectedSocket() socket: Socket,
+  ): Promise<Chat> {
+    const user = await this.chatService.getUserFromSocket(socket);
+
+    if (!user) {
+      return ;
+    }
     const message = await this.chatService.saveMessage(data);
 
-    this.server.sockets.to(data.dest).to(data.author).emit('receive_message');
-    this.server.sockets.to(data.dest).emit('receive_message_notification');
+    // const destId: any = data.destId;
+    this.server.sockets.to(socket.join(data.destId.toString())).to(socket.data.id).emit('receive_message');
+    this.server.sockets.to(socket.join(data.destId.toString())).emit('receive_message_notification');
 
     return message;
   }
@@ -52,20 +61,6 @@ export class ChatGateway extends AppGateway {
     
     return message;
   }
-
-  // @SubscribeMessage('last_from')
-  // async lastFrom(@MessageBody() id: number) {
-  //   const messages = await this.chatService.getMessagesById(id);
-  //   const last = messages[messages.length - 1];
-  //     return last;
-  // }
-
-  // @SubscribeMessage('request_all_messages')
-  // async requestAllMessages(@ConnectedSocket() socket: Socket) {
-  //   await this.chatService.getUserFromSocket(socket);
-
-  //   return await this.chatService.getAllMessages();
-  // }
 
   @SubscribeMessage('send_message_ingame')
   async handleMessageNotSave(

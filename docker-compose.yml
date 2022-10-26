@@ -20,7 +20,7 @@ services:
     container_name: ${CONTAINER_NAME_FRONTEND}
     build:
       context: ./frontend
-      target: prod42
+      target: dev
       dockerfile: Dockerfile
     image: vuejs:1.0
     networks:
