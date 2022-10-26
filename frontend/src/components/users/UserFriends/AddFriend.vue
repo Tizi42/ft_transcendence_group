@@ -106,7 +106,7 @@ async function onSend() {
         socket.emit("update_friend", data);
         socket.emit("request_friendship", data);
       } else {
-        alert("Sorry, but you can't add this user as friend.");
+        alert("Send friend request failed, please try again later...");
       }
     })
     .catch(function (error: Error) {

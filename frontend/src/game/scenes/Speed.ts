@@ -65,7 +65,7 @@ export default class SpeedScene extends Phaser.Scene {
     });
 
     // listen for game end
-    socket.on("end", (data: { winner: string }) => {
+    socket.once("end", (data: { winner: string }) => {
       this.before_change_scene();
       this.scene.start("GameOverScene", { winner: data.winner });
     });
@@ -98,6 +98,5 @@ export default class SpeedScene extends Phaser.Scene {
 
   before_change_scene() {
     socket.off("game_update");
-    socket.off("end");
   }
 }

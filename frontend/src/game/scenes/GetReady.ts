@@ -88,7 +88,7 @@ export default class GetReadyScene extends Phaser.Scene {
     }
 
     // listen for server instruction to start game
-    socket.on("game_start", () => {
+    socket.once("game_start", () => {
       console.log("game_start rand", Math.random());
       this.start_game_scene();
     });
@@ -96,13 +96,9 @@ export default class GetReadyScene extends Phaser.Scene {
 
   start_game_scene() {
     console.log("Game start !!!", this.scene);
-    this.before_change_scene();
+    // this.before_change_scene();
     if (gameInfo.mode === "magic") this.scene.start("MagicScene");
     else if (gameInfo.mode === "speed") this.scene.start("SpeedScene");
     else this.scene.start("GameScene");
-  }
-
-  before_change_scene() {
-    socket.off("game_start");
   }
 }
