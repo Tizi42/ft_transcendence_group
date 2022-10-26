@@ -38,7 +38,7 @@ import { UsersService } from './users.service';
 export class UsersModule {
   constructor(private usersService: UsersService,
     private readonly battlesService: BattlesService) {
-    if (true) {
+    if (false) {
       this.usersService.removeAll();
       this.battlesService.removeAll();
       setTimeout(() => {
