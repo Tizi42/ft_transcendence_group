@@ -126,3 +126,13 @@ body {
   left: 102px;
   top: 200px;
 }
+
+.redNotify {
+  display: block;
+  position: absolute;
+  height: 25px;
+  width: 25px;
+  top: 5px;
+  left: 5px;
+  background-image: url("../icons/circle.svg");
+}
