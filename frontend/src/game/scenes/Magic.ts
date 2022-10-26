@@ -102,7 +102,7 @@ export default class MagicScene extends Phaser.Scene {
     this.anims.create({
       key: "eye",
       frameRate: 7,
-      frames: this.anims.generateFrameNumbers("spell", { start: 9, end: 9 }),
+      frames: this.anims.generateFrameNumbers("spell", { start: 10, end: 10 }),
       repeat: -1,
     });
 
@@ -308,5 +308,17 @@ export default class MagicScene extends Phaser.Scene {
     socket.off("refresh_spells");
     socket.off("update_paddle_size");
     socket.off("apply_effect");
+    this.Lpaddle_eye_effect = 0;
+    this.Lpaddle_alpha = 1;
+    this.paddle_left.alpha = 1;
+    this.Rpaddle_eye_effect = 0;
+    this.Rpaddle_alpha = 1;
+    this.paddle_right.alpha = 1;
+    this.shield_left.alpha = 0;
+    this.shield_right.alpha = 0;
+    this.paddle_left.setScale(1, 1);
+    this.paddle_right.setScale(1, 1);
+    this.can_cast = 1;
+    this.can_switch = 1;
   }
 }
