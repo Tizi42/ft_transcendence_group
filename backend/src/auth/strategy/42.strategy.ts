@@ -26,7 +26,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
             email: profile.emails == undefined ? "" : profile.emails[0].value,
             picture: profile.photos == undefined ? "" : profile.photos[0].value,
         });
-        
         done(null, user);
     }
 }
