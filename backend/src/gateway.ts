@@ -28,17 +28,16 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     socket.data = await this.chatService.getUserFromSocket(socket);
     console.log("socket user id: ", socket.data);
     if (socket.data) {
-      socket.join(socket.data.id);
+      socket.join(socket.data.id.toString());
       await this.channelService.joinChannelsRooms(socket);
       await this.usersService.updateUserStatus(socket.data.id, "online");
       for (let i = 0; i < socket.data.friendWith.length; i++) {
-        let friend: any = socket.data.friendWith[i];
-        this.server.sockets.to(friend).emit('friend_login_logout');
+        this.server.sockets.to(socket.data.friendWith[i].toString()).emit('friend_login_logout');
       }
       // console log the room for this user //
       const rooms = this.server.of("/").adapter.rooms;
-      console.log("room users id :", socket.data.id, " = ", rooms.get(socket.data.id));
-      console.log("length room = ", rooms.get(socket.data.id).size);
+      console.log("room users id :", socket.data.id, " = ", rooms.get(socket.data.id.toString()));
+      console.log("length room = ", rooms.get(socket.data.id.toString()).size);
       // ////////////////////////////////// //
     }
 
@@ -56,16 +55,16 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleDisconnect(socket: Socket) {
     const users = [];
     if (socket.data) {
-      socket.leave(socket.data.id);
+      socket.leave(socket.data.id.toString());
       const rooms = this.server.of("/").adapter.rooms;
       // console log disconnected and leave room for this user //
       console.log("disconnected :", socket.data.username);
-      console.log("room users id :", socket.data.id, " = ", rooms.get(socket.data.id));
-      if (rooms.get(socket.data.id)) {
-        console.log("length room = ", rooms.get(socket.data.id).size);
+      console.log("room users id :", socket.data.id, " = ", rooms.get(socket.data.id.toString()));
+      if (rooms.get(socket.data.id.toString())) {
+        console.log("length room = ", rooms.get(socket.data.id.toString()).size);
       }
       // //////////////////////////////////////////////////// //
-      if (!rooms.get(socket.data.id)) {
+      if (!rooms.get(socket.data.id.toString())) {
         await this.usersService.updateUserStatus(socket.data.id, "offline");
       }
     }
@@ -87,11 +86,10 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!user) {
       return ;
     }
-    this.server.sockets.to(socket.data.id).emit('force_logout');
+    this.server.sockets.to(socket.data.id.toString()).emit('force_logout');
     await this.usersService.updateUserStatus(user.id, "offline");
     for (let i = 0; i < user.friendWith.length; i++) {
-      let friend: any = user.friendWith[i];
-      this.server.sockets.to(friend).emit('friend_login_logout');
+      this.server.sockets.to(user.friendWith[i].toString()).emit('friend_login_logout');
     }
   }
 }

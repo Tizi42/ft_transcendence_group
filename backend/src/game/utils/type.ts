@@ -44,3 +44,23 @@ export type spellInfo = {
   target: string,
   effect: number,
 }
+
+export type inviteData = {
+  sender: number,
+  user_id: number,
+}
+
+export type smallInfoRoom = {
+  room_name: string,
+  user_id: number,
+}
+
+export type onlyRoomName = {
+  room_name: string,
+}
+
+export type movePaddle = {
+  user_id: number,
+  room_name: string,
+  paddle_move_direction: number,
+}

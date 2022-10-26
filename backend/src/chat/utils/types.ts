@@ -1,9 +1,9 @@
 import { User } from "../../users/users.entity";
 
 export type messageInfos = {
-    author: User;
     content: string;
-    created_at: Date;
+    authorId: number;
+    destId: number;
 }
 
 export type emojiInfo = {

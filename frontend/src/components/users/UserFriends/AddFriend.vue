@@ -91,8 +91,8 @@ function onClickSearch() {
 
 async function onSend() {
   const data = {
-    from: user.id,
-    to: targetUser.value.id,
+    from: user.id.toString(),
+    to: targetUser.value.id.toString(),
   };
   axios
     .post(getUrlOf("api/users/friends/add"), {
@@ -116,8 +116,8 @@ async function onSend() {
 
 async function onCancel() {
   const data = {
-    from: user.id,
-    to: targetUser.value.id,
+    from: user.id.toString(),
+    to: targetUser.value.id.toString(),
   };
   axios
     .post(getUrlOf("api/users/friends/ignore"), {

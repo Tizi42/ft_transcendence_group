@@ -10,6 +10,7 @@ import { extname } from "path";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import RequestWithUser from "./utils/requestWithUser.interface";
 import { SetDisplayNameDto } from "./utils/setDisplayName.dto";
+import { UpdateResult } from "typeorm";
 
 export const storage = {
   storage : diskStorage ({
@@ -33,14 +34,14 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Put('uploads/avatar')  
   @UseInterceptors(FileInterceptor('file', storage))
-  async uploadAvatar(@Req() req: RequestWithUser, @UploadedFile() file: Express.Multer.File) : Promise<any> {
+  async uploadAvatar(@Req() req: RequestWithUser, @UploadedFile() file: Express.Multer.File) : Promise<UpdateResult> {
     return await this.usersService.updateUserAvatar(
       req.user.id, file.filename, "http://localhost:3000/api/users/avatar/" + req.user.id
     ); //`${this.SERVER_URL}${file.path}`
   }
 
   @Get('avatar/:id')
-  async getAvatar(@Param('id') id: number, @Res() res: Response): Promise<any> {
+  async getAvatar(@Param('id') id: number, @Res() res: Response) {
     let user = await this.usersService.findOne(id);
     if (user.pictureLocalFilename === "")
       return res.sendFile("default.png", { root: 'src/uploads/avatar'});
@@ -48,7 +49,7 @@ export class UsersController {
   }
 
   @Get('avatar')
-  async getMyAvatar(@Req() req: RequestWithUser, @Res() res: Response): Promise<any> {
+  async getMyAvatar(@Req() req: RequestWithUser, @Res() res: Response) {
     console.log(req.user);
     let user = await this.usersService.findOne(req.user.id);
     if (user.pictureLocalFilename === "")

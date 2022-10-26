@@ -8,7 +8,7 @@ import { UsersService } from '../users/users.service';
 import { ChatService } from '../chat/chat.service';
 import { ChannelService } from 'src/channel/channel.service';
 import { BattlesService } from '../battles/battles.service';
-import { inviteInfo, queueInfo, roomInfo } from './utils/type';
+import { smallInfoRoom, inviteData, inviteInfo, queueInfo, roomInfo, movePaddle, onlyRoomName } from './utils/type';
 
 export class GameGateway extends AppGateway {
 
@@ -190,18 +190,18 @@ export class GameGateway extends AppGateway {
   }
 
   @SubscribeMessage('refuse_invitation')
-  onRefuseInvite(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+  onRefuseInvite(@ConnectedSocket() socket: Socket, @MessageBody() data: inviteData) {
     const invitation = GameGateway.invitations.get(data.sender);
     if (!invitation || invitation.invitee_id != data.user_id)
       return "invitation no longer exist...";
     
     GameGateway.invitations.delete(data.sender);
     this.server.to(invitation.sender_sid).emit("decline_invitation");
-    this.server.to(data.user_id).emit("invitation_expired");
+    this.server.to(data.user_id.toString()).emit("invitation_expired");
   }
 
   @SubscribeMessage('accept_invitation')
-  async onAcceptInvite(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+  async onAcceptInvite(@ConnectedSocket() socket: Socket, @MessageBody() data: inviteData) {
     const invitation = GameGateway.invitations.get(data.sender);
     if (!invitation || invitation.invitee_id != data.user_id)
       return "invitation no longer exist...";
@@ -227,7 +227,7 @@ export class GameGateway extends AppGateway {
     this.server.to(invitation.sender_sid).to(socket.id).emit("go_play", roomName);
 
     // clean invitaion
-    this.server.to(data.user_id).emit("invitation_expired");
+    this.server.to(data.user_id.toString()).emit("invitation_expired");
     GameGateway.invitations.delete(data.sender);
   }
 
@@ -236,7 +236,7 @@ export class GameGateway extends AppGateway {
   */
 
   @SubscribeMessage('init_room')
-  sendRoomInfo(@ConnectedSocket() socket: Socket, @MessageBody() data: any): roomInfo {
+  sendRoomInfo(@ConnectedSocket() socket: Socket, @MessageBody() data: smallInfoRoom): roomInfo {
     const room = GameGateway.rooms.get(data.room_name);
     if (!room)
       return null;
@@ -250,7 +250,7 @@ export class GameGateway extends AppGateway {
   }
 
   @SubscribeMessage('leave_game')
-  async onLeavingRoom(@ConnectedSocket() socket: Socket, @MessageBody() data: any) {
+  async onLeavingRoom(@ConnectedSocket() socket: Socket, @MessageBody() data: smallInfoRoom) {
     const room = GameGateway.rooms.get(data.room_name);
     if (!room)
       return null;
@@ -263,7 +263,7 @@ export class GameGateway extends AppGateway {
   }
 
   @SubscribeMessage('ready')
-  async onPlayerReady(@MessageBody() data: any) {
+  async onPlayerReady(@MessageBody() data: smallInfoRoom) {
     const room = GameGateway.rooms.get(data.room_name);
     console.log(data.user_id, " is ready");
     if (!room || (data.user_id !== room.playerL && data.user_id !== room.playerR)
@@ -278,7 +278,7 @@ export class GameGateway extends AppGateway {
   }
 
   @SubscribeMessage('cancel_ready')
-  async onCancelReady(@MessageBody() data: any) {
+  async onCancelReady(@MessageBody() data: smallInfoRoom) {
     const room = GameGateway.rooms.get(data.room_name);
     if (!room)
       return null;
@@ -287,7 +287,7 @@ export class GameGateway extends AppGateway {
   }
 
   @SubscribeMessage('update_paddle')
-  async onUpdatePaddle(@MessageBody() data: any) {
+  async onUpdatePaddle(@MessageBody() data: movePaddle) {
     const room = GameGateway.rooms.get(data.room_name);
     if (!room)
       return null;
@@ -295,14 +295,14 @@ export class GameGateway extends AppGateway {
   }
 
   @SubscribeMessage('launch_spell')
-  async onLaunchSPell(@MessageBody() data: any) {
+  async onLaunchSPell(@MessageBody() data: smallInfoRoom) {
     const room = GameGateway.rooms.get(data.room_name);
     if (!room) return;
     room.on_spell_lauched(data.user_id);
   }
 
   @SubscribeMessage('switch_spell')
-  async onSwitchPell(@MessageBody() data: any) {
+  async onSwitchPell(@MessageBody() data: smallInfoRoom) {
     const room = GameGateway.rooms.get(data.room_name);
     if (!room) return;
     room.on_switch_spell(data.user_id);
@@ -324,7 +324,7 @@ export class GameGateway extends AppGateway {
   @SubscribeMessage('get_game_status')
   async onGetGameStatus(
     @ConnectedSocket() socket: Socket,
-    @MessageBody() data: any
+    @MessageBody() data: onlyRoomName
   ) {
     const room = GameGateway.rooms.get(data.room_name);
     if (!room)

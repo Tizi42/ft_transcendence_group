@@ -61,7 +61,7 @@ export class AuthService {
 
     /***Valid User and Login***/
 
-    async validateUser(userDetails: UserDetails): Promise<any> {
+    async validateUser(userDetails: UserDetails): Promise<User> {
         const user = await this.usersService.findOneByEmail(userDetails.email);
         if (user) {
             return user;
