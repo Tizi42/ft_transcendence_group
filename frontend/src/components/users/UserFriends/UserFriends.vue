@@ -31,7 +31,7 @@
         />
       </div>
     </div>
-    <div v-else>Add some friends with the button (+) 🐻‍❄️</div>
+    <div v-else class="addSomeFriends">Add some friends with the button (+) 🐻‍❄️</div>
   </div>
 </template>
 
@@ -76,6 +76,10 @@ defineExpose(
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.addSomeFriends {
+  color: #bebebe;
 }
 
 .friends-buttons {
