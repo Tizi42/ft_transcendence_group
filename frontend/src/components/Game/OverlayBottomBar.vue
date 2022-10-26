@@ -8,6 +8,7 @@
       right="0px"
       left=""
       padding="0px 20px"
+      zindex="982"
       ref="menuRef"
       :canClick="props.role != 'watch'"
     >
