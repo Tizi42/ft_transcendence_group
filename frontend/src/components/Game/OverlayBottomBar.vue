@@ -78,14 +78,14 @@
           and
           <img src="../../assets/icons/downArrow.svg" class="inlineImg" />
           to move your paddle.<br /><br />
-          Press Left and Right to switch spells<br /><br />
-          Press Shift to send the one spell that's on top<br /><br />
+          Press LEFT and RIGHT to switch spells<br /><br />
+          Press SHIFT to send the one spell that's on top<br /><br />
           Points are earned when your opponent<br />
           fails to catch the ball<br /><br />
           You need 11 points to win.<br /><br />
           GL HF!
         </div>
-        <div v-if="mode === 'speed'" class="rulesTxt">
+        <div v-else-if="mode === 'speed'" class="rulesTxt">
           Use
           <img src="../../assets/icons/upArrow.svg" class="inlineImg" />
           and
@@ -93,7 +93,7 @@
           to move your paddle.<br /><br />
           Points are earned when your opponent<br />
           fails to catch the ball<br /><br />
-          The game will end in 1 min 30<br /><br />
+          The game will end in 3 minutes<br /><br />
           You need to miss less balls to win.<br /><br />
           GL HF!
         </div>
