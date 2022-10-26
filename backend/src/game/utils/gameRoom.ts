@@ -51,8 +51,8 @@ export class GameRoom {
   readonly max_angle = Math.PI / 4;
   readonly hit_range = () : number => { return this.ball_velocity * 0.5 + 1.5 };
   readonly ball_velocity_init: velocityInit = {
-    normal: 7.5, // 7.5 pixels per 25ms, 300 pixels per 1000ms
-    magic: 7.5,
+    normal: 9, // 9 pixels per 25ms
+    magic: 9,
     speed: 15,
   };
   readonly paddle_velocity_init: velocityInit = {
