@@ -12,3 +12,11 @@ export type FriendShip = {
     from: string;
     to: string;
 }
+
+export type RemoveNotif = {
+    receiverId: number;
+}
+
+export type RemoveNotifChannel = {
+    selectedChannelId: number;
+}
