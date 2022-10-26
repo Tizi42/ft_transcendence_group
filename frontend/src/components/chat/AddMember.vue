@@ -72,7 +72,9 @@ function onClickSearch() {
 
   console.log(searchInput.value);
   axios
-    .get(getUrlOf("api/users/info/") + searchInput.value)
+    .get(getUrlOf("api/users/info/") + searchInput.value, {
+      withCredentials: true,
+    })
     .then((response: Response) => {
       if (response.data) {
         targetUser.value = response.data;

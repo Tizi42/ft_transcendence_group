@@ -34,10 +34,16 @@ async function onRemoveBlock() {
     to: props.blocked.id.toString(),
   };
   axios
-    .post(getUrlOf("api/users/block/rm/"), {
-      id1: user.id,
-      id2: props.blocked.id,
-    })
+    .post(
+      getUrlOf("api/users/block/rm/"),
+      {
+        id1: user.id,
+        id2: props.blocked.id,
+      },
+      {
+        withCredentials: true,
+      }
+    )
     .then((response: Response) => {
       console.log(response);
       emit("renew");
