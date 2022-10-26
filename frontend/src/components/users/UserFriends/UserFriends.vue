@@ -31,7 +31,9 @@
         />
       </div>
     </div>
-    <div v-else class="addSomeFriends">Add some friends with the button (+) 🐻‍❄️</div>
+    <div v-else class="addSomeFriends">
+      Add some friends with the button (+) &#128059;&#8205;&#10052;&#65039;
+    </div>
   </div>
 </template>
 
