@@ -23,13 +23,13 @@ onBeforeMount(async () => {
     method: "POST",
     credentials: "include",
   })
-    .then((response) => {
+    .then((response: Response) => {
       return response.blob();
     })
     .then((blob: Blob) => {
       imageUrl.value = URL.createObjectURL(blob);
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       console.log(error);
     });
 });

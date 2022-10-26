@@ -94,7 +94,7 @@ async function getStatus() {
   return fetch(getUrlOf("api/private"), {
     credentials: "include",
   })
-    .then((response) => {
+    .then((response: Response) => {
       return response.status;
     })
     .then((status) => {
@@ -103,7 +103,7 @@ async function getStatus() {
       }
       return false;
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       console.log("ERROR : ", error);
       return false;
     });
@@ -113,7 +113,7 @@ async function getPreAuth() {
   return fetch(getUrlOf("api/preAuth"), {
     credentials: "include",
   })
-    .then((response) => {
+    .then((response: Response) => {
       return response.status;
     })
     .then((status) => {
@@ -122,7 +122,7 @@ async function getPreAuth() {
       }
       return false;
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       console.log("ERROR : ", error);
       return false;
     });

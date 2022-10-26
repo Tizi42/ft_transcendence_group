@@ -54,7 +54,7 @@ const handleInvitationRequest = async (action: string) => {
       targetId: user.id,
     }),
   })
-    .then((response) => {
+    .then((response: Response) => {
       return response.json();
     })
     .then((data) => {
@@ -67,7 +67,7 @@ const handleInvitationRequest = async (action: string) => {
         socket.emit("update_join_request", dataToEmit);
       }
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       console.log("error : ", error);
     });
 };

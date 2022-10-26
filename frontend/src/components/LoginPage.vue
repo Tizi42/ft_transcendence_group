@@ -20,7 +20,7 @@ onBeforeMount(async () => {
   await fetch(getUrlOf("api/private"), {
     credentials: "include",
   })
-    .then((response) => {
+    .then((response: Response) => {
       if (response.status === 200) {
         router.push({
           name: "game",
@@ -28,7 +28,7 @@ onBeforeMount(async () => {
       }
       return response.json();
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       console.log("ERROR : ", error);
     });
 });

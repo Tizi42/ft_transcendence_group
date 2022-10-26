@@ -115,9 +115,14 @@ function createUserMinimal(user: User | null): UserMinimal {
 
 function loadEmojis() {
   for (var i = 1; i < 38; i++) {
-    emojisURL.push(
-      new URL("../../assets/icons/emojis/" + i + ".svg", import.meta.url)
-    );
+    if (i == 0)
+      emojisURL.push(
+        new URL("../../assets/gameMode/modeNormal.svg", import.meta.url)
+      );
+    else
+      emojisURL.push(
+        new URL("../../assets/icons/emojis/" + i + ".svg", import.meta.url)
+      );
   }
 }
 

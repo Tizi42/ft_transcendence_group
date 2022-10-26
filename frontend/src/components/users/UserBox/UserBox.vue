@@ -124,7 +124,7 @@ function onSend() {
         to: user.id.toString(),
       });
     })
-    .catch(function (error) {
+    .catch(function (error: Error) {
       console.log(error);
     });
 }
@@ -142,7 +142,7 @@ function onCancel() {
         to: user.id.toString(),
       });
     })
-    .catch(function (error) {
+    .catch(function (error: Error) {
       console.log(error);
     });
 }

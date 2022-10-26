@@ -18,9 +18,7 @@
         <div v-if="friend.status === 'in game'" class="red-point"></div>
         <h3>{{ friend.displayName }}</h3>
       </div>
-      <div v-if="user.pendingMsgList.includes(friend.id)" class="red-point">
-        x
-      </div>
+      <div v-if="user.pendingMsgList.includes(friend.id)" class="redNotify" />
     </li>
   </ul>
 </template>
@@ -37,7 +35,6 @@ import {
   ref,
   Ref,
   defineEmits,
-  defineProps,
   defineExpose,
   onBeforeUnmount,
 } from "vue";
@@ -54,7 +51,7 @@ const getMessages = async (id: number) => {
   await fetch(getUrlOf("api/chat/messages/" + id), {
     credentials: "include",
   })
-    .then((response) => {
+    .then((response: Response) => {
       return response.json();
     })
     .then((data) => {
