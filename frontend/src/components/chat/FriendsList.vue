@@ -18,6 +18,9 @@
         <div v-if="friend.status === 'in game'" class="red-point"></div>
         <h3>{{ friend.displayName }}</h3>
       </div>
+      <div v-if="user.pendingMsgList.includes(friend.id)" class="red-point">
+        x
+      </div>
     </li>
   </ul>
 </template>
@@ -25,6 +28,7 @@
 <script lang="ts" setup>
 import { getUrlOf } from "@/router";
 import socket from "@/socket";
+import { useUserStore } from "@/stores/user";
 import { Chat } from "@backend/chat/entities/chat.entity";
 import { StoreGeneric } from "pinia";
 import {
@@ -38,11 +42,7 @@ import {
   onBeforeUnmount,
 } from "vue";
 
-interface Props {
-  user: StoreGeneric;
-}
-
-defineProps<Props>();
+const user: StoreGeneric = useUserStore();
 const receiver: Ref<number> = ref(-1);
 const history: Ref<Chat[]> = ref([]);
 const selectedFriend: Ref<number> = ref(-1);
@@ -65,9 +65,12 @@ const getMessages = async (id: number) => {
     });
   emit("selectReceiver", id);
   emit("getHistory", history.value);
+  if (receiver.value != -1 && user.id != id) {
+    socket.emit("remove_private_notif", { receiverId: id });
+  }
 };
 
-onBeforeMount(() => {
+onBeforeMount(async () => {
   socket.on("receive_message", () => {
     getMessages(receiver.value);
   });

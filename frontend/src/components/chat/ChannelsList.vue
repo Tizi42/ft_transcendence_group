@@ -37,6 +37,9 @@
         class="hided_channel"
         src="@/assets/icons/hide_channel.svg"
       />
+      <div v-if="user.pendingMsgChannel.includes(channel.id)" class="red-point">
+        x
+      </div>
     </li>
   </ul>
   <Teleport to="body">
@@ -74,7 +77,7 @@ interface Props {
   myChannels: Channel[];
 }
 
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 const props: Readonly<Props> = defineProps<Props>();
 const selectedChannel: Ref<number> = ref(props.selectedChannel);
 const addWindow: Ref<boolean> = ref(false);
@@ -132,6 +135,9 @@ const getChannelMessages = async (channelId: number) => {
       console.error(err);
     });
   emit("getHistory", history.value);
+  if (selectedChannel.value != -1) {
+    socket.emit("remove_channel_notif", { selectedChannelId: channelId });
+  }
 };
 
 const addNewChannel = () => {

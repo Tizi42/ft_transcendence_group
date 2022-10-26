@@ -21,6 +21,8 @@ export interface userInfoStore {
   totalDraws: Ref<number>;
   winRate: Ref<number>;
   channelInvitePending: Ref<Array<number>>;
+  pendingMsgList: Ref<Array<number>>;
+  pendingMsgChannel: Ref<Array<number>>;
   doFetch: voidFunction;
   doFetchFriends: voidFunction;
   doFetchPending: voidFunction;
@@ -41,6 +43,8 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
   const winRate = ref(-1);
   const allowNotifications = ref(true);
   const channelInvitePending: Ref<Array<number>> = ref([]);
+  const pendingMsgList: Ref<Array<number>> = ref([]);
+  const pendingMsgChannel: Ref<Array<number>> = ref([]);
 
   doFetch();
   doFetchFriends();
@@ -114,6 +118,33 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
     doFetchPending();
   });
 
+  socket.on("receive_message_notification", (authorId: number) => {
+    pendingMsgList.value.push(authorId);
+  });
+
+  socket.on("ignore_private_notif", (receiverId: number) => {
+    const index = pendingMsgList.value.indexOf(receiverId);
+    if (index != -1) {
+      pendingMsgList.value.splice(index, 1);
+    }
+  });
+
+  socket.on(
+    "receive_channel_notification",
+    (authorId: number, channelId: number) => {
+      if (authorId != id.value) {
+        pendingMsgChannel.value.push(channelId);
+      }
+    }
+  );
+
+  socket.on("ignore_channel_notif", (selectedChannelId: number) => {
+    const index = pendingMsgChannel.value.indexOf(selectedChannelId);
+    if (index != -1) {
+      pendingMsgChannel.value.splice(index, 1);
+    }
+  });
+
   return {
     id,
     displayName,
@@ -129,6 +160,8 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
     totalDraws,
     winRate,
     channelInvitePending,
+    pendingMsgList,
+    pendingMsgChannel,
     doFetch,
     doFetchFriends,
     doFetchPending,

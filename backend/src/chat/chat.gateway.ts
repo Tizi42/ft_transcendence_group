@@ -37,7 +37,7 @@ export class ChatGateway extends AppGateway {
     const message = await this.chatService.saveMessage(data);
 
     this.server.sockets.to(data.destId.toString()).to(socket.data.id.toString()).emit('receive_message');
-    this.server.sockets.to(data.destId.toString()).emit('receive_message_notification');
+    this.server.sockets.to(data.destId.toString()).emit('receive_message_notification', socket.data.id);
 
     return message;
   }
@@ -56,7 +56,7 @@ export class ChatGateway extends AppGateway {
     const message = await this.chatService.saveChannelMessage(data, user);
 
     this.server.sockets.to(channel.name).emit('receive_channel_message');
-    this.server.sockets.to(channel.name).emit('receive_channel_notification', user.id);
+    this.server.sockets.to(channel.name).emit('receive_channel_notification', user.id, channel.id);
     
     return message;
   }
