@@ -251,6 +251,9 @@ export class ChannelService {
     if (!channel) {
       return null;
     }
+    if (!this.isChannelMember(userToMuteId, channel[0])) {
+      return null;
+    }
     for (let i = 0; i < channel[0].muted.length; i++)
     {
       if (channel[0].muted[i] === userToMuteId)
