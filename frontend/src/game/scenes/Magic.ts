@@ -26,8 +26,8 @@ export default class MagicScene extends Phaser.Scene {
   keyDown: Phaser.Input.Keyboard.Key;
   keyShift: Phaser.Input.Keyboard.Key;
 
-  switch_time = 0;
-  cast_time = 0;
+  can_switch = 1;
+  can_cast = 1;
   spell1 = 0;
   spell2 = 0;
 
@@ -39,6 +39,16 @@ export default class MagicScene extends Phaser.Scene {
   Rpaddle_eye_effect = 0;
   Rpaddle_alpha = 1;
 
+  anims_index = [
+    "none",
+    "paddle_bonus",
+    "paddle_malus",
+    "speed_ball",
+    "inverse",
+    "shield",
+    "eye",
+  ];
+
   constructor() {
     super("MagicScene");
   }
@@ -46,6 +56,55 @@ export default class MagicScene extends Phaser.Scene {
   create() {
     this.width = this.cameras.main.width;
     this.height = this.cameras.main.height;
+
+    this.anims.create({
+      key: "none",
+      frameRate: 7,
+      frames: this.anims.generateFrameNumbers("spell", { start: 0, end: 0 }),
+      repeat: -1,
+    });
+
+    this.anims.create({
+      key: "paddle_malus",
+      frameRate: 2,
+      frames: this.anims.generateFrameNumbers("spell", { start: 1, end: 3 }),
+      repeat: -1,
+    });
+
+    this.anims.create({
+      key: "paddle_bonus",
+      frameRate: 2,
+      frames: this.anims.generateFrameNumbers("spell", { start: 4, end: 6 }),
+      repeat: -1,
+    });
+
+    this.anims.create({
+      key: "speed_ball",
+      frameRate: 7,
+      frames: this.anims.generateFrameNumbers("spell", { start: 7, end: 7 }),
+      repeat: -1,
+    });
+
+    this.anims.create({
+      key: "inverse",
+      frameRate: 7,
+      frames: this.anims.generateFrameNumbers("spell", { start: 8, end: 8 }),
+      repeat: -1,
+    });
+
+    this.anims.create({
+      key: "shield",
+      frameRate: 7,
+      frames: this.anims.generateFrameNumbers("spell", { start: 9, end: 9 }),
+      repeat: -1,
+    });
+
+    this.anims.create({
+      key: "eye",
+      frameRate: 7,
+      frames: this.anims.generateFrameNumbers("spell", { start: 9, end: 9 }),
+      repeat: -1,
+    });
 
     // set up background
     this.add.image(
@@ -145,10 +204,14 @@ export default class MagicScene extends Phaser.Scene {
     });
 
     socket.on("refresh_spells", (data: spellUpdate) => {
-      this.spell1_left.setFrame(data.spell1_L);
-      this.spell2_left.setFrame(data.spell2_L);
-      this.spell1_right.setFrame(data.spell1_R);
-      this.spell2_right.setFrame(data.spell2_R);
+      this.spell1_left.stop();
+      this.spell1_left.play(this.anims_index[data.spell1_L]);
+      this.spell2_left.stop();
+      this.spell2_left.play(this.anims_index[data.spell2_L]);
+      this.spell1_right.stop();
+      this.spell1_right.play(this.anims_index[data.spell1_R]);
+      this.spell2_right.stop();
+      this.spell2_right.play(this.anims_index[data.spell2_R]);
       if (gameInfo.user_role === "left") {
         this.spell1 = data.spell1_L;
         this.spell2 = data.spell2_L;
@@ -186,9 +249,7 @@ export default class MagicScene extends Phaser.Scene {
     });
   }
 
-  update(time: number, delta: number) {
-    this.switch_time += delta;
-    this.cast_time += delta;
+  update() {
     if (this.Lpaddle_eye_effect) {
       if (this.Lpaddle_alpha <= -0.8) this.Lpaddle_alpha = 1;
       else this.Lpaddle_alpha -= 0.05;
@@ -203,23 +264,26 @@ export default class MagicScene extends Phaser.Scene {
       this.update_paddle(-1);
     } else if (this.keyDown.isDown) {
       this.update_paddle(1);
-    } else if (this.keyLeft.isDown || this.keyRight.isDown) {
-      if (this.switch_time > 200) {
-        this.switch_time = 0;
+    }
+    if (this.keyLeft.isDown || this.keyRight.isDown) {
+      if (this.can_switch) {
+        this.can_switch = 0;
         socket.emit("switch_spell", {
           user_id: gameInfo.user_id,
           room_name: gameInfo.room_name,
         });
       }
-    } else if (this.keyShift.isDown) {
-      if (this.cast_time > 200) {
-        this.cast_time = 0;
+    } else this.can_switch = 1;
+
+    if (this.keyShift.isDown) {
+      if (this.can_cast) {
+        this.can_cast = 0;
         socket.emit("launch_spell", {
           user_id: gameInfo.user_id,
           room_name: gameInfo.room_name,
         });
       }
-    }
+    } else this.can_cast = 1;
   }
 
   create_paddle(x: number, y: number) {
