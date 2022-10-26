@@ -54,7 +54,7 @@ const getMessages = async (id: number) => {
   await fetch(getUrlOf("api/chat/messages/" + id), {
     credentials: "include",
   })
-    .then((response) => {
+    .then((response: Response) => {
       return response.json();
     })
     .then((data) => {

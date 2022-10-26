@@ -54,7 +54,7 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
     fetch(getUrlOf("api/private"), {
       credentials: "include",
     })
-      .then((response) => {
+      .then((response: Response) => {
         return response.json();
       })
       .then((user: User) => {
@@ -71,7 +71,7 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
         allowNotifications.value = user.allowNotifications;
         channelInvitePending.value = user.memberPendingReqFrom;
       })
-      .catch((error) => {
+      .catch((error: Error) => {
         console.log(error);
       });
   }
@@ -80,13 +80,13 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
     fetch(getUrlOf("api/users/friends/") + id.value, {
       credentials: "include",
     })
-      .then((response) => {
+      .then((response: Response) => {
         return response.json();
       })
       .then((list) => {
         friends.value = list;
       })
-      .catch((error) => {
+      .catch((error: Error) => {
         console.log(error);
       });
   }
@@ -95,13 +95,13 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
     fetch(getUrlOf("api/users/friends/from/") + id.value, {
       credentials: "include",
     })
-      .then((response) => {
+      .then((response: Response) => {
         return response.json();
       })
       .then((list) => {
         pending.value = list;
       })
-      .catch((error) => {
+      .catch((error: Error) => {
         console.log(error);
       });
   }
