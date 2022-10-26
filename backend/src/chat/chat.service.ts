@@ -4,6 +4,7 @@ import { WsException } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
 import { User } from 'src/users/users.entity';
+import { UsersService } from 'src/users/users.service';
 import { Repository } from "typeorm";
 import { Chat } from './entities/chat.entity';
 import { ChannelMessage, messageInfos } from './utils/types';
@@ -14,13 +15,17 @@ export class ChatService {
         @InjectRepository(Chat)
         private readonly chatRepository: Repository<Chat>,
         private readonly authService: AuthService,
+        private readonly usersService: UsersService,
     ) {}
 
-    async saveMessage(content: messageInfos): Promise<Chat> {
-        const newMessage = this.chatRepository.create(content);
-        await this.chatRepository.save(newMessage);
+    async saveMessage(data: messageInfos): Promise<Chat> {
+        const newMessage = new Chat();
 
-        return newMessage;
+        newMessage.content = data.content;
+        newMessage.dest = await this.usersService.findOne(data.destId);
+        newMessage.author = await this.usersService.findOne(data.authorId);
+
+        return await this.chatRepository.save(newMessage);;
     }
 
     async saveChannelMessage(data: ChannelMessage, author: User): Promise<Chat> {
