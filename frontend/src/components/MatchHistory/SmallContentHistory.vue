@@ -10,7 +10,7 @@
     </li>
   </TransitionGroup>
   <div class="nofriends v-center" v-if="noMatch">
-    You never played our wonderful game &#128530;
+    Never played our wonderful game &#128530;
   </div>
 </template>
 
