@@ -16,8 +16,9 @@ import { ref, defineComponent, defineExpose, onBeforeMount } from "vue";
 import BlockedUserItem from "./BlockedUserItem.vue";
 import { useUserStore } from "@/stores/user";
 import { getUrlOf } from "@/router";
+import { StoreGeneric } from "pinia";
 
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 const blocked = ref([]);
 
 function doFetchBlocked() {

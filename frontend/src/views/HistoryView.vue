@@ -32,9 +32,10 @@ import { getUrlOf } from "@/router";
 import TableHistory from "@/components/MatchHistory/TableHistory.vue";
 import { useUserStore } from "@/stores/user";
 import { BattleShow } from "@backend/battles/utils/battle-show";
+import { StoreGeneric } from "pinia";
 
 // variables
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 const dataReady: Ref<Array<boolean>> = ref([false, false]);
 const history: Ref<Array<BattleShow[]>> = ref([[], []]);
 const noMatch: Ref<Array<boolean>> = ref([false, true]);

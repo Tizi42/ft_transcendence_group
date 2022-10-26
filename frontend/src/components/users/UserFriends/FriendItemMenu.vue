@@ -26,12 +26,13 @@ import axios from "axios";
 import { User } from "@backend/users/users.entity";
 import socket from "@/socket";
 import { getUrlOf } from "@/router";
+import { StoreGeneric } from "pinia";
 
 interface Props {
   friend: User;
 }
 
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 const props: Readonly<Props> = defineProps<Props>();
 const emit = defineEmits(["hideMenu", "inviting"]);
 const menu = ref();

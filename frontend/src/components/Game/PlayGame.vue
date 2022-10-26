@@ -21,8 +21,9 @@ import GameOverlay from "./GameOverlay.vue";
 import { useUserStore } from "@/stores/user";
 import router from "@/router";
 import { roomInfo } from "@backend/game/utils/type";
+import { StoreGeneric } from "pinia";
 
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 
 interface Props {
   room_name: string;

@@ -81,13 +81,14 @@
 import socket from "@/socket";
 import { useUserStore } from "@/stores/user";
 import { Channel } from "@backend/channel/entities/channel.entity";
+import { StoreGeneric } from "pinia";
 import { defineComponent, defineExpose, defineProps, defineEmits } from "vue";
 
 interface Props {
   channel: Channel;
 }
 
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 const props: Readonly<Props> = defineProps<Props>();
 
 const test = () => {

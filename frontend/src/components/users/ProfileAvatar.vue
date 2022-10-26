@@ -24,8 +24,9 @@ import { ref, defineComponent, defineExpose } from "vue";
 import axios from "axios";
 import { useUserStore } from "@/stores/user";
 import { getUrlOf } from "@/router";
+import { StoreGeneric } from "pinia";
 
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 const upload = ref();
 const reader = new FileReader();
 const avatarFrame = ref();

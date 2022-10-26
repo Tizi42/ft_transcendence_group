@@ -50,9 +50,10 @@ import LoadingRing from "../utils/LoadingRing.vue";
 import router from "@/router/index";
 import socket from "@/socket";
 import { useUserStore } from "@/stores/user";
+import { StoreGeneric } from "pinia";
 
 const waiting: Ref<boolean> = ref(false);
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 const show: Ref<boolean> = ref(false);
 const choosenMode: Ref<number> = ref(0);
 const numberModes = 3;

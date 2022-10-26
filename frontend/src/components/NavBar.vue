@@ -37,8 +37,9 @@
 import { useUserStore } from "@/stores/user";
 import { onBeforeMount, onBeforeUnmount, Ref, ref } from "vue";
 import socket from "@/socket";
+import { StoreGeneric } from "pinia";
 
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 const pendingReq: Ref<boolean> = ref(false);
 const pendingMsg: Ref<boolean> = ref(false);
 user.doFetch();

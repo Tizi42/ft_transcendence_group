@@ -21,8 +21,9 @@ import { Ref, ref } from "vue";
 import axios from "axios";
 import socket from "@/socket";
 import { getUrlOf } from "@/router";
+import { StoreGeneric } from "pinia";
 
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 const props = defineProps(["blocked"]);
 const emit = defineEmits(["renew"]);
 const notRemoved: Ref<boolean> = ref(true);

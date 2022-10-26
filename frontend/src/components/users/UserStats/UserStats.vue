@@ -45,8 +45,9 @@ import { onBeforeMount, ref, Ref } from "vue";
 import WinGraph from "./WinGraph.vue";
 import TableHistory from "@/components/MatchHistory/TableHistory.vue";
 import { BattleShow } from "@backend/battles/utils/battle-show";
+import { StoreGeneric } from "pinia";
 
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 const dataReady: Ref<boolean> = ref(false);
 const historyReady: Ref<boolean> = ref(false);
 const leaderboard: Ref<User[]> = ref([]);

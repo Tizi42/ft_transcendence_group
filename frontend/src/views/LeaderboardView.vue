@@ -34,7 +34,7 @@ import { User } from "@backend/users/users.entity";
 import LeaderBoard from "@/components/Leaderboard/Leaderboard.vue";
 import { useUserStore } from "@/stores/user";
 
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 const dataReady: Ref<Array<boolean>> = ref([false, false]);
 const leaderboard: Ref<Array<User[]>> = ref([[], []]);
 const orders: Ref<Array<number>> = ref([1, 1]);

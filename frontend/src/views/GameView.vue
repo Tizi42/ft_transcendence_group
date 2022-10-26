@@ -21,8 +21,9 @@
 import { onBeforeRouteLeave, RouteLocationNormalized } from "vue-router";
 import { defineComponent, defineExpose, onBeforeMount, onMounted } from "vue";
 import { useUserStore } from "@/stores/user";
+import { StoreGeneric } from "pinia";
 
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 
 onMounted(() => {
   onBeforeRouteLeave((to: RouteLocationNormalized) => {

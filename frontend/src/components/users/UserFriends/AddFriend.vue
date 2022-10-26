@@ -49,8 +49,9 @@ import { useUserStore } from "@/stores/user";
 import socket from "@/socket";
 import axios from "axios";
 import { getUrlOf } from "@/router";
+import { StoreGeneric } from "pinia";
 
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 let input = ref("");
 let targetUser = ref();
 let pending = ref(false);

@@ -48,8 +48,9 @@ import { onBeforeMount, defineComponent, defineExpose } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import { getUrlOf } from "@/router";
+import { StoreGeneric } from "pinia";
 
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 const router = useRouter();
 
 onBeforeMount(async () => {

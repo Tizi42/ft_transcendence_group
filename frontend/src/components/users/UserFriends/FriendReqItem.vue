@@ -33,8 +33,9 @@ import { useUserStore } from "@/stores/user";
 import axios from "axios";
 import socket from "@/socket";
 import { getUrlOf } from "@/router";
+import { StoreGeneric } from "pinia";
 
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 const props = defineProps(["sender"]);
 
 async function onHandleFriendRequest(action: string) {

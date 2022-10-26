@@ -50,8 +50,9 @@ import socket from "@/socket";
 import axios from "axios";
 import { getUrlOf } from "@/router";
 import { Channel } from "@backend/channel/entities/channel.entity";
+import { StoreGeneric } from "pinia";
 
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 const searchInput: Ref<string> = ref("");
 const targetUser = ref();
 const pending = ref(false);

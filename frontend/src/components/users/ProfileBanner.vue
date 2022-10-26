@@ -36,8 +36,9 @@ import { ref, defineComponent, defineExpose, Ref } from "vue";
 import { useUserStore } from "@/stores/user";
 import ProfileAvatar from "./ProfileAvatar.vue";
 import { getUrlOf } from "@/router";
+import { StoreGeneric } from "pinia";
 
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 const editingMode: Ref<boolean> = ref(false);
 const newname: Ref<string> = ref("");
 

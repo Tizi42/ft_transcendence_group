@@ -14,8 +14,9 @@
 import { useUserStore } from "@/stores/user";
 import NavBar from "./components/NavBar.vue";
 import InviteNotif from "./components/InviteNotif.vue";
+import { StoreGeneric } from "pinia";
 
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 user.doFetch();
 </script>
 

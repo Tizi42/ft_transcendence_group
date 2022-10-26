@@ -35,6 +35,7 @@ import router, { getUrlOf } from "@/router";
 import socket from "@/socket";
 import { useUserStore } from "@/stores/user";
 import { GameRoomNS } from "@backend/game/utils/gameNS";
+import { StoreGeneric } from "pinia";
 import { defineComponent, defineExpose, defineProps, onMounted } from "vue";
 import { Ref, ref } from "vue";
 
@@ -43,7 +44,7 @@ interface Props {
   modeIcon: URL;
 }
 
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 
 const props: Readonly<Props> = defineProps<Props>();
 const show: Ref<boolean> = ref(false);

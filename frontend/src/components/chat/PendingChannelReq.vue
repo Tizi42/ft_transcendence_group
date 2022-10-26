@@ -29,13 +29,14 @@ import { getUrlOf } from "@/router";
 import socket from "@/socket";
 import { useUserStore } from "@/stores/user";
 import { Channel } from "@backend/channel/entities/channel.entity";
+import { StoreGeneric } from "pinia";
 import { defineComponent, defineExpose, defineProps } from "vue";
 
 interface Props {
   channelToJoin: Channel;
 }
 
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 const props: Readonly<Props> = defineProps<Props>();
 
 const handleInvitationRequest = async (action: string) => {

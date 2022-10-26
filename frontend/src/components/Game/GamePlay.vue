@@ -8,6 +8,7 @@
 import { defineExpose, defineComponent, onMounted, defineProps } from "vue";
 import { useUserStore } from "@/stores/user";
 import gameInfo from "@/game/gameInfo";
+import { StoreGeneric } from "pinia";
 
 interface Props {
   room_name: string;
@@ -16,7 +17,7 @@ interface Props {
 }
 
 const props: Readonly<Props> = defineProps<Props>();
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 const containerId = "game-container";
 const game = await import("@/game/gameConfig");
 

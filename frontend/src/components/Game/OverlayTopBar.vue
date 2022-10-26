@@ -72,6 +72,7 @@ import EmoteBox from "./EmoteBox.vue";
 import { UserMinimal } from "@/components/utils/UserMinimal";
 import { messageInGame } from "@backend/chat/utils/types";
 import { useUserStore } from "@/stores/user";
+import { StoreGeneric } from "pinia";
 
 interface Props {
   playerL: UserMinimal;
@@ -89,7 +90,7 @@ interface Props {
 
 const props: Readonly<Props> = defineProps<Props>();
 const show: Ref<boolean> = ref(false);
-const user = useUserStore();
+const user: StoreGeneric = useUserStore();
 const onLeftSide = ref(false);
 const onRightSide = ref(false);
 
