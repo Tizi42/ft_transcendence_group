@@ -206,13 +206,13 @@ async function showUserProfile(event: number) {
   await fetch(getUrlOf("api/users/info/" + event), {
     credentials: "include",
   })
-    .then((response) => {
+    .then((response: Response) => {
       return response.json();
     })
     .then((data) => {
       userTarget.value = data;
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       console.log("error : ", error);
     });
   isShowUserProfile.value = true;

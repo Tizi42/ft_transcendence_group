@@ -61,7 +61,7 @@ async function onSubmitDisplayName() {
         displayname: newname.value,
       }),
     })
-      .then((response) => {
+      .then((response: Response) => {
         return response.json();
       })
       .then((data) => {
@@ -73,7 +73,7 @@ async function onSubmitDisplayName() {
           editingMode.value = false;
         }
       })
-      .catch((error) => {
+      .catch((error: Error) => {
         console.log("error :", error);
       });
   } else editingMode.value = false;

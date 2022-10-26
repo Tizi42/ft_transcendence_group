@@ -25,14 +25,14 @@ function doFetchBlocked() {
   fetch(getUrlOf("api/users/block/") + user.id, {
     credentials: "include",
   })
-    .then((response) => {
+    .then((response: Response) => {
       return response.json();
     })
     .then((list) => {
       console.log("blocked users: ", list);
       blocked.value = list;
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       console.log(error);
     });
 }

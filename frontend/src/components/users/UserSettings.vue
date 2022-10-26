@@ -65,14 +65,14 @@ async function toggle2FA() {
     await fetch(getUrlOf("api/auth/2fa/turn-off"), {
       credentials: "include",
     })
-      .then((response) => {
+      .then((response: Response) => {
         return response.json();
       })
       .then((result) => {
         user.doFetch();
         console.log("success : ", result);
       })
-      .catch((error) => {
+      .catch((error: Error) => {
         console.log("error : ", error);
       });
   }

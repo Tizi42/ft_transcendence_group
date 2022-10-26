@@ -96,7 +96,7 @@ watch(
     await fetch(getUrlOf("api/channel/getAll/privates"), {
       credentials: "include",
     })
-      .then((response) => {
+      .then((response: Response) => {
         return response.json();
       })
       .then((data) => {
@@ -104,7 +104,7 @@ watch(
         console.log("data =", data);
         allMyInvite.value = data;
       })
-      .catch((error) => {
+      .catch((error: Error) => {
         console.log("error :", error);
       });
   }
@@ -122,7 +122,7 @@ const getChannelMessages = async (channelId: number) => {
   await fetch(getUrlOf("api/chat/channelMessages/" + channelId), {
     credentials: "include",
   })
-    .then((response) => {
+    .then((response: Response) => {
       return response.json();
     })
     .then((data) => {
