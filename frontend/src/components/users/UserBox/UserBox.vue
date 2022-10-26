@@ -120,8 +120,8 @@ function onSend() {
     .then(function () {
       pending.value = true;
       socket.emit("update_friend", {
-        from: props.target.id,
-        to: user.id,
+        from: props.target.id.toString(),
+        to: user.id.toString(),
       });
     })
     .catch(function (error: Error) {
@@ -138,8 +138,8 @@ function onCancel() {
     .then(function () {
       pending.value = false;
       socket.emit("update_friend", {
-        from: props.target.id,
-        to: user.id,
+        from: props.target.id.toString(),
+        to: user.id.toString(),
       });
     })
     .catch(function (error: Error) {

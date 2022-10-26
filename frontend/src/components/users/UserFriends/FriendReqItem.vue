@@ -39,8 +39,8 @@ const props = defineProps(["sender"]);
 
 async function onHandleFriendRequest(action: string) {
   const data = {
-    from: user.id,
-    to: props.sender.id,
+    from: user.id.toString(),
+    to: props.sender.id.toString(),
   };
   axios
     .post(getUrlOf("api/users/friends/") + action, {

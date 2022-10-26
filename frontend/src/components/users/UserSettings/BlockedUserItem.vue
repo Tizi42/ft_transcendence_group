@@ -30,8 +30,8 @@ const notRemoved: Ref<boolean> = ref(true);
 async function onRemoveBlock() {
   notRemoved.value = false;
   const data = {
-    from: user.id,
-    to: props.blocked.id,
+    from: user.id.toString(),
+    to: props.blocked.id.toString(),
   };
   axios
     .post(getUrlOf("api/users/block/rm/"), {
