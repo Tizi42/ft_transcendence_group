@@ -18,9 +18,7 @@
         <div v-if="friend.status === 'in game'" class="red-point"></div>
         <h3>{{ friend.displayName }}</h3>
       </div>
-      <div v-if="user.pendingMsgList.includes(friend.id)" class="redNotify">
-        x
-      </div>
+      <div v-if="user.pendingMsgList.includes(friend.id)" class="redNotify" />
     </li>
   </ul>
 </template>

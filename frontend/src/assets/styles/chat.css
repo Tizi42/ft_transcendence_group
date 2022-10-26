@@ -55,6 +55,7 @@
 }
 
 #players-col, #channels-col {
+    position: relative;
     flex: 1;
     margin: 0;
     padding: 1em;
@@ -88,6 +89,10 @@
 }
 
 /* Players, friends list */
+
+.list-friends {
+  position: relative;
+}
 
 .list-friends li {
     margin: 0;

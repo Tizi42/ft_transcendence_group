@@ -35,9 +35,9 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.server.sockets.to(socket.data.friendWith[i].toString()).emit('friend_login_logout');
       }
       // console log the room for this user //
-      const rooms = this.server.of("/").adapter.rooms;
-      console.log("room users id :", socket.data.id, " = ", rooms.get(socket.data.id.toString()));
-      console.log("length room = ", rooms.get(socket.data.id.toString()).size);
+      // const rooms = this.server.of("/").adapter.rooms;
+      // console.log("room users id :", socket.data.id, " = ", rooms.get(socket.data.id.toString()));
+      // console.log("length room = ", rooms.get(socket.data.id.toString()).size);
       // ////////////////////////////////// //
     }
 

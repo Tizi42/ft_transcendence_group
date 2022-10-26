@@ -6,7 +6,7 @@
       @click="select('players')"
     >
       Players
-      <div v-if="user.pendingMsgList.length > 0" class="redNotify">x</div>
+      <div v-if="user.pendingMsgList.length > 0" class="redNotifyGlobal" />
     </button>
     <button
       id="channels-col"
@@ -14,7 +14,7 @@
       @click="select('channels')"
     >
       Channels
-      <div v-if="user.pendingMsgChannel.length > 0" class="redNotify">x</div>
+      <div v-if="user.pendingMsgChannel.length > 0" class="redNotifyGlobal" />
     </button>
   </div>
 </template>
