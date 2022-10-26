@@ -65,12 +65,12 @@
         :noMatch="noMatch"
       />
     </div>
-    <div class="friendsBox" v-if="show">
+    <!-- <div class="friendsBox" v-if="show">
       <div class="subtitleBox">
         <img src="@/assets/icons/friends.svg" />
         Friends ({{ nbFriends }})
       </div>
-    </div>
+    </div> -->
     <button
       @click="inviteToPlay()"
       v-if="target.status === 'online' && target.id != user.id"

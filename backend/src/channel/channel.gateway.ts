@@ -141,8 +141,13 @@ export class ChannelGateway extends AppGateway {
     {
       const channelName = await this.channelService.banUser(data.channelId, user.id, data.userToBanId);
       if (channelName != null) {
-        this.server.sockets.to(channelName).emit('banned_user', data.userToBanId, data.channelId);
-        this.server.sockets.to(channelName).emit('hide_window', data.userToBanId);
+        // this.server.sockets.to(channelName).emit('banned_user', data.userToBanId, data.channelId);
+        // this.server.sockets.to(channelName).emit('hide_window', data.userToBanId);
+        this.server.sockets.to(channelName).emit('channel_updated', data.channelId);
+        setTimeout(async () => {
+          await this.channelService.unBanUser(data.channelId, data.userToBanId);
+          this.server.sockets.to(channelName).emit('channel_updated', data.channelId);
+        }, 7200000);
       }
     }
   }
@@ -184,7 +189,7 @@ export class ChannelGateway extends AppGateway {
         setTimeout(async () => {
           await this.channelService.unMuteUser(data.channelId, data.userToMuteId);
           this.server.sockets.to(channelName).emit('channel_updated', data.channelId);
-        }, 300000);
+        }, 60000);
       }
     }
   }

@@ -224,6 +224,23 @@ export class ChannelService {
     return null;
   }
 
+  async unBanUser(channelId: number, userToBanId: number) {
+    const channel = await this.findChannelAndMembers(channelId);
+
+    if (!channel) {
+      return null;
+    }
+    if (!this.isChannelMember(userToBanId, channel[0])) {
+      return null;
+    }
+    for (let i = 0; i < channel[0].banned.length; i++)
+    {
+      if (channel[0].banned[i] === userToBanId)
+        channel[0].banned.splice(i, 1);
+        await this.channelRepository.save(channel);
+    }
+  }
+
   async muteUser(channelId: number, userToMuteId: number) {
     const channel = await this.findChannelAndMembers(channelId);
 
