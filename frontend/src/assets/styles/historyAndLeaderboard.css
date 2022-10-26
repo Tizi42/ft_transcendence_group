@@ -7,6 +7,27 @@
   height: fit-content;
 }
 
+.matchSmall {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  width: 100%;
+}
+
+.matchSmallResults {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+}
+
+.nameSmall {
+  width: 50%;
+}
+
 .title img {
   height: 42px;
   margin-right: 20px;
@@ -81,6 +102,29 @@
 .tableContainer::-webkit-scrollbar {
   display: none;
 }
+
+
+.tableSmallContainer {
+  color: white;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  overflow: scroll;
+  width: 100%;
+  height: 15vh;
+  margin: 0;
+  z-index: 20;
+  scrollbar-color: dark;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  background-color: #1e2b02cc;
+  border-radius: 0px 22px 22px 22px;
+}
+
+.tableSmallContainer::-webkit-scrollbar {
+  display: none;
+}
+
 
 .titleContainer {
   z-index: 1;
@@ -377,6 +421,18 @@ li {
 .profile:hover {
   transform: scale(1.2);
   cursor: pointer;
+}
+
+.profileSmall {
+  display: block;
+  width: 50px;
+  min-width: 50px;
+  height: 50px;
+  min-height: 50px;
+  border-radius: 100%;
+  object-fit: cover;
+  opacity: 1;
+  transition: all 0.3s ease-out;
 }
 
 li {

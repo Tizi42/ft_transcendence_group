@@ -54,6 +54,17 @@
         </tbody>
       </table>
     </div>
+    <div class="historyBox" v-if="show">
+      <div class="subtitleBox">
+        <img src="@/assets/icons/stats.svg" />
+        History
+      </div>
+      <SmallTableHistory
+        :ready="historyReady"
+        :battles="history"
+        :noMatch="noMatch"
+      />
+    </div>
     <div class="friendsBox" v-if="show">
       <div class="subtitleBox">
         <img src="@/assets/icons/friends.svg" />
@@ -91,6 +102,8 @@ import { getUrlOf } from "@/router";
 import socket from "@/socket";
 import { StoreGeneric } from "pinia";
 import InvitationModal from "@/components/Game/invitation/InvitationModal.vue";
+import SmallTableHistory from "@/components/MatchHistory/SmallTableHistory.vue";
+import { BattleShow } from "@backend/battles/utils/battle-show";
 
 interface Props {
   target: User;
@@ -105,6 +118,9 @@ const friendWith: Ref<boolean> = ref(false);
 const nbFriends: Ref<number> = ref(0);
 const show: Ref<boolean> = ref(false);
 const emit = defineEmits(["closeUserBox", "statusOn", "statusOff"]);
+const historyReady: Ref<boolean> = ref(false);
+const history: Ref<BattleShow[]> = ref([]);
+const noMatch: Ref<boolean> = ref(true);
 
 function onSend() {
   const data = {
@@ -151,6 +167,20 @@ function getWinRate(): string {
   return props.target.winRate + "%";
 }
 
+async function reloadHistory() {
+  historyReady.value = false;
+  let response: Response = await fetch(
+    getUrlOf("api/battles/show/" + props.target.id),
+    {
+      credentials: "include",
+    }
+  );
+  history.value = await response.json();
+  setTimeout(() => {
+    historyReady.value = true;
+  }, 500);
+}
+
 async function getFriendShipInfo() {
   let getFriendLvl: Response = await fetch(
     getUrlOf(
@@ -190,6 +220,9 @@ function closeUser() {
 onBeforeMount(async () => {
   show.value = false;
   await getFriendShipInfo();
+  await reloadHistory();
+  if (history.value.length > 0) noMatch.value = false;
+  else noMatch.value = true;
   show.value = true;
 });
 
@@ -330,7 +363,8 @@ tr:last-child {
 
 .friendsBox,
 .statsBox,
-.infoBox {
+.infoBox,
+.historyBox {
   display: flex;
   flex-direction: column;
   align-items: center;
