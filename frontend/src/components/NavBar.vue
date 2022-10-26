@@ -55,7 +55,7 @@ onBeforeMount(async () => {
   socket.on("receive_message_notification", () => {
     pendingMsg.value = true;
   });
-  socket.on("receive_channel_notification", (id: number) => {
+  socket.on("receive_channel_notification", (id: number, channelId: number) => {
     if (id != user.id) pendingMsg.value = true;
   });
   socket.on("ignore_chat_notification", async () => {

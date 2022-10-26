@@ -5,7 +5,7 @@ import { AppGateway } from '../gateway';
 import { UsersService } from './users.service';
 import { ChatService } from '../chat/chat.service';
 import { BattlesService } from '../battles/battles.service';
-import { FriendShip } from './utils/types';
+import { FriendShip, RemoveNotif, RemoveNotifChannel } from './utils/types';
 
 export class UserGateway extends AppGateway {
 
@@ -61,5 +61,31 @@ export class UserGateway extends AppGateway {
   @SubscribeMessage('update_friend')
   async onFriendAccept(@MessageBody() data: FriendShip) {
     this.server.sockets.to(data.from).to(data.to).emit('friend_update');
+  }
+
+  @SubscribeMessage('remove_private_notif')
+  async handleRemovePrivateNotif(
+    @MessageBody() data: RemoveNotif,
+    @ConnectedSocket() socket: Socket
+  ) {
+    const user = await this.chatService.getUserFromSocket(socket);
+
+    if (!user) {
+      return ;
+    }
+    this.server.sockets.to(socket.data.id.toString()).emit('ignore_private_notif', data.receiverId);
+  }
+
+  @SubscribeMessage('remove_channel_notif')
+  async handleRemoveChannelNotif(
+    @MessageBody() data: RemoveNotifChannel,
+    @ConnectedSocket() socket: Socket
+  ) {
+    const user = await this.chatService.getUserFromSocket(socket);
+
+    if (!user) {
+      return ;
+    }
+    this.server.sockets.to(socket.data.id.toString()).emit('ignore_channel_notif', data.selectedChannelId);
   }
 }
