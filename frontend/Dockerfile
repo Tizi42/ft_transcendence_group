@@ -8,4 +8,4 @@ RUN     npm ci
 
 COPY    . /usr/src/app/
 
-CMD     [ "npm", "run", "dev" ]
+CMD     [ "npm", "run", "prod" ]
