@@ -38,12 +38,12 @@ async function onRemoveBlock() {
       id1: user.id,
       id2: props.blocked.id,
     })
-    .then((response) => {
+    .then((response: Response) => {
       console.log(response);
       emit("renew");
       socket.emit("update_friend", data);
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       console.log(error);
     });
   user.doFetch();

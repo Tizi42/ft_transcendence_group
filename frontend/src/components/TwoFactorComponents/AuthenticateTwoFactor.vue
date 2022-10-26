@@ -37,7 +37,7 @@ const authenticate = async () => {
       authenticationCode: authenticationCode.value,
     }),
   })
-    .then((response) => {
+    .then((response: Response) => {
       let p1 = document.querySelector("p");
       p1?.remove();
       if (response.status === 200) {
@@ -53,7 +53,7 @@ const authenticate = async () => {
       }
       return response.json();
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       console.log("error : ", error);
     });
 };

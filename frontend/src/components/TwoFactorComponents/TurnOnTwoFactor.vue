@@ -32,7 +32,7 @@ const verifyCode = async () => {
       authenticationCode: authenticationCode.value,
     }),
   })
-    .then((response) => {
+    .then((response: Response) => {
       let p1 = document.querySelector("p");
       p1?.remove();
       if (response.status === 200) {
@@ -51,7 +51,7 @@ const verifyCode = async () => {
     .then((data) => {
       console.log("success : ", data);
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       console.log("error : ", error);
     });
 };

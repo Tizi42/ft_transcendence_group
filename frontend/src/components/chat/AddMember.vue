@@ -73,7 +73,7 @@ function onClickSearch() {
   console.log(searchInput.value);
   axios
     .get(getUrlOf("api/users/info/") + searchInput.value)
-    .then((response) => {
+    .then((response: Response) => {
       if (response.data) {
         targetUser.value = response.data;
         console.log("data =", targetUser.value);
@@ -98,7 +98,7 @@ function onClickSearch() {
         searchInput.value = "";
       }
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       console.log(error);
       inputBorder.value = "4px solid red";
       searchInput.value = "";
@@ -121,7 +121,7 @@ async function onSend() {
       targetId: targetUser.value.id,
     }),
   })
-    .then((response) => {
+    .then((response: Response) => {
       return response.json();
     })
     .then((data) => {
@@ -131,7 +131,7 @@ async function onSend() {
         socket.emit("update_join_request", dataToEmit);
       }
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       console.log("error : ", error);
     });
 }
@@ -152,7 +152,7 @@ async function onCancel() {
       targetId: targetUser.value.id,
     }),
   })
-    .then((response) => {
+    .then((response: Response) => {
       return response.json();
     })
     .then((data) => {
@@ -162,7 +162,7 @@ async function onCancel() {
         socket.emit("update_join_request", dataToEmit);
       }
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       console.log("error : ", error);
     });
 }
