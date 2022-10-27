@@ -234,7 +234,7 @@ export class GameGateway extends AppGateway {
     this.server.to(invitation.sender_sid).to(socket.id).emit("go_play", roomName);
 
     // clean invitaion
-    this.server.to(data.user_id.toString()).emit("invitation_expired");
+    // this.server.to(data.user_id.toString()).emit("invitation_expired");
     GameGateway.invitations.delete(data.sender);
   }
 
