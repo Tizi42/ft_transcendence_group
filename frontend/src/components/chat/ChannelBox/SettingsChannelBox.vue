@@ -98,6 +98,9 @@ const changePrivacy = async () => {
   console.log("password = ", newPassword.value);
   console.log("channel = ", props.channel);
   inputBorder.value = "none";
+  if (channelType.value === "") {
+    return;
+  }
   socket.emit("update_channel_privacy", {
     channel: props.channel,
     type: channelType.value,

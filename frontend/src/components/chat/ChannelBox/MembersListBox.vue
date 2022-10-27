@@ -25,7 +25,8 @@
               v-if="
                 channel.admins.includes(user.id, 0) &&
                 !channel.admins.includes(member.id, 0) &&
-                !channel.banned.includes(member.id, 0)
+                !channel.banned.includes(member.id, 0) &&
+                !channel.muted.includes(member.id, 0)
               "
             >
               ban
@@ -44,7 +45,8 @@
               v-if="
                 channel.admins.includes(user.id, 0) &&
                 !channel.admins.includes(member.id, 0) &&
-                !channel.muted.includes(member.id, 0)
+                !channel.muted.includes(member.id, 0) &&
+                !channel.banned.includes(member.id, 0)
               "
             >
               mute
