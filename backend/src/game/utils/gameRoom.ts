@@ -455,6 +455,7 @@ export class GameRoom {
     this.game_status = "ended";
     clearInterval(this.interval);
     if (this.mode === "magic") {
+      console.log("clear magic timeouts in game end");
       clearInterval(this.spell_interval);
       this.spell_timeout.forEach((id) => {
         clearTimeout(id);
@@ -499,6 +500,10 @@ export class GameRoom {
         this.previous_ball_speed = 0;
         this.L_shield = 0;
         this.R_shield = 0;
+        this.spell1_L = 0;
+        this.spell2_L = 0;
+        this.spell1_L = 0;
+        this.spell2_L = 0;
     }
   }
 
