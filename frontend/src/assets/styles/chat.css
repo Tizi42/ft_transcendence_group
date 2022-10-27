@@ -208,7 +208,9 @@
 }
 
 .userNotMuted .message-text:focus,
-.userNotMuted .message-text:hover {
+.userNotMuted .message-text:hover,
+.userNotBanned .message-text:focus,
+.userNotBanned .message-text:hover {
     transform: scale(1.01, 1.01);
 }
 
@@ -222,15 +224,18 @@
     background-color: #1E2B02;
 }
 
-.message-input .userMuted button {
+.message-input .userMuted button,
+.message-input .userBanned button {
     opacity: 60%;
 }
 
-.message-input .userNotMuted button {
+.message-input .userNotMuted button,
+.message-input .userNotBanned button {
     transition: transform 0.5s ease;
 }
 
-.message-input .userNotMuted button:hover {
+.message-input .userNotMuted button:hover,
+.message-input .userNotBanned button:hover {
     transform: scale(1.05, 1.05);
     cursor: pointer;
 }

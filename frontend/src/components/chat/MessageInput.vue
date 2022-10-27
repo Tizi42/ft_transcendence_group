@@ -20,23 +20,46 @@
       v-if="selectedChannel != -1 && channel"
       @submit.prevent="onSubmit(receiver, selectedChannel)"
       :class="{
-        userMuted: channel.muted.includes(user.id, 0),
-        userNotMuted: !channel.muted.includes(user.id, 0),
+        userMuted:
+          channel.muted.includes(user.id, 0) ||
+          channel.banned.includes(user.id, 0),
+        userNotMuted:
+          !channel.muted.includes(user.id, 0) &&
+          !channel.banned.includes(user.id, 0),
+        // userBanned: channel.banned.includes(user.id, 0),
+        // userNotBanned: !channel.banned.includes(user.id, 0),
       }"
     >
       <div class="div-message-input">
         <input
-          v-if="!channel.muted.includes(user.id, 0)"
+          v-if="
+            !channel.muted.includes(user.id, 0) &&
+            !channel.banned.includes(user.id, 0)
+          "
           v-model="messageText"
           type="text"
           placeholder="Your message.."
           class="message-text"
         />
         <input
-          v-else
+          v-if="
+            channel.muted.includes(user.id, 0) &&
+            !channel.banned.includes(user.id, 0)
+          "
           v-model="messageText"
           type="text"
           placeholder="You've been muted for 1 minutes.."
+          class="message-text"
+          disabled
+        />
+        <input
+          v-if="
+            !channel.muted.includes(user.id, 0) &&
+            channel.banned.includes(user.id, 0)
+          "
+          v-model="messageText"
+          type="text"
+          placeholder="You've been banned for 2 hours.."
           class="message-text"
           disabled
         />
