@@ -99,8 +99,8 @@
     </ChannelBoxModal>
     <InvitationModal
       @hideInvitation="hideInvitation"
-      v-if="inviteWindow && userTarget"
-      :friend="userTarget"
+      v-if="inviteWindow && target"
+      :friend="target"
     />
     <MyModal v-if="addMemberWindow && channel" @hide="hide">
       <AddMember :channel="channel" />
@@ -217,6 +217,7 @@ async function showUserProfile(event: number) {
     });
   isShowUserProfile.value = true;
 }
+
 watch(
   () => props.history,
   () => {

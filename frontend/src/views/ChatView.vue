@@ -28,7 +28,6 @@
         :user="user"
       />
       <HistoryMessages
-        v-if="(receiver != -1 && receiverProfile) || selectedChannel != -1"
         :history="history"
         :target="receiverProfile"
         :isActive="isActive"
