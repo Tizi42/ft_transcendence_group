@@ -181,7 +181,7 @@ export class GameRoom {
       console.log("noooooooooooope dont spawn spell");
       return;
     }
-    console.log("spawmn a new spell !");
+    // console.log("spawmn a new spell !");
     const spellL = this.getRandomInt(6) + 1;
     const spellR = this.getRandomInt(6) + 1;
 
@@ -199,7 +199,7 @@ export class GameRoom {
   }
 
   on_switch_spell(user_id: number) {
-    console.log("Switch spell !");
+    // console.log("Switch spell !");
     let tmp: number;
   
     if (this.playerL === user_id) {
@@ -221,7 +221,7 @@ export class GameRoom {
 
   on_spell_lauched(user_id: number)
   {
-    console.log("Launch a spell !");
+    // console.log("Launch a spell !");
     let effect: number = 0;
     let side: string = "";
     let target: string = "";
@@ -327,7 +327,7 @@ export class GameRoom {
   }
 
   on_paddle_move(user_id: number, paddle_move_direction: number) {
-    console.log("moving paddle, dir: ", paddle_move_direction);
+    // console.log("moving paddle, dir: ", paddle_move_direction);
     let side: string;
     if (this.playerL === user_id) side = "left";
     else if (this.playerR === user_id) side = "right";
@@ -508,8 +508,8 @@ export class GameRoom {
       this.R_shield = 0;
       this.spell1_L = 0;
       this.spell2_L = 0;
-      this.spell1_L = 0;
-      this.spell2_L = 0;
+      this.spell1_R = 0;
+      this.spell2_R = 0;
     }
   }
 
