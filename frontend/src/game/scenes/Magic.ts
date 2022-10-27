@@ -28,8 +28,6 @@ export default class MagicScene extends Phaser.Scene {
 
   can_switch = 1;
   can_cast = 1;
-  spell1 = 0;
-  spell2 = 0;
 
   paddle_left_size = 1;
   paddle_right_size = 1;
@@ -212,13 +210,6 @@ export default class MagicScene extends Phaser.Scene {
       this.spell1_right.play(this.anims_index[data.spell1_R]);
       this.spell2_right.stop();
       this.spell2_right.play(this.anims_index[data.spell2_R]);
-      if (gameInfo.user_role === "left") {
-        this.spell1 = data.spell1_L;
-        this.spell2 = data.spell2_L;
-      } else {
-        this.spell1 = data.spell1_R;
-        this.spell2 = data.spell2_R;
-      }
     });
     socket.on("update_paddle_size", (data: paddleSizes) => {
       this.paddle_left.setScale(1, data.left / 40);
@@ -267,6 +258,7 @@ export default class MagicScene extends Phaser.Scene {
         this.update_paddle(1);
       }
       if (this.keyLeft.isDown || this.keyRight.isDown) {
+        // console.log("witched !");
         if (this.can_switch) {
           this.can_switch = 0;
           socket.emit("switch_spell", {
@@ -274,9 +266,13 @@ export default class MagicScene extends Phaser.Scene {
             room_name: gameInfo.room_name,
           });
         }
-      } else this.can_switch = 1;
+      } else if (this.keyLeft.isUp || this.keyRight.isUp) {
+        // console.log("can switch !");
+        this.can_switch = 1;
+      }
 
       if (this.keyShift.isDown) {
+        // console.log("casted");
         if (this.can_cast) {
           this.can_cast = 0;
           socket.emit("launch_spell", {
@@ -284,7 +280,10 @@ export default class MagicScene extends Phaser.Scene {
             room_name: gameInfo.room_name,
           });
         }
-      } else this.can_cast = 1;
+      } else if (this.keyShift.isUp) {
+        // console.log("can cast !");
+        this.can_cast = 1;
+      }
     }
   }
 
@@ -322,5 +321,13 @@ export default class MagicScene extends Phaser.Scene {
     this.paddle_right.setScale(1, 1);
     this.can_cast = 1;
     this.can_switch = 1;
+    this.spell1_left.stop();
+    this.spell1_left.play(this.anims_index[0]);
+    this.spell2_left.stop();
+    this.spell2_left.play(this.anims_index[0]);
+    this.spell1_right.stop();
+    this.spell1_right.play(this.anims_index[0]);
+    this.spell2_right.stop();
+    this.spell2_right.play(this.anims_index[0]);
   }
 }
