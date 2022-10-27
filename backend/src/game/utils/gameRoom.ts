@@ -141,6 +141,7 @@ export class GameRoom {
     if (this.mode == "speed") {
       setTimeout(this.game_end.bind(this), 180000);
     }
+    clearInterval(this.spell_interval);
     this.current_game_start_time = new Date();
     this.current_game_id = await this.battlesService.addOne({
       opponent1: this.playerL,
@@ -149,6 +150,9 @@ export class GameRoom {
     });
     this.game_status = "running";
     this.getRandomInt(1) === 1 ? this.on_launch("toRight") : this.on_launch("toLeft");
+    if (this.mode === "magic") {
+      this.spell_interval = setInterval(this.spawn_spell.bind(this), this.spell_spawn_frequencey);
+    }
   }
 
   on_launch(direction: string)
@@ -170,12 +174,13 @@ export class GameRoom {
     this.ball_velocity_y = randVelocity[1];
     // start update
     this.interval = setInterval(this.update_game.bind(this), this.update_frequencey);
-    if (this.mode == "magic") {
-      this.spell_interval = setInterval(this.spawn_spell.bind(this), this.spell_spawn_frequencey);
-    }
   }
 
   spawn_spell() {
+    if (this.game_status === "ended") {
+      console.log("noooooooooooope dont spawn spell");
+      return;
+    }
     console.log("spawmn a new spell !");
     const spellL = this.getRandomInt(6) + 1;
     const spellR = this.getRandomInt(6) + 1;
@@ -491,19 +496,20 @@ export class GameRoom {
     this.paddle.left.y = this.height * 0.5;
     this.paddle.right.y = this.height * 0.5;
     if (this.mode == "magic") {
-        this.paddle["left"].height_half = 40;
-        this.paddle["right"].height_half = 40;
-        this.L_reverse_effect = 1;
-        this.R_reverse_effect = 1;
-        this.L_speed_ball = 0;
-        this.R_speed_ball = 0;
-        this.previous_ball_speed = 0;
-        this.L_shield = 0;
-        this.R_shield = 0;
-        this.spell1_L = 0;
-        this.spell2_L = 0;
-        this.spell1_L = 0;
-        this.spell2_L = 0;
+      console.log("reset game variables");
+      this.paddle["left"].height_half = 40;
+      this.paddle["right"].height_half = 40;
+      this.L_reverse_effect = 1;
+      this.R_reverse_effect = 1;
+      this.L_speed_ball = 0;
+      this.R_speed_ball = 0;
+      this.previous_ball_speed = 0;
+      this.L_shield = 0;
+      this.R_shield = 0;
+      this.spell1_L = 0;
+      this.spell2_L = 0;
+      this.spell1_L = 0;
+      this.spell2_L = 0;
     }
   }
 
