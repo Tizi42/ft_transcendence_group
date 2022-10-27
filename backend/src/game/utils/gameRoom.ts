@@ -176,6 +176,7 @@ export class GameRoom {
   }
 
   spawn_spell() {
+    console.log("spawmn a new spell !");
     const spellL = this.getRandomInt(6) + 1;
     const spellR = this.getRandomInt(6) + 1;
 
@@ -193,6 +194,7 @@ export class GameRoom {
   }
 
   on_switch_spell(user_id: number) {
+    console.log("Switch spell !");
     let tmp: number;
   
     if (this.playerL === user_id) {
@@ -214,6 +216,7 @@ export class GameRoom {
 
   on_spell_lauched(user_id: number)
   {
+    console.log("Launch a spell !");
     let effect: number = 0;
     let side: string = "";
     let target: string = "";
@@ -225,6 +228,7 @@ export class GameRoom {
       side = "right";
       target = "left";
     }
+    else return;
 
     if (side == "left") {
       if (this.spell1_L) {
@@ -318,6 +322,7 @@ export class GameRoom {
   }
 
   on_paddle_move(user_id: number, paddle_move_direction: number) {
+    console.log("moving paddle, dir: ", paddle_move_direction);
     let side: string;
     if (this.playerL === user_id) side = "left";
     else if (this.playerR === user_id) side = "right";
@@ -429,7 +434,6 @@ export class GameRoom {
       right: this.score_right,
     });
     clearInterval(this.interval);
-    if (this.mode == "magic") clearInterval(this.spell_interval);
     if (!this.check_game_end())
       this.on_launch(direction);
   }
@@ -449,12 +453,12 @@ export class GameRoom {
 
   game_end(){
     this.game_status = "ended";
-    if (this.mode === "speed")
-      clearInterval(this.interval);
+    clearInterval(this.interval);
     if (this.mode === "magic") {
-      for (let id of this.spell_timeout) {
+      clearInterval(this.spell_interval);
+      this.spell_timeout.forEach((id) => {
         clearTimeout(id);
-      }
+      });
     }
 
     this.winner = this.score_left > this.score_right ? this.playerL : this.playerR;
@@ -502,8 +506,12 @@ export class GameRoom {
   stop_game() {
     this.game_status = "ended";
     clearInterval(this.interval);
-    if (this.mode === "magic")
+    if (this.mode === "magic") {
       clearInterval(this.spell_interval);
+      this.spell_timeout.forEach((id) => {
+        clearTimeout(id);
+      });
+    }
   }
 
   /*
