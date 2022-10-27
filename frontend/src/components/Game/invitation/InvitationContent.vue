@@ -47,6 +47,7 @@ const refused: Ref<boolean> = ref(false);
 const choosenMode: Ref<string> = ref("normal");
 const lastSending: Ref<Date> = ref(new Date());
 const refusedMsg: Ref<string> = ref("");
+const invitationTimeout: Ref<ReturnType<typeof setTimeout>> = ref();
 
 function send() {
   emit("sending");
@@ -58,7 +59,7 @@ function send() {
     user_id: user.id,
     invitee: props.friend.id,
   });
-  setTimeout(() => {
+  invitationTimeout.value = setTimeout(() => {
     if (new Date().getTime() - lastSending.value.getTime() > 29000)
       cancelTooLong();
   }, 30000);
@@ -101,8 +102,9 @@ onBeforeMount(() => {
     refusedMsg.value = "Your opponent has turned down your invitation";
     hideAfterTime();
   });
-  socket.on("go_play", (roomName: string) => {
-    console.log(roomName);
+  socket.once("go_play", (roomName: string) => {
+    clearTimeout(invitationTimeout.value);
+    console.log("go play received", roomName);
     router.push({ name: "pong", params: { room_name: roomName } });
   });
   socket.on("unavailable", () => {
@@ -120,7 +122,6 @@ onBeforeMount(() => {
 
 onBeforeUnmount(() => {
   socket.off("decline_invitation");
-  socket.off("go_play");
   socket.off("unavailable");
   socket.off("not_allowed");
 });
