@@ -217,6 +217,7 @@ async function showUserProfile(event: number) {
     });
   isShowUserProfile.value = true;
 }
+
 watch(
   () => props.history,
   () => {
