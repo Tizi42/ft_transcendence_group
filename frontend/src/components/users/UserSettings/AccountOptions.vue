@@ -74,9 +74,9 @@ async function toggle2FA() {
       .then((response: Response) => {
         return response.json();
       })
-      .then((result) => {
+      .then(() => {
         user.doFetch();
-      })
+      });
   }
 }
 

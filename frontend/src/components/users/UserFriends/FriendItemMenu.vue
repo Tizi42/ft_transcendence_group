@@ -53,13 +53,13 @@ async function onRemoveFriend() {
         withCredentials: true,
       }
     )
-    .then((response: Response) => {
+    .then(() => {
       user.doFetchFriends();
       socket.emit("update_friend", {
         from: props.friend.id.toString(),
         to: user.id.toString(),
       });
-    })
+    });
   emit("hideMenu");
 }
 
@@ -75,13 +75,13 @@ function onBlockUser() {
         withCredentials: true,
       }
     )
-    .then((response: Response) => {
+    .then(() => {
       user.doFetchFriends();
       socket.emit("update_friend", {
         from: props.friend.id.toString(),
         to: user.id.toString(),
       });
-    })
+    });
   emit("hideMenu");
 }
 

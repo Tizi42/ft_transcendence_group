@@ -70,7 +70,7 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
         winRate.value = user.winRate;
         allowNotifications.value = user.allowNotifications;
         channelInvitePending.value = user.memberPendingReqFrom;
-      })
+      });
   }
 
   function doFetchFriends() {
@@ -82,7 +82,7 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
       })
       .then((list) => {
         friends.value = list;
-      })
+      });
   }
 
   function doFetchPending() {
@@ -94,7 +94,7 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
       })
       .then((list) => {
         pending.value = list;
-      })
+      });
   }
 
   socket.on("friend_login_logout", async () => {

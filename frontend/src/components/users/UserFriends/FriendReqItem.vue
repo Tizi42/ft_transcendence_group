@@ -54,11 +54,11 @@ async function onHandleFriendRequest(action: string) {
         withCredentials: true,
       }
     )
-    .then((response: Response) => {
+    .then(() => {
       socket.emit("update_friend", data);
       user.doFetchPending();
       user.doFetchFriends();
-    })
+    });
 }
 
 defineExpose(

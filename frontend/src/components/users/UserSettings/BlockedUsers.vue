@@ -30,7 +30,7 @@ function doFetchBlocked() {
     })
     .then((list) => {
       blocked.value = list;
-    })
+    });
 }
 
 onBeforeMount(() => {

@@ -45,10 +45,10 @@ async function onRemoveBlock() {
         withCredentials: true,
       }
     )
-    .then((response: Response) => {
+    .then(() => {
       emit("renew");
       socket.emit("update_friend", data);
-    })
+    });
   user.doFetch();
 }
 

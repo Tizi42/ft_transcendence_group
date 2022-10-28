@@ -64,13 +64,11 @@ function onClickSearch() {
   friendWith.value = false;
   inputBorder.value = "none";
 
-  console.log(input.value);
   axios
     .get(getUrlOf("api/users/info/") + input.value, {
       withCredentials: true,
     })
     .then((response: Response) => {
-      console.log(response);
       if (response.data) {
         targetUser.value = response.data;
         if (
@@ -85,8 +83,7 @@ function onClickSearch() {
         input.value = "";
       }
     })
-    .catch((error: Error) => {
-      console.log(error);
+    .catch(() => {
       inputBorder.value = "4px solid red";
       input.value = "";
     });
@@ -109,7 +106,6 @@ async function onSend() {
       }
     )
     .then((response: Response) => {
-      console.log("response = ", response);
       if (response.data != "") {
         pending.value = true;
         socket.emit("update_friend", data);
@@ -117,9 +113,6 @@ async function onSend() {
       } else {
         alert("Send friend request failed, please try again later...");
       }
-    })
-    .catch(function (error: Error) {
-      console.log(error);
     });
 }
 
@@ -139,10 +132,10 @@ async function onCancel() {
         withCredentials: true,
       }
     )
-    .then((response: Response) => {
+    .then(() => {
       pending.value = false;
       socket.emit("update_friend", data);
-    })
+    });
 }
 
 defineExpose(

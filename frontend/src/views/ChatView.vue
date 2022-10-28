@@ -91,7 +91,7 @@ const handleSelectedNav = async (event: string) => {
       })
       .then((data) => {
         allMyChannels.value = data;
-      })
+      });
   }
 };
 
@@ -106,7 +106,7 @@ const handleSelectedReceiver = async (event: number) => {
       })
       .then((data) => {
         receiverProfile.value = data;
-      })
+      });
   } else {
     receiverProfile.value = null;
   }
@@ -144,8 +144,7 @@ socket.on("channel_updated", async () => {
           }
         }
       }
-    })
-    .catch(() => {});
+    });
   for (let i = 0; i < allMyChannels.value.length; i++) {
     if (allMyChannels.value[i].id === selectedChannel.value) {
       channel.value = allMyChannels.value[i];
@@ -169,8 +168,7 @@ socket.on("banned_user", async (userToBanId: number, channelId: number) => {
       })
       .then((data) => {
         allMyChannels.value = data;
-      })
-      .catch((error: Error) => {});
+      });
     for (let i = 0; i < allMyChannels.value.length; i++) {
       if (allMyChannels.value[i].id === channelId) {
         channel.value = allMyChannels.value[i];

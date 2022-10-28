@@ -30,16 +30,16 @@ export class AuthController {
     }
 
     // for development only: allow to log in with an existing email in db
-    // @Get('dev-only')
-    // async devUserLogin(@Query('email') email: string, @Res({ passthrough: true }) res: Response) {
-    //   const user = await this.usersService.findOneByEmail(email);
-    //   if (!user) {
-    //     return "No such user";
-    //   }
-    //   const { accessToken } = this.authService.login(user, false);
-    //   res.cookie('jwt', accessToken);
-    //   res.redirect('http://localhost:8080/2FA');
-    // }
+    @Get('dev-only')
+    async devUserLogin(@Query('email') email: string, @Res({ passthrough: true }) res: Response) {
+      const user = await this.usersService.findOneByEmail(email);
+      if (!user) {
+        return "No such user";
+      }
+      const { accessToken } = this.authService.login(user, false);
+      res.cookie('jwt', accessToken);
+      res.redirect('http://localhost:8080/2FA');
+    }
 
     @Post('2fa/generate')
     @UseGuards(JwtAuthGuard)

@@ -142,9 +142,6 @@ function onSend() {
       pending.value = true;
       socket.emit("update_friend", data);
       socket.emit("request_friendship", data);
-    })
-    .catch(function (error: Error) {
-      console.log(error);
     });
 }
 
@@ -168,9 +165,6 @@ function onCancel() {
       pending.value = false;
       socket.emit("update_friend", data);
       socket.emit("request_friendship", data);
-    })
-    .catch(function (error: Error) {
-      console.log(error);
     });
 }
 
