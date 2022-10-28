@@ -61,7 +61,6 @@ async function toLogout() {
 
 onBeforeMount(() => {
   socket.on("force_logout", () => {
-    console.log("cookie jwt = ", cookies.get("jwt"));
     cookies.remove("jwt");
     router.push({
       name: "login",

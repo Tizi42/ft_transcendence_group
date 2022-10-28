@@ -92,9 +92,6 @@ const handleSelectedNav = async (event: string) => {
       .then((data) => {
         allMyChannels.value = data;
       })
-      .catch((error: Error) => {
-        console.log("error :", error);
-      });
   }
 };
 
@@ -110,9 +107,6 @@ const handleSelectedReceiver = async (event: number) => {
       .then((data) => {
         receiverProfile.value = data;
       })
-      .catch((error: Error) => {
-        console.log("ERROR : ", error);
-      });
   } else {
     receiverProfile.value = null;
   }
@@ -128,7 +122,6 @@ const handleChannelSelected = async (event: number) => {
   for (let i = 0; i < allMyChannels.value.length; i++) {
     if (allMyChannels.value[i].id === selectedChannel.value) {
       channel.value = allMyChannels.value[i];
-      console.log("channel id ", event, "=", channel.value);
     }
   }
 };
@@ -152,10 +145,7 @@ socket.on("channel_updated", async () => {
         }
       }
     })
-    .catch((error: Error) => {
-      console.log("error :", error);
-    });
-  console.log("my channels = ", allMyChannels.value);
+    .catch(() => {});
   for (let i = 0; i < allMyChannels.value.length; i++) {
     if (allMyChannels.value[i].id === selectedChannel.value) {
       channel.value = allMyChannels.value[i];
@@ -180,9 +170,7 @@ socket.on("banned_user", async (userToBanId: number, channelId: number) => {
       .then((data) => {
         allMyChannels.value = data;
       })
-      .catch((error: Error) => {
-        console.log("error :", error);
-      });
+      .catch((error: Error) => {});
     for (let i = 0; i < allMyChannels.value.length; i++) {
       if (allMyChannels.value[i].id === channelId) {
         channel.value = allMyChannels.value[i];

@@ -60,9 +60,7 @@ onMounted(() => {
 });
 
 onBeforeMount(() => {
-  socket.on("new_connection", () => {
-    console.log("on user page");
-  });
+  socket.on("new_connection", () => {});
 });
 
 onBeforeUnmount(() => {

@@ -1,8 +1,8 @@
 <template>
   <button class="btn" data="Sign in with 42" @click="handleLogin()"></button>
-  <!-- <router-link :to="{ name: 'dev-login' }" id="link">
+  <router-link :to="{ name: 'dev-login' }" id="link">
     <button class="btn" data="Log in with email"></button>
-  </router-link> -->
+  </router-link>
 </template>
 
 <script setup lang="ts">

@@ -69,7 +69,6 @@ function onClickFriend(event: MouseEvent) {
   clickCoord.value.x = event.pageX - 100;
   clickCoord.value.y = event.pageY + 10;
   show.value = !show.value;
-  console.log("click", show.value);
 }
 
 function hide() {

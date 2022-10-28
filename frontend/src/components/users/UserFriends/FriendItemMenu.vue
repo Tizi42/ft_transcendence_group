@@ -38,12 +38,10 @@ const emit = defineEmits(["hideMenu", "inviting"]);
 const menu = ref();
 
 function onInvitePlay() {
-  console.log("Inviting friend to play a game");
   emit("inviting");
 }
 
 async function onRemoveFriend() {
-  console.log("remove ", props.friend.id);
   axios
     .post(
       getUrlOf("api/users/friends/rm/"),
@@ -61,16 +59,11 @@ async function onRemoveFriend() {
         from: props.friend.id.toString(),
         to: user.id.toString(),
       });
-      console.log(response);
     })
-    .catch((error: Error) => {
-      console.log(error);
-    });
   emit("hideMenu");
 }
 
 function onBlockUser() {
-  console.log("block ", props.friend.id);
   axios
     .post(
       getUrlOf("api/users/block/add/"),
@@ -88,11 +81,7 @@ function onBlockUser() {
         from: props.friend.id.toString(),
         to: user.id.toString(),
       });
-      console.log(response);
     })
-    .catch((error: Error) => {
-      console.log(error);
-    });
   emit("hideMenu");
 }
 

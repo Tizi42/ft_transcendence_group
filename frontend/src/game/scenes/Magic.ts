@@ -258,7 +258,6 @@ export default class MagicScene extends Phaser.Scene {
         this.update_paddle(1);
       }
       if (this.keyLeft.isDown || this.keyRight.isDown) {
-        // console.log("witched !");
         if (this.can_switch) {
           this.can_switch = 0;
           socket.emit("switch_spell", {
@@ -267,12 +266,10 @@ export default class MagicScene extends Phaser.Scene {
           });
         }
       } else if (this.keyLeft.isUp || this.keyRight.isUp) {
-        // console.log("can switch !");
         this.can_switch = 1;
       }
 
       if (this.keyShift.isDown) {
-        // console.log("casted");
         if (this.can_cast) {
           this.can_cast = 0;
           socket.emit("launch_spell", {
@@ -281,7 +278,6 @@ export default class MagicScene extends Phaser.Scene {
           });
         }
       } else if (this.keyShift.isUp) {
-        // console.log("can cast !");
         this.can_cast = 1;
       }
     }

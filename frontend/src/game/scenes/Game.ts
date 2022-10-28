@@ -18,11 +18,9 @@ export default class GameScene extends Phaser.Scene {
 
   constructor() {
     super("GameScene");
-    console.log("construct game scene", this.i++);
   }
 
   create() {
-    console.log("create game scene", this.i++);
     this.width = this.cameras.main.width;
     this.height = this.cameras.main.height;
 

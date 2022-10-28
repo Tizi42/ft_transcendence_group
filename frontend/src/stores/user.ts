@@ -71,9 +71,6 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
         allowNotifications.value = user.allowNotifications;
         channelInvitePending.value = user.memberPendingReqFrom;
       })
-      .catch((error: Error) => {
-        console.log(error);
-      });
   }
 
   function doFetchFriends() {
@@ -86,9 +83,6 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
       .then((list) => {
         friends.value = list;
       })
-      .catch((error: Error) => {
-        console.log(error);
-      });
   }
 
   function doFetchPending() {
@@ -101,9 +95,6 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
       .then((list) => {
         pending.value = list;
       })
-      .catch((error: Error) => {
-        console.log(error);
-      });
   }
 
   socket.on("friend_login_logout", async () => {

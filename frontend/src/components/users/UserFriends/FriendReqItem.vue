@@ -58,11 +58,7 @@ async function onHandleFriendRequest(action: string) {
       socket.emit("update_friend", data);
       user.doFetchPending();
       user.doFetchFriends();
-      console.log(response);
     })
-    .catch((error: Error) => {
-      console.log(error);
-    });
 }
 
 defineExpose(

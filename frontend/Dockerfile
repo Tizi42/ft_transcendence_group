@@ -1,11 +1,11 @@
-FROM    node:lts-alpine As production
+FROM    node:lts-alpine
 
 WORKDIR /usr/src/app
 
-COPY    package*.json ./
+COPY    . /usr/src/app/
+
+RUN     npm install -g vite@latest
 
 RUN     npm ci
-
-COPY    . /usr/src/app/
 
 CMD     [ "npm", "run", "prod" ]

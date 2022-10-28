@@ -140,13 +140,9 @@ async function onCancel() {
       }
     )
     .then((response: Response) => {
-      console.log(response);
       pending.value = false;
       socket.emit("update_friend", data);
     })
-    .catch(function (error: Error) {
-      console.log(error);
-    });
 }
 
 defineExpose(

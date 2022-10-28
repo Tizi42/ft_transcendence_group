@@ -22,7 +22,6 @@ const user: StoreGeneric = useUserStore();
 const blocked = ref([]);
 
 function doFetchBlocked() {
-  console.log("Fetching blocked...");
   fetch(getUrlOf("api/users/block/") + user.id, {
     credentials: "include",
   })
@@ -30,12 +29,8 @@ function doFetchBlocked() {
       return response.json();
     })
     .then((list) => {
-      console.log("blocked users: ", list);
       blocked.value = list;
     })
-    .catch((error: Error) => {
-      console.log(error);
-    });
 }
 
 onBeforeMount(() => {

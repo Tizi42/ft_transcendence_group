@@ -1,4 +1,4 @@
-FROM    node:lts-alpine As production
+FROM    node:lts-alpine
 
 WORKDIR /usr/src/app
 

@@ -6,7 +6,6 @@ import MagicScene from "@/game/scenes/Magic";
 import SpeedScene from "./scenes/Speed";
 
 function launch(containerId: string) {
-  console.log("in launch");
   return new Phaser.Game({
     type: Phaser.AUTO,
     width: 1043,

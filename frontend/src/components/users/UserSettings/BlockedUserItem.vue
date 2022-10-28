@@ -46,13 +46,9 @@ async function onRemoveBlock() {
       }
     )
     .then((response: Response) => {
-      console.log(response);
       emit("renew");
       socket.emit("update_friend", data);
     })
-    .catch((error: Error) => {
-      console.log(error);
-    });
   user.doFetch();
 }
 

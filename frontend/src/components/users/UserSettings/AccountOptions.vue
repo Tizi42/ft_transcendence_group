@@ -76,11 +76,7 @@ async function toggle2FA() {
       })
       .then((result) => {
         user.doFetch();
-        console.log("success : ", result);
       })
-      .catch((error: Error) => {
-        console.log("error : ", error);
-      });
   }
 }
 
