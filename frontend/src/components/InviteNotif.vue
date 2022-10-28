@@ -56,7 +56,6 @@ async function getSenderInfo(id: number) {
 }
 
 onBeforeMount(() => {
-  console.log(" on brefore mount in inv notif");
   socket.on("game_invitation", async (data: Invitation) => {
     inviteId.value = data.sender_id;
     mode.value = data.mode;
@@ -67,14 +66,12 @@ onBeforeMount(() => {
     pendingReq.value = false;
   });
   socket.on("go_play", (roomName: string) => {
-    console.log("in inv notif: receive go play", roomName);
     pendingReq.value = false;
     router.push({ name: "pong", params: { room_name: roomName } });
   });
 });
 
 onBeforeUnmount(() => {
-  console.log(" on brefore UnMount in inv notif");
   socket.off("game_invitation");
   socket.off("invitation_expired");
   socket.off("go_play");

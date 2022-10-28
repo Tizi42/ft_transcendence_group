@@ -66,16 +66,12 @@ async function onSubmitDisplayName() {
         return response.json();
       })
       .then((data) => {
-        console.log("data = ", data);
         if (data.msg && data.msg === "bad_name") {
           alert("This name is already picked !");
         } else {
           user.doFetch();
           editingMode.value = false;
         }
-      })
-      .catch((error: Error) => {
-        console.log("error :", error);
       });
   } else editingMode.value = false;
 }

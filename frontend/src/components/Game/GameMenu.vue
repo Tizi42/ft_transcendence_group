@@ -91,17 +91,10 @@ async function changeMode(next: boolean) {
 //  game init/cancel
 function cancel() {
   waiting.value = false;
-  console.log("cancel game");
-  socket.emit(
-    "quit_queue",
-    {
-      mode: mode.value[choosenMode.value],
-      user_id: user.id,
-    },
-    (data: string) => {
-      console.log(data);
-    }
-  );
+  socket.emit("quit_queue", {
+    mode: mode.value[choosenMode.value],
+    user_id: user.id,
+  });
 }
 
 async function startGame() {
@@ -113,7 +106,6 @@ async function startGame() {
       user_id: user.id,
     },
     (data: boolean) => {
-      console.log(data);
       if (data) {
         window.alert("You are already in queue!");
         waiting.value = false;

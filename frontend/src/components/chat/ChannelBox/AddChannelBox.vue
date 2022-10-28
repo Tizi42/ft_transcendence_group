@@ -62,8 +62,6 @@ let inputBorder = ref("none");
 let inputBorderPassword = ref("none");
 
 const createNewChannel = async () => {
-  console.log("channel name = ", channelName.value);
-  console.log("channel type = ", channelType.value);
   if (
     channelName.value === "" ||
     (channelName.value.length < 3 && channelName.value.length > 30)
@@ -78,7 +76,6 @@ const createNewChannel = async () => {
     owner: props.user.id,
     password: channelPassword.value,
   };
-  console.log(data);
   socket.emit("create_channel", data);
 };
 

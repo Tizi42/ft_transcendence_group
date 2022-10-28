@@ -19,18 +19,14 @@ function handleLogin() {
 onBeforeMount(async () => {
   await fetch(getUrlOf("api/private"), {
     credentials: "include",
-  })
-    .then((response: Response) => {
-      if (response.status === 200) {
-        router.push({
-          name: "game",
-        });
-      }
-      return response.json();
-    })
-    .catch((error: Error) => {
-      console.log("ERROR : ", error);
-    });
+  }).then((response: Response) => {
+    if (response.status === 200) {
+      router.push({
+        name: "game",
+      });
+    }
+    return response.json();
+  });
 });
 
 defineExpose(

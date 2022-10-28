@@ -51,15 +51,12 @@ const toJoin = () => {
     channelId: props.channel.id,
     password: password.value,
   };
-  console.log("channel to join =>", props.channel.name);
-  console.log("banned list =>", props.channel.banned);
   socket.emit("join_channel", data);
   password.value = "";
 };
 
 onBeforeMount(() => {
-  socket.on("joined_channel", (channelId: number) => {
-    console.log("joined channel id ", channelId);
+  socket.on("joined_channel", () => {
     socket.emit("get_all_channels");
     emit("hideAddChannel");
   });

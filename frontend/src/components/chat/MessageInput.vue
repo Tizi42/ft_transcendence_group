@@ -75,16 +75,7 @@
 import socket from "@/socket";
 import { Channel } from "@backend/channel/entities/channel.entity";
 import { StoreGeneric } from "pinia";
-import {
-  defineComponent,
-  ref,
-  Ref,
-  defineProps,
-  defineExpose,
-  onBeforeMount,
-  onBeforeUnmount,
-  onUnmounted,
-} from "vue";
+import { defineComponent, ref, Ref, defineProps, defineExpose } from "vue";
 
 interface Props {
   user: StoreGeneric;
@@ -111,32 +102,16 @@ const onSubmit = (receiver: number, selectedChannel: number) => {
       messageText.value = "";
     });
   } else if (selectedChannel >= 0) {
-    console.log("selected channel id = ", selectedChannel);
     const data = {
       content: messageText.value,
       authorId: props.user.id,
       channelId: selectedChannel,
     };
-    console.log("data message = ", data);
     socket.emit("send_channel_message", data, () => {
       messageText.value = "";
     });
   }
 };
-
-onBeforeMount(() => {
-  socket.on("muted_by", (channelId: number, userId: number) => {
-    console.log("You've been muted by", userId, "in channel id", channelId);
-  });
-});
-
-onBeforeUnmount(() => {
-  socket.off("muted_by");
-});
-
-onUnmounted(() => {
-  socket.off("muted_by");
-});
 
 defineExpose(
   defineComponent({

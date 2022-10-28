@@ -32,8 +32,6 @@ interface Props {
 const props: Readonly<Props> = defineProps<Props>();
 const room_info = ref();
 
-console.log(props);
-
 onBeforeMount(() => {
   if (props.room_name === undefined) router.push({ name: "game" });
   socket.emit(
@@ -44,7 +42,6 @@ onBeforeMount(() => {
     },
     (data: roomInfo) => {
       room_info.value = data;
-      console.log("room_info: ", data);
     }
   );
 });

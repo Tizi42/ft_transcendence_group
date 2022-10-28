@@ -39,16 +39,9 @@ function generateNewQrCode() {
     firstEnablingTwoFactor.value = true;
     fetch(getUrlOf("api/auth/2fa/reGenerate"), {
       credentials: "include",
-    })
-      .then((response: Response) => {
-        return response.status;
-      })
-      .then((status) => {
-        console.log(status);
-      })
-      .catch((error: Error) => {
-        console.log("ERROR : ", error);
-      });
+    }).then((response: Response) => {
+      return response.status;
+    });
   }
 }
 
@@ -67,9 +60,6 @@ onBeforeMount(async () => {
     .then((user: User) => {
       profile.value = user;
       firstEnablingTwoFactor.value = user.isFirstEnablingTwoFactor;
-    })
-    .catch((error: Error) => {
-      console.log("ERROR : ", error);
     });
 });
 </script>

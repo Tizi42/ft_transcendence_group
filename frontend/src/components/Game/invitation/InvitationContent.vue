@@ -104,7 +104,6 @@ onBeforeMount(() => {
   });
   socket.once("go_play", (roomName: string) => {
     clearTimeout(invitationTimeout.value);
-    console.log("go play received", roomName);
     router.push({ name: "pong", params: { room_name: roomName } });
   });
   socket.on("unavailable", () => {

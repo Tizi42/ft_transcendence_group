@@ -24,9 +24,8 @@
         :emojisURL="emojisURL"
         :message="messageW"
         :mode="mode"
-        @changeSound="changeSound"
+        @changeSound="null"
         @quitGame="quitGame"
-        @hideChat="hideChat"
       />
       <ReadyButton v-if="readyStatus[0]" />
       <ReadyButton v-if="readyStatus[1]" />
@@ -169,7 +168,6 @@ function updateEmoji(msg: emojiInfo) {
 }
 
 async function getPlayersInfo() {
-  console.log(props);
   dataReady.value = false;
 
   let left: Response = await fetch(
@@ -195,17 +193,9 @@ async function getPlayersInfo() {
   }, 500);
 }
 
-function changeSound(value: number) {
-  console.log("user wants to change sound", value);
-}
-
 function quitGame() {
   force_quit.value = false;
   router.push({ name: "game" });
-}
-
-function hideChat() {
-  console.log("hide chat");
 }
 
 onMounted(() => {
@@ -238,7 +228,6 @@ onBeforeMount(async () => {
 
   socket.on("quit_game", () => {
     window.alert("Player has left game, return to game menu...");
-    console.log("force quit !!");
     force_quit.value = true;
     router.push({ name: "game" });
   });
