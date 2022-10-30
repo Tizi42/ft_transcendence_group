@@ -25,4 +25,3 @@ function launch(containerId: string) {
 }
 
 export default launch;
-export { launch };
