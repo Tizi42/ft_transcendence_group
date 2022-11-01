@@ -1,8 +1,8 @@
 <template>
   <button class="btn" data="Sign in with 42" @click="handleLogin()"></button>
-  <router-link :to="{ name: 'dev-login' }" id="link">
+  <!-- <router-link :to="{ name: 'dev-login' }" id="link">
     <button class="btn" data="Log in with email"></button>
-  </router-link>
+  </router-link> -->
 </template>
 
 <script setup lang="ts">
@@ -19,14 +19,18 @@ function handleLogin() {
 onBeforeMount(async () => {
   await fetch(getUrlOf("api/private"), {
     credentials: "include",
-  }).then((response: Response) => {
-    if (response.status === 200) {
-      router.push({
-        name: "game",
-      });
-    }
-    return response.json();
-  });
+  })
+    .then((response: Response) => {
+      if (response.status === 200) {
+        router.push({
+          name: "game",
+        });
+      }
+      return response.json();
+    })
+    .catch((error: Error) => {
+      console.log("ERROR : ", error);
+    });
 });
 
 defineExpose(

@@ -59,13 +59,17 @@ const handleInvitationRequest = async (action: string) => {
       return response.json();
     })
     .then((data) => {
+      console.log("handle invitation data = ", data);
       if (data === "password_error" || data === "ban_error") {
-        return;
+        console.log("user banned by this channel");
       } else if (action === "acceptJoin") {
         socket.emit("accept_join_request", dataToEmit);
       } else {
         socket.emit("update_join_request", dataToEmit);
       }
+    })
+    .catch((error: Error) => {
+      console.log("error : ", error);
     });
 };
 

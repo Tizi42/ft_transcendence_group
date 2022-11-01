@@ -62,6 +62,7 @@ function joinGame() {
     window.alert("You already have a running game, please close it first.");
     return;
   }
+  console.log("joining", props.room.room_name);
   const data = {
     room_name: props.room.room_name,
     user_id: user.id,

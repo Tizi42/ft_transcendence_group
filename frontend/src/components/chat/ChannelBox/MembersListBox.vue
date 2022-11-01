@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>Members list</h2>
+    <h2 @click="test">Members list</h2>
     <div class="manage-members-list">
       <ul>
         <li
@@ -93,6 +93,10 @@ interface Props {
 const user: StoreGeneric = useUserStore();
 const props: Readonly<Props> = defineProps<Props>();
 
+const test = () => {
+  console.log("channel members = ", props.channel.members);
+};
+
 const banUser = (id: number, displayName: string) => {
   if (confirm(`Are you sure you want to ban ${displayName} for 2 hours ?`)) {
     socket.emit("ban_member", {
@@ -100,6 +104,9 @@ const banUser = (id: number, displayName: string) => {
       userId: user.id,
       userToBanId: id,
     });
+    console.log("ban user id", id, "from channel", props.channel.name);
+  } else {
+    console.log("user no banned");
   }
 };
 
@@ -110,6 +117,15 @@ const muteUser = (id: number, displayName: string) => {
       userId: user.id,
       userToMuteId: id,
     });
+    console.log(
+      "mute user id",
+      id,
+      "from channel",
+      props.channel.name,
+      "for ? time"
+    );
+  } else {
+    console.log("user not muted");
   }
 };
 
@@ -120,6 +136,9 @@ const makeAdmin = (id: number, displayName: string) => {
       userId: user.id,
       newAdminId: id,
     });
+    console.log("make admin user id", id);
+  } else {
+    console.log("no new admin");
   }
 };
 

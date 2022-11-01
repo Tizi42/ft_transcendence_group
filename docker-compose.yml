@@ -3,6 +3,8 @@ services:
     container_name: ${CONTAINER_NAME_BACKEND}
     build:
       context: ./backend
+      target: production
+      dockerfile: Dockerfile
     image: nestjs:1.0
     networks:
       - transcendence
@@ -17,6 +19,8 @@ services:
     container_name: ${CONTAINER_NAME_FRONTEND}
     build:
       context: ./frontend
+      target: production
+      dockerfile: Dockerfile
     image: vuejs:1.0
     networks:
       - transcendence
@@ -24,6 +28,7 @@ services:
       - 8080:8080
     volumes:
       - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
 
   database:
     container_name: ${CONTAINER_NAME_DATABASE}
@@ -37,6 +42,18 @@ services:
       - '9876:5432'
     volumes:
       - postgres-data:/var/lib/postgresql/data
+
+  # pgadmin:
+  #   container_name: pgadmin4_container
+  #   image: dpage/pgadmin4
+  #   restart: always
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@admin.com
+  #     PGADMIN_DEFAULT_PASSWORD: root
+  #   ports:
+  #     - "5050:80"
+  #   networks:
+  #     - transcendence
 
 volumes:
   postgres-data: {}

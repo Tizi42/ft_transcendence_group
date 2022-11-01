@@ -103,7 +103,8 @@ async function getStatus() {
       }
       return false;
     })
-    .catch(() => {
+    .catch((error: Error) => {
+      console.log("ERROR : ", error);
       return false;
     });
 }
@@ -121,7 +122,8 @@ async function getPreAuth() {
       }
       return false;
     })
-    .catch(() => {
+    .catch((error: Error) => {
+      console.log("ERROR : ", error);
       return false;
     });
 }

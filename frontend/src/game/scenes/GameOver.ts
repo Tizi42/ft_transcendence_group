@@ -13,6 +13,7 @@ export default class GameOverScene extends Phaser.Scene {
 
   i = 0;
   init(data: { winner: string }) {
+    console.log("init", this.i++, data);
     this.winner = data.winner;
   }
 
@@ -30,6 +31,7 @@ export default class GameOverScene extends Phaser.Scene {
       );
       // listen for server instruction to restart watching a game
       socket.once("game_start", () => {
+        console.log("Game start !!!");
         socket.emit("reset_score", {
           user_id: gameInfo.user_id,
         });

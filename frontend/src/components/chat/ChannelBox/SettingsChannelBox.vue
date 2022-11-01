@@ -94,6 +94,9 @@ const newPassword: Ref<string | null> = ref(null);
 let inputBorder = ref("none");
 
 const changePrivacy = async () => {
+  console.log("new channel type = ", channelType.value);
+  console.log("password = ", newPassword.value);
+  console.log("channel = ", props.channel);
   inputBorder.value = "none";
   if (channelType.value === "") {
     return;
@@ -108,6 +111,7 @@ const changePrivacy = async () => {
 };
 
 const UpdatePassword = () => {
+  console.log("Your new password = ", newPassword.value);
   inputBorder.value = "none";
   if (newPassword.value === null) {
     return;

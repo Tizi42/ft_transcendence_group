@@ -86,6 +86,7 @@ onUpdated(() => {
 });
 
 onBeforeMount(() => {
+  console.log(props);
   updateData();
 });
 

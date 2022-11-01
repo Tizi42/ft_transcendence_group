@@ -53,6 +53,7 @@ onBeforeMount(() => {
   }
 
   socket.on("game_start", () => {
+    console.log("Timmmmer game start !!!!");
     time.value = new Date();
     stop.value = false;
     updateTimer();
@@ -64,6 +65,7 @@ onBeforeMount(() => {
   });
 
   socket.on("time_reset", () => {
+    console.log("receive time reset !!!!");
     if (props.mode == "speed") {
       timer.value = ["03", "00"];
     } else {
@@ -73,6 +75,7 @@ onBeforeMount(() => {
 
   //for watch mode
   socket.on("current_game_time", (time_diff: number) => {
+    console.log("gametime: ", time_diff);
     time.value = new Date();
     watch_diff.value = time_diff;
     stop.value = false;

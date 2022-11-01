@@ -32,17 +32,23 @@ const reader = new FileReader();
 const avatarFrame = ref();
 
 function onClickFrame() {
+  console.log(upload.value);
   upload.value.click();
 }
 
 function onChangeAvatar() {
+  console.log(upload.value.files[0]);
   const image = upload.value.files[0];
   let formdata = new FormData();
 
   formdata.append("file", image);
-  axios.put(getUrlOf("api/users/uploads/avatar/"), formdata, {
-    withCredentials: true,
-  });
+  axios
+    .put(getUrlOf("api/users/uploads/avatar/"), formdata, {
+      withCredentials: true,
+    })
+    .then((res) => {
+      console.log(res);
+    });
   if (image) reader.readAsDataURL(image);
 }
 

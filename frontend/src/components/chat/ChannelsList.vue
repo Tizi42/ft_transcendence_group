@@ -95,7 +95,8 @@ watch(
 
 watch(
   () => user.channelInvitePending,
-  async () => {
+  async (newChannelInvitePending) => {
+    console.log("newChannelInvitePending =", newChannelInvitePending);
     await fetch(getUrlOf("api/channel/getAll/privates"), {
       credentials: "include",
     })
@@ -104,7 +105,11 @@ watch(
       })
       .then((data) => {
         allMyInvite.value = [];
+        console.log("data =", data);
         allMyInvite.value = data;
+      })
+      .catch((error: Error) => {
+        console.log("error :", error);
       });
   }
 );
@@ -137,6 +142,7 @@ const getChannelMessages = async (channelId: number) => {
 };
 
 const addNewChannel = () => {
+  console.log("add new channel");
   addWindow.value = true;
 };
 

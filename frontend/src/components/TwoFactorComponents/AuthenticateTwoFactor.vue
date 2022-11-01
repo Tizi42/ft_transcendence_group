@@ -36,21 +36,25 @@ const authenticate = async () => {
     body: JSON.stringify({
       authenticationCode: authenticationCode.value,
     }),
-  }).then((response: Response) => {
-    let p1 = document.querySelector("p");
-    p1?.remove();
-    if (response.status === 200) {
-      router.push({
-        name: "game",
-      });
-    } else {
-      authenticationCode.value = "";
-      let newP = document.createElement("p");
-      newP.textContent = "Wrong code !";
-      let form = document.getElementById("form");
-      form?.append(newP);
-    }
-    return response.json();
-  });
+  })
+    .then((response: Response) => {
+      let p1 = document.querySelector("p");
+      p1?.remove();
+      if (response.status === 200) {
+        router.push({
+          name: "game",
+        });
+      } else {
+        authenticationCode.value = "";
+        let newP = document.createElement("p");
+        newP.textContent = "Wrong code !";
+        let form = document.getElementById("form");
+        form?.append(newP);
+      }
+      return response.json();
+    })
+    .catch((error: Error) => {
+      console.log("error : ", error);
+    });
 };
 </script>

@@ -70,6 +70,9 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
         winRate.value = user.winRate;
         allowNotifications.value = user.allowNotifications;
         channelInvitePending.value = user.memberPendingReqFrom;
+      })
+      .catch((error: Error) => {
+        console.log(error);
       });
   }
 
@@ -82,6 +85,9 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
       })
       .then((list) => {
         friends.value = list;
+      })
+      .catch((error: Error) => {
+        console.log(error);
       });
   }
 
@@ -94,6 +100,9 @@ export const useUserStore = defineStore("user", (): userInfoStore => {
       })
       .then((list) => {
         pending.value = list;
+      })
+      .catch((error: Error) => {
+        console.log(error);
       });
   }
 

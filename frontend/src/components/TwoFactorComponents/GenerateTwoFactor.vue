@@ -28,6 +28,9 @@ onBeforeMount(async () => {
     })
     .then((blob: Blob) => {
       imageUrl.value = URL.createObjectURL(blob);
+    })
+    .catch((error: Error) => {
+      console.log(error);
     });
 });
 </script>

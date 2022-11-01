@@ -1,4 +1,4 @@
-FROM    node:lts-alpine
+FROM    node:lts-alpine As production
 
 WORKDIR /usr/src/app
 
@@ -8,6 +8,6 @@ RUN     npm ci
 
 COPY    . /usr/src/app/
 
-ENV     NODE_ENV development
+ENV     NODE_ENV production
 
 CMD     [ "npm", "run", "start:prod" ]

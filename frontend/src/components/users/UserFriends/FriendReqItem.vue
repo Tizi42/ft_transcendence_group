@@ -54,10 +54,14 @@ async function onHandleFriendRequest(action: string) {
         withCredentials: true,
       }
     )
-    .then(() => {
+    .then((response: Response) => {
       socket.emit("update_friend", data);
       user.doFetchPending();
       user.doFetchFriends();
+      console.log(response);
+    })
+    .catch((error: Error) => {
+      console.log(error);
     });
 }
 

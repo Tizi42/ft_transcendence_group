@@ -195,10 +195,14 @@ function leaveChannel(selectedChannel: number) {
       channelId: selectedChannel,
       userId: user.id,
     });
+    console.log("leaving the channel");
+  } else {
+    console.log("not leaving the channel");
   }
 }
 
 async function showUserProfile(event: number) {
+  console.log("show user profile id =", event);
   await fetch(getUrlOf("api/users/info/" + event), {
     credentials: "include",
   })
@@ -207,6 +211,9 @@ async function showUserProfile(event: number) {
     })
     .then((data) => {
       userTarget.value = data;
+    })
+    .catch((error: Error) => {
+      console.log("error : ", error);
     });
   isShowUserProfile.value = true;
 }
